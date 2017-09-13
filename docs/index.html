@@ -1,0 +1,151 @@
+<!DOCTYPE  html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>doc</title>
+    <style>
+      /*github.com style (c) Vasily Polovnyov <vast@whiteants.net>*/
+      pre code {
+        display: block; padding: 0.5em;
+        color: #333;
+        background: #f8f8ff
+      }
+      pre .comment,
+      pre .template_comment,
+      pre .diff .header,
+      pre .javadoc {
+        color: #998;
+        font-style: italic
+      }
+      pre .keyword,
+      pre .css .rule .keyword,
+      pre .winutils,
+      pre .javascript .title,
+      pre .nginx .title,
+      pre .subst,
+      pre .request,
+      pre .status {
+        color: #333;
+        font-weight: bold
+      }
+      pre .number,
+      pre .hexcolor,
+      pre .ruby .constant {
+        color: #099;
+      }
+      pre .string,
+      pre .tag .value,
+      pre .phpdoc,
+      pre .tex .formula {
+        color: #d14
+      }
+      pre .title,
+      pre .id {
+        color: #900;
+        font-weight: bold
+      }
+      pre .javascript .title,
+      pre .lisp .title,
+      pre .clojure .title,
+      pre .subst {
+        font-weight: normal
+      }
+      pre .class .title,
+      pre .haskell .type,
+      pre .vhdl .literal,
+      pre .tex .command {
+        color: #458;
+        font-weight: bold
+      }
+      pre .tag,
+      pre .tag .title,
+      pre .rules .property,
+      pre .django .tag .keyword {
+        color: #000080;
+        font-weight: normal
+      }
+      pre .attribute,
+      pre .variable,
+      pre .lisp .body {
+        color: #008080
+      }
+      pre .regexp {
+        color: #009926
+      }
+      pre .class {
+        color: #458;
+        font-weight: bold
+      }
+      pre .symbol,
+      pre .ruby .symbol .string,
+      pre .lisp .keyword,
+      pre .tex .special,
+      pre .prompt {
+        color: #990073
+      }
+      pre .built_in,
+      pre .lisp .title,
+      pre .clojure .built_in {
+        color: #0086b3
+      }
+      pre .preprocessor,
+      pre .pi,
+      pre .doctype,
+      pre .shebang,
+      pre .cdata {
+        color: #999;
+        font-weight: bold
+      }
+      pre .deletion {
+        background: #fdd
+      }
+      pre .addition {
+        background: #dfd
+      }
+      pre .diff .change {
+        background: #0086b3
+      }
+      pre .chunk {
+        color: #aaa
+      }
+    </style>
+  </head>
+  <body>  
+    <h1 id="ithoughts-io">ithoughts.io</h1>
+<h2 id="todo">TODO</h2>
+<h3 id="pages-produit-">Pages produit:</h3>
+<ul>
+<li>Présentation</li>
+<li>Forum de support</li>
+<li>Page vente (trouver solution pour donnations)</li>
+</ul>
+<h3 id="services-web">Services =&gt; Web</h3>
+<p>Trouver lien dans la main desc</p>
+<p>Flèche + &quot;En savoir plus&quot; sur le cadre</p>
+<h2 id="planification-modelextension">Planification ModelExtension</h2>
+<p>Pour chaque méthode, le paramètre <code>source</code> représente une valeur valide de sélecteur de source de données</p>
+<ul>
+<li>Sur le modèle<ul>
+<li><strong>make/spawn([<em>object</em> <code>props</code>]) =&gt; <em>Instance</em></strong>: Crée une instance, définissant ses propriétés  paramètres <code>props</code> fournis. Cette instance doit être persistée manuellement par la suite</li>
+<li><strong>makeMany/spawnMany([<em>object[]</em> <code>props</code>]) =&gt; <em>Instance</em></strong>: Crée des instances, définissant ses propriétés  paramètres <code>props</code> fournis. Cette instance doit être persistée manuellement par la suite</li>
+<li><strong>find(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Récupère une entité correspondant à <code>query</code> avec les options fournies. Si <code>query</code> n&#39;est pas un objet, on considère qu&#39;il s&#39;agit de l&#39;ID.</li>
+<li><strong>findMany(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance[])</em></strong>: cf <code>find</code></li>
+<li><strong>delete(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Supprime une entité correspondant à <code>query</code>. Si <code>query</code> n&#39;est pas un objet, on considère qu&#39;il s&#39;agit de l&#39;ID. <code>options</code> peut contenir <code>allowEmptyQuery</code>. L&#39;instance renvoyée a pour valeurs temporaire des valeurs indéfinies.</li>
+<li><strong>deleteMany(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: cf <code>delete</code></li>
+<li><strong>update(<em>object || Any</em> <code>query</code>, <em>object</em> <code>newAttrs</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Met à jour une entité correspondant à <code>query</code> avec les attributs contenus dans <code>newAttrs</code>. Si <code>query</code> n&#39;est pas un objet, on considère qu&#39;il s&#39;agit de l&#39;ID. <code>options</code> peut contenir <code>allowEmptyQuery</code>.</li>
+<li><strong>updateMany(<em>object || Any</em> <code>query</code>, <em>object</em> <code>newAttrs</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance[])</em></strong>: cf <code>update</code></li>
+</ul>
+</li>
+<li>Sur l&#39;instance<ul>
+<li><strong>destroy([<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Supprime cette instance de la <code>source</code> spécifiée. Ses propriétés temporaires/instantanées sont réinitialisées à <code>undefined</code>.</li>
+<li><strong>persist([<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Enregistre les modifications de cette instance dans <code>source</code> spécifiée. Ses propriétés temporaires/instantanées sont définies à celles renvoyées par l&#39;adapteur.</li>
+<li><strong>fetch([<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Réeffectue les opérations nécessaires pour obtenir l&#39;état de l&#39;instance dans la source spécifiée.</li>
+</ul>
+</li>
+</ul>
+<p>Si on change l&#39;ID, le modèle passe en mode desync?</p>
+<p>Adapter p2p?</p>
+
+  </body>
+</html>

@@ -1,31 +1,25 @@
-var ModelExtension;
+'use strict';
 
-it( 'Load', done => {
-	AltCore.loadModule( 'ModelExtension' ).then( ext => {
-		ModelExtension = module.ModelExtension = ext;
-		done();
-	}).catch( e => done( e ));
-});
-it( 'Collections generation', () => {
-	//	console.log(module.ModelExtension.registerModel);
-});
-describe( '"check" feature', () => {
+const Diaspora = require('../diaspora');
+require('./config');
+
+/*describe( '"check" feature', () => {
 	it( 'Basic tests with types', () => {
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 'string',
 		}, {
 			test: {
 				type: 'any',
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 1,
 		}, {
 			test: {
 				type: 'any',
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			string: 'string',
 			number: 1,
 			float:  1.5,
@@ -40,7 +34,7 @@ describe( '"check" feature', () => {
 				type: 'float',
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			object: {
 				string: 'string',
 			},
@@ -89,7 +83,7 @@ describe( '"check" feature', () => {
 				],
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			object: {
 				string: null,
 			},
@@ -140,7 +134,7 @@ describe( '"check" feature', () => {
 		})).to.be.empty;
 	});
 	it( '"required" property', () => {
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 1,
 		}, {
 			test: {
@@ -148,7 +142,7 @@ describe( '"check" feature', () => {
 				required: true,
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 'string',
 		}, {
 			test: {
@@ -156,7 +150,7 @@ describe( '"check" feature', () => {
 				required: true,
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: null,
 		}, {
 			test: {
@@ -164,7 +158,7 @@ describe( '"check" feature', () => {
 				required: true,
 			},
 		})).to.be.not.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 'a',
 		}, {
 			test: {
@@ -172,7 +166,7 @@ describe( '"check" feature', () => {
 				required: true,
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			object: {
 				string: null,
 			},
@@ -187,7 +181,7 @@ describe( '"check" feature', () => {
 				},
 			},
 		})).to.be.not.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			object: null,
 		}, {
 			object: {
@@ -200,7 +194,7 @@ describe( '"check" feature', () => {
 				},
 			},
 		})).to.be.not.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			object: null,
 		}, {
 			object: {
@@ -213,13 +207,13 @@ describe( '"check" feature', () => {
 				},
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({}, {
+		expect( Diaspora.check({}, {
 			rand: {
 				type:     'number',
 				required: true,
 			},
 		})).to.be.not.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			rand: null,
 		}, {
 			rand: {
@@ -227,7 +221,7 @@ describe( '"check" feature', () => {
 				required: true,
 			},
 		})).to.be.not.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			rand: l.random( 0, 100 ),
 		}, {
 			rand: {
@@ -237,7 +231,7 @@ describe( '"check" feature', () => {
 		})).to.be.empty;
 	});
 	it( '"enum" property', () => {
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 1,
 		}, {
 			test: {
@@ -245,7 +239,7 @@ describe( '"check" feature', () => {
 				enum: [ 1, 2, 'aze' ],
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 'string',
 		}, {
 			test: {
@@ -253,7 +247,7 @@ describe( '"check" feature', () => {
 				enum: [ 'string', 'hello' ],
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 'string',
 		}, {
 			test: {
@@ -261,7 +255,7 @@ describe( '"check" feature', () => {
 				enum: [ 'hello', 'world' ],
 			},
 		})).to.be.not.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 'string',
 		}, {
 			test: {
@@ -269,7 +263,7 @@ describe( '"check" feature', () => {
 				enum: [ 'hello', /^str/ ],
 			},
 		})).to.be.empty;
-		expect( ModelExtension.check({
+		expect( Diaspora.check({
 			test: 'string',
 		}, {
 			test: {
@@ -280,7 +274,7 @@ describe( '"check" feature', () => {
 	});
 });
 it( '"default" feature', () => {
-	expect( ModelExtension.default({
+	expect( Diaspora.default({
 		aze: 123,
 	}, {
 		foo: {
@@ -292,7 +286,7 @@ it( '"default" feature', () => {
 		foo: 'bar',
 	});
 	const now = l.now();
-	expect( ModelExtension.default({
+	expect( Diaspora.default({
 		aze: 123,
 	}, {
 		foo: {
@@ -303,7 +297,7 @@ it( '"default" feature', () => {
 		aze: 123,
 		foo: now,
 	});
-	expect( ModelExtension.default({
+	expect( Diaspora.default({
 		aze: 'baz',
 	}, {
 		aze: {
@@ -313,7 +307,7 @@ it( '"default" feature', () => {
 	})).to.deep.equal({
 		aze: 'baz',
 	});
-	expect( ModelExtension.default({
+	expect( Diaspora.default({
 		aze: 'baz',
 	}, {
 		aze: {
@@ -323,14 +317,15 @@ it( '"default" feature', () => {
 	})).to.deep.equal({
 		aze: 'baz',
 	});
-});
+});*/
+
 let inMemoryAdapter;
 describe( 'Adapters', () => {
 	it( 'Create in-memory adapter', done => {
-		inMemoryAdapter = ModelExtension.createDataSource( 'in-memory', {});
+		inMemoryAdapter = Diaspora.createDataSource( 'in-memory', {});
 		inMemoryAdapter.waitReady().then( adapter => {
 			expect( adapter ).to.be.an( 'object' );
-			expect( adapter.constructor.name ).to.be.eql( 'InMemoryMEAdapter' );
+			expect( adapter.constructor.name ).to.be.eql( 'InMemoryDiasporaAdapter' );
 			expect( adapter ).to.satisfy( o => ( 'findOne' in o ) || ( 'findMany' in o ), 'should have at least one "find" method' );
 			expect( adapter ).to.satisfy( o => ( 'deleteOne' in o ) || ( 'deleteMany' in o ), 'should have at least one "delete" method' );
 			expect( adapter ).to.satisfy( o => ( 'updateOne' in o ) || ( 'updateMany' in o ), 'should have at least one "update" method' );
@@ -339,8 +334,8 @@ describe( 'Adapters', () => {
 		}).catch( done );
 	});
 	it( 'Register named in-memory dataSource', () => {
-		ModelExtension.registerDataSource( 'test', 'inMemory', inMemoryAdapter );
-		expect( ModelExtension.dataSources ).to.deep.equal({
+		Diaspora.registerDataSource( 'test', 'inMemory', inMemoryAdapter );
+		expect( Diaspora.dataSources ).to.deep.equal({
 			test: {
 				inMemory: inMemoryAdapter,
 			},
@@ -353,7 +348,7 @@ describe( 'Models', () => {
 		let testedEntity;
 		let modelName = 'testModel';
 		it( 'Should create a model', () => {
-			testModel = ModelExtension.declareModel( 'test', modelName, {
+			testModel = Diaspora.declareModel( 'test', modelName, {
 				sources:    [ 'inMemory' ],
 				attributes: {
 					foo: {
@@ -425,7 +420,7 @@ describe( 'Models', () => {
 				});
 			});
 			it( '- Persist changed in-Memory Datastore', () => {
-				const inMemoryStore = ModelExtension.dataSources.test.inMemory;
+				const inMemoryStore = Diaspora.dataSources.test.inMemory;
 				expect( inMemoryStore.store ).to.have.property( 'testModel' );
 				const collection = inMemoryStore.store.testModel;
 				expect( collection.items ).to.deep.include( testedEntity.toObject());
@@ -441,7 +436,7 @@ describe( 'Models', () => {
 				expect( testedEntity.getState()).to.be.eql( 'syncing' );
 				expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
 				return retPromise.then(() => {
-					//console.log(require('util').inspect(ModelExtension.dataSources.test.inMemory, {colors: true, depth: 8}));
+					//console.log(require('util').inspect(Diaspora.dataSources.test.inMemory, {colors: true, depth: 8}));
 					expect( testedEntity.getState()).to.be.eql( 'sync' );
 					expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
 					expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
@@ -460,7 +455,7 @@ describe( 'Models', () => {
 				expect( testedEntity.getState()).to.be.eql( 'syncing' );
 				expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
 				return retPromise.then(() => {
-					//console.log(require('util').inspect(ModelExtension.dataSources.test.inMemory, {colors: true, depth: 8}));
+					//console.log(require('util').inspect(Diaspora.dataSources.test.inMemory, {colors: true, depth: 8}));
 					expect( testedEntity.getState()).to.be.eql( 'orphan' );
 					expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
 					expect( testedEntity, 'id should be a undefined value or key on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'id' );
@@ -470,7 +465,7 @@ describe( 'Models', () => {
 				});
 			});
 			it( '- Destroy changed in-Memory Datastore', () => {
-				const inMemoryStore = ModelExtension.dataSources.test.inMemory;
+				const inMemoryStore = Diaspora.dataSources.test.inMemory;
 				expect( inMemoryStore.store ).to.have.property( 'testModel' );
 				const collection = inMemoryStore.store.testModel;
 				expect( collection.items ).to.not.deep.include( testedEntity.toObject());

@@ -1,0 +1,48 @@
+{
+	"name": "diaspora",
+	"version": "0.0.1",
+	"description": "Multi-Layer ORM for Javascript Client+Server",
+	"main": "diaspora.js",
+	"directories": {
+		"lib": "lib",
+		"test": "test"
+	},
+	"scripts": {
+		"test": "mocha test/index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Nihilivin/Diaspora.git"
+	},
+	"keywords": [
+		"ORM"
+	],
+	"author": "Gerkin",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/Nihilivin/Diaspora/issues"
+	},
+	"homepage": "https://github.com/Nihilivin/Diaspora#readme",
+	"docco_husky": {
+		"output_dir": "docs/docco",
+		"readme": "README-docco.md",
+		"project_name": "Diaspora"
+	},
+	"devDependencies": {
+		"chai": "^4.1.2",
+		"grunt": "^1.0.1",
+		"grunt-docco-husky": "0.0.4",
+		"grunt-jsdoc": "^2.1.1",
+		"grunt-markdown": "^0.7.0",
+		"gruntify-eslint": "^4.0.0",
+		"ink-docstrap": "^1.3.0",
+		"load-grunt-tasks": "^3.5.2",
+		"mocha": "^3.5.3"
+	},
+	"dependencies": {
+		"bluebird": "^3.5.0",
+		"check-types": "^7.3.0",
+		"lodash": "^4.17.4",
+		"sequential-event": "^0.1.0"
+	}
+}
