@@ -16,7 +16,7 @@ module.exports = function gruntInit( grunt ) {
 		'Gruntfile.js',
 		'diaspora.js',
 		'lib/**/*.js',
-		'!node_modules/**',
+		'!node_modules/**/*',
 		'tests/**/*.js',
 	];
 
@@ -26,17 +26,16 @@ module.exports = function gruntInit( grunt ) {
 			options: {
 				format: 'stylish', //'node_modules/eslint-tap',
 				fix:    true,
+				configFile: 'eslint-es6-browser.json',
 			},
 			info: {
 				options: {
-					configFile: 'eslint-es6-browser.json',
 					silent:     true,
 				},
 				src: jsAssets,
 			},
 			strict: {
 				options: {
-					configFile: 'eslint-es6-browser.json',
 				},
 				src: jsAssets,
 			},
@@ -52,7 +51,7 @@ module.exports = function gruntInit( grunt ) {
 			src:     jsAssets,
 			options: {
 				private:     true,
-				destination: `${ baseDocPath }/jsdoc`,
+				destination: `${ baseDocPath }/jsdoc/`,
 				config:	     'jsdoc.json',
 				template:    './node_modules/ink-docstrap/template',
 				readme:      'README-jsdoc.md',

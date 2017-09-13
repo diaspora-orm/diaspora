@@ -1,6 +1,6 @@
 # API documentation
 
-Welcome on the API documentation of AltEnter.
+Welcome on the API documentation of Diaspora.
 
 ## <a href="#modules-architecture" id="modules-architecture">Modules architecture</a>
 

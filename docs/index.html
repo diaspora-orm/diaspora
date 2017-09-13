@@ -112,40 +112,60 @@
     </style>
   </head>
   <body>  
-    <h1 id="ithoughts-io">ithoughts.io</h1>
-<h2 id="todo">TODO</h2>
-<h3 id="pages-produit-">Pages produit:</h3>
-<ul>
-<li>Présentation</li>
-<li>Forum de support</li>
-<li>Page vente (trouver solution pour donnations)</li>
-</ul>
-<h3 id="services-web">Services =&gt; Web</h3>
-<p>Trouver lien dans la main desc</p>
-<p>Flèche + &quot;En savoir plus&quot; sur le cadre</p>
-<h2 id="planification-modelextension">Planification ModelExtension</h2>
-<p>Pour chaque méthode, le paramètre <code>source</code> représente une valeur valide de sélecteur de source de données</p>
-<ul>
-<li>Sur le modèle<ul>
-<li><strong>make/spawn([<em>object</em> <code>props</code>]) =&gt; <em>Instance</em></strong>: Crée une instance, définissant ses propriétés  paramètres <code>props</code> fournis. Cette instance doit être persistée manuellement par la suite</li>
-<li><strong>makeMany/spawnMany([<em>object[]</em> <code>props</code>]) =&gt; <em>Instance</em></strong>: Crée des instances, définissant ses propriétés  paramètres <code>props</code> fournis. Cette instance doit être persistée manuellement par la suite</li>
-<li><strong>find(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Récupère une entité correspondant à <code>query</code> avec les options fournies. Si <code>query</code> n&#39;est pas un objet, on considère qu&#39;il s&#39;agit de l&#39;ID.</li>
-<li><strong>findMany(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance[])</em></strong>: cf <code>find</code></li>
-<li><strong>delete(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Supprime une entité correspondant à <code>query</code>. Si <code>query</code> n&#39;est pas un objet, on considère qu&#39;il s&#39;agit de l&#39;ID. <code>options</code> peut contenir <code>allowEmptyQuery</code>. L&#39;instance renvoyée a pour valeurs temporaire des valeurs indéfinies.</li>
-<li><strong>deleteMany(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: cf <code>delete</code></li>
-<li><strong>update(<em>object || Any</em> <code>query</code>, <em>object</em> <code>newAttrs</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Met à jour une entité correspondant à <code>query</code> avec les attributs contenus dans <code>newAttrs</code>. Si <code>query</code> n&#39;est pas un objet, on considère qu&#39;il s&#39;agit de l&#39;ID. <code>options</code> peut contenir <code>allowEmptyQuery</code>.</li>
-<li><strong>updateMany(<em>object || Any</em> <code>query</code>, <em>object</em> <code>newAttrs</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance[])</em></strong>: cf <code>update</code></li>
-</ul>
-</li>
-<li>Sur l&#39;instance<ul>
-<li><strong>destroy([<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Supprime cette instance de la <code>source</code> spécifiée. Ses propriétés temporaires/instantanées sont réinitialisées à <code>undefined</code>.</li>
-<li><strong>persist([<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Enregistre les modifications de cette instance dans <code>source</code> spécifiée. Ses propriétés temporaires/instantanées sont définies à celles renvoyées par l&#39;adapteur.</li>
-<li><strong>fetch([<em>string</em> <code>source</code>]) =&gt; <em>Promise(Instance)</em></strong>: Réeffectue les opérations nécessaires pour obtenir l&#39;état de l&#39;instance dans la source spécifiée.</li>
-</ul>
-</li>
-</ul>
-<p>Si on change l&#39;ID, le modèle passe en mode desync?</p>
-<p>Adapter p2p?</p>
+    <h1 id="diaspora">Diaspora</h1>
+<p><strong><em>Multi-source ORM for NodeJS &amp; the browser</em></strong></p>
+<hr>
+<h2 id="api-overview">API Overview</h2>
+<p>Here is a short API overview. For a detailed API documentation, check... The doc that does not exist yet ^^&#39;</p>
+<h3 id="model-methods">Model methods</h3>
+<h4 id="make-spawn-object-props-entity-">make/spawn([<em>object</em> <code>props</code>]) =&gt; <em>Entity</em></h4>
+<p>Create an entity, defining its properties with provided <code>props</code>. The returned entity should be persisted later.</p>
+<h4 id="makemany-spawnmany-object-props-entity-">makeMany/spawnMany([<em>object[]</em> <code>props</code>]) =&gt; <em>Entity[]</em></h4>
+<p>See <code>make</code> or <code>spawn</code>.</p>
+<h4 id="insert-object-props-promise-entity-">insert([<em>object</em> <code>props</code>]) =&gt; <em>Promise(Entity)</em></h4>
+<p>Create an entity, defining its properties with provided <code>props</code>, and persist it immediately.</p>
+<h4 id="insertmany-object-props-promise-entity-">insertMany([<em>object[]</em> <code>props</code>]) =&gt; <em>Promise(Entity[])</em></h4>
+<p>See <code>insertMany</code>.</p>
+<h4 id="find-object-any-query-object-options-string-source-promise-entity-">find(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Entity)</em></h4>
+<p>Retrieve an entity matching <code>query</code>. If <code>query</code> isn&#39;t an object, it is considered as an ID.</p>
+<h4 id="findmany-object-any-query-object-options-string-source-promise-entity-">findMany(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Entity[])</em></h4>
+<p>See <code>find</code></p>
+<h4 id="delete-object-any-query-object-options-string-source-promise-entity-">delete(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Entity)</em></h4>
+<p>Delete an entity matching <code>query</code>. If <code>query</code> isn&#39;t an object, it is considered as an ID. <code>options</code> can contain <code>allowEmptyQuery</code>.</p>
+<h4 id="deletemany-object-any-query-object-options-string-source-promise-entity-">deleteMany(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Entity)</em></h4>
+<p>See <code>delete</code></p>
+<h4 id="update-object-any-query-object-newattrs-object-options-string-source-promise-entity-">update(<em>object || Any</em> <code>query</code>, <em>object</em> <code>newAttrs</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Entity)</em></h4>
+<p>Update a single entity matching <code>query</code>with attributes in <code>newAttrs</code>. If <code>query</code> isn&#39;t an object, it is considered as an ID. <code>options</code> can contain <code>allowEmptyQuery</code>.</p>
+<h4 id="updatemany-object-any-query-object-newattrs-object-options-string-source-promise-entity-">updateMany(<em>object || Any</em> <code>query</code>, <em>object</em> <code>newAttrs</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) =&gt; <em>Promise(Entity[])</em></h4>
+<p>See <code>update</code></p>
+<h3 id="entity-methods">Entity methods</h3>
+<h4 id="destroy-string-source-promise-this-">destroy([<em>string</em> <code>source</code>]) =&gt; <em>Promise(this)</em></h4>
+<p>Delete this entity from the specified <code>source</code>. Source hash object is set to <code>undefined</code></p>
+<h4 id="persist-string-source-promise-this-">persist([<em>string</em> <code>source</code>]) =&gt; <em>Promise(this)</em></h4>
+<p>Save current entity to the specified <code>source</code>.</p>
+<h4 id="fetch-string-source-promise-this-">fetch([<em>string</em> <code>source</code>]) =&gt; <em>Promise(this)</em></h4>
+<p>Reload entity from specified <code>source</code>.</p>
+<h2 id="planned-or-unsure-diaspora-behaviors">Planned or unsure Diaspora behaviors</h2>
+<blockquote>
+<p>Manual change of ID</p>
+</blockquote>
+<p><em>Unsure</em> &gt; Entity may change mode to <code>desync</code> ?</p>
+<blockquote>
+<p>P2P Adapter</p>
+</blockquote>
+<p><em>Unsure</em> &gt; May be interesting... Check for possible problems about data modification, etc etc.</p>
+<blockquote>
+<p>Mongo Adapter</p>
+</blockquote>
+<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
+<blockquote>
+<p>LocalStorage Adapter</p>
+</blockquote>
+<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
+<blockquote>
+<p>Auto-switch to API server/client</p>
+</blockquote>
+<p><em>Planned</em> &gt; Wait for at least Mongo &amp; Localstorage adapters.</p>
 
   </body>
 </html>

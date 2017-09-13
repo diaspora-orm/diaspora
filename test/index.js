@@ -3,7 +3,7 @@
 const Diaspora = require('../diaspora');
 require('./config');
 
-/*describe( '"check" feature', () => {
+describe( '"check" feature', () => {
 	it( 'Basic tests with types', () => {
 		expect( Diaspora.check({
 			test: 'string',
@@ -317,7 +317,7 @@ it( '"default" feature', () => {
 	})).to.deep.equal({
 		aze: 'baz',
 	});
-});*/
+});
 
 let inMemoryAdapter;
 describe( 'Adapters', () => {
@@ -371,7 +371,6 @@ describe( 'Models', () => {
 			const entity2 = testModel.spawn({
 				foo: 'bar',
 			});
-			console.log( entity2.foo, entity2 );
 			expect( entity2 ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
 			expect( entity2.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
 			expect( entity2 ).to.respondTo( 'toObject' );
@@ -399,7 +398,7 @@ describe( 'Models', () => {
 			});
 		});
 		describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
-			it( '- Persist should change Entity', () => {
+			it( 'Persist should change Entity', () => {
 				testedEntity = testModel.spawn({
 					foo: 'bar',
 				});
@@ -419,13 +418,13 @@ describe( 'Models', () => {
 					return Promise.resolve();
 				});
 			});
-			it( '- Persist changed in-Memory Datastore', () => {
+			it( 'Persist changed in-Memory Datastore', () => {
 				const inMemoryStore = Diaspora.dataSources.test.inMemory;
 				expect( inMemoryStore.store ).to.have.property( 'testModel' );
 				const collection = inMemoryStore.store.testModel;
 				expect( collection.items ).to.deep.include( testedEntity.toObject());
 			});
-			it( '- Fetch', () => {
+			it( 'Fetch', () => {
 				testedEntity.foo = 'baz';
 				expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
 				expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
@@ -445,7 +444,7 @@ describe( 'Models', () => {
 					return Promise.resolve();
 				});
 			});
-			it( '- Destroy should change the entity', () => {
+			it( 'Destroy should change the entity', () => {
 				expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
 				expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
 				expect( testedEntity ).to.respondTo( 'destroy' );
@@ -464,7 +463,7 @@ describe( 'Models', () => {
 					return Promise.resolve();
 				});
 			});
-			it( '- Destroy changed in-Memory Datastore', () => {
+			it( 'Destroy changed in-Memory Datastore', () => {
 				const inMemoryStore = Diaspora.dataSources.test.inMemory;
 				expect( inMemoryStore.store ).to.have.property( 'testModel' );
 				const collection = inMemoryStore.store.testModel;
@@ -584,46 +583,85 @@ describe( 'Models', () => {
 					expect( testModel ).to.respondTo( 'update' );
 					return Promise.resolve()
 						.then(() => checkUpdate({
-							foo: undefined,
-						}, {
-							foo: 'qux',
-						}, false ))
+						foo: undefined,
+					}, {
+						foo: 'qux',
+					}, false ))
 						.then(() => checkUpdate({
-							foo: 'baz',
-						}, {
-							foo: 'qux',
-						}, false ))
+						foo: 'baz',
+					}, {
+						foo: 'qux',
+					}, false ))
 						.then(() => checkUpdate({
-							foo: 'bar',
-						}, {
-							foo: undefined,
-						}, false ));
+						foo: 'bar',
+					}, {
+						foo: undefined,
+					}, false ));
 				});
 				it( 'Update multiple instances', () => {
 					expect( testModel ).to.respondTo( 'updateMany' );
 					return Promise.resolve()
 						.then(() => checkUpdate({
-							foo: undefined,
-						}, {
-							foo: 'bar',
-						}, true ).then( foundEntities => {
-							expect( foundEntities ).to.have.lengthOf( 2 );
-						}))
+						foo: undefined,
+					}, {
+						foo: 'bar',
+					}, true ).then( foundEntities => {
+						expect( foundEntities ).to.have.lengthOf( 2 );
+					}))
 						.then(() => checkUpdate({
-							foo: 'baz',
-						}, {
-							foo: undefined,
-						}, true ).then( foundEntities => {
-							expect( foundEntities ).to.have.lengthOf( 1 );
-						}))
+						foo: 'baz',
+					}, {
+						foo: undefined,
+					}, true ).then( foundEntities => {
+						expect( foundEntities ).to.have.lengthOf( 1 );
+					}))
 						.then(() => checkUpdate({
-							foo: 'bat',
-						}, {
-							foo: 'twy',
-						}, true )
-						.then( foundEntities => {
-							expect( foundEntities ).to.have.lengthOf( 0 );
-						}));
+						foo: 'bat',
+					}, {
+						foo: 'twy',
+					}, true )
+							  .then( foundEntities => {
+						expect( foundEntities ).to.have.lengthOf( 0 );
+					}));
+				});
+			});
+			describe( '- Delete instances', () => {
+				function checkDestroy( query, many = true ) {
+					return testModel.findMany(query).then(entities => {
+						return Promise.resolve(entities.length);
+					}).then(beforeCount => {
+						return testModel[many ? 'deleteMany' : 'delete']( query ).then( () => Promise.resolve(beforeCount));
+					}).then(beforeCount => {
+						return testModel.findMany(query).then(entities => {
+							return Promise.resolve({before: beforeCount, after: entities.length});
+						});
+					}).then(result => {
+						if(many || 0 === result.before){
+							expect(result.after).to.be.equal(0);
+						} else {
+							expect(result.after).to.be.equal(result.before - 1);
+						}
+					});
+				}
+				it( 'Delete a single instance', () => {
+					expect( testModel ).to.respondTo( 'delete' );
+					return Promise.resolve()
+						.then(() => checkDestroy({
+						foo: undefined,
+					}, false ))
+						.then(() => checkDestroy({
+						foo: 'bar',
+					}, false ));
+				});
+				it( 'Delete multiple instances', () => {
+					expect( testModel ).to.respondTo( 'deleteMany' );
+					return Promise.resolve().then(() => checkDestroy({
+						foo: undefined,
+					}, true )).then(() => checkDestroy({
+						foo: 'baz',
+					}, true )).then(() => checkDestroy({
+						foo: 'qux',
+					}, true ));
 				});
 			});
 		});
