@@ -53,7 +53,7 @@ module.exports = function gruntInit( grunt ) {
 				readme:      'README-jsdoc.md',
 			},
 		},
-		markdown: {
+/*		markdown: {
 			index: {
 				files: [
 					{
@@ -78,7 +78,7 @@ module.exports = function gruntInit( grunt ) {
 					},
 				},
 			},
-		},
+		},*/
 	});
 
 	grunt.loadNpmTasks( 'grunt-jsdoc' );
@@ -91,7 +91,7 @@ module.exports = function gruntInit( grunt ) {
 	grunt.registerTask(
 		'documentate',
 		[
-			'markdown:index',
+//			'markdown:index',
 			'jsdoc',
 			'docco_husky',
 		]

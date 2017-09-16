@@ -47,34 +47,8 @@
         <span class="nx">template</span><span class="o">:</span>    <span class="s1">&#39;./node_modules/ink-docstrap/template&#39;</span><span class="p">,</span>
         <span class="nx">readme</span><span class="o">:</span>      <span class="s1">&#39;README-jsdoc.md&#39;</span><span class="p">,</span>
       <span class="p">},</span>
-    <span class="p">},</span>
-    <span class="nx">markdown</span><span class="o">:</span> <span class="p">{</span>
-      <span class="nx">index</span><span class="o">:</span> <span class="p">{</span>
-        <span class="nx">files</span><span class="o">:</span> <span class="p">[</span>
-          <span class="p">{</span>
-            <span class="nx">src</span><span class="o">:</span>  <span class="s1">&#39;README.md&#39;</span><span class="p">,</span>
-            <span class="nx">dest</span><span class="o">:</span> <span class="s1">&#39;docs/index.html&#39;</span><span class="p">,</span>
-            <span class="nx">ext</span><span class="o">:</span>  <span class="s1">&#39;.html&#39;</span><span class="p">,</span>
-          <span class="p">},</span>
-        <span class="p">],</span>
-        <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-          <span class="nx">templateContext</span><span class="o">:</span>    <span class="p">{},</span>
-          <span class="nx">contextBinder</span><span class="o">:</span>      <span class="kc">false</span><span class="p">,</span>
-          <span class="nx">contextBinderMark</span><span class="o">:</span>  <span class="s1">&#39;@@@&#39;</span><span class="p">,</span>
-          <span class="nx">autoTemplate</span><span class="o">:</span>       <span class="kc">true</span><span class="p">,</span>
-          <span class="nx">autoTemplateFormat</span><span class="o">:</span> <span class="s1">&#39;jst&#39;</span><span class="p">,</span>
-          <span class="nx">markdownOptions</span><span class="o">:</span>    <span class="p">{</span>
-            <span class="nx">gfm</span><span class="o">:</span>       <span class="kc">true</span><span class="p">,</span>
-            <span class="nx">highlight</span><span class="o">:</span> <span class="s1">&#39;manual&#39;</span><span class="p">,</span>
-            <span class="nx">codeLines</span><span class="o">:</span> <span class="p">{</span>
-              <span class="nx">before</span><span class="o">:</span> <span class="s1">&#39;&lt;span&gt;&#39;</span><span class="p">,</span>
-              <span class="nx">after</span><span class="o">:</span>  <span class="s1">&#39;&lt;/span&gt;&#39;</span><span class="p">,</span>
-            <span class="p">},</span>
-          <span class="p">},</span>
-        <span class="p">},</span>
-      <span class="p">},</span>
-    <span class="p">},</span>
-  <span class="p">});</span>
+    <span class="p">},</span></pre></div></td></tr><tr id="section-5"><td class="docs"><div class="pilwrap"><a href="#section-5" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><p>markdown: {<br />            index: {<br />                files: [<br />                    {<br />                        src:  'README.md',<br />                        dest: 'docs/index.html',<br />                        ext:  '.html',<br />                    },<br />                ],<br />                options: {<br />                    templateContext:    {},<br />                    contextBinder:      false,<br />                    contextBinderMark:  '@@@',<br />                    autoTemplate:       true,<br />                    autoTemplateFormat: 'jst',<br />                    markdownOptions:    {<br />                        gfm:       true,<br />                        highlight: 'manual',<br />                        codeLines: {<br />                            before: '<span>',<br />                            after:  '</span>',<br />                        },<br />                    },<br />                },<br />            },<br />        },</p></div><div class="body"></div></div>
+</td><td class="code"><div class="highlight"><pre>  <span class="p">});</span>
 
   <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-jsdoc&#39;</span> <span class="p">);</span>
   <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-docco-husky&#39;</span> <span class="p">);</span>
@@ -85,9 +59,9 @@
 
   <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span>
     <span class="s1">&#39;documentate&#39;</span><span class="p">,</span>
-    <span class="p">[</span>
-      <span class="s1">&#39;markdown:index&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;jsdoc&#39;</span><span class="p">,</span>
+    <span class="p">[</span></pre></div></td></tr><tr id="section-6"><td class="docs"><div class="pilwrap"><a href="#section-6" class="pilcrow">&#182;</a></div><pre><code>    'markdown:index',
+</code></pre>
+</td><td class="code"><div class="highlight"><pre>      <span class="s1">&#39;jsdoc&#39;</span><span class="p">,</span>
       <span class="s1">&#39;docco_husky&#39;</span><span class="p">,</span>
     <span class="p">]</span>
   <span class="p">);</span>
@@ -105,4 +79,4 @@
   <span class="p">);</span>
 <span class="p">};</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Sat Sep 16 2017 15:50:02 GMT+0200 (CEST)  </div><div id="projectname"><a href="./index.html">Diaspora</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Sat Sep 16 2017 16:04:18 GMT+0200 (CEST)  </div><div id="projectname"><a href="./index.html">Diaspora</a></div></div></body></html>
