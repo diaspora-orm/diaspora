@@ -4,7 +4,7 @@
 
 ## Code details
 
-This documentation section is a readable version of the code, for quick review. Please visit the [Quick Code Review](http://github.ithoughts.io/Diaspora/docco/index.html) or the [API Documentation](http://github.ithoughts.io/Diaspora/jsdoc/index.html)
+This documentation section is a readable version of the code, for quick review. Please visit the [Manual website](http://github.ithoughts.io/Diaspora), the [Quick Code Review](http://github.ithoughts.io/Diaspora/docco/index.html) or the [API Documentation](http://github.ithoughts.io/Diaspora/jsdoc/index.html)
 
 ---
 

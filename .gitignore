@@ -58,3 +58,5 @@ typings/
 .env
 
 .localStorageTest/
+
+docs/\.sass-cache/

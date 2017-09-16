@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+<!-- Begin Jekyll SEO tag v2.3.0 -->
+<title>Dinky theme | Dinky is a red hot theme for GitHub Pages.</title>
+<meta property="og:title" content="Dinky theme" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Dinky is a red hot theme for GitHub Pages." />
+<meta property="og:description" content="Dinky is a red hot theme for GitHub Pages." />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="Dinky theme" />
+<script type="application/ld+json">
+{"name":"Dinky theme","description":"Dinky is a red hot theme for GitHub Pages.","author":null,"@type":"WebSite","url":"http://localhost:4000/","publisher":null,"image":null,"headline":"Dinky theme","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Dinky theme</h1>
+        <p class="header">Dinky is a red hot theme for GitHub Pages.</p>
+
+        <ul>
+          
+            <li class="download"><a class="buttons" href="">Download ZIP</a></li>
+            <li class="download"><a class="buttons" href="">Download TAR</a></li>
+          
+          <li><a class="buttons github" href="">View On GitHub</a></li>
+        </ul>
+
+        
+
+        
+      </header>
+
+      <section>
+        <h1 id="diaspora">Diaspora</h1>
+
+<p><strong><em>Multi-source ORM for NodeJS &amp; the browser</em></strong></p>
+
+<h2 id="code-details">Code details</h2>
+
+<p>This documentation section is a readable version of the code, for quick review. Please visit the <a href="docco/index.html">Quick Code Review</a> or the <a href="jsdoc/index.html">API Documentation</a></p>
+
+<hr />
+
+<h2 id="api-overview">API Overview</h2>
+
+<p>Here is a short API overview. For a detailed API documentation, check… The doc that does not exist yet ^^’</p>
+
+<h3 id="model-methods">Model methods</h3>
+
+<h4 id="makespawnobject-props--entity">make/spawn([<em>object</em> <code class="highlighter-rouge">props</code>]) =&gt; <em>Entity</em></h4>
+
+<p>Create an entity, defining its properties with provided <code class="highlighter-rouge">props</code>. The returned entity should be persisted later.</p>
+
+<h4 id="makemanyspawnmanyobject-props--entity">makeMany/spawnMany([<em>object[]</em> <code class="highlighter-rouge">props</code>]) =&gt; <em>Entity[]</em></h4>
+
+<p>See <code class="highlighter-rouge">make</code> or <code class="highlighter-rouge">spawn</code>.</p>
+
+<h4 id="insertobject-props--promiseentity">insert([<em>object</em> <code class="highlighter-rouge">props</code>]) =&gt; <em>Promise(Entity)</em></h4>
+
+<p>Create an entity, defining its properties with provided <code class="highlighter-rouge">props</code>, and persist it immediately.</p>
+
+<h4 id="insertmanyobject-props--promiseentity">insertMany([<em>object[]</em> <code class="highlighter-rouge">props</code>]) =&gt; <em>Promise(Entity[])</em></h4>
+
+<p>See <code class="highlighter-rouge">insertMany</code>.</p>
+
+<h4 id="findobject--any-query-object-options-string-source--promiseentity">find(<em>object || Any</em> <code class="highlighter-rouge">query</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity)</em></h4>
+
+<p>Retrieve an entity matching <code class="highlighter-rouge">query</code>. If <code class="highlighter-rouge">query</code> isn’t an object, it is considered as an ID.</p>
+
+<h4 id="findmanyobject--any-query-object-options-string-source--promiseentity">findMany(<em>object || Any</em> <code class="highlighter-rouge">query</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity[])</em></h4>
+
+<p>See <code class="highlighter-rouge">find</code></p>
+
+<h4 id="deleteobject--any-query-object-options-string-source--promiseentity">delete(<em>object || Any</em> <code class="highlighter-rouge">query</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity)</em></h4>
+
+<p>Delete an entity matching <code class="highlighter-rouge">query</code>. If <code class="highlighter-rouge">query</code> isn’t an object, it is considered as an ID. <code class="highlighter-rouge">options</code> can contain <code class="highlighter-rouge">allowEmptyQuery</code>.</p>
+
+<h4 id="deletemanyobject--any-query-object-options-string-source--promiseentity">deleteMany(<em>object || Any</em> <code class="highlighter-rouge">query</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity)</em></h4>
+
+<p>See <code class="highlighter-rouge">delete</code></p>
+
+<h4 id="updateobject--any-query-object-newattrs-object-options-string-source--promiseentity">update(<em>object || Any</em> <code class="highlighter-rouge">query</code>, <em>object</em> <code class="highlighter-rouge">newAttrs</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity)</em></h4>
+
+<p>Update a single entity matching <code class="highlighter-rouge">query</code>with attributes in <code class="highlighter-rouge">newAttrs</code>. If <code class="highlighter-rouge">query</code> isn’t an object, it is considered as an ID. <code class="highlighter-rouge">options</code> can contain <code class="highlighter-rouge">allowEmptyQuery</code>.</p>
+
+<h4 id="updatemanyobject--any-query-object-newattrs-object-options-string-source--promiseentity">updateMany(<em>object || Any</em> <code class="highlighter-rouge">query</code>, <em>object</em> <code class="highlighter-rouge">newAttrs</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity[])</em></h4>
+
+<p>See <code class="highlighter-rouge">update</code></p>
+
+<h3 id="entity-methods">Entity methods</h3>
+
+<h4 id="destroystring-source--promisethis">destroy([<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(this)</em></h4>
+
+<p>Delete this entity from the specified <code class="highlighter-rouge">source</code>. Source hash object is set to <code class="highlighter-rouge">undefined</code></p>
+
+<h4 id="persiststring-source--promisethis">persist([<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(this)</em></h4>
+
+<p>Save current entity to the specified <code class="highlighter-rouge">source</code>.</p>
+
+<h4 id="fetchstring-source--promisethis">fetch([<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(this)</em></h4>
+
+<p>Reload entity from specified <code class="highlighter-rouge">source</code>.</p>
+
+<h2 id="planned-or-unsure-diaspora-behaviors">Planned or unsure Diaspora behaviors</h2>
+
+<blockquote>
+  <p>Manual change of ID</p>
+</blockquote>
+
+<p><em>Unsure</em> &gt; Entity may change mode to <code class="highlighter-rouge">desync</code> ?</p>
+
+<blockquote>
+  <p>P2P Adapter</p>
+</blockquote>
+
+<p><em>Unsure</em> &gt; May be interesting… Check for possible problems about data modification, etc etc.</p>
+
+<blockquote>
+  <p>Mongo Adapter</p>
+</blockquote>
+
+<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
+
+<blockquote>
+  <p>Redis Adapter</p>
+</blockquote>
+
+<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
+
+<blockquote>
+  <p>LocalStorage/SessionStorage Adapter</p>
+</blockquote>
+
+<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
+
+<blockquote>
+  <p>Auto-switch to API server/client</p>
+</blockquote>
+
+<p><em>Planned</em> &gt; Wait for at least Mongo &amp; Localstorage adapters.</p>
+
+      </section>
+
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
