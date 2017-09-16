@@ -3,10 +3,6 @@
 /* global module: false */
 
 require( 'chalk' );
-//const fs = require( 'fs' );
-const _ = require( 'lodash' );
-const path = require( 'path' );
-//const textReplace = require('grunt-text-replace/lib/grunt-text-replace');
 
 module.exports = function gruntInit( grunt ) {
 	// Project configuration.
@@ -24,23 +20,23 @@ module.exports = function gruntInit( grunt ) {
 		pkg:    grunt.file.readJSON( 'package.json' ),
 		eslint: {
 			options: {
-				format: 'stylish', //'node_modules/eslint-tap',
-				fix:    true,
-				configFile: 'eslint-es6-browser.json',
+				format:     'stylish', //'node_modules/eslint-tap',
+				fix:        true,
+				configFile: 'eslint-es6-node.json',
 			},
 			info: {
 				options: {
-					silent:     true,
+					silent: true,
 				},
 				src: jsAssets,
 			},
 			strict: {
-				options: {
-				},
-				src: jsAssets,
+				options: {},
+				src:     jsAssets,
 			},
 		},
 		docco_husky: {
+			project_name: 'Diaspora',
 			files: {
 				expand: true,
 				src:    jsAssets,

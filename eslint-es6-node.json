@@ -1,21 +1,14 @@
 {
 	"env": {
 		"es6": true,
-		"browser": true
+		"node": true
 	},
 	"extends": "eslint:recommended",
 	"parserOptions": {
 		"sourceType": "script"
 	},
 	"globals": {
-		"require": false,
-		"define": false,
-		"l": false,
-		"c": false,
-		"SequentialEvent": false,
-		"window": false,
-		"global": false,
-		"AltCore": false
+		"global": false
 	},
 	"rules": {
 		"no-console": 0,

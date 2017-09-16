@@ -2,6 +2,10 @@
 
 ***Multi-source ORM for NodeJS & the browser***
 
+## Code details
+
+This documentation section is a readable version of the code, for quick review. Please visit the [Quick Code Review](docco/index.html) or the [API Documentation](jsdoc/index.html)
+
 ---
 
 ## API Overview
@@ -78,7 +82,11 @@ Reload entity from specified `source`.
 
 *Planned* > Wait for definitive adapter structure
 
-> LocalStorage Adapter
+> Redis Adapter
+
+*Planned* > Wait for definitive adapter structure
+
+> LocalStorage/SessionStorage Adapter
 
 *Planned* > Wait for definitive adapter structure
 
