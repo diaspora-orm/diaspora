@@ -4,7 +4,7 @@
 <span class="kr">const</span> <span class="nx">SequentialEvent</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;sequential-event&#39;</span> <span class="p">);</span>
 <span class="kr">const</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;lodash&#39;</span><span class="p">);</span>
 <span class="kr">const</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;check-types&#39;</span><span class="p">);</span>
-<span class="kr">const</span> <span class="nb">Promise</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;bluebird&#39;</span><span class="p">);</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><p>@class DiasporaAdapter</p></div><div class="details"></div><div class="body"></div></div>
+<span class="kr">const</span> <span class="nb">Promise</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;bluebird&#39;</span><span class="p">);</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><p>@class DiasporaAdapter</p></div><div class="details"><div class="dox_tag_title">Params</div><div class="dox_tag_detail"><span>classEntity </span><span class="dox_type">DataStoreEntity</span><span>- Class used to spawn source entities</span></div></div><div class="body"></div></div>
 </td><td class="code"><div class="highlight"><pre><span class="kr">class</span> <span class="nx">DiasporaAdapter</span> <span class="kr">extends</span> <span class="nx">SequentialEvent</span> <span class="p">{</span>
   <span class="nx">constructor</span><span class="p">(</span> <span class="nx">classEntity</span> <span class="p">)</span> <span class="p">{</span>
     <span class="kr">super</span><span class="p">();</span>
@@ -12,7 +12,7 @@
   <span class="p">}</span></pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@method waitReady
 <ul><li>@description Returns a promise resolved once adapter state is ready</li>
-<li>@memberof module:Diaspora.DiasporaAdapter</li>
+<li>@memberof DiasporaAdapter</li>
 <li>@public</li>
 <li>@instance</li>
 <li>@author gerkin</li>
@@ -33,7 +33,7 @@
 <li>@method insertOne
 <ul><li>@summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter</li>
 <li>@description Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide <code>insertOne</code> itself</li>
-<li>@memberof module:Diaspora.DiasporaAdapter</li>
+<li>@memberof DiasporaAdapter</li>
 <li>@public</li>
 <li>@instance</li>
 <li>@author gerkin</li>
@@ -48,7 +48,7 @@
 <li>@method insertMany
 <ul><li>@summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter</li>
 <li>@description Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide <code>insertMany</code> itself</li>
-<li>@memberof module:Diaspora.DiasporaAdapter</li>
+<li>@memberof DiasporaAdapter</li>
 <li>@public</li>
 <li>@instance</li>
 <li>@author gerkin</li>
@@ -64,4 +64,4 @@
 
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">DiasporaAdapter</span><span class="p">;</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Sat Sep 16 2017 16:57:13 GMT+0200 (CEST)  </div><div id="projectname"><a href="../../index.html">Diaspora</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Sat Sep 16 2017 21:31:46 GMT+0200 (CEST)  </div><div id="projectname"><a href="../../index.html">Diaspora</a></div></div></body></html>

@@ -27,7 +27,7 @@ On your account, can load, edit & save documents. Once opened, you work on an of
 
 On your website, you store the full article on a MySQL or MongoDB database. When you create, update, or delete your documents, search engine datas have to be refreshed.
 
-## How it works?
+## How does it work?
 
 Diaspora is composed of a server & a client library, both loading the same configuration structure.
 
@@ -47,65 +47,7 @@ An entity represent a data, like a row in MySQL, or a document in MongoDB. Each 
 
 Data sources are a data store we interact with through [adapters](). This is a database in the store you use. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in the program
 
-## API Overview
 
-Here is a short API overview. For a detailed API documentation, check... The doc that does not exist yet ^^'
-
-### Model methods
-
-#### make/spawn([*object* `props`]) => *Entity*
-
-Create an entity, defining its properties with provided `props`. The returned entity should be persisted later.
-
-#### makeMany/spawnMany([*object[]* `props`]) => *Entity[]*
-
-See `make` or `spawn`.
-
-#### insert([*object* `props`]) => *Promise(Entity)*
-
-Create an entity, defining its properties with provided `props`, and persist it immediately.
-
-#### insertMany([*object[]* `props`]) => *Promise(Entity[])*
-
-See `insertMany`.
-
-#### find(*object || Any* `query`, [*object* `options`], [*string* `source`]) => *Promise(Entity)*
-
-Retrieve an entity matching `query`. If `query` isn't an object, it is considered as an ID.
-
-#### findMany(*object || Any* `query`, [*object* `options`], [*string* `source`]) => *Promise(Entity[])*
-
-See `find`
-
-#### delete(*object || Any* `query`, [*object* `options`], [*string* `source`]) => *Promise(Entity)*
-
-Delete an entity matching `query`. If `query` isn't an object, it is considered as an ID. `options` can contain `allowEmptyQuery`.
-
-#### deleteMany(*object || Any* `query`, [*object* `options`], [*string* `source`]) => *Promise(Entity)*
-
-See `delete`
-
-#### update(*object || Any* `query`, *object* `newAttrs`, [*object* `options`], [*string* `source`]) => *Promise(Entity)*
-
-Update a single entity matching `query`with attributes in `newAttrs`. If `query` isn't an object, it is considered as an ID. `options` can contain `allowEmptyQuery`.
-
-#### updateMany(*object || Any* `query`, *object* `newAttrs`, [*object* `options`], [*string* `source`]) => *Promise(Entity[])*
-
-See `update`
-
-### Entity methods
-
-#### destroy([*string* `source`]) => *Promise(this)*
-
-Delete this entity from the specified `source`. Source hash object is set to `undefined`
-
-#### persist([*string* `source`]) => *Promise(this)*
-
-Save current entity to the specified `source`.
-
-#### fetch([*string* `source`]) => *Promise(this)*
-
-Reload entity from specified `source`.
 
 ## Planned or unsure Diaspora behaviors
 

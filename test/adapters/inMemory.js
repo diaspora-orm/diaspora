@@ -2,5 +2,8 @@
 
 const AdapterTestUtils = require('./utils');
 
-AdapterTestUtils.checkSpawnedAdapter('in-memory', {}, 'InMemory');
-AdapterTestUtils.checkRegisterAdapter('in-memory', 'inMemory');
+const ADAPTER_LABEL = 'in-memory';
+AdapterTestUtils.createDataSource(ADAPTER_LABEL, {});
+AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'InMemory');
+AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);
+AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'inMemory');

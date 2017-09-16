@@ -80,7 +80,7 @@
 
 <p>On your website, you store the full article on a MySQL or MongoDB database. When you create, update, or delete your documents, search engine datas have to be refreshed.</p>
 
-<h2 id="how-it-works">How it works?</h2>
+<h2 id="how-does-it-work">How does it work?</h2>
 
 <p>Diaspora is composed of a server &amp; a client library, both loading the same configuration structure.</p>
 
@@ -101,66 +101,6 @@
 <h3 id="data-sources">Data sources</h3>
 
 <p>Data sources are a data store we interact with through <a href="">adapters</a>. This is a database in the store you use. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in the program</p>
-
-<h2 id="api-overview">API Overview</h2>
-
-<p>Here is a short API overview. For a detailed API documentation, check… The doc that does not exist yet ^^’</p>
-
-<h3 id="model-methods">Model methods</h3>
-
-<h4 id="makespawnobject-props--entity">make/spawn([<em>object</em> <code class="highlighter-rouge">props</code>]) =&gt; <em>Entity</em></h4>
-
-<p>Create an entity, defining its properties with provided <code class="highlighter-rouge">props</code>. The returned entity should be persisted later.</p>
-
-<h4 id="makemanyspawnmanyobject-props--entity">makeMany/spawnMany([<em>object[]</em> <code class="highlighter-rouge">props</code>]) =&gt; <em>Entity[]</em></h4>
-
-<p>See <code class="highlighter-rouge">make</code> or <code class="highlighter-rouge">spawn</code>.</p>
-
-<h4 id="insertobject-props--promiseentity">insert([<em>object</em> <code class="highlighter-rouge">props</code>]) =&gt; <em>Promise(Entity)</em></h4>
-
-<p>Create an entity, defining its properties with provided <code class="highlighter-rouge">props</code>, and persist it immediately.</p>
-
-<h4 id="insertmanyobject-props--promiseentity">insertMany([<em>object[]</em> <code class="highlighter-rouge">props</code>]) =&gt; <em>Promise(Entity[])</em></h4>
-
-<p>See <code class="highlighter-rouge">insertMany</code>.</p>
-
-<h4 id="findobject--any-query-object-options-string-source--promiseentity">find(<em>object || Any</em> <code class="highlighter-rouge">query</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity)</em></h4>
-
-<p>Retrieve an entity matching <code class="highlighter-rouge">query</code>. If <code class="highlighter-rouge">query</code> isn’t an object, it is considered as an ID.</p>
-
-<h4 id="findmanyobject--any-query-object-options-string-source--promiseentity">findMany(<em>object || Any</em> <code class="highlighter-rouge">query</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity[])</em></h4>
-
-<p>See <code class="highlighter-rouge">find</code></p>
-
-<h4 id="deleteobject--any-query-object-options-string-source--promiseentity">delete(<em>object || Any</em> <code class="highlighter-rouge">query</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity)</em></h4>
-
-<p>Delete an entity matching <code class="highlighter-rouge">query</code>. If <code class="highlighter-rouge">query</code> isn’t an object, it is considered as an ID. <code class="highlighter-rouge">options</code> can contain <code class="highlighter-rouge">allowEmptyQuery</code>.</p>
-
-<h4 id="deletemanyobject--any-query-object-options-string-source--promiseentity">deleteMany(<em>object || Any</em> <code class="highlighter-rouge">query</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity)</em></h4>
-
-<p>See <code class="highlighter-rouge">delete</code></p>
-
-<h4 id="updateobject--any-query-object-newattrs-object-options-string-source--promiseentity">update(<em>object || Any</em> <code class="highlighter-rouge">query</code>, <em>object</em> <code class="highlighter-rouge">newAttrs</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity)</em></h4>
-
-<p>Update a single entity matching <code class="highlighter-rouge">query</code>with attributes in <code class="highlighter-rouge">newAttrs</code>. If <code class="highlighter-rouge">query</code> isn’t an object, it is considered as an ID. <code class="highlighter-rouge">options</code> can contain <code class="highlighter-rouge">allowEmptyQuery</code>.</p>
-
-<h4 id="updatemanyobject--any-query-object-newattrs-object-options-string-source--promiseentity">updateMany(<em>object || Any</em> <code class="highlighter-rouge">query</code>, <em>object</em> <code class="highlighter-rouge">newAttrs</code>, [<em>object</em> <code class="highlighter-rouge">options</code>], [<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(Entity[])</em></h4>
-
-<p>See <code class="highlighter-rouge">update</code></p>
-
-<h3 id="entity-methods">Entity methods</h3>
-
-<h4 id="destroystring-source--promisethis">destroy([<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(this)</em></h4>
-
-<p>Delete this entity from the specified <code class="highlighter-rouge">source</code>. Source hash object is set to <code class="highlighter-rouge">undefined</code></p>
-
-<h4 id="persiststring-source--promisethis">persist([<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(this)</em></h4>
-
-<p>Save current entity to the specified <code class="highlighter-rouge">source</code>.</p>
-
-<h4 id="fetchstring-source--promisethis">fetch([<em>string</em> <code class="highlighter-rouge">source</code>]) =&gt; <em>Promise(this)</em></h4>
-
-<p>Reload entity from specified <code class="highlighter-rouge">source</code>.</p>
 
 <h2 id="planned-or-unsure-diaspora-behaviors">Planned or unsure Diaspora behaviors</h2>
 
