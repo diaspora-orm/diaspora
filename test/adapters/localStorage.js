@@ -2,7 +2,16 @@
 
 const LocalStorage = require('node-localstorage').LocalStorage;
 const fs = require('fs');
-const localStorageDir = '.localStorageTest';
+
+const ADAPTER_LABEL = 'localstorage';
+const adapterConfig = getConfig(ADAPTER_LABEL);
+if(!adapterConfig.data_dir){
+	return it('LocalStorage adapter unconfigured', function(){
+		this.skip();
+	});
+}
+
+const localStorageDir = adapterConfig.data_dir;
 try{
 	const dataDir = path.resolve(__dirname, '../../', localStorageDir);
 	/**
@@ -32,7 +41,6 @@ global.localStorage = new LocalStorage(localStorageDir);
 
 const AdapterTestUtils = require('./utils');
 
-const ADAPTER_LABEL = 'localstorage';
 AdapterTestUtils.createDataSource(ADAPTER_LABEL, {});
 AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'LocalStorage');
 AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);

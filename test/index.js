@@ -4,7 +4,7 @@
 
 global.Diaspora = require('../diaspora');
 global.dataSources = {};
-require('./config');
+require('./defineGlobals');
 
 describe( '"check" feature', () => {
 	it( 'Basic tests with types', () => {

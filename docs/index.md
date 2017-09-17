@@ -29,7 +29,7 @@ On your website, you store the full article on a MySQL or MongoDB database. When
 
 ## How does it work?
 
-Diaspora is composed of a server & a client library, both loading the same configuration structure.
+Diaspora is composed of a server & a client library, both loading the same configuration structure. (See [how to configure Diaspora]())
 
 Diaspora allows you to create models, entities and data sources.
 
