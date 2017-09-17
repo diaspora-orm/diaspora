@@ -3,5 +3,6 @@ description: Multi-source ORM for node.js & the browser
 show_downloads: true
 google_analytics: UA-61219056-7
 theme: jekyll-theme-dinky
+canonical_url: https://diaspora.ithoughts.io
 #sitemap:
 #`    filename: "/sitemap.xml"

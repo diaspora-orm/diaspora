@@ -16,9 +16,9 @@
 	<body>
 		<nav>
 			<ul>
-				<li><a href="{{ site.url }}/Diaspora/">Home</a></li>
-				<li><a href="{{ site.url }}/Diaspora/docco/index.html">Quick Code Review</a></li>
-				<li><a href="{{ site.url }}/Diaspora/jsdoc/index.html">API Documentation</a></li>
+				<li><a href="{{ site.url }}/">Home</a></li>
+				<li><a href="{{ site.url }}/docco/index.html">Quick Code Review</a></li>
+				<li><a href="{{ site.url }}/jsdoc/index.html">API Documentation</a></li>
 			</ul>
 		</nav>
 		<div class="wrapper">
@@ -64,5 +64,25 @@
 			ga('send', 'pageview');
 		</script>
 		{% endif %}
+		<script>
+			/**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+			
+    var disqus_config = function () {
+        this.page.url = "{{ site.canonical_url }}{{ page.url }}";  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "{{ page.title }}"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+			(function() {  // DON'T EDIT BELOW THIS LINE
+				var d = document, s = d.createElement('script');
+
+				s.src = 'https://diaspora-orm.disqus.com/embed.js';
+
+				s.setAttribute('data-timestamp', +new Date());
+				(d.head || d.body).appendChild(s);
+			})();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
 	</body>
 </html>

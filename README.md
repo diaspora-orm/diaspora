@@ -4,7 +4,7 @@
 
 ## Code details
 
-This documentation section is a readable version of the code, for quick review. Please visit the [Manual website](http://github.ithoughts.io/Diaspora), the [Quick Code Review](http://github.ithoughts.io/Diaspora/docco/index.html) or the [API Documentation](http://github.ithoughts.io/Diaspora/jsdoc/index.html)
+This documentation section is a readable version of the code, for quick review. Please visit the [Manual website](https://diaspora.ithoughts.io/), the [Quick Code Review](https://diaspora.ithoughts.io/docco/index.html) or the [API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
 
 > ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:
 >
