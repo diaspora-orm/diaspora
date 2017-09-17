@@ -43,11 +43,13 @@ Models represents the population of your data, and how to interact with them. Mo
 
 An entity represent a data, like a row in MySQL, or a document in MongoDB. Each entities are attached to a single [model](), and contains its value for each [data source](). An entity can then know and interact with its state in each data source.
 
+> See the [Entity API]()
+
 ### Data sources
 
-Data sources are a data store we interact with through [adapters](). This is a database in the store you use. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in the program
+Data sources are a data store we interact with through [adapters](). This is a database in the store you use. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in the program. You are not supposed to use adapters & data-sources directly: Diaspora is in charge for this.
 
-
+> Learn how to [create an Adapter]()
 
 ## Planned or unsure Diaspora behaviors
 

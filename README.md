@@ -6,6 +6,13 @@
 
 This documentation section is a readable version of the code, for quick review. Please visit the [Manual website](http://github.ithoughts.io/Diaspora), the [Quick Code Review](http://github.ithoughts.io/Diaspora/docco/index.html) or the [API Documentation](http://github.ithoughts.io/Diaspora/jsdoc/index.html)
 
+> ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:
+>
+> * *Relations*: Not implemented
+> * *Browser version*: Not ready
+> * *Query language*: Only supports equality
+> * *Registering external adapter*: Soon
+
 ---
 
 ## API Overview

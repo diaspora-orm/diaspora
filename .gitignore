@@ -60,3 +60,5 @@ typings/
 .localStorageTest/
 
 docs/\.sass-cache/
+
+docs/_site/
