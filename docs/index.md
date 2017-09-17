@@ -37,19 +37,19 @@ Diaspora allows you to create models, entities and data sources.
 
 Models represents the population of your data, and how to interact with them. Models manage [entities](#), and interacts with [data sources](). We can assimilate it to a table in MySQL or a collection in MongoDB.
 
-> See the [Model API]()
+<a href="#" class="btn">See the <b>Model API</b></a>
 
 ### Entities
 
 An entity represent a data, like a row in MySQL, or a document in MongoDB. Each entities are attached to a single [model](), and contains its value for each [data source](). An entity can then know and interact with its state in each data source.
 
-> See the [Entity API]()
+<a href="#" class="btn">See the <b>Entity API</b></a>
 
 ### Data sources
 
 Data sources are a data store we interact with through [adapters](). This is a database in the store you use. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in the program. You are not supposed to use adapters & data-sources directly: Diaspora is in charge for this.
 
-> Learn how to [create an Adapter]()
+<a href="#" class="btn">Learn how to <b>create an adapter</b></a>
 
 ## Planned or unsure Diaspora behaviors
 
