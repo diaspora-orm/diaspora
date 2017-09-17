@@ -19,6 +19,7 @@ const AdapterTestUtils = {
 		it( `Create ${adapterLabel} adapter`, done => {
 			const dataSourceLabel = getDataSourceLabel(adapterLabel);
 			dataSources[dataSourceLabel].waitReady().then( adapter => {
+				adapter.baseName = baseName;
 				expect( adapter ).to.be.an( 'object' );
 				expect( adapter.constructor.name, 'Adapter name does not comply to naming convention' ).to.equal( `${baseName}DiasporaAdapter` );
 				l.forEach(['insert', 'find', 'update', 'delete'], word => {
@@ -44,6 +45,7 @@ const AdapterTestUtils = {
 			});
 			expect(entity).to.include.all.keys('id', 'idHash');
 			expect(entity.idHash).to.be.an('object').that.have.property(adapter.name, entity.id);
+			expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${adapter.baseName}Entity` );
 		}
 
 		describe('Test adapter methods', () => {

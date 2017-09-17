@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Class: InMemoryDiasporaAdapter</title>
+	<title>Documentation Class: RedisDiasporaAdapter</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: InMemoryDiasporaAdapter</h1>
+	<h1 class="page-title">Class: RedisDiasporaAdapter</h1>
 <section>
 
 <header>
@@ -87,7 +87,7 @@
         <h2>
             <span class="ancestors"><a href="Adapters.html">Adapters</a>.</span>
         
-        InMemoryDiasporaAdapter
+        RedisDiasporaAdapter
         </h2>
         
             <div class="class-description"><p>This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser &amp; Node.JS</p></div>
@@ -102,7 +102,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="InMemoryDiasporaAdapter"><span class="type-signature"></span>new InMemoryDiasporaAdapter( [config])</h4>
+    <h4 class="name" id="RedisDiasporaAdapter"><span class="type-signature"></span>new RedisDiasporaAdapter( [config])</h4>
     
     
 </dt>
@@ -464,14 +464,14 @@
     <h4 class="name" id="deleteMany"><span class="type-signature"></span>deleteMany(table, queryFind [, options])</h4>
     
     
-    <p class="summary">This reimplements <a href="Adapters.DiasporaAdapter.html#deleteMany">Adapters.DiasporaAdapter#deleteMany</a>, modified for in-memory interactions.</p>
+    <p class="summary">At least one of deleteOne or deleteMany must be reimplemented by adapter</p>
     
 </dt>
 <dd>
 
     
     <div class="description">
-        <p>Delete several entities from the memory.</p>
+        <p>Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide <code>deleteMany</code> itself</p>
     </div>
     
 
@@ -575,7 +575,7 @@
                 </td>
             
 
-            <td class="description last"><p>Hash representing entities to find</p></td>
+            <td class="description last"><p>Hash representing the entities to find</p></td>
         </tr>
 
     
@@ -633,12 +633,16 @@
 	
 
 	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Adapters.DiasporaAdapter.html#deleteMany">Adapters.DiasporaAdapter#deleteMany</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="Adapters.DiasporaAdapter.html#deleteMany">Adapters.DiasporaAdapter#deleteMany</a>
-    </li></ul></dd>
     
 
     
@@ -691,7 +695,7 @@
     
             
 <div class="param-desc">
-    <p>Promise resolved once items are deleted. Called with (<em>undefined</em>)</p>
+    <p>Promise resolved once item is found. Called with (<em><a href="DataStoreEntity.html">DataStoreEntity</a>[]</em> <code>entities</code>)</p>
 </div>
 
 
@@ -980,14 +984,14 @@
     <h4 class="name" id="findMany"><span class="type-signature"></span>findMany(table, queryFind [, options])</h4>
     
     
-    <p class="summary">This reimplements <a href="Adapters.DiasporaAdapter.html#findMany">Adapters.DiasporaAdapter#findMany</a>, modified for in-memory interactions.</p>
+    <p class="summary">At least one of findOne or findMany must be reimplemented by adapter</p>
     
 </dt>
 <dd>
 
     
     <div class="description">
-        <p>Retrieve several entities from the memory.</p>
+        <p>Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide <code>findMany</code> itself</p>
     </div>
     
 
@@ -1149,12 +1153,16 @@
 	
 
 	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Adapters.DiasporaAdapter.html#findMany">Adapters.DiasporaAdapter#findMany</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="Adapters.DiasporaAdapter.html#findMany">Adapters.DiasporaAdapter#findMany</a>
-    </li></ul></dd>
     
 
     
@@ -1207,7 +1215,7 @@
     
             
 <div class="param-desc">
-    <p>Promise resolved once items are found. Called with (<em><a href="InMemoryEntity.html">InMemoryEntity</a>[]</em> <code>entities</code>)</p>
+    <p>Promise resolved once item is found. Called with (<em><a href="DataStoreEntity.html">DataStoreEntity</a>[]</em> <code>entities</code>)</p>
 </div>
 
 
@@ -1465,7 +1473,7 @@
     
             
 <div class="param-desc">
-    <p>Promise resolved once item is found. Called with (<em><a href="InMemoryEntity.html">InMemoryEntity</a></em> <code>entity</code>)</p>
+    <p>Promise resolved once item is found. Called with (<em><a href="RedisEntity.html">RedisEntity</a></em> <code>entity</code>)</p>
 </div>
 
 
@@ -1477,383 +1485,6 @@
     <dd>
         
 <span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="generateUUID"><span class="type-signature"></span>generateUUID()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Create a new unique id for this store's entity</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li>gerkin</li>
-			</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Generated unique id</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">String</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="generateUUID"><span class="type-signature"></span>generateUUID()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Create a new unique id for this store's entity</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li>gerkin</li>
-			</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Generated unique id</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">String</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getSafeTableExists"><span class="type-signature"></span>getSafeTableExists(table)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Get or create the store hash</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>table</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Name of the table</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li>gerkin</li>
-			</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>In memory table to use</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">DataStoreTable</span>
 
 
 
@@ -2226,7 +1857,7 @@
     
             
 <div class="param-desc">
-    <p>Promise resolved once insertion is done. Called with (<em><a href="InMemoryEntity.html">InMemoryEntity</a></em> <code>entity</code>)</p>
+    <p>Promise resolved once insertion is done. Called with (<em><a href="RedisEntity.html">RedisEntity</a></em> <code>entity</code>)</p>
 </div>
 
 
@@ -2655,14 +2286,14 @@
     <h4 class="name" id="updateMany"><span class="type-signature"></span>updateMany(table, queryFind, update [, options])</h4>
     
     
-    <p class="summary">This reimplements <a href="Adapters.DiasporaAdapter.html#updateMany">Adapters.DiasporaAdapter#updateMany</a>, modified for in-memory interactions.</p>
+    <p class="summary">At least one of updateOne or updateMany must be reimplemented by adapter</p>
     
 </dt>
 <dd>
 
     
     <div class="description">
-        <p>Update several entities in the memory.</p>
+        <p>Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide <code>updateMany</code> itself</p>
     </div>
     
 
@@ -2730,7 +2361,7 @@
                 </td>
             
 
-            <td class="description last"><p>Name of the table to update data in</p></td>
+            <td class="description last"><p>Name of the table to retrieve data from</p></td>
         </tr>
 
     
@@ -2860,12 +2491,16 @@
 	
 
 	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Adapters.DiasporaAdapter.html#updateMany">Adapters.DiasporaAdapter#updateMany</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="Adapters.DiasporaAdapter.html#updateMany">Adapters.DiasporaAdapter#updateMany</a>
-    </li></ul></dd>
     
 
     
@@ -2918,7 +2553,7 @@
     
             
 <div class="param-desc">
-    <p>Promise resolved once update is done. Called with (<em><a href="InMemoryEntity.html">InMemoryEntity</a>[]</em> <code>entities</code>)</p>
+    <p>Promise resolved once item is found. Called with (<em><a href="DataStoreEntity.html">DataStoreEntity</a>[]</em> <code>entities</code>)</p>
 </div>
 
 
@@ -3212,7 +2847,7 @@
     
             
 <div class="param-desc">
-    <p>Promise resolved once update is done. Called with (<em><a href="InMemoryEntity.html">InMemoryEntity</a></em> <code>entity</code>)</p>
+    <p>Promise resolved once update is done. Called with (<em><a href="RedisEntity.html">RedisEntity</a></em> <code>entity</code>)</p>
 </div>
 
 

@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Adapters.DiasporaAdapter.html">Adapters.DiasporaAdapter</a></li><li><a href="Adapters.InMemoryDiasporaAdapter.html">Adapters.InMemoryDiasporaAdapter</a></li><li><a href="Adapters.LocalStorageDiasporaAdapter.html">Adapters.LocalStorageDiasporaAdapter</a></li><li><a href="Adapters.MongoDiasporaAdapter.html">Adapters.MongoDiasporaAdapter</a></li><li><a href="DataStoreEntity.html">DataStoreEntity</a></li><li><a href="Entity.html">Entity</a></li><li><a href="InMemoryEntity.html">InMemoryEntity</a></li><li><a href="LocalStorageEntity.html">LocalStorageEntity</a></li><li><a href="Model.html">Model</a></li><li><a href="MongoEntity.html">MongoEntity</a></li>
+					<li><a href="Adapters.DiasporaAdapter.html">Adapters.DiasporaAdapter</a></li><li><a href="Adapters.InMemoryDiasporaAdapter.html">Adapters.InMemoryDiasporaAdapter</a></li><li><a href="Adapters.LocalStorageDiasporaAdapter.html">Adapters.LocalStorageDiasporaAdapter</a></li><li><a href="Adapters.MongoDiasporaAdapter.html">Adapters.MongoDiasporaAdapter</a></li><li><a href="Adapters.RedisDiasporaAdapter.html">Adapters.RedisDiasporaAdapter</a></li><li><a href="DataStoreEntity.html">DataStoreEntity</a></li><li><a href="Entity.html">Entity</a></li><li><a href="InMemoryEntity.html">InMemoryEntity</a></li><li><a href="LocalStorageEntity.html">LocalStorageEntity</a></li><li><a href="Model.html">Model</a></li><li><a href="MongoEntity.html">MongoEntity</a></li><li><a href="RedisEntity.html">RedisEntity</a></li>
 				</ul>
 			</li>
 			
@@ -2370,6 +2370,404 @@
             
 <hr>
 <dt>
+    <h4 class="name" id="remapInput"><span class="type-signature"></span>remapInput(table, query)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>TODO</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>table</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of the table for which we remap</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>query</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Hash representing the entity to remap</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Adapters.DiasporaAdapter.html#remapInput">Adapters.DiasporaAdapter#remapInput</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li>TODO remapping</li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Remapped object</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="remapOutput"><span class="type-signature"></span>remapOutput(table, query)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>TODO</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>table</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of the table for which we remap</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>query</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Hash representing the entity to remap</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Adapters.DiasporaAdapter.html#remapOutput">Adapters.DiasporaAdapter#remapOutput</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li>TODO remapping</li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Remapped object</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="updateMany"><span class="type-signature"></span>updateMany(table, queryFind, update [, options])</h4>
     
     
@@ -3126,7 +3524,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on 2017-09-17T05:09:00+02:00
+		on 2017-09-17T08:53:23+02:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
