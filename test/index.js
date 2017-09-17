@@ -1,5 +1,7 @@
 'use strict';
 
+/* globals l: false, c: false */
+
 global.Diaspora = require('../diaspora');
 global.dataSources = {};
 require('./config');

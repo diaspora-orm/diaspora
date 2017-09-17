@@ -1,17 +1,19 @@
-<!DOCTYPE html><html><head><title>diaspora.js</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../index.html" class="source"><span class="file_name">README</span></a><a href="../Gruntfile.js.html" class="source "><span class="base_path">. / </span><span class="file_name">Gruntfile.js</span></a><a href="../diaspora.js.html" class="source "><span class="base_path">. / </span><span class="file_name">diaspora.js</span></a><a href="../lib/adapters/baseAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">baseAdapter.js</span></a><a href="../lib/adapters/inMemoryAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">inMemoryAdapter.js</span></a><a href="../lib/adapters/localStorageAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">localStorageAdapter.js</span></a><a href="../lib/dataStoreEntities/baseEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">baseEntity.js</span></a><a href="../lib/dataStoreEntities/inMemoryEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">inMemoryEntity.js</span></a><a href="../lib/dataStoreEntities/localStorageEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">localStorageEntity.js</span></a><a href="../lib/diaspora.js.html" class="source selected"><span class="base_path">lib / </span><span class="file_name">diaspora.js</span></a><a href="../lib/entityFactory.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">entityFactory.js</span></a><a href="../lib/model.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">model.js</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>diaspora.js</h1><div class="filepath">lib/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div>
+<!DOCTYPE html><html><head><title>diaspora.js</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../index.html" class="source"><span class="file_name">README</span></a><a href="../Gruntfile.js.html" class="source "><span class="base_path">. / </span><span class="file_name">Gruntfile.js</span></a><a href="../diaspora.js.html" class="source "><span class="base_path">. / </span><span class="file_name">diaspora.js</span></a><a href="../lib/adapters/baseAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">baseAdapter.js</span></a><a href="../lib/adapters/inMemoryAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">inMemoryAdapter.js</span></a><a href="../lib/adapters/localStorageAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">localStorageAdapter.js</span></a><a href="../lib/adapters/mongoAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">mongoAdapter.js</span></a><a href="../lib/dataStoreEntities/baseEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">baseEntity.js</span></a><a href="../lib/dataStoreEntities/inMemoryEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">inMemoryEntity.js</span></a><a href="../lib/dataStoreEntities/localStorageEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">localStorageEntity.js</span></a><a href="../lib/dataStoreEntities/mongoEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">mongoEntity.js</span></a><a href="../lib/diaspora.js.html" class="source selected"><span class="base_path">lib / </span><span class="file_name">diaspora.js</span></a><a href="../lib/entityFactory.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">entityFactory.js</span></a><a href="../lib/model.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">model.js</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>diaspora.js</h1><div class="filepath">lib/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div>
 </td><td class="code"><div class="highlight"><pre><span></span><span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
 
-<span class="kr">const</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;lodash&#39;</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;lodash&#39;</span> <span class="p">);</span>
+<span class="kr">const</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;check-types&#39;</span> <span class="p">);</span>
 <span class="kr">const</span> <span class="nx">DiasporaAdapter</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/baseAdapter.js&#39;</span> <span class="p">);</span>
 
 <span class="kr">const</span> <span class="nx">adapters</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s1">&#39;in-memory&#39;</span><span class="o">:</span>    <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/inMemoryAdapter&#39;</span> <span class="p">),</span>
   <span class="s1">&#39;localstorage&#39;</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/localStorageAdapter&#39;</span> <span class="p">),</span>
+  <span class="s1">&#39;mongo&#39;</span><span class="o">:</span>        <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/mongoAdapter&#39;</span> <span class="p">),</span>
 <span class="p">};</span>
 <span class="kr">const</span> <span class="nx">dataSources</span> <span class="o">=</span> <span class="p">{};</span>
 <span class="kr">const</span> <span class="nx">models</span> <span class="o">=</span> <span class="p">{};</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><p>@function cloneKeysAdd</p></div><div class="details"><div class="dox_tag_title">Params</div><div class="dox_tag_detail"><span>of </span><span class="dox_type">String[]    keys    Array</span><span>- keys to this point.</span></div><div class="dox_tag_detail"><span>key </span><span class="dox_type">String  newKey  New</span><span>- value.</span></div></div><div class="body"></div></div>
 </td><td class="code"><div class="highlight"><pre><span class="kd">function</span> <span class="nx">cloneKeysAdd</span><span class="p">(</span> <span class="nx">keys</span><span class="p">,</span> <span class="nx">newKey</span> <span class="p">)</span> <span class="p">{</span>
-  <span class="kr">const</span> <span class="nx">newKeys</span> <span class="o">=</span> <span class="nx">l</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span> <span class="nx">keys</span> <span class="p">);</span>
+  <span class="kr">const</span> <span class="nx">newKeys</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span> <span class="nx">keys</span> <span class="p">);</span>
   <span class="nx">newKeys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">newKey</span> <span class="p">);</span>
   <span class="k">return</span> <span class="nx">newKeys</span><span class="p">;</span>
 <span class="p">}</span></pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><p>Diaspora main namespace</p></div><div class="details"></div><div class="body"></div></div>
@@ -26,7 +28,7 @@
 <li>@returns {Error[]} Array of errors</li></ul></li>
 </ul></div><div class="body"></div></div>
 </td><td class="code"><div class="highlight"><pre>  <span class="nx">check</span><span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="nx">modelDesc</span> <span class="p">)</span> <span class="p">{</span></pre></div></td></tr><tr id="section-5"><td class="docs"><div class="pilwrap"><a href="#section-5" class="pilcrow">&#182;</a></div><p>Apply method <code>checkField</code> on each field described</p>
-</td><td class="code"><div class="highlight"><pre>    <span class="k">return</span> <span class="nx">l</span><span class="p">(</span> <span class="nx">modelDesc</span> <span class="p">)</span>
+</td><td class="code"><div class="highlight"><pre>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span> <span class="nx">modelDesc</span> <span class="p">)</span>
       <span class="p">.</span><span class="nx">mapValues</span><span class="p">((</span> <span class="nx">fieldDesc</span><span class="p">,</span> <span class="nx">field</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">checkField</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="k">this</span><span class="p">,</span> <span class="nx">entity</span><span class="p">[</span><span class="nx">field</span><span class="p">],</span> <span class="nx">fieldDesc</span><span class="p">,</span> <span class="p">[</span> <span class="nx">field</span> <span class="p">]))</span>
       <span class="p">.</span><span class="nx">values</span><span class="p">()</span>
       <span class="p">.</span><span class="nx">flatten</span><span class="p">()</span>
@@ -47,7 +49,7 @@
     <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">not</span><span class="p">.</span><span class="nx">object</span><span class="p">(</span> <span class="nx">fieldDesc</span> <span class="p">))</span> <span class="p">{</span>
       <span class="k">return</span><span class="p">;</span>
     <span class="p">}</span>
-    <span class="nx">l</span><span class="p">.</span><span class="nx">defaults</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">,</span> <span class="p">{</span>
       <span class="nx">required</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
     <span class="p">});</span>
 
@@ -66,15 +68,12 @@
       <span class="p">}</span>
       <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">assigned</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">model</span> <span class="p">))</span> <span class="p">{</span>
         <span class="kd">let</span> <span class="nx">model</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">string</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">model</span> <span class="p">))</span> <span class="p">{</span>
-          <span class="k">if</span> <span class="p">(</span> <span class="nx">l</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span> <span class="nx">collections</span><span class="p">,</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">model</span> <span class="p">))</span> <span class="p">{</span>
-            <span class="nx">model</span> <span class="o">=</span> <span class="nx">collections</span><span class="p">[</span><span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">model</span><span class="p">].</span><span class="nx">model</span><span class="p">;</span>
-          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span> <span class="s1">&#39;.&#39;</span> <span class="p">)</span> <span class="si">}</span><span class="sb"> spec &quot;model&quot; string does not match with any registered model`</span> <span class="p">);</span>
-          <span class="p">}</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">instance</span><span class="p">(</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">RelationalModel</span><span class="p">,</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">model</span> <span class="p">))</span> <span class="p">{</span>
-          <span class="nx">model</span> <span class="o">=</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">model</span><span class="p">;</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">string</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">model</span> <span class="p">))</span> <span class="p">{</span></pre></div></td></tr><tr id="section-10"><td class="docs"><div class="pilwrap"><a href="#section-10" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><p>f ( _.has( collections, fieldDesc.model )) {<br />                        model = collections[fieldDesc.model].model;<br />                    } else {</p></div><div class="body"></div></div>
+</td><td class="code"><div class="highlight"><pre>          <span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span> <span class="s1">&#39;.&#39;</span> <span class="p">)</span> <span class="si">}</span><span class="sb"> spec &quot;model&quot; string does not match with any registered model`</span> <span class="p">);</span></pre></div></td></tr><tr id="section-11"><td class="docs"><div class="pilwrap"><a href="#section-11" class="pilcrow">&#182;</a></div><pre><code>            }
+        } else if ( c.instance( Backbone.RelationalModel, fieldDesc.model )) {
+            model = fieldDesc.model;
+</code></pre>
+</td><td class="code"><div class="highlight"><pre>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
           <span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span> <span class="s1">&#39;.&#39;</span> <span class="p">)</span> <span class="si">}</span><span class="sb"> spec &quot;model&quot; must be either a string or a Backbone.RelationalModel instance`</span> <span class="p">);</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="p">(</span> <span class="nx">model</span> <span class="p">)</span> <span class="p">{</span>
@@ -114,7 +113,7 @@
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
               <span class="kr">const</span> <span class="nx">deepTest</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">object</span><span class="p">(</span>
                 <span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">attributes</span>
-              <span class="p">)</span> <span class="o">?</span> <span class="nx">l</span><span class="p">(</span> <span class="nx">value</span> <span class="p">).</span><span class="nx">mapValues</span><span class="p">(</span>
+              <span class="p">)</span> <span class="o">?</span> <span class="nx">_</span><span class="p">(</span> <span class="nx">value</span> <span class="p">).</span><span class="nx">mapValues</span><span class="p">(</span>
                   <span class="p">(</span> <span class="nx">propVal</span><span class="p">,</span> <span class="nx">propName</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">checkField</span><span class="p">(</span>
                     <span class="nx">propVal</span><span class="p">,</span>
                     <span class="nx">fieldDesc</span><span class="p">.</span><span class="nx">attributes</span><span class="p">[</span><span class="nx">propName</span><span class="p">],</span>
@@ -133,11 +132,11 @@
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
               <span class="kr">const</span> <span class="nx">deepTest</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">object</span><span class="p">(</span>
                 <span class="nx">fieldDesc</span><span class="p">.</span><span class="k">of</span>
-              <span class="p">)</span> <span class="o">?</span> <span class="nx">l</span><span class="p">(</span> <span class="nx">value</span> <span class="p">).</span><span class="nx">map</span><span class="p">(</span>
+              <span class="p">)</span> <span class="o">?</span> <span class="nx">_</span><span class="p">(</span> <span class="nx">value</span> <span class="p">).</span><span class="nx">map</span><span class="p">(</span>
                   <span class="p">(</span> <span class="nx">propVal</span><span class="p">,</span> <span class="nx">propName</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
                     <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">array</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="k">of</span> <span class="p">))</span> <span class="p">{</span>
-                      <span class="kr">const</span> <span class="nx">subErrors</span> <span class="o">=</span> <span class="nx">l</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="k">of</span> <span class="p">).</span><span class="nx">map</span><span class="p">(</span> <span class="nx">desc</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">checkField</span><span class="p">(</span> <span class="nx">propVal</span><span class="p">,</span> <span class="nx">desc</span><span class="p">,</span> <span class="nx">cloneKeysAdd</span><span class="p">(</span> <span class="nx">keys</span><span class="p">,</span> <span class="nx">propName</span> <span class="p">)));</span>
-                      <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">l</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span> <span class="nx">subErrors</span><span class="p">,</span> <span class="nx">v</span> <span class="p">=&gt;</span> <span class="mi">0</span> <span class="o">===</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="p">))</span> <span class="p">{</span>
+                      <span class="kr">const</span> <span class="nx">subErrors</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="k">of</span> <span class="p">).</span><span class="nx">map</span><span class="p">(</span> <span class="nx">desc</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">checkField</span><span class="p">(</span> <span class="nx">propVal</span><span class="p">,</span> <span class="nx">desc</span><span class="p">,</span> <span class="nx">cloneKeysAdd</span><span class="p">(</span> <span class="nx">keys</span><span class="p">,</span> <span class="nx">propName</span> <span class="p">)));</span>
+                      <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span> <span class="nx">subErrors</span><span class="p">,</span> <span class="nx">v</span> <span class="p">=&gt;</span> <span class="mi">0</span> <span class="o">===</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="p">))</span> <span class="p">{</span>
                         <span class="k">return</span> <span class="nx">subErrors</span><span class="p">;</span>
                       <span class="p">}</span>
                     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -166,7 +165,7 @@
       <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">assigned</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="kr">enum</span> <span class="p">))</span> <span class="p">{</span>
-      <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">l</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="kr">enum</span><span class="p">,</span> <span class="nx">enumVal</span> <span class="p">=&gt;</span> <span class="p">{</span>
+      <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">.</span><span class="kr">enum</span><span class="p">,</span> <span class="nx">enumVal</span> <span class="p">=&gt;</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">instance</span><span class="p">(</span> <span class="nx">enumVal</span><span class="p">,</span> <span class="nb">RegExp</span> <span class="p">))</span> <span class="p">{</span>
           <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">enumVal</span> <span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -178,7 +177,7 @@
       <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="nx">errors</span><span class="p">;</span>
-  <span class="p">},</span></pre></div></td></tr><tr id="section-10"><td class="docs"><div class="pilwrap"><a href="#section-10" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
+  <span class="p">},</span></pre></div></td></tr><tr id="section-12"><td class="docs"><div class="pilwrap"><a href="#section-12" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@function default
 <ul><li>@description Set default values if required</li>
 <li>@memberof Diaspora</li>
@@ -188,10 +187,10 @@
 <li>@param   {module:ModelExtension.ModelPrototype} modelDesc Model description</li>
 <li>@returns {Object} Entity merged with default values</li></ul></li>
 </ul></div><div class="body"></div></div>
-</td><td class="code"><div class="highlight"><pre>  <span class="k">default</span><span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="nx">modelDesc</span> <span class="p">)</span> <span class="p">{</span></pre></div></td></tr><tr id="section-11"><td class="docs"><div class="pilwrap"><a href="#section-11" class="pilcrow">&#182;</a></div><p>Apply method <code>defaultField</code> on each field described</p>
-</td><td class="code"><div class="highlight"><pre>    <span class="k">return</span> <span class="nx">l</span><span class="p">.</span><span class="nx">defaults</span><span class="p">(</span>
+</td><td class="code"><div class="highlight"><pre>  <span class="k">default</span><span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="nx">modelDesc</span> <span class="p">)</span> <span class="p">{</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><p>Apply method <code>defaultField</code> on each field described</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span><span class="p">(</span>
       <span class="nx">entity</span><span class="p">,</span>
-      <span class="nx">l</span><span class="p">.</span><span class="nx">mapValues</span><span class="p">(</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">mapValues</span><span class="p">(</span>
         <span class="nx">modelDesc</span><span class="p">,</span>
         <span class="p">(</span> <span class="nx">fieldDesc</span><span class="p">,</span> <span class="nx">field</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultField</span><span class="p">(</span>
           <span class="nx">entity</span><span class="p">[</span><span class="nx">field</span><span class="p">],</span>
@@ -199,7 +198,7 @@
         <span class="p">)</span>
       <span class="p">)</span>
     <span class="p">);</span>
-  <span class="p">},</span></pre></div></td></tr><tr id="section-12"><td class="docs"><div class="pilwrap"><a href="#section-12" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
+  <span class="p">},</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@function defaultField
 <ul><li>@description Set the default on a single field according to its description</li>
 <li>@memberof Diaspora</li>
@@ -228,7 +227,7 @@
     <span class="p">}</span>
     <span class="kr">const</span> <span class="nx">newDataSource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">adapters</span><span class="p">[</span><span class="nx">adapter</span><span class="p">](</span> <span class="nx">config</span> <span class="p">);</span>
     <span class="k">return</span> <span class="nx">newDataSource</span><span class="p">;</span>
-  <span class="p">},</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
+  <span class="p">},</span></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@method registerDataSource
 <ul><li>@description Stores the data source with provided label</li>
 <li>@memberof Diaspora</li>
@@ -253,11 +252,11 @@
       <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span> <span class="s1">&#39;DataSource must be an instance inheriting &quot;DiasporaAdapter&quot;&#39;</span> <span class="p">);</span>
     <span class="p">}</span>
     <span class="nx">dataSource</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
-    <span class="nx">l</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span> <span class="nx">dataSources</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span> <span class="nx">dataSources</span><span class="p">,</span> <span class="p">{</span>
       <span class="p">[</span><span class="nx">moduleName</span><span class="p">]</span><span class="o">:</span> <span class="p">{},</span>
     <span class="p">});</span>
     <span class="nx">dataSources</span><span class="p">[</span><span class="nx">moduleName</span><span class="p">][</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">dataSource</span><span class="p">;</span>
-  <span class="p">},</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
+  <span class="p">},</span></pre></div></td></tr><tr id="section-16"><td class="docs"><div class="pilwrap"><a href="#section-16" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@method declareModel
 <ul><li>@description Create a new Model with provided description</li>
 <li>@memberof Diaspora</li>
@@ -279,7 +278,7 @@
       <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span> <span class="s1">&#39;&quot;modelDesc&quot; must be an object&#39;</span> <span class="p">);</span>
     <span class="p">}</span>
     <span class="kr">const</span> <span class="nx">model</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Model</span><span class="p">(</span> <span class="nx">moduleName</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">modelDesc</span> <span class="p">);</span>
-    <span class="nx">l</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span> <span class="nx">models</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span> <span class="nx">models</span><span class="p">,</span> <span class="p">{</span>
       <span class="p">[</span><span class="nx">moduleName</span><span class="p">]</span><span class="o">:</span> <span class="p">{},</span>
     <span class="p">});</span>
     <span class="nx">models</span><span class="p">[</span><span class="nx">moduleName</span><span class="p">][</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">model</span><span class="p">;</span>
@@ -291,7 +290,7 @@
   <span class="nx">adapters</span><span class="p">,</span>
 <span class="p">};</span>
 
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Diaspora</span><span class="p">;</span></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><p>Load Model class after, so that Model requires Diaspora once it is declared</p>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Diaspora</span><span class="p">;</span></pre></div></td></tr><tr id="section-17"><td class="docs"><div class="pilwrap"><a href="#section-17" class="pilcrow">&#182;</a></div><p>Load Model class after, so that Model requires Diaspora once it is declared</p>
 </td><td class="code"><div class="highlight"><pre><span class="kr">const</span> <span class="nx">Model</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./model&#39;</span> <span class="p">);</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Sun Sep 17 2017 01:18:52 GMT+0200 (CEST)  </div><div id="projectname"><a href="../index.html">Diaspora</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Sun Sep 17 2017 05:09:06 GMT+0200 (CEST)  </div><div id="projectname"><a href="../index.html">Diaspora</a></div></div></body></html>

@@ -2,6 +2,8 @@
 
 const Promise = require('bluebird');
 
+/* globals l: false, c: false */
+
 function getDataSourceLabel(name){
 	return name + 'Adapter';
 }
@@ -9,13 +11,14 @@ function getDataSourceLabel(name){
 const AdapterTestUtils = {
 	createDataSource: (adapterLabel, config) => {
 		const dataSourceLabel = getDataSourceLabel(adapterLabel);
-		dataSources[dataSourceLabel] = Diaspora.createDataSource( adapterLabel, config);
+		const dataSource = Diaspora.createDataSource( adapterLabel, config);
+		dataSources[dataSourceLabel] = dataSource;
+		return dataSource;
 	},
 	checkSpawnedAdapter: (adapterLabel, baseName) => {
 		it( `Create ${adapterLabel} adapter`, done => {
 			const dataSourceLabel = getDataSourceLabel(adapterLabel);
 			dataSources[dataSourceLabel].waitReady().then( adapter => {
-				//				console.log(dataSources, adapter);
 				expect( adapter ).to.be.an( 'object' );
 				expect( adapter.constructor.name, 'Adapter name does not comply to naming convention' ).to.equal( `${baseName}DiasporaAdapter` );
 				l.forEach(['insert', 'find', 'update', 'delete'], word => {

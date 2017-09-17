@@ -37,7 +37,7 @@ module.exports = function gruntInit( grunt ) {
 		},
 		docco_husky: {
 			project_name: 'Diaspora',
-			files: {
+			files:        {
 				expand: true,
 				src:    jsAssets,
 			},
@@ -53,7 +53,7 @@ module.exports = function gruntInit( grunt ) {
 				readme:      'README-jsdoc.md',
 			},
 		},
-/*		markdown: {
+		/*		markdown: {
 			index: {
 				files: [
 					{
@@ -91,7 +91,7 @@ module.exports = function gruntInit( grunt ) {
 	grunt.registerTask(
 		'documentate',
 		[
-//			'markdown:index',
+			//			'markdown:index',
 			'jsdoc',
 			'docco_husky',
 		]
