@@ -340,7 +340,7 @@ footer {
 
 
 
-button, a.btn, nav ul li a {
+button, a.btn, nav#header ul li a {
 	background: #AF0011;
 	background: -moz-linear-gradient(top,#AF0011 0%,#820011 100%);
 	background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#f8f8f8),color-stop(100%,#ddd));
@@ -354,10 +354,10 @@ button, a.btn, nav ul li a {
 	box-shadow: inset 0px 1px 1px 0 #e90226;
 	color: #FFFFFF;
 	padding: 5px;
-    font-weight: bold;
+	font-weight: bold;
 }
 
-nav{
+nav#header{
 	background: #171717;
 	width: 100%;
 
@@ -369,9 +369,6 @@ nav{
 		text-align: center;
 
 		li{
-			display: inline-block;
-			//			margin: 0 10px;
-
 			&, a{
 				box-shadow: none;
 				border: none;
@@ -384,6 +381,68 @@ nav{
 		display: block;
 	}
 }
+
+nav ul li {
+	display: inline-block;
+	padding: 0;
+	> a {
+		display: inline-block;
+		padding: 5px 10px;
+	}
+}
+
+.tabs {
+	position: relative;
+
+	& > nav {
+		height: 36px;
+
+		> ul {
+			> li {
+				border-top-left-radius: 5px;
+				border-top-right-radius: 5px;
+				border: 1px solid #0D0D0D;
+				border-bottom: none;
+
+				background: #ddd;
+				background: -moz-linear-gradient(top,#f8f8f8 0%, #ddd 100%);
+				background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#f8f8f8),color-stop(100%,#ddd));
+				background: -webkit-linear-gradient(top,#f8f8f8 0%, #ddd 100%);
+				background: -o-linear-gradient(top,#f8f8f8 0%, #ddd 100%);
+				background: -ms-linear-gradient(top,#f8f8f8 0%, #ddd 100%);
+				background: linear-gradient(top,#f8f8f8 0%, #ddd 100%);
+			}
+		}
+	}
+}
+
+.tabs-init .tab {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+	display: none;
+	transition: 0.5s opacity;
+	width: 100%;
+
+	&.active{
+		display: block;
+		pointer-events: all;
+		opacity: 1;
+	}
+}
+
+.tabs-code .highlight pre {
+	margin: 10px;
+}
+
+
+
+// Per language
+
+[data-page="/query-language.html"] section h2{
+    margin: 0 0 10px;
+}
+
 
 @media print, screen and (max-width: 960px) {
 

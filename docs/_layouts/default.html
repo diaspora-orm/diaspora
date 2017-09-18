@@ -13,8 +13,8 @@
 <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 	</head>
-	<body>
-		<nav>
+	<body data-page="{{ page.url }}">
+		<nav id="header">
 			<ul>
 				<li><a href="{{ site.url }}/">Home</a></li>
 				<li><a href="{{ site.url }}/docco/index.html">Quick Code Review</a></li>
@@ -69,11 +69,11 @@
      *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
      *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
      */
-			
-    var disqus_config = function () {
-        this.page.url = "{{ site.canonical_url }}{{ page.url }}";  // Replace PAGE_URL with your page's canonical URL variable
-        this.page.identifier = "{{ page.title }}"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-    };
+
+			var disqus_config = function () {
+				this.page.url = "{{ site.canonical_url }}{{ page.url }}";  // Replace PAGE_URL with your page's canonical URL variable
+				this.page.identifier = "{{ page.title }}"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+			};
 			(function() {  // DON'T EDIT BELOW THIS LINE
 				var d = document, s = d.createElement('script');
 

@@ -11,8 +11,7 @@
     <span class="kr">super</span><span class="p">(</span> <span class="nx">InMemoryEntity</span> <span class="p">);</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="s1">&#39;ready&#39;</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">store</span> <span class="o">=</span> <span class="p">{};</span>
-  <span class="p">}</span>
-  </pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><hr />
+  <span class="p">}</span></pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><hr />
 
 <h3>Utils</h3>
 </td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-4"><td class="docs"><div class="pilwrap"><a href="#section-4" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
@@ -65,18 +64,19 @@
 <li>@returns {Object[]} Set with options applied</li></ul></li>
 </ul></div><div class="body"></div></div>
 </td><td class="code"><div class="highlight"><pre>  <span class="kr">static</span> <span class="nx">applyOptionsToSet</span><span class="p">(</span> <span class="nx">set</span><span class="p">,</span> <span class="nx">options</span> <span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span> <span class="s1">&#39;limit&#39;</span> <span class="p">))</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">integer</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">limit</span> <span class="p">))</span> <span class="p">{</span>
-        <span class="nx">set</span> <span class="o">=</span> <span class="nx">set</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">limit</span> <span class="p">);</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="nx">ModelExtension</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span> <span class="sb">`Trying to apply a non-integer limit &quot;</span><span class="si">${</span> <span class="nx">options</span><span class="p">.</span><span class="nx">limit</span> <span class="si">}</span><span class="sb">&quot;.`</span> <span class="p">);</span>
-      <span class="p">}</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span><span class="p">(</span> <span class="nx">options</span><span class="p">,</span> <span class="p">{</span>
+      <span class="nx">limit</span><span class="o">:</span> <span class="kc">Infinity</span><span class="p">,</span>
+      <span class="nx">skip</span><span class="o">:</span>  <span class="mi">0</span><span class="p">,</span>
+    <span class="p">});</span>
+    <span class="nx">set</span> <span class="o">=</span> <span class="nx">set</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">skip</span> <span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nx">set</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="nx">options</span><span class="p">.</span><span class="nx">limit</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="nx">set</span> <span class="o">=</span> <span class="nx">set</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">limit</span> <span class="p">);</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="nx">set</span><span class="p">;</span>
   <span class="p">}</span></pre></div></td></tr><tr id="section-8"><td class="docs"><div class="pilwrap"><a href="#section-8" class="pilcrow">&#182;</a></div><hr />
 
 <h3>Insert</h3>
-</td><td class="code"><div class="highlight"><pre>  </pre></div></td></tr><tr id="section-9"><td class="docs"><div class="pilwrap"><a href="#section-9" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
+</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-9"><td class="docs"><div class="pilwrap"><a href="#section-9" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@method insertOne
 <ul><li>@summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.</li>
 <li>@description Insert a single entity in the memory store.</li>
@@ -94,7 +94,7 @@
     <span class="nx">entity</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">generateUUID</span><span class="p">();</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">setIdHash</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">);</span>
     <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">);</span>
-    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">));</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="k">this</span> <span class="p">));</span>
   <span class="p">}</span></pre></div></td></tr><tr id="section-10"><td class="docs"><div class="pilwrap"><a href="#section-10" class="pilcrow">&#182;</a></div><hr />
 
 <h3>Find</h3>
@@ -107,14 +107,15 @@
 <li>@instance</li>
 <li>@author gerkin</li>
 <li>@param   {String} table  Name of the table to retrieve data from</li>
-<li>@param   {Object} queryFind Hash representing the entity to find</li>
+<li>@param   {SelectQueryOrCondition} queryFind Hash representing the entity to find</li>
 <li>@param   {QueryOptions} [options={}] Hash of options.</li>
 <li>@returns {Promise} Promise resolved once item is found. Called with (<em>{@link InMemoryEntity}</em> <code>entity</code>)</li></ul></li>
 </ul></div><div class="body"></div></div>
 </td><td class="code"><div class="highlight"><pre>  <span class="nx">findOne</span><span class="p">(</span> <span class="nx">table</span><span class="p">,</span> <span class="nx">queryFind</span><span class="p">,</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
     <span class="kr">const</span> <span class="nx">storeTable</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getSafeTableExists</span><span class="p">(</span> <span class="nx">table</span> <span class="p">);</span>
-    <span class="kr">const</span> <span class="nx">match</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">queryFind</span> <span class="p">);</span>
-    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]));</span>
+    <span class="kr">const</span> <span class="nx">matches</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">partial</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">matchEntity</span><span class="p">,</span> <span class="nx">queryFind</span> <span class="p">));</span>
+    <span class="kr">const</span> <span class="nx">reducedMatches</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">applyOptionsToSet</span><span class="p">(</span> <span class="nx">matches</span><span class="p">,</span> <span class="nx">options</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">_</span><span class="p">.</span><span class="nx">first</span><span class="p">(</span> <span class="nx">reducedMatches</span> <span class="p">),</span> <span class="k">this</span> <span class="p">));</span>
   <span class="p">}</span></pre></div></td></tr><tr id="section-12"><td class="docs"><div class="pilwrap"><a href="#section-12" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@method findMany
 <ul><li>@summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.</li>
@@ -124,19 +125,19 @@
 <li>@instance</li>
 <li>@author gerkin</li>
 <li>@param   {String} table  Name of the table to retrieve data from</li>
-<li>@param   {Object} queryFind Hash representing entities to find</li>
+<li>@param   {SelectQueryOrCondition} queryFind Hash representing entities to find</li>
 <li>@param   {QueryOptions} [options={}] Hash of options.</li>
 <li>@returns {Promise} Promise resolved once items are found. Called with (<em>{@link InMemoryEntity}[]</em> <code>entities</code>)</li></ul></li>
 </ul></div><div class="body"></div></div>
 </td><td class="code"><div class="highlight"><pre>  <span class="nx">findMany</span><span class="p">(</span> <span class="nx">table</span><span class="p">,</span> <span class="nx">queryFind</span><span class="p">,</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
     <span class="kr">const</span> <span class="nx">storeTable</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getSafeTableExists</span><span class="p">(</span> <span class="nx">table</span> <span class="p">);</span>
-    <span class="kr">const</span> <span class="nx">matches</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">queryFind</span> <span class="p">);</span>
+    <span class="kr">const</span> <span class="nx">matches</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">partial</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">matchEntity</span><span class="p">,</span> <span class="nx">queryFind</span> <span class="p">));</span>
     <span class="kr">const</span> <span class="nx">reducedMatches</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">applyOptionsToSet</span><span class="p">(</span> <span class="nx">matches</span><span class="p">,</span> <span class="nx">options</span> <span class="p">);</span>
-    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span> <span class="nx">reducedMatches</span><span class="p">,</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">)));</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span> <span class="nx">reducedMatches</span><span class="p">,</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="k">this</span> <span class="p">)));</span>
   <span class="p">}</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><hr />
 
 <h3>Update</h3>
-</td><td class="code"><div class="highlight"><pre>  </pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
+</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@method updateOne
 <ul><li>@summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.</li>
 <li>@description Update a single entity in the memory.</li>
@@ -145,16 +146,17 @@
 <li>@instance</li>
 <li>@author gerkin</li>
 <li>@param   {String} table  Name of the table to update data in</li>
-<li>@param   {Object} queryFind Hash representing the entity to find</li>
+<li>@param   {SelectQueryOrCondition} queryFind Hash representing the entity to find</li>
 <li>@param   {Object} update Object properties to set</li>
 <li>@param   {QueryOptions} [options={}] Hash of options.</li>
 <li>@returns {Promise} Promise resolved once update is done. Called with (<em>{@link InMemoryEntity}</em> <code>entity</code>)</li></ul></li>
 </ul></div><div class="body"></div></div>
 </td><td class="code"><div class="highlight"><pre>  <span class="nx">updateOne</span><span class="p">(</span> <span class="nx">table</span><span class="p">,</span> <span class="nx">queryFind</span><span class="p">,</span> <span class="nx">update</span><span class="p">,</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
     <span class="kr">const</span> <span class="nx">storeTable</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getSafeTableExists</span><span class="p">(</span> <span class="nx">table</span> <span class="p">);</span>
-    <span class="kr">const</span> <span class="nx">match</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">queryFind</span> <span class="p">);</span>
-    <span class="nx">_</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span> <span class="nx">_</span><span class="p">.</span><span class="nx">first</span><span class="p">(</span> <span class="nx">match</span> <span class="p">),</span> <span class="nx">update</span> <span class="p">);</span>
-    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">_</span><span class="p">.</span><span class="nx">first</span><span class="p">(</span> <span class="nx">match</span> <span class="p">)));</span>
+    <span class="kr">const</span> <span class="nx">matches</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">partial</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">matchEntity</span><span class="p">,</span> <span class="nx">queryFind</span> <span class="p">));</span>
+    <span class="kr">const</span> <span class="nx">firstMatch</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">first</span><span class="p">(</span> <span class="nx">matches</span> <span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">applyUpdateEntity</span><span class="p">(</span> <span class="nx">update</span><span class="p">,</span> <span class="nx">firstMatch</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">firstMatch</span> <span class="p">));</span>
   <span class="p">}</span></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@method updateMany
 <ul><li>@summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.</li>
@@ -164,23 +166,23 @@
 <li>@instance</li>
 <li>@author gerkin</li>
 <li>@param   {String} table  Name of the table to update data in</li>
-<li>@param   {Object} queryFind Hash representing entities to find</li>
+<li>@param   {SelectQueryOrCondition} queryFind Hash representing entities to find</li>
 <li>@param   {Object} update Object properties to set</li>
 <li>@param   {QueryOptions} [options={}] Hash of options.</li>
 <li>@returns {Promise} Promise resolved once update is done. Called with (<em>{@link InMemoryEntity}[]</em> <code>entities</code>)</li></ul></li>
 </ul></div><div class="body"></div></div>
 </td><td class="code"><div class="highlight"><pre>  <span class="nx">updateMany</span><span class="p">(</span> <span class="nx">table</span><span class="p">,</span> <span class="nx">queryFind</span><span class="p">,</span> <span class="nx">update</span><span class="p">,</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
     <span class="kr">const</span> <span class="nx">storeTable</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getSafeTableExists</span><span class="p">(</span> <span class="nx">table</span> <span class="p">);</span>
-    <span class="kr">const</span> <span class="nx">matches</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">queryFind</span> <span class="p">);</span>
+    <span class="kr">const</span> <span class="nx">matches</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">storeTable</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">partial</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">matchEntity</span><span class="p">,</span> <span class="nx">queryFind</span> <span class="p">));</span>
     <span class="kr">const</span> <span class="nx">reducedMatches</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">applyOptionsToSet</span><span class="p">(</span> <span class="nx">matches</span><span class="p">,</span> <span class="nx">options</span> <span class="p">);</span>
     <span class="nx">_</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span> <span class="nx">reducedMatches</span><span class="p">,</span> <span class="nx">match</span> <span class="p">=&gt;</span> <span class="p">{</span>
-      <span class="nx">_</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">update</span> <span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">applyUpdateEntity</span><span class="p">(</span> <span class="nx">update</span><span class="p">,</span> <span class="nx">match</span> <span class="p">);</span>
     <span class="p">});</span>
-    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span> <span class="nx">reducedMatches</span><span class="p">,</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">)));</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span> <span class="nx">reducedMatches</span><span class="p">,</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">classEntity</span><span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="k">this</span> <span class="p">)));</span>
   <span class="p">}</span></pre></div></td></tr><tr id="section-16"><td class="docs"><div class="pilwrap"><a href="#section-16" class="pilcrow">&#182;</a></div><hr />
 
 <h3>Delete</h3>
-</td><td class="code"><div class="highlight"><pre>  </pre></div></td></tr><tr id="section-17"><td class="docs"><div class="pilwrap"><a href="#section-17" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
+</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-17"><td class="docs"><div class="pilwrap"><a href="#section-17" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><ul>
 <li>@method deleteOne
 <ul><li>@summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.</li>
 <li>@description Delete a single entity from the memory.</li>
@@ -189,7 +191,7 @@
 <li>@instance</li>
 <li>@author gerkin</li>
 <li>@param   {String} table  Name of the table to delete data from</li>
-<li>@param   {Object} queryFind Hash representing the entity to find</li>
+<li>@param   {SelectQueryOrCondition} queryFind Hash representing the entity to find</li>
 <li>@param   {QueryOptions} [options={}] Hash of options.</li>
 <li>@returns {Promise} Promise resolved once item is found. Called with (<em>undefined</em>)</li></ul></li>
 </ul></div><div class="body"></div></div>
@@ -208,7 +210,7 @@
 <li>@instance</li>
 <li>@author gerkin</li>
 <li>@param   {String} table  Name of the table to delete data from</li>
-<li>@param   {Object} queryFind Hash representing entities to find</li>
+<li>@param   {SelectQueryOrCondition} queryFind Hash representing entities to find</li>
 <li>@param   {QueryOptions} [options={}] Hash of options.</li>
 <li>@returns {Promise} Promise resolved once items are deleted. Called with (<em>undefined</em>)</li></ul></li>
 </ul></div><div class="body"></div></div>
@@ -226,4 +228,4 @@
 
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">InMemoryDiasporaAdapter</span><span class="p">;</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Sun Sep 17 2017 19:56:32 GMT+0200 (CEST)  </div><div id="projectname"><a href="../../index.html">Diaspora</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Mon Sep 18 2017 13:15:43 GMT+0200 (CEST)  </div><div id="projectname"><a href="../../index.html">Diaspora</a></div></div></body></html>
