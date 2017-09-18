@@ -49,7 +49,7 @@ module.exports = function gruntInit( grunt ) {
 				private:     true,
 				destination: `${ baseDocPath }/jsdoc/`,
 				config:	     'jsdoc.json',
-				template:    './node_modules/ink-docstrap/template',
+				template:    './node_modules/ink-docstrap/template2',
 				readme:      'README-jsdoc.md',
 			},
 		},
@@ -64,9 +64,9 @@ module.exports = function gruntInit( grunt ) {
 			},
 			options: {
 				banner: `---
-layout: null
+layout: docpage
 #title: Home
-toc: true
+toc: false
 ---
 `,
 			},
@@ -114,7 +114,7 @@ toc: true
 			//			'markdown:index',
 			'jsdoc',
 			'docco_husky',
-			'changed:concat:dist',
+			'concat:dist',
 		]
 	);
 	grunt.registerTask(

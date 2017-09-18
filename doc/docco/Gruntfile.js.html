@@ -1,7 +1,7 @@
 ---
-layout: null
+layout: docpage
 #title: Home
-toc: true
+toc: false
 ---
 <!DOCTYPE html><html><head><title>Gruntfile.js</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="./docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="./index.html" class="source"><span class="file_name">README</span></a><a href="./Gruntfile.js.html" class="source selected"><span class="base_path">. / </span><span class="file_name">Gruntfile.js</span></a><a href="./diaspora.js.html" class="source "><span class="base_path">. / </span><span class="file_name">diaspora.js</span></a><a href="./lib/adapters/baseAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">baseAdapter.js</span></a><a href="./lib/adapters/inMemoryAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">inMemoryAdapter.js</span></a><a href="./lib/adapters/localStorageAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">localStorageAdapter.js</span></a><a href="./lib/adapters/mongoAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">mongoAdapter.js</span></a><a href="./lib/adapters/redisAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">redisAdapter.js</span></a><a href="./lib/dataStoreEntities/baseEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">baseEntity.js</span></a><a href="./lib/dataStoreEntities/inMemoryEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">inMemoryEntity.js</span></a><a href="./lib/dataStoreEntities/localStorageEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">localStorageEntity.js</span></a><a href="./lib/dataStoreEntities/mongoEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">mongoEntity.js</span></a><a href="./lib/dataStoreEntities/redisEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">redisEntity.js</span></a><a href="./lib/diaspora.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">diaspora.js</span></a><a href="./lib/entityFactory.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">entityFactory.js</span></a><a href="./lib/model.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">model.js</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>Gruntfile.js</h1><div class="filepath">./</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div>
 </td><td class="code"><div class="highlight"><pre><span></span><span class="s1">&#39;use strict&#39;</span><span class="p">;</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><div class="dox"><div class="summary"><p>global module: false</p></div><div class="body"></div></div>
@@ -49,7 +49,7 @@ toc: true
         <span class="kr">private</span><span class="o">:</span>     <span class="kc">true</span><span class="p">,</span>
         <span class="nx">destination</span><span class="o">:</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/jsdoc/`</span><span class="p">,</span>
         <span class="nx">config</span><span class="o">:</span>      <span class="s1">&#39;jsdoc.json&#39;</span><span class="p">,</span>
-        <span class="nx">template</span><span class="o">:</span>    <span class="s1">&#39;./node_modules/ink-docstrap/template&#39;</span><span class="p">,</span>
+        <span class="nx">template</span><span class="o">:</span>    <span class="s1">&#39;./node_modules/ink-docstrap/template2&#39;</span><span class="p">,</span>
         <span class="nx">readme</span><span class="o">:</span>      <span class="s1">&#39;README-jsdoc.md&#39;</span><span class="p">,</span>
       <span class="p">},</span>
     <span class="p">},</span>
@@ -60,13 +60,13 @@ toc: true
           <span class="s1">&#39;doc/docco/**/*.html&#39;</span><span class="p">,</span>
           <span class="s1">&#39;doc/jsdoc/**/*.html&#39;</span><span class="p">,</span>
         <span class="p">],</span>
-      <span class="nx">dest</span><span class="o">:</span> <span class="s1">&#39;./&#39;</span><span class="p">,</span>
+        <span class="nx">dest</span><span class="o">:</span> <span class="s1">&#39;./&#39;</span><span class="p">,</span>
       <span class="p">},</span>
       <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
         <span class="nx">banner</span><span class="o">:</span> <span class="sb">`---</span>
-<span class="sb">layout: null</span>
+<span class="sb">layout: docpage</span>
 <span class="sb">#title: Home</span>
-<span class="sb">toc: true</span>
+<span class="sb">toc: false</span>
 <span class="sb">---</span>
 <span class="sb">`</span><span class="p">,</span>
       <span class="p">},</span>
@@ -88,7 +88,7 @@ toc: true
 </code></pre>
 </td><td class="code"><div class="highlight"><pre>      <span class="s1">&#39;jsdoc&#39;</span><span class="p">,</span>
       <span class="s1">&#39;docco_husky&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;changed:concat:dist&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;concat:dist&#39;</span><span class="p">,</span>
     <span class="p">]</span>
   <span class="p">);</span>
   <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span>
@@ -105,4 +105,4 @@ toc: true
   <span class="p">);</span>
 <span class="p">};</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Mon Sep 18 2017 16:01:23 GMT+0200 (CEST)  </div><div id="projectname"><a href="./index.html">Diaspora</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Mon Sep 18 2017 17:07:50 GMT+0200 (CEST)  </div><div id="projectname"><a href="./index.html">Diaspora</a></div></div></body></html>

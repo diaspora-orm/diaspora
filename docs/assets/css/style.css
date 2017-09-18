@@ -497,7 +497,9 @@ button, a.btn, nav#header ul li a {
 
 nav#header {
   background: #171717;
-  width: 100%; }
+  width: 100%;
+  position: fixed;
+  z-index: 1; }
   nav#header ul {
     list-style: none;
     margin: 0;
@@ -557,10 +559,10 @@ nav ul li {
   width: auto;
   padding-left: 287px;
   justify-content: stretch; }
-  .wrapper header {
+  .wrapper > header {
     flex: 0 0 170px;
     float: none; }
-  .wrapper header, .wrapper footer {
+  .wrapper > header, .wrapper footer {
     left: 0; }
 
 #content {
@@ -568,6 +570,9 @@ nav ul li {
   padding-right: 225px; }
   #content > section {
     padding-bottom: 50px; }
+  #content > section > footer {
+    position: static;
+    width: auto; }
 
 #toc {
   position: fixed;
@@ -575,32 +580,56 @@ nav ul li {
   width: 200px;
   box-sizing: border-box;
   height: 100%;
-  padding-top: 36px;
+  margin: 0;
+  padding: 0 !important;
   top: 0;
   pointer-events: none;
   display: flex;
   flex-direction: column;
   justify-content: center; }
-  #toc > .section-nav {
+  #toc > * {
     padding-right: 25px;
     pointer-events: all;
     overflow-y: scroll;
-    max-height: 100%; }
-    #toc > .section-nav > li > ul {
+    max-height: 100%;
+    margin: 0; }
+    #toc > * > li > ul {
       list-style-type: upper-roman; }
-      #toc > .section-nav > li > ul > li > ul {
+      #toc > * > li > ul > li > ul {
         list-style-type: lower-roman; }
-        #toc > .section-nav > li > ul > li > ul > li > ul {
+        #toc > * > li > ul > li > ul > li > ul {
           list-style-type: lower-alpha; }
   #toc ul {
     padding-left: 15px;
     margin-bottom: 0;
     list-style-type: none; }
+  #toc.col-md-3 {
+    top: 72px;
+    max-height: calc(100% - 72px); }
 
-.toc-h1 {
+#main header a {
+  color: #D9230F; }
+
+.navbar.navbar-default.navbar-fixed-top {
+  top: 28px; }
+
+body.default .toc-h1 {
   margin-left: -15px; }
-  .toc-h1 > a {
+  body.default .toc-h1 > a {
     display: none; }
+body.default #toc {
+  padding-top: 36px !important; }
+
+body.docpage #toc > * {
+  padding-right: 0; }
+body.docpage #main header {
+  position: static;
+  float: none;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #171717;
+  width: auto; }
 
 section {
   float: none; }
