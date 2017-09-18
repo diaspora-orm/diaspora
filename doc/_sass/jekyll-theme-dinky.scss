@@ -320,7 +320,6 @@ a.buttons:hover {
 /* Section - for main page content */
 
 section {
-	width:650px;
 	float:right;
 	padding-bottom:50px;
 }
@@ -437,8 +436,11 @@ $menuHeight: 36px;
 }
 
 .wrapper{
+	display: flex;
+	flex-direction: row;
 	width: auto;
-	padding-left: 317px;
+	padding-left: 287px;
+    justify-content: stretch;
 
 	header{
 		flex: 0 0 170px;
@@ -451,13 +453,11 @@ $menuHeight: 36px;
 $offsetLeftMenu: 25px;
 $widthMenu: 200px;
 #content{
-	display: flex;
-	flex-direction: row;
+    flex: 1 1 auto;
 	padding-right: $offsetLeftMenu + $widthMenu;
 
 	> section {
 		padding-bottom: 50px;
-		min-width: 250px;
 	}
 }
 
@@ -502,7 +502,9 @@ $pad: 15px;
 		display: none;
 	}
 }
-
+section{
+	float: none;
+}
 
 // Per language
 
@@ -516,17 +518,22 @@ $pad: 15px;
 	div.wrapper {
 		width:auto;
 		margin:0;
+		flex-direction: column;
+		padding-left: 0;
 	}
 
 	header, section, footer {
 		float:none;
 		position:static;
 		width:auto;
+		left: 0;
+		margin-right: 200px;
+		position: relative;
 	}
 
 	footer {
 		border-top: 1px solid #ccc;
-		margin:0 84px 0 50px;
+		margin:0 224px 0 50px;
 		padding:0;
 	}
 
@@ -535,7 +542,7 @@ $pad: 15px;
 	}
 
 	section {
-		padding:20px 84px 20px 50px;
+		padding:20px 10px 20px 50px;
 		margin:0 0 20px;
 	}
 
@@ -566,11 +573,18 @@ $pad: 15px;
 	}
 
 	footer {
-		margin: 0 0 0 30px;
+		margin: 0 30px;
 	}
 
 	header ul, header p.view {
 		position:static;
+	}
+
+	#toc{
+		display: none;
+	}
+	#content{
+		padding-right: 25px;
 	}
 }
 

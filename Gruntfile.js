@@ -7,7 +7,7 @@ require( 'chalk' );
 module.exports = function gruntInit( grunt ) {
 	// Project configuration.
 
-	const baseDocPath = 'docs';
+	const baseDocPath = 'doc';
 	const jsAssets = [
 		'Gruntfile.js',
 		'diaspora.js',
@@ -53,6 +53,24 @@ module.exports = function gruntInit( grunt ) {
 				readme:      'README-jsdoc.md',
 			},
 		},
+		concat: {
+			dist: {
+				expand: true,
+				src: [
+					'doc/docco/**/*.html',
+					'doc/jsdoc/**/*.html',
+				],
+				dest: './',
+			},
+			options: {
+				banner: `---
+layout: null
+#title: Home
+toc: true
+---
+`,
+			},
+		},
 		/*		markdown: {
 			index: {
 				files: [
@@ -85,6 +103,8 @@ module.exports = function gruntInit( grunt ) {
 	grunt.loadNpmTasks( 'grunt-docco-husky' );
 	grunt.loadNpmTasks( 'grunt-markdown' );
 	grunt.loadNpmTasks( 'gruntify-eslint' );
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-changed');
 
 	require( 'load-grunt-tasks' )( grunt );
 
@@ -94,6 +114,7 @@ module.exports = function gruntInit( grunt ) {
 			//			'markdown:index',
 			'jsdoc',
 			'docco_husky',
+			'changed:concat:dist',
 		]
 	);
 	grunt.registerTask(

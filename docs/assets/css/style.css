@@ -468,7 +468,6 @@ a.buttons:hover {
 
 /* Section - for main page content */
 section {
-  width: 650px;
   float: right;
   padding-bottom: 50px; }
 
@@ -553,8 +552,11 @@ nav ul li {
   margin: 10px; }
 
 .wrapper {
+  display: flex;
+  flex-direction: row;
   width: auto;
-  padding-left: 317px; }
+  padding-left: 287px;
+  justify-content: stretch; }
   .wrapper header {
     flex: 0 0 170px;
     float: none; }
@@ -562,12 +564,10 @@ nav ul li {
     left: 0; }
 
 #content {
-  display: flex;
-  flex-direction: row;
+  flex: 1 1 auto;
   padding-right: 225px; }
   #content > section {
-    padding-bottom: 50px;
-    min-width: 250px; }
+    padding-bottom: 50px; }
 
 #toc {
   position: fixed;
@@ -599,29 +599,37 @@ nav ul li {
   .toc-h1 > a {
     display: none; }
 
+section {
+  float: none; }
+
 [data-page="/query-language.html"] section h2 {
   margin: 0 0 10px; }
 
 @media print, screen and (max-width: 960px) {
   div.wrapper {
     width: auto;
-    margin: 0; }
+    margin: 0;
+    flex-direction: column;
+    padding-left: 0; }
 
   header, section, footer {
     float: none;
     position: static;
-    width: auto; }
+    width: auto;
+    left: 0;
+    margin-right: 200px;
+    position: relative; }
 
   footer {
     border-top: 1px solid #ccc;
-    margin: 0 84px 0 50px;
+    margin: 0 224px 0 50px;
     padding: 0; }
 
   header {
     padding-right: 320px; }
 
   section {
-    padding: 20px 84px 20px 50px;
+    padding: 20px 10px 20px 50px;
     margin: 0 0 20px; }
 
   header a small {
@@ -644,10 +652,16 @@ nav ul li {
     margin: 0 0 30px; }
 
   footer {
-    margin: 0 0 0 30px; }
+    margin: 0 30px; }
 
   header ul, header p.view {
-    position: static; } }
+    position: static; }
+
+  #toc {
+    display: none; }
+
+  #content {
+    padding-right: 25px; } }
 @media print, screen and (max-width: 480px) {
   header ul li.download {
     display: none; }

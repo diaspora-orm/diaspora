@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Adapters.DiasporaAdapter.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Adapters.InMemoryDiasporaAdapter.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Adapters.LocalStorageDiasporaAdapter.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Adapters.MongoDiasporaAdapter.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Adapters.RedisDiasporaAdapter.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Adapters.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/DataStoreEntity.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Diaspora.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Entity.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/Gruntfile.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/InMemoryEntity.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/LocalStorageEntity.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/Model.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/MongoEntity.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/RedisEntity.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/adapters/baseAdapter.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/dataStoreEntities/baseEntity.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/classes.list.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/create-an-adapter.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/diaspora.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/diaspora.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/entityFactory.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/global.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/adapters/inMemoryAdapter.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/dataStoreEntities/inMemoryEntity.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/adapters/localStorageAdapter.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/dataStoreEntities/localStorageEntity.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/model.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/adapters/mongoAdapter.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/dataStoreEntities/mongoEntity.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/namespaces.list.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/query-language.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/jsdoc/quicksearch.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/adapters/redisAdapter.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://localhost:4000/docco/lib/dataStoreEntities/redisEntity.js.html</loc>
+      
+        <lastmod>2017-09-18T16:02:18+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+  
+    
+  
+</urlset>
