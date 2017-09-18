@@ -15,8 +15,12 @@ it('Wait for purge of mongodb collection', () => {
 	return dataSource.waitReady().then(() => {
 		const collection = dataSource.db.collection('test');
 		return collection.drop();
-	}).catch(e => console.error(e));
+	}).catch(e => {
+		console.error(e);
+		return Promise.resolve();
+	});
 });
 AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'Mongo');
 AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);
+AdapterTestUtils.checkApplications(ADAPTER_LABEL);
 AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'mongo');

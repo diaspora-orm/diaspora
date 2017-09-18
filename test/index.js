@@ -322,5 +322,5 @@ it( '"default" feature', () => {
 	});
 });
 
-importTest('Adapters', './adapters/index.js');
-importTest('Models', './models/index.js');
+importTest(chalk.bold.underline.blue('Adapters'), './adapters/index.js');
+//importTest(chalk.bold.underline.blue('Models'), './models/index.js');

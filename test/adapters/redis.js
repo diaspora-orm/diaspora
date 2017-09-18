@@ -15,4 +15,5 @@ it('Wait for purge of redis database', () => {
 });
 AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'Redis');
 AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);
+AdapterTestUtils.checkApplications(ADAPTER_LABEL);
 AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'redis');

@@ -8,6 +8,8 @@ function getDataSourceLabel(name){
 	return name + 'Adapter';
 }
 
+const style = chalk.underline.white;
+
 const AdapterTestUtils = {
 	createDataSource: (adapterLabel, config) => {
 		const dataSourceLabel = getDataSourceLabel(adapterLabel);
@@ -16,7 +18,7 @@ const AdapterTestUtils = {
 		return dataSource;
 	},
 	checkSpawnedAdapter: (adapterLabel, baseName) => {
-		it( `Create ${adapterLabel} adapter`, done => {
+		it( style(`Create ${adapterLabel} adapter`), done => {
 			const dataSourceLabel = getDataSourceLabel(adapterLabel);
 			dataSources[dataSourceLabel].waitReady().then( adapter => {
 				adapter.baseName = baseName;
@@ -39,25 +41,17 @@ const AdapterTestUtils = {
 				return `${fctName} (from BaseAdapter)`;
 			}
 		};
-		const validateEntity = (entity, props, adapter) => {
-			l.forEach(props, (val, key) => {
-				expect(entity).to.have.property(key, val);
-			});
-			expect(entity).to.include.all.keys('id', 'idHash');
-			expect(entity.idHash).to.be.an('object').that.have.property(adapter.name, entity.id);
-			expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${adapter.baseName}Entity` );
-		}
 
-		describe('Test adapter methods', () => {
+		describe(style('Test adapter methods'), () => {
 			let findManyOk = false;
 			let findAllOk = false;
-			describe('Insert methods', () => {
+			describe('✨ Insert methods', () => {
 				it(getTestLabel('insertOne'), () => {
 					expect(adapter).to.respondTo('insertOne');
 					const object = {foo: 'bar'};
 					return adapter.insertOne('test', object).then(entity => {
 						return Promise.try(() => {
-							validateEntity(entity, object, adapter);
+							expect(entity).to.be.a.dataStoreEntity(adapter, object);
 							return Promise.resolve();
 						});
 					});
@@ -67,33 +61,29 @@ const AdapterTestUtils = {
 					const objects = [{baz: 'qux'}, {qux: 'foo'}, {foo: 'bar'}];
 					return adapter.insertMany('test', objects).then(entities => {
 						return Promise.try(() => {
-							expect(entities).to.be.an('array').that.have.lengthOf(objects.length);
-							l.forEach(entities, (entity, index) => {
-								validateEntity(entity, objects[index], adapter);
-							});
+							expect(entities).to.be.a.set.of.dataStoreEntity(adapter, objects).that.have.lengthOf(objects.length);
 							return Promise.resolve();
 						});
 					});
 				});
 			});
-			describe('Find methods', () => {
+			describe('🔎 Find methods', () => {
 				it(getTestLabel('findOne'), () => {
 					expect(adapter).to.respondTo('findOne');
-					return adapter.findOne('test', {baz: 'qux'}).then(entity => {
+					const object = {baz: 'qux'};
+					return adapter.findOne('test', object).then(entity => {
 						return Promise.try(() => {
-							validateEntity(entity, {baz: 'qux'}, adapter);
+							expect(entity).to.be.a.dataStoreEntity(adapter, object);
 							return Promise.resolve();
 						});
 					});
 				});
 				it(getTestLabel('findMany'), () => {
 					expect(adapter).to.respondTo('findMany');
-					return adapter.findMany('test', {foo: 'bar'}).then(entities => {
+					const objects = {foo: 'bar'};
+					return adapter.findMany('test', objects).then(entities => {
 						return Promise.try(() => {
-							expect(entities).to.be.an('array').that.have.lengthOf(2);
-							l.forEach(entities, (entity, index) => {
-								validateEntity(entity, {foo: 'bar'}, adapter);
-							});
+							expect(entities).to.be.a.set.of.dataStoreEntity(adapter, objects).that.have.lengthOf(2);
 							findManyOk = true;
 							return Promise.resolve();
 						});
@@ -107,24 +97,21 @@ const AdapterTestUtils = {
 					expect(adapter).to.respondTo('findMany');
 					return adapter.findMany('test', {}).then(entities => {
 						return Promise.try(() => {
-							expect(entities).to.be.an('array').that.have.lengthOf(4);
-							l.forEach(entities, (entity, index) => {
-								validateEntity(entity, {}, adapter);
-							});
+							expect(entities).to.be.a.set.of.dataStoreEntity(adapter).that.have.lengthOf(4);
 							findAllOk = true;
 							return Promise.resolve();
 						});
 					});
 				});
 			});
-			describe('Update methods', () => {
+			describe('🔃 Update methods', () => {
 				it(getTestLabel('updateOne'), () => {
 					expect(adapter).to.respondTo('updateOne');
 					const fromObj = {baz: 'qux'};
 					const targetObj = {foo: 'bar'};
 					return adapter.updateOne('test', fromObj, targetObj).then(entity => {
 						return Promise.try(() => {
-							validateEntity(entity, l.assign({}, fromObj, targetObj), adapter);
+							expect(entity).to.be.a.dataStoreEntity(adapter, l.assign({}, fromObj, targetObj));
 							return Promise.resolve();
 						});
 					});
@@ -135,16 +122,13 @@ const AdapterTestUtils = {
 					const targetObj = {baz: 'qux'};
 					return adapter.updateMany('test', fromObj, targetObj).then(entities => {
 						return Promise.try(() => {
-							expect(entities).to.be.an('array').that.have.lengthOf(3);
-							l.forEach(entities, (entity, index) => {
-								validateEntity(entity, l.assign({}, fromObj, targetObj), adapter);
-							});
+							expect(entities).to.be.a.set.of.dataStoreEntity(adapter, l.assign({}, fromObj, targetObj)).that.have.lengthOf(3);
 							return Promise.resolve();
 						});
 					});
 				});
 			});
-			describe('Delete methods', () => {
+			describe('❌ Delete methods', () => {
 				it(getTestLabel('deleteOne'), () => {
 					expect(adapter).to.respondTo('deleteOne');
 					const obj = {qux: 'foo'};
@@ -176,8 +160,12 @@ const AdapterTestUtils = {
 			});
 		});
 	},
+	checkApplications: adapterLabel => {
+		const adapter = dataSources[getDataSourceLabel(adapterLabel)];
+		require('../testApps/adapters/index')(adapter);
+	},
 	checkRegisterAdapter: (adapterLabel, dataSourceName) => {
-		it( `Register named ${adapterLabel} dataSource`, () => {
+		it( style(`Register named ${adapterLabel} dataSource`), () => {
 			const namespace = 'test';
 			Diaspora.registerDataSource( namespace, dataSourceName, dataSources[getDataSourceLabel(adapterLabel)] );
 			//console.log(Diaspora.dataSources);

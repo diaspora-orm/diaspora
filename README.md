@@ -75,7 +75,7 @@ Save current entity to the specified `source`.
 
 Reload entity from specified `source`.
 
-## Planned or unsure Diaspora behaviors
+## Planned or unsure Diaspora behaviors/features
 
 > Manual change of ID
 
@@ -85,17 +85,9 @@ Reload entity from specified `source`.
 
 *Unsure* > May be interesting... Check for possible problems about data modification, etc etc.
 
-> Mongo Adapter
+> IndexedDB Adapter (browser)
 
-*Planned* > Wait for definitive adapter structure
-
-> Redis Adapter
-
-*Planned* > Wait for definitive adapter structure
-
-> LocalStorage/SessionStorage Adapter
-
-*Planned* > Wait for definitive adapter structure
+*Unsure* > Technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 
 > Auto-switch to API server/client
 

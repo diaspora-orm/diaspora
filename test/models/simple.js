@@ -3,9 +3,15 @@
 let testModel;
 let testedEntity;
 const modelName = 'testModel';
+const SOURCE = ([
+	'inMemory',
+	'localStorage',
+	'mongo',
+	'redis',
+])[1];
 it( 'Should create a model', () => {
 	testModel = Diaspora.declareModel( 'test', modelName, {
-		sources:    [ 'inMemory' ],
+		sources:    [ SOURCE ],
 		attributes: {
 			foo: {
 				type: 'string',
@@ -17,7 +23,6 @@ it( 'Should create a model', () => {
 });
 it( 'Should be able to create an entity of the defined model.', () => {
 	const entity1 = testModel.spawn();
-	//			console.log({foo: entity1.foo, entity: entity1, keys: Object.keys(entity1), constructor: entity1.constructor});
 	expect( entity1 ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.undefined;
 	expect( entity1.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
 	expect( entity1 ).to.respondTo( 'toObject' );
@@ -54,7 +59,7 @@ it( 'Should be able to create multiple entities.', () => {
 	});
 });
 describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
-	it( 'Persist should change Entity', () => {
+	it( 'Persist should change the entity', () => {
 		testedEntity = testModel.spawn({
 			foo: 'bar',
 		});
@@ -65,22 +70,16 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 		expect( testedEntity ).to.respondTo( 'persist' );
 		const retPromise = testedEntity.persist();
 		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
+		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
 		return retPromise.then(() => {
 			expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
 			expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
 			expect( testedEntity.getState()).to.be.eql( 'sync' );
-			expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
+			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
 			return Promise.resolve();
 		});
 	});
-	it( 'Persist changed in-Memory Datastore', () => {
-		const inMemoryStore = Diaspora.dataSources.test.inMemory;
-		expect( inMemoryStore.store ).to.have.property( 'testModel' );
-		const collection = inMemoryStore.store.testModel;
-		expect( collection.items ).to.deep.include( testedEntity.toObject());
-	});
-	it( 'Fetch', () => {
+	it( 'Fetch should change the entity', () => {
 		testedEntity.foo = 'baz';
 		expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
 		expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
@@ -89,11 +88,10 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 		expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
 		const retPromise = testedEntity.fetch();
 		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
+		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
 		return retPromise.then(() => {
-			//console.log(require('util').inspect(Diaspora.dataSources.test.inMemory, {colors: true, depth: 8}));
 			expect( testedEntity.getState()).to.be.eql( 'sync' );
-			expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
+			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
 			expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
 			expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
 			expect( testedEntity, '"foo" should be reset to "bar"' ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
@@ -108,22 +106,15 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 		expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
 		const retPromise = testedEntity.destroy();
 		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
+		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
 		return retPromise.then(() => {
-			//console.log(require('util').inspect(Diaspora.dataSources.test.inMemory, {colors: true, depth: 8}));
 			expect( testedEntity.getState()).to.be.eql( 'orphan' );
-			expect( testedEntity.getLastDataSource()).to.be.eql( 'inMemory' );
+			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
 			expect( testedEntity, 'id should be a undefined value or key on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'id' );
 			expect( testedEntity, 'idHash should be undefined on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'idHash' );
 			expect( testedEntity, '"foo" should still be set to "bar"' ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
 			return Promise.resolve();
 		});
-	});
-	it( 'Destroy changed in-Memory Datastore', () => {
-		const inMemoryStore = Diaspora.dataSources.test.inMemory;
-		expect( inMemoryStore.store ).to.have.property( 'testModel' );
-		const collection = inMemoryStore.store.testModel;
-		expect( collection.items ).to.not.deep.include( testedEntity.toObject());
 	});
 });
 describe( 'Should be able to use model methods to find, update, delete & create', () => {
@@ -142,16 +133,10 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		it( 'Create multiple instances', () => {
 			expect( testModel ).to.respondTo( 'insertMany' );
 			return testModel.insertMany([
-				{
-					foo: 'baz',
-				},
+				{ foo: 'baz' },
 				undefined,
-				{
-					foo: undefined,
-				},
-				{
-					foo: 'baz',
-				},
+				{ foo: undefined },
+				{ foo: 'baz' },
 			]).then( newEntities => {
 				expect( newEntities ).to.be.an( 'array' ).that.have.lengthOf( 4 );
 				l.forEach( newEntities, newEntity => {
@@ -174,7 +159,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				if ( many ) {
 					expect( foundEntities ).to.be.an( 'array' );
 					l.forEach( foundEntities, checkSingle );
-				} else {
+				} else if(c.assigned(foundEntities)) {
 					expect( foundEntities.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
 					checkSingle( foundEntities );
 				}
@@ -183,37 +168,29 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		}
 		it( 'Find a single instance', () => {
 			expect( testModel ).to.respondTo( 'find' );
-			return Promise.all([
-				checkFind({
-					foo: undefined,
-				}, false ),
-				checkFind({
-					foo: 'baz',
-				}, false ),
-				checkFind({
-					foo: 'bar',
-				}, false ),
-			]);
+			return Promise.mapSeries([
+				{ foo: undefined },
+				{ foo: 'baz' },
+				{ foo: 'bar' },
+			], item => checkFind(item, false ).then(foundItem => {
+				expect(foundItem).to.be.an('object');
+				return Promise.resolve();
+			}));
 		});
 		it( 'Find multiple instances', () => {
 			expect( testModel ).to.respondTo( 'findMany' );
-			return Promise.all([
-				checkFind({
-					foo: undefined,
-				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 2 );
-				}),
-				checkFind({
-					foo: 'baz',
-				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 2 );
-				}),
-				checkFind({
-					foo: 'bar',
-				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 1 );
-				}),
-			]);
+			return Promise.mapSeries([
+				{query:{ foo: undefined }, length: 2},
+				{query:{ foo: 'baz' }, length: 2},
+				{query:{ foo: 'bar' }, length: 1},
+			], item => checkFind(item.query, true ).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( item.length );
+			}));
+		});
+		it( 'Find all instances', () => {
+			return testModel.findMany({}).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( 5 );
+			})
 		});
 	});
 	describe( '- Update instances', () => {
@@ -255,6 +232,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			}, false ));
 		});
 		it( 'Update multiple instances', () => {
+			//process.exit()
 			expect( testModel ).to.respondTo( 'updateMany' );
 			return Promise.resolve()
 				.then(() => checkUpdate({
@@ -263,6 +241,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				foo: 'bar',
 			}, true ).then( foundEntities => {
 				expect( foundEntities ).to.have.lengthOf( 2 );
+				return Promise.resolve();
 			}))
 				.then(() => checkUpdate({
 				foo: 'baz',
@@ -270,6 +249,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				foo: undefined,
 			}, true ).then( foundEntities => {
 				expect( foundEntities ).to.have.lengthOf( 1 );
+				return Promise.resolve();
 			}))
 				.then(() => checkUpdate({
 				foo: 'bat',
@@ -278,6 +258,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			}, true )
 					  .then( foundEntities => {
 				expect( foundEntities ).to.have.lengthOf( 0 );
+				return Promise.resolve();
 			}));
 		});
 	});
@@ -318,6 +299,9 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			}, true )).then(() => checkDestroy({
 				foo: 'qux',
 			}, true ));
+		});
+		it( 'Delete all instances', () => {
+			return testModel.deleteMany({})
 		});
 	});
 });

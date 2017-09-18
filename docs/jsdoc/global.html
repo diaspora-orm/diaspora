@@ -383,6 +383,510 @@
     
 </dd>
 
+            
+                
+<hr>
+<dt class="name" id="SelectQuery">
+    <h4 id="SelectQuery">SelectQuery</h4>
+
+    
+</dt>
+<dd>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Object</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>*</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Any</span>
+|
+
+<span class="param-type"><a href="global.html">SelectQueryCondition</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Fields to search. If not providing an object, find items with a property value that equals this value</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+</dl>
+
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+            
+                
+<hr>
+<dt class="name" id="SelectQueryCondition">
+    <h4 id="SelectQueryCondition">SelectQueryCondition</h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>By default, all conditions in a single SelectQueryCondition are combined with an <code>AND</code> operator</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Object</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>$equals</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Any</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Match if item value is equal to this. Objects and array are compared deeply. <strong>Alias: <code>==</code></strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$diff</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Any</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Match if item value is different to this. Objects and array are compared deeply. <strong>Alias: <code>!=</code></strong> <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$less</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Match if item value is less than this. <strong>Alias: <code>&lt;</code></strong> <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$lessEqual</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Match if item value is less than this or equals to this. <strong>Alias: <code>&lt;=</code></strong> <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$greater</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Match if item value is greater than this. <strong>Alias: <code>&gt;</code></strong> <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$greaterEqual</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Match if item value is greater than this or equals to this. <strong>Alias: <code>&gt;=</code></strong> **NOT IMPLEMENTED</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$or</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="global.html">SelectQueryCondition</a>></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Match if <em>one of</em> the conditions in the array is true. <strong>Alias: <code>||</code></strong> <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$and</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="global.html">SelectQueryCondition</a>></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Match if <em>all</em> the conditions in the array are true. Optional, because several conditions in a single SelectQueryCondition are combined with an <code>AND</code> operator. <strong>Alias: <code>&amp;&amp;</code></strong> <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$not</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html">SelectQueryCondition</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Invert the condition <strong>Alias: <code>!</code></strong> <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$contains</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>On string, it will check if query is included in item using GLOB. <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>$contains</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html">SelectQueryCondition</a></span>
+|
+
+<span class="param-type">Any</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>On string, it will check if query is included in item using GLOB. <strong>NOT IMPLEMENTED YET</strong></p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+</dl>
+
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
             </dl>
     
 
@@ -431,7 +935,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on 2017-09-17T19:56:23+02:00
+		on 2017-09-18T10:21:00+02:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
