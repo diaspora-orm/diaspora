@@ -45,9 +45,16 @@
 				{% endif %}
 			</header>
 
-			<section>
-				{{ content }}
-			</section>
+			<div id="content">
+				<section>
+					{{ content }}
+				</section>
+				{% if page.toc %}
+				<div id="toc">
+					{{ content | toc_only }}
+				</div>
+				{% endif %}
+			</div>
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>

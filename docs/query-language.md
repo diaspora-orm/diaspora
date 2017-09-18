@@ -1,8 +1,16 @@
 ---
 layout: default
+title: Query Language
+toc: true
 ---
 
-## Match all
+# Query language
+
+## Match queries
+
+Match queries are used when you use `find`, `update` or `delete` operations.
+
+### Match all
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
@@ -31,7 +39,7 @@ db.getCollection('phones').find({}).then(...);
 </div>
 </div>
 
-## Match one by id
+### Match one by id
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
@@ -60,7 +68,7 @@ db.getCollection('phones').find({_id : ObjectId("59bf7e38945e5adadfd83b1c")}).th
 </div>
 </div>
 
-## Match by a value or not, with **==** and **!=**
+### Match by a value or not, with **==** and **!=**
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
@@ -96,7 +104,7 @@ db.getCollection('phones').find({ number : { $ne: '(251) 546-9442' } }).then(...
  * `==` can be replaced by `$equal`
  * `!=` can be replaced by `$diff`
 
-## Match by number comparaison, with **<**, **<=**, **>** and **>=**
+### Match by number comparaison, with **<**, **<=**, **>** and **>=**
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
@@ -143,7 +151,7 @@ db.getCollection('phones').find({ index:{ $lte: 12 } }).then(...);
  * `>` can be replaced by `$greater`
  * `>=` can be replaced by `$greaterEqual`
  
-## Do logical operations, with **||**, **&&**, **^^** and **!**
+### Do logical operations, with **||**, **&&**, **^^** and **!**
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
@@ -215,7 +223,7 @@ Last query is not exactly the same though... TODO Improve
  * `^^` can be replaced by `$xor`
  * `!` can be replaced by `$not`
 
-## Match 2 by id, with **$in**
+### Match 2 by id, with **$in**
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
@@ -249,5 +257,11 @@ db.getCollection('phones').find({ _id : { $in: [
 {% endhighlight %}
 </div>
 </div>
+
+## Update queries
+
+Update queries are used only with `update` operations.
+
+## Comments
 
 <div id="disqus_thread"></div>

@@ -28,6 +28,8 @@ GEM
       sass (~> 3.4)
     jekyll-seo-tag (2.3.0)
       jekyll (~> 3.3)
+    jekyll-toc (0.3.0)
+      nokogiri (~> 1.6)
     jekyll-watch (1.5.0)
       listen (~> 3.0, < 3.1)
     kramdown (1.15.0)
@@ -36,6 +38,9 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
     mercenary (0.3.6)
+    mini_portile2 (2.2.0)
+    nokogiri (1.8.0)
+      mini_portile2 (~> 2.2.0)
     pathutil (0.14.0)
       forwardable-extended (~> 2.6)
     public_suffix (3.0.0)
@@ -55,6 +60,7 @@ PLATFORMS
 
 DEPENDENCIES
   jekyll-theme-dinky!
+  jekyll-toc
 
 BUNDLED WITH
    1.15.4

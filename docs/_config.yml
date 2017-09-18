@@ -6,3 +6,5 @@ theme: jekyll-theme-dinky
 canonical_url: https://diaspora.ithoughts.io
 #sitemap:
 #`    filename: "/sitemap.xml"
+gems:
+  - jekyll-toc

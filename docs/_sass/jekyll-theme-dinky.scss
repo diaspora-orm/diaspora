@@ -391,11 +391,12 @@ nav ul li {
 	}
 }
 
+$menuHeight: 36px;
 .tabs {
 	position: relative;
 
 	& > nav {
-		height: 36px;
+		height: $menuHeight;
 
 		> ul {
 			> li {
@@ -435,12 +436,78 @@ nav ul li {
 	margin: 10px;
 }
 
+.wrapper{
+	width: auto;
+	padding-left: 317px;
+
+	header{
+		flex: 0 0 170px;
+		float: none;
+	}
+	header, footer{
+		left: 0;
+	}
+}
+$offsetLeftMenu: 25px;
+$widthMenu: 200px;
+#content{
+	display: flex;
+	flex-direction: row;
+	padding-right: $offsetLeftMenu + $widthMenu;
+
+	> section {
+		padding-bottom: 50px;
+		min-width: 250px;
+	}
+}
+
+$pad: 15px;
+#toc{
+	position: fixed;
+	right: 0;
+	width: $widthMenu;
+	box-sizing: border-box;
+	height: 100%;
+	padding-top: $menuHeight;
+	top: 0;
+	pointer-events: none;
+
+	> .section-nav{
+		padding-right: $offsetLeftMenu;
+		pointer-events: all;
+		overflow-y: scroll;
+		max-height: 100%;
+
+		> li > ul {
+			list-style-type: upper-roman;
+			> li > ul {
+				list-style-type: lower-roman;
+				> li > ul {
+					list-style-type: lower-alpha;
+				}
+			}
+		}
+	}
+
+	ul{
+		padding-left: $pad;
+		margin-bottom: 0;
+		list-style-type: none;
+	}
+}
+.toc-h1 {
+	margin-left: -$pad;
+
+	& > a{
+		display: none;
+	}
+}
 
 
 // Per language
 
 [data-page="/query-language.html"] section h2{
-    margin: 0 0 10px;
+	margin: 0 0 10px;
 }
 
 
