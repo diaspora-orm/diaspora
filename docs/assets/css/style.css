@@ -577,7 +577,10 @@ nav ul li {
   height: 100%;
   padding-top: 36px;
   top: 0;
-  pointer-events: none; }
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; }
   #toc > .section-nav {
     padding-right: 25px;
     pointer-events: all;

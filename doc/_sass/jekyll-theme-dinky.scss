@@ -471,6 +471,9 @@ $pad: 15px;
 	padding-top: $menuHeight;
 	top: 0;
 	pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
 	> .section-nav{
 		padding-right: $offsetLeftMenu;
