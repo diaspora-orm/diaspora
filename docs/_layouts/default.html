@@ -49,7 +49,7 @@
 				<section>
 					{{ content }}
 				</section>
-				{% if page.toc %}
+				{% if page.toc and toc_only %}
 				<div id="toc">
 					{{ content | toc_only }}
 				</div>
