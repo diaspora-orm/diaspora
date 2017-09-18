@@ -8,3 +8,4 @@ canonical_url: https://diaspora.ithoughts.io
 #`    filename: "/sitemap.xml"
 gems:
   - jekyll-toc
+destination: ../docs

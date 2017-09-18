@@ -1,0 +1,107 @@
+<!DOCTYPE html><html><head><title>README</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="./docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="./index.html" class="source"><span class="file_name">README</span></a><a href="./Gruntfile.js.html" class="source "><span class="base_path">. / </span><span class="file_name">Gruntfile.js</span></a><a href="./diaspora.js.html" class="source "><span class="base_path">. / </span><span class="file_name">diaspora.js</span></a><a href="./lib/adapters/baseAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">baseAdapter.js</span></a><a href="./lib/adapters/inMemoryAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">inMemoryAdapter.js</span></a><a href="./lib/adapters/localStorageAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">localStorageAdapter.js</span></a><a href="./lib/adapters/mongoAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">mongoAdapter.js</span></a><a href="./lib/adapters/redisAdapter.js.html" class="source "><span class="base_path">lib / adapters / </span><span class="file_name">redisAdapter.js</span></a><a href="./lib/dataStoreEntities/baseEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">baseEntity.js</span></a><a href="./lib/dataStoreEntities/inMemoryEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">inMemoryEntity.js</span></a><a href="./lib/dataStoreEntities/localStorageEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">localStorageEntity.js</span></a><a href="./lib/dataStoreEntities/mongoEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">mongoEntity.js</span></a><a href="./lib/dataStoreEntities/redisEntity.js.html" class="source "><span class="base_path">lib / dataStoreEntities / </span><span class="file_name">redisEntity.js</span></a><a href="./lib/diaspora.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">diaspora.js</span></a><a href="./lib/entityFactory.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">entityFactory.js</span></a><a href="./lib/model.js.html" class="source "><span class="base_path">lib / </span><span class="file_name">model.js</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"></th><th class="code"></th></tr></thead><tbody><tr id="section"><td class="docs"><h1><a href="https://github.com/Nihilivin/Diaspora#readme">diaspora
+</a></h1><p>Multi-Layer ORM for Javascript Client+Server</p><h3>Version</h3><p>0.0.1</p><h3>Author</h3><p>Gerkin</p><h3>Repository</h3><p>git - git+https://github.com/Nihilivin/Diaspora.git</p><h3>Dependencies </h3><ul><li><b>bluebird </b><span>^3.5.0</span></li><li><b>check-types </b><span>^7.3.0</span></li><li><b>lodash </b><span>^4.17.4</span></li><li><b>mongodb </b><span>^2.2.31</span></li><li><b>redis </b><span>^2.8.0</span></li><li><b>sequential-event </b><span>^0.1.0</span></li></ul><p></p></td><td id="content" class="code"><h1>Diaspora</h1>
+
+<p><strong><em>Multi-source ORM for NodeJS &amp; the browser</em></strong></p>
+
+<h2>Code details</h2>
+
+<p>This documentation section is a readable version of the code, for quick review. Please visit the <a href="https://diaspora.ithoughts.io/">Manual website</a>, the <a href="https://diaspora.ithoughts.io/docco/index.html">Quick Code Review</a> or the <a href="https://diaspora.ithoughts.io/jsdoc/index.html">API Documentation</a></p>
+
+<blockquote>
+  <p><strong><em>Important note</em></strong>: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:</p>
+  
+  <ul>
+  <li><em>Relations</em>: Not implemented</li>
+  <li><em>Browser version</em>: Not ready</li>
+  <li><em>Query language</em>: Only supports equality</li>
+  <li><em>Registering external adapter</em>: Soon</li>
+  </ul>
+</blockquote>
+
+<hr />
+
+<h2>API Overview</h2>
+
+<p>Here is a short API overview. For a detailed API documentation, check... The doc that does not exist yet ^^'</p>
+
+<h3>Model methods</h3>
+
+<h4>make/spawn([<em>object</em> <code>props</code>]) => <em>Entity</em></h4>
+
+<p>Create an entity, defining its properties with provided <code>props</code>. The returned entity should be persisted later.</p>
+
+<h4>makeMany/spawnMany([<em>object[]</em> <code>props</code>]) => <em>Entity[]</em></h4>
+
+<p>See <code>make</code> or <code>spawn</code>.</p>
+
+<h4>insert([<em>object</em> <code>props</code>]) => <em>Promise(Entity)</em></h4>
+
+<p>Create an entity, defining its properties with provided <code>props</code>, and persist it immediately.</p>
+
+<h4>insertMany([<em>object[]</em> <code>props</code>]) => <em>Promise(Entity[])</em></h4>
+
+<p>See <code>insertMany</code>.</p>
+
+<h4>find(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) => <em>Promise(Entity)</em></h4>
+
+<p>Retrieve an entity matching <code>query</code>. If <code>query</code> isn't an object, it is considered as an ID.</p>
+
+<h4>findMany(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) => <em>Promise(Entity[])</em></h4>
+
+<p>See <code>find</code></p>
+
+<h4>delete(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) => <em>Promise(Entity)</em></h4>
+
+<p>Delete an entity matching <code>query</code>. If <code>query</code> isn't an object, it is considered as an ID. <code>options</code> can contain <code>allowEmptyQuery</code>.</p>
+
+<h4>deleteMany(<em>object || Any</em> <code>query</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) => <em>Promise(Entity)</em></h4>
+
+<p>See <code>delete</code></p>
+
+<h4>update(<em>object || Any</em> <code>query</code>, <em>object</em> <code>newAttrs</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) => <em>Promise(Entity)</em></h4>
+
+<p>Update a single entity matching <code>query</code>with attributes in <code>newAttrs</code>. If <code>query</code> isn't an object, it is considered as an ID. <code>options</code> can contain <code>allowEmptyQuery</code>.</p>
+
+<h4>updateMany(<em>object || Any</em> <code>query</code>, <em>object</em> <code>newAttrs</code>, [<em>object</em> <code>options</code>], [<em>string</em> <code>source</code>]) => <em>Promise(Entity[])</em></h4>
+
+<p>See <code>update</code></p>
+
+<h3>Entity methods</h3>
+
+<h4>destroy([<em>string</em> <code>source</code>]) => <em>Promise(this)</em></h4>
+
+<p>Delete this entity from the specified <code>source</code>. Source hash object is set to <code>undefined</code></p>
+
+<h4>persist([<em>string</em> <code>source</code>]) => <em>Promise(this)</em></h4>
+
+<p>Save current entity to the specified <code>source</code>.</p>
+
+<h4>fetch([<em>string</em> <code>source</code>]) => <em>Promise(this)</em></h4>
+
+<p>Reload entity from specified <code>source</code>.</p>
+
+<h2>Planned or unsure Diaspora behaviors/features</h2>
+
+<blockquote>
+  <p>Manual change of ID</p>
+</blockquote>
+
+<p><em>Unsure</em> > Entity may change mode to <code>desync</code> ?</p>
+
+<blockquote>
+  <p>P2P Adapter</p>
+</blockquote>
+
+<p><em>Unsure</em> > May be interesting... Check for possible problems about data modification, etc etc.</p>
+
+<blockquote>
+  <p>IndexedDB Adapter (browser)</p>
+</blockquote>
+
+<p><em>Unsure</em> > Technology may be too immature. See <a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API">MDN about IndexedDB</a></p>
+
+<blockquote>
+  <p>Auto-switch to API server/client</p>
+</blockquote>
+
+<p><em>Planned</em> > Wait for at least Mongo &amp; Localstorage adapters.</p>  </td></tr></tbody></table><div id="generated">generated Mon Sep 18 2017 13:15:37 GMT+0200 (CEST)  </div><div id="projectname"><a href="./index.html">Diaspora</a></div></div></body></html>
