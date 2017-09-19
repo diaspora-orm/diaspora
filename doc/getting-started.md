@@ -30,7 +30,7 @@ npm install --save diaspora
 
 ### For the browser
 
-<div class="warning">
+<div class="note warning">
 Diaspora is not yet ready to be used in the browser. Come back later
 </div>
 

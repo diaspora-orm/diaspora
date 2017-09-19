@@ -482,13 +482,19 @@ footer {
 /*****************************
 CUSTOM
 *****************************/
-.warning {
-  background: #ffd079;
+.note {
   padding: 5px 15px;
   border: 1px solid #f8f8f8;
   border-radius: 15px; }
-  .warning::before {
-    content: '!';
+  .note.warning {
+    background: #ffd079; }
+    .note.warning::before {
+      content: '!'; }
+  .note.info {
+    background: #93afff; }
+    .note.info::before {
+      content: 'i'; }
+  .note::before {
     display: block;
     float: left;
     font-size: 35px;

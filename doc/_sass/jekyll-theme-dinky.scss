@@ -344,14 +344,26 @@ footer {
 CUSTOM
 *****************************/
 
-.warning{
-	background: #ffd079;
+.note{
 	padding: 5px 15px;
 	border: 1px solid #f8f8f8;
 	border-radius: 15px;
 
+	&.warning{
+		background: #ffd079;
+
+		&::before{
+			content: '!';
+		}
+	}
+	&.info{
+		background: #93afff;
+
+		&::before{
+			content: 'i';
+		}
+	}
 	&::before{
-		content: '!';
 		display: block;
 		float: left;
 		font-size: 35px;

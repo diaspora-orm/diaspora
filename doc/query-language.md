@@ -18,7 +18,7 @@ Match queries are used when you use `find`, `update` or `delete` operations.
 <h4>Diaspora</h4>
 
 {% highlight javascript %}
-phones.findMany({}).then(...);
+PhoneBook.findMany({}).then(...);
 {% endhighlight %}
 </div>
 <div class="tab" data-ref="sql">
@@ -26,7 +26,7 @@ phones.findMany({}).then(...);
 <h4>SQL</h4>
 
 {% highlight sql %}
-SELECT * FROM `phones`;
+SELECT * FROM `PhoneBook`;
 {% endhighlight %}
 </div>
 <div class="tab" data-ref="mongodb">
@@ -34,7 +34,7 @@ SELECT * FROM `phones`;
 <h4>MongoDB</h4>
 
 {% highlight javascript %}
-db.getCollection('phones').find({}).then(...);
+db.getCollection('PhoneBook').find({}).then(...);
 {% endhighlight %}
 </div>
 </div>
@@ -47,7 +47,7 @@ db.getCollection('phones').find({}).then(...);
 <h4>Diaspora</h4>
 
 {% highlight javascript %}
-phones.find({id:'9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6'}).then(...);
+PhoneBook.find({id:'9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6'}).then(...);
 {% endhighlight %}
 </div>
 <div class="tab" data-ref="sql">
@@ -55,7 +55,7 @@ phones.find({id:'9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6'}).then(...);
 <h4>SQL</h4>
 
 {% highlight sql %}
-SELECT * FROM `phones` WHERE `id`=15;
+SELECT * FROM `PhoneBook` WHERE `id`=15;
 {% endhighlight %}
 </div>
 <div class="tab" data-ref="mongodb">
@@ -63,7 +63,7 @@ SELECT * FROM `phones` WHERE `id`=15;
 <h4>MongoDB</h4>
 
 {% highlight javascript %}
-db.getCollection('phones').find({_id : ObjectId("59bf7e38945e5adadfd83b1c")}).then(...);
+db.getCollection('PhoneBook').find({_id : ObjectId("59bf7e38945e5adadfd83b1c")}).then(...);
 {% endhighlight %}
 </div>
 </div>
@@ -76,8 +76,8 @@ db.getCollection('phones').find({_id : ObjectId("59bf7e38945e5adadfd83b1c")}).th
 <h4>Diaspora</h4>
 
 {% highlight javascript %}
-phones.find({ number:{ '==': '(251) 546-9442' } }).then(...);
-phones.find({ number:{ '!=': '(251) 546-9442' } }).then(...);
+PhoneBook.find({ number:{ '==': '(251) 546-9442' } }).then(...);
+PhoneBook.find({ number:{ '!=': '(251) 546-9442' } }).then(...);
 {% endhighlight %}
 The usage of <code>==</code> is optional, you can replace <code>{'==': value}</code> with <code>value</code>
 </div>
@@ -86,8 +86,8 @@ The usage of <code>==</code> is optional, you can replace <code>{'==': value}</c
 <h4>SQL</h4>
 
 {% highlight sql %}
-SELECT * FROM `phones` WHERE `number` = "(251) 546-9442";
-SELECT * FROM `phones` WHERE `number` != "(251) 546-9442";
+SELECT * FROM `PhoneBook` WHERE `number` = "(251) 546-9442";
+SELECT * FROM `PhoneBook` WHERE `number` != "(251) 546-9442";
 {% endhighlight %}
 </div>
 <div class="tab" data-ref="mongodb">
@@ -95,8 +95,8 @@ SELECT * FROM `phones` WHERE `number` != "(251) 546-9442";
 <h4>MongoDB</h4>
 
 {% highlight javascript %}
-db.getCollection('phones').find({ number : '(251) 546-9442' }).then(...);
-db.getCollection('phones').find({ number : { $ne: '(251) 546-9442' } }).then(...);
+db.getCollection('PhoneBook').find({ number : '(251) 546-9442' }).then(...);
+db.getCollection('PhoneBook').find({ number : { $ne: '(251) 546-9442' } }).then(...);
 {% endhighlight %}
 </div>
 </div>
@@ -112,10 +112,10 @@ db.getCollection('phones').find({ number : { $ne: '(251) 546-9442' } }).then(...
 <h4>Diaspora</h4>
 
 {% highlight javascript %}
-phones.find({ index:{ '>': 12 } }).then(...);
-phones.find({ index:{ '>=': 12 } }).then(...);
-phones.find({ index:{ '<': 12 } }).then(...);
-phones.find({ index:{ '<=': 12 } }).then(...);
+PhoneBook.find({ index:{ '>': 12 } }).then(...);
+PhoneBook.find({ index:{ '>=': 12 } }).then(...);
+PhoneBook.find({ index:{ '<': 12 } }).then(...);
+PhoneBook.find({ index:{ '<=': 12 } }).then(...);
 {% endhighlight %}
 <blockquote>
 <b>Tip: </b> You should read comparaison operators like this:
@@ -127,10 +127,10 @@ phones.find({ index:{ '<=': 12 } }).then(...);
 <h4>SQL</h4>
 
 {% highlight sql %}
-SELECT * FROM `phones` WHERE `index` > 12;
-SELECT * FROM `phones` WHERE `index` >= 12;
-SELECT * FROM `phones` WHERE `index` < 12;
-SELECT * FROM `phones` WHERE `index` <= 12;
+SELECT * FROM `PhoneBook` WHERE `index` > 12;
+SELECT * FROM `PhoneBook` WHERE `index` >= 12;
+SELECT * FROM `PhoneBook` WHERE `index` < 12;
+SELECT * FROM `PhoneBook` WHERE `index` <= 12;
 {% endhighlight %}
 </div>
 <div class="tab" data-ref="mongodb">
@@ -138,10 +138,10 @@ SELECT * FROM `phones` WHERE `index` <= 12;
 <h4>MongoDB</h4>
 
 {% highlight javascript %}
-db.getCollection('phones').find({ index:{ $gt: 12 } }).then(...);
-db.getCollection('phones').find({ index:{ $gte: 12 } }).then(...);
-db.getCollection('phones').find({ index:{ $lt: 12 } }).then(...);
-db.getCollection('phones').find({ index:{ $lte: 12 } }).then(...);
+db.getCollection('PhoneBook').find({ index:{ $gt: 12 } }).then(...);
+db.getCollection('PhoneBook').find({ index:{ $gte: 12 } }).then(...);
+db.getCollection('PhoneBook').find({ index:{ $lt: 12 } }).then(...);
+db.getCollection('PhoneBook').find({ index:{ $lte: 12 } }).then(...);
 {% endhighlight %}
 </div>
 </div>
@@ -159,40 +159,42 @@ db.getCollection('phones').find({ index:{ $lte: 12 } }).then(...);
 <h4>Diaspora</h4>
 
 {% highlight javascript %}
-phones.find({ index:{ '||': [
+PhoneBook.find({ index:{ '||': [
 	{ '<': 5 },
 	{ '==': 9 },
 ]}).then(...); // Will retrieve items with index [0, 1, 2, 3, 4, 9]
-phones.find({ index:{ '&&': [
+PhoneBook.find({ index:{ '&&': [
 	{ '<': 10 },
 	{ '>=': 5 },
 ]}).then(...); // Will retrieve items with index [5, 6, 7, 8, 9]
-phones.find({ index:{ '^^': [
+PhoneBook.find({ index:{ '^^': [
 	{ email: 'foobar@example.com' },
 	{ phone: '(251) 546-9442' },
 ]}).then(...); // Will retrieve items with either the provided email or address, but not both
-phones.find({ index: { '!':{ '==': 5 } } }).then(...);
+PhoneBook.find({ index: { '!':{ '==': 5 } } }).then(...);
 {% endhighlight %}
+<div class="note info">
 The usage of <code>==</code> is optional, you can replace <code>{'==': value}</code> with <code>value</code>
+</div>
 </div>
 <div class="tab" data-ref="sql">
 
 <h4>SQL</h4>
 
 {% highlight sql %}
-SELECT * FROM `phones` WHERE 
+SELECT * FROM `PhoneBook` WHERE 
 	(`index` < 5) OR
 	(`index` = 9);
 	
-SELECT * FROM `phones` WHERE
+SELECT * FROM `PhoneBook` WHERE
 	(`index` < 10) AND
 	(`index` >= 10);
 	
-SELECT * FROM `phones` WHERE
+SELECT * FROM `PhoneBook` WHERE
 	(`email` = "foobar@example.com") XOR
 	(`phone` = "(251) 546-9442");
 	
-SELECT * FROM `phones` WHERE NOT (`index` == 5);
+SELECT * FROM `PhoneBook` WHERE NOT (`index` == 5);
 {% endhighlight %}
 </div>
 <div class="tab" data-ref="mongodb">
@@ -200,21 +202,23 @@ SELECT * FROM `phones` WHERE NOT (`index` == 5);
 <h4>MongoDB</h4>
 
 {% highlight javascript %}
-db.getCollection('phones').find({ $or: [
+db.getCollection('PhoneBook').find({ $or: [
     { index: { $lt: 5 } },
     { index: { $eq: 9 } },
  ] }).then(...);
- db.getCollection('phones').find({ $and: [
+ db.getCollection('PhoneBook').find({ $and: [
     { index: { $lt: 10 } },
     { index: { $gte: 5 } },
  ] })
- db.getCollection('phones').find({ $xor: [
+ db.getCollection('PhoneBook').find({ $xor: [
 	{ email: { $eq: 'foobar@example.com' } },
 	{ phone: { $eq: '(251) 546-9442' } },
  ] })
-db.getCollection('phones').find({ index: { $ne: 5 } }).then(...);
+db.getCollection('PhoneBook').find({ index: { $ne: 5 } }).then(...);
 {% endhighlight %}
+<div class="note warning">
 Last query is not exactly the same though... TODO Improve
+</div>
 </div>
 </div>
 
@@ -231,7 +235,7 @@ Last query is not exactly the same though... TODO Improve
 <h4>Diaspora</h4>
 
 {% highlight javascript %}
-phones.find({ id:{ $in: [
+PhoneBook.find({ id:{ $in: [
 	'9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6',
 	'd3d23cc1-46cd-4619-a044-4a30b75a38f6',
 ] } }).then(...);
@@ -242,7 +246,7 @@ phones.find({ id:{ $in: [
 <h4>SQL</h4>
 
 {% highlight sql %}
-SELECT * FROM `phones` WHERE `id` IN (15, 16);
+SELECT * FROM `PhoneBook` WHERE `id` IN (15, 16);
 {% endhighlight %}
 </div>
 <div class="tab" data-ref="mongodb">
@@ -250,7 +254,7 @@ SELECT * FROM `phones` WHERE `id` IN (15, 16);
 <h4>MongoDB</h4>
 
 {% highlight javascript %}
-db.getCollection('phones').find({ _id : { $in: [
+db.getCollection('PhoneBook').find({ _id : { $in: [
     ObjectId("59bf7e38945e5adadfd83b1c"),
     ObjectId("59a56875ab7388e9b823331b"),
 ] } }).then(...);
