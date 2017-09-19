@@ -5,14 +5,14 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 
 		<!-- Begin Jekyll SEO tag v2.3.0 -->
-<title>Home | Diaspora</title>
-<meta property="og:title" content="Home" />
+<title>Diaspora | Multi-source ORM for node.js &amp; the browser</title>
+<meta property="og:title" content="Diaspora" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Multi-source ORM for node.js &amp; the browser" />
 <meta property="og:description" content="Multi-source ORM for node.js &amp; the browser" />
 <meta property="og:site_name" content="Diaspora" />
 <script type="application/ld+json">
-{"name":"Diaspora","description":"Multi-source ORM for node.js &amp; the browser","author":null,"@type":"WebSite","url":"/","publisher":null,"image":null,"headline":"Home","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+{"name":"Diaspora","description":"Multi-source ORM for node.js &amp; the browser","author":null,"@type":"WebSite","url":"/","publisher":null,"image":null,"headline":"Diaspora","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 		<link href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic' rel='stylesheet' type='text/css'>
@@ -53,7 +53,7 @@
 				<section>
 					<h1>Diaspora</h1>
 
-<p><strong><em>Multi-source ORM for NodeJS &amp; the browser</em></strong></p>
+<p><strong><em>Multi-source ORM for NodeJS &amp; modern web browsers</em></strong></p>
 
 <blockquote>
 <p>You are on the manual website. You may check the <a href="docco/index.html">Quick Code Review</a> or the <a href="jsdoc/index.html">API Documentation</a></p>
@@ -63,43 +63,44 @@
 
 <h2>What is Diaspora</h2>
 
-<p>A diaspora, according to (TODO), is</p>
-
 <blockquote>
-<p>(TODO find a citation)</p>
+<p>A <em>diaspora</em> (from Greek διασπορά, <q>scattering, dispersion</q>) is a scattered population whose origin lies within a smaller geographic locale
+- Wikipedia</p>
 </blockquote>
 
-<p>Exactly like populations, your apps may use datas from several sources, and you may like to interact with each source independently with the same payload data. Some example of applications that takes advantage of Diaspora: </p>
+<p>Diaspora considers data as populations and like human beings these data can move from their original app memory to databases.
+A Diaspora based app may thus use data from several sources and can interact with each source independently with the same payload data.
+Here are some examples :</p>
 
-<h3>Example 1: Diaspora Doc</h3>
+<h3>Example 1: <q>Diaspora Docs</q></h3>
 
-<p>On your account, can load, edit &amp; save documents. Once opened, you work on an offline version that keeps all your changes, so you can close the window and continue back later. After editing your document, you&#39;ll save it: it sends the document on the server (probably via a REST API), that will persist it on the server&#39;s database.</p>
+<p>Let&#39;s consider an <em>online office suite app</em> with both desktop and browser interface : you can load, edit and save your documents and your account synchronises them all.
+If working offline, the app keeps all changes locally on an offline version and when working online, it will send it on the server to be saved on one or many of the server&#39;s databases upon saving.</p>
 
 <h3>Example 2: Update search engine datas</h3>
 
-<p>On your website, you store the full article on a MySQL or MongoDB database. When you create, update, or delete your documents, search engine datas have to be refreshed.</p>
+<p>A website article is stored on a database (let&#39;s say MySQL or MongoDB). When you create, update or delete the article, your website search engine data have to be refreshed.</p>
 
 <h2>How does it work?</h2>
 
-<p>Diaspora is composed of a server &amp; a client library, both loading the same configuration structure. (See <a href="">how to configure Diaspora</a>)</p>
-
-<p>Diaspora allows you to create models, entities and data sources.</p>
+<p>Diaspora is both a server and a client library, loading the same configuation structure.
+Diaspora allows you to create models, entities and data sources :</p>
 
 <h3>Models</h3>
 
-<p>Models represents the population of your data, and how to interact with them. Models manage <a href="#">entities</a>, and interacts with <a href="">data sources</a>. We can assimilate it to a table in MySQL or a collection in MongoDB.</p>
+<p>Models describe data and how to interact with them. Models instantiate and manage their <a href="#">entities</a>, and interacts with <a href="">data sources</a>. We can assimilate it to a table in MySQL or a collection in MongoDB.</p>
 
 <p><a href="#" class="btn">See the <b>Model API</b></a></p>
 
 <h3>Entities</h3>
 
-<p>An entity represent a data, like a row in MySQL, or a document in MongoDB. Each entities are attached to a single <a href="">model</a>, and contains its value for each <a href="">data source</a>. An entity can then know and interact with its state in each data source.</p>
+<p>An entity represent a data, like a row in MySQL, or a document in MongoDB. Each entities are attached to a single <a href="">model</a>, and contains its value for each <a href="">data source</a>. Thus, an entity can know and interact with its state in each data source.</p>
 
 <p><a href="#" class="btn">See the <b>Entity API</b></a></p>
 
 <h3>Data sources</h3>
 
-<p>Data sources are a data store we interact with through <a href="">adapters</a>. This is a database in the store you use. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in the program. You are not supposed to use adapters &amp; data-sources directly: Diaspora is in charge for this.</p>
+<p>Data sources are data stores we interact with through <a href="">adapters</a>. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in your program. You are not supposed to use adapters &amp; data-sources directly: Diaspora is in charge for this.</p>
 
 <p><a href="#" class="btn">Learn how to <b>create an adapter</b></a></p>
 
@@ -141,41 +142,15 @@
 
 <p><em>Planned</em> &gt; Wait for at least Mongo &amp; Localstorage adapters.</p>
 
-<h2>Comments</h2>
-
 <div id="disqus_thread"></div>
 
 				</section>
-				
-				<div id="toc">
-					<ul class="section-nav">
-<li class="toc-entry toc-h1"><a href="#diaspora">Diaspora</a>
-<ul>
-<li class="toc-entry toc-h2"><a href="#what-is-diaspora">What is Diaspora</a>
-<ul>
-<li class="toc-entry toc-h3"><a href="#example-1-diaspora-doc">Example 1: Diaspora Doc</a></li>
-<li class="toc-entry toc-h3"><a href="#example-2-update-search-engine-datas">Example 2: Update search engine datas</a></li>
-</ul>
-</li>
-<li class="toc-entry toc-h2"><a href="#how-does-it-work">How does it work?</a>
-<ul>
-<li class="toc-entry toc-h3"><a href="#models">Models</a></li>
-<li class="toc-entry toc-h3"><a href="#entities">Entities</a></li>
-<li class="toc-entry toc-h3"><a href="#data-sources">Data sources</a></li>
-</ul>
-</li>
-<li class="toc-entry toc-h2"><a href="#planned-or-unsure-diaspora-behaviors">Planned or unsure Diaspora behaviors</a></li>
-<li class="toc-entry toc-h2"><a href="#comments">Comments</a></li>
-</ul>
-</li>
-</ul>
-				</div>
 				
 			</div>
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-				<p><small>Page built the 19 of Sep 2017 at 13:48</small></p>
+				<p><small>Page built the 19 of Sep 2017 at 13:49</small></p>
 			</footer>
 		</div>
 		<!--[if !IE]><script>fixScale(document);</script><![endif]-->
@@ -197,7 +172,7 @@
 
 			var disqus_config = function () {
 				this.page.url = "https://diaspora.ithoughts.io/";  // Replace PAGE_URL with your page's canonical URL variable
-				this.page.identifier = "Home"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+				this.page.identifier = ""; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
 			};
 			(function() {  // DON'T EDIT BELOW THIS LINE
 				var d = document, s = d.createElement('script');
