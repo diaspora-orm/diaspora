@@ -180,6 +180,7 @@ pre {
 }
 
 
+
 /* Tables */
 
 table {
@@ -339,6 +340,25 @@ footer {
 
 
 
+/*****************************
+CUSTOM
+*****************************/
+
+.warning{
+	background: #ffd079;
+	padding: 5px 15px;
+	border: 1px solid #f8f8f8;
+	border-radius: 15px;
+
+	&::before{
+		content: '!';
+		display: block;
+		float: left;
+		font-size: 35px;
+		color: #8c8c8c;
+		margin-right: 15px;
+	}
+}
 button, a.btn, nav#header ul li a {
 	background: #AF0011;
 	background: -moz-linear-gradient(top,#AF0011 0%,#820011 100%);
@@ -355,12 +375,17 @@ button, a.btn, nav#header ul li a {
 	padding: 5px;
 	font-weight: bold;
 }
+sup{
+	font-size: 0.75em;
+	vertical-align: super;
+}
 
 nav#header{
 	background: #171717;
 	width: 100%;
 	position: fixed;
 	z-index: 1;
+	top: 0;
 
 	ul{
 		list-style: none;
@@ -438,6 +463,7 @@ $menuHeight: 36px;
 }
 
 .wrapper{
+	margin-top: 35px;
 	display: flex;
 	flex-direction: row;
 	width: auto;
@@ -465,6 +491,16 @@ $widthMenu: 200px;
 		position: static;
 		width: auto;
 	}
+}
+dt.name{
+	[id$="__anchor"]{
+		position: relative;
+		top: -36px;
+	}
+}
+.toc-shim{
+	position: relative;
+	top: -20px;
 }
 
 $pad: 15px;
@@ -531,6 +567,9 @@ body.default{
 body.docpage{
 	#toc > *{
 		padding-right: 0;
+	}
+	h1, h2, h3{
+		border-bottom: none;
 	}
 
 	#main header{

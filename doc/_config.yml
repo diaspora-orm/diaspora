@@ -4,8 +4,16 @@ show_downloads: true
 google_analytics: UA-61219056-7
 theme: jekyll-theme-dinky
 canonical_url: https://diaspora.ithoughts.io
+host: https://diaspora.ithoughts.io
+port: ""
+baseurl: ""
 #sitemap:
 #`    filename: "/sitemap.xml"
-gems:
+plugins:
   - jekyll-toc
 destination: ../docs
+lsi: true
+incremental: false
+markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "underline", "highlight", "quote", "footnotes", "superscript", "prettify", "xhtml"]#"smart"

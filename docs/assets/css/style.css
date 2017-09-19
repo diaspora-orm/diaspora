@@ -479,6 +479,22 @@ footer {
   bottom: 10px;
   padding-left: 50px; }
 
+/*****************************
+CUSTOM
+*****************************/
+.warning {
+  background: #ffd079;
+  padding: 5px 15px;
+  border: 1px solid #f8f8f8;
+  border-radius: 15px; }
+  .warning::before {
+    content: '!';
+    display: block;
+    float: left;
+    font-size: 35px;
+    color: #8c8c8c;
+    margin-right: 15px; }
+
 button, a.btn, nav#header ul li a {
   background: #AF0011;
   background: -moz-linear-gradient(top, #AF0011 0%, #820011 100%);
@@ -495,11 +511,16 @@ button, a.btn, nav#header ul li a {
   padding: 5px;
   font-weight: bold; }
 
+sup {
+  font-size: 0.75em;
+  vertical-align: super; }
+
 nav#header {
   background: #171717;
   width: 100%;
   position: fixed;
-  z-index: 1; }
+  z-index: 1;
+  top: 0; }
   nav#header ul {
     list-style: none;
     margin: 0;
@@ -554,6 +575,7 @@ nav ul li {
   margin: 10px; }
 
 .wrapper {
+  margin-top: 35px;
   display: flex;
   flex-direction: row;
   width: auto;
@@ -573,6 +595,14 @@ nav ul li {
   #content > section > footer {
     position: static;
     width: auto; }
+
+dt.name [id$="__anchor"] {
+  position: relative;
+  top: -36px; }
+
+.toc-shim {
+  position: relative;
+  top: -20px; }
 
 #toc {
   position: fixed;
@@ -622,6 +652,8 @@ body.default #toc {
 
 body.docpage #toc > * {
   padding-right: 0; }
+body.docpage h1, body.docpage h2, body.docpage h3 {
+  border-bottom: none; }
 body.docpage #main header {
   position: static;
   float: none;

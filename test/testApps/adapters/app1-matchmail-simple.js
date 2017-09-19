@@ -16,7 +16,7 @@ module.exports = (adapter, data, tableName) => {
 	});
 	let lastWithEmail;
 	it(`🔎 Find last entity with an email (option ${chalk.bold('skip')})`, () => {
-		process.exit();
+//		process.exit();
 		let index = 0;
 		return new Promise((resolve, reject) => {
 			const loop = () => {

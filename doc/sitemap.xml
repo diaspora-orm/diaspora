@@ -6,7 +6,7 @@ sitemap:
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   {% for post in site.posts %}
-    {% unless post.published == false %}
+    {% unless post.sitemap.exclude or post.published == false %}
     <url>
       <loc>{{ site.canonical_url }}{{ post.url }}</loc>
       {% if post.sitemap.lastmod %}

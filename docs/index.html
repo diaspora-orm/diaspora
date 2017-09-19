@@ -10,16 +10,14 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Multi-source ORM for node.js &amp; the browser" />
 <meta property="og:description" content="Multi-source ORM for node.js &amp; the browser" />
-<link rel="canonical" href="http://localhost:4000/" />
-<meta property="og:url" content="http://localhost:4000/" />
 <meta property="og:site_name" content="Diaspora" />
 <script type="application/ld+json">
-{"name":"Diaspora","description":"Multi-source ORM for node.js &amp; the browser","author":null,"@type":"WebSite","url":"http://localhost:4000/","publisher":null,"image":null,"headline":"Home","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+{"name":"Diaspora","description":"Multi-source ORM for node.js &amp; the browser","author":null,"@type":"WebSite","url":"/","publisher":null,"image":null,"headline":"Home","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 		<link href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" href="/assets/css/style.css?v=">
-		<script src="/assets/js/scale.fix.js"></script>
+		<link rel="stylesheet" href="assets/css/style.css?v=">
+		<script src="assets/js/scale.fix.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 		<!--[if lt IE 9]>
 <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -28,9 +26,9 @@
 	<body data-page="/" class="default">
 		<nav id="header">
 			<ul>
-				<li><a href="http://localhost:4000/">Home</a></li>
-				<li><a href="http://localhost:4000/docco/index.html">Quick Code Review</a></li>
-				<li><a href="http://localhost:4000/jsdoc/index.html">API Documentation</a></li>
+				<li><a href="/">Home</a></li>
+				<li><a href="/docco/index.html">Quick Code Review</a></li>
+				<li><a href="/jsdoc/index.html">API Documentation</a></li>
 			</ul>
 		</nav>
 		<div class="wrapper">
@@ -53,97 +51,97 @@
 
 			<div id="content">
 				<section>
-					<h1 id="diaspora">Diaspora</h1>
+					<h1>Diaspora</h1>
 
 <p><strong><em>Multi-source ORM for NodeJS &amp; the browser</em></strong></p>
 
 <blockquote>
-  <p>You are on the manual website. You may check the <a href="docco/index.html">Quick Code Review</a> or the <a href="jsdoc/index.html">API Documentation</a></p>
+<p>You are on the manual website. You may check the <a href="docco/index.html">Quick Code Review</a> or the <a href="jsdoc/index.html">API Documentation</a></p>
 </blockquote>
 
-<hr />
+<hr/>
 
-<h2 id="what-is-diaspora">What is Diaspora</h2>
+<h2>What is Diaspora</h2>
 
 <p>A diaspora, according to (TODO), is</p>
 
 <blockquote>
-  <p>(TODO find a citation)</p>
+<p>(TODO find a citation)</p>
 </blockquote>
 
-<p>Exactly like populations, your apps may use datas from several sources, and you may like to interact with each source independently with the same payload data. Some example of applications that takes advantage of Diaspora:</p>
+<p>Exactly like populations, your apps may use datas from several sources, and you may like to interact with each source independently with the same payload data. Some example of applications that takes advantage of Diaspora: </p>
 
-<h3 id="example-1-diaspora-doc">Example 1: Diaspora Doc</h3>
+<h3>Example 1: Diaspora Doc</h3>
 
-<p>On your account, can load, edit &amp; save documents. Once opened, you work on an offline version that keeps all your changes, so you can close the window and continue back later. After editing your document, you’ll save it: it sends the document on the server (probably via a REST API), that will persist it on the server’s database.</p>
+<p>On your account, can load, edit &amp; save documents. Once opened, you work on an offline version that keeps all your changes, so you can close the window and continue back later. After editing your document, you&#39;ll save it: it sends the document on the server (probably via a REST API), that will persist it on the server&#39;s database.</p>
 
-<h3 id="example-2-update-search-engine-datas">Example 2: Update search engine datas</h3>
+<h3>Example 2: Update search engine datas</h3>
 
 <p>On your website, you store the full article on a MySQL or MongoDB database. When you create, update, or delete your documents, search engine datas have to be refreshed.</p>
 
-<h2 id="how-does-it-work">How does it work?</h2>
+<h2>How does it work?</h2>
 
 <p>Diaspora is composed of a server &amp; a client library, both loading the same configuration structure. (See <a href="">how to configure Diaspora</a>)</p>
 
 <p>Diaspora allows you to create models, entities and data sources.</p>
 
-<h3 id="models">Models</h3>
+<h3>Models</h3>
 
 <p>Models represents the population of your data, and how to interact with them. Models manage <a href="#">entities</a>, and interacts with <a href="">data sources</a>. We can assimilate it to a table in MySQL or a collection in MongoDB.</p>
 
 <p><a href="#" class="btn">See the <b>Model API</b></a></p>
 
-<h3 id="entities">Entities</h3>
+<h3>Entities</h3>
 
 <p>An entity represent a data, like a row in MySQL, or a document in MongoDB. Each entities are attached to a single <a href="">model</a>, and contains its value for each <a href="">data source</a>. An entity can then know and interact with its state in each data source.</p>
 
 <p><a href="#" class="btn">See the <b>Entity API</b></a></p>
 
-<h3 id="data-sources">Data sources</h3>
+<h3>Data sources</h3>
 
 <p>Data sources are a data store we interact with through <a href="">adapters</a>. This is a database in the store you use. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in the program. You are not supposed to use adapters &amp; data-sources directly: Diaspora is in charge for this.</p>
 
 <p><a href="#" class="btn">Learn how to <b>create an adapter</b></a></p>
 
-<h2 id="planned-or-unsure-diaspora-behaviors">Planned or unsure Diaspora behaviors</h2>
+<h2>Planned or unsure Diaspora behaviors</h2>
 
 <blockquote>
-  <p>Manual change of ID</p>
+<p>Manual change of ID</p>
 </blockquote>
 
-<p><em>Unsure</em> &gt; Entity may change mode to <code class="highlighter-rouge">desync</code> ?</p>
+<p><em>Unsure</em> &gt; Entity may change mode to <code class="prettyprint">desync</code> ?</p>
 
 <blockquote>
-  <p>P2P Adapter</p>
+<p>P2P Adapter</p>
 </blockquote>
 
-<p><em>Unsure</em> &gt; May be interesting… Check for possible problems about data modification, etc etc.</p>
+<p><em>Unsure</em> &gt; May be interesting... Check for possible problems about data modification, etc etc.</p>
 
 <blockquote>
-  <p>Mongo Adapter</p>
-</blockquote>
-
-<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
-
-<blockquote>
-  <p>Redis Adapter</p>
+<p>Mongo Adapter</p>
 </blockquote>
 
 <p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
 
 <blockquote>
-  <p>LocalStorage/SessionStorage Adapter</p>
+<p>Redis Adapter</p>
 </blockquote>
 
 <p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
 
 <blockquote>
-  <p>Auto-switch to API server/client</p>
+<p>LocalStorage/SessionStorage Adapter</p>
+</blockquote>
+
+<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
+
+<blockquote>
+<p>Auto-switch to API server/client</p>
 </blockquote>
 
 <p><em>Planned</em> &gt; Wait for at least Mongo &amp; Localstorage adapters.</p>
 
-<h2 id="comments">Comments</h2>
+<h2>Comments</h2>
 
 <div id="disqus_thread"></div>
 
@@ -177,6 +175,7 @@
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+				<p><small>Page built the 19 of Sep 2017 at 13:48</small></p>
 			</footer>
 		</div>
 		<!--[if !IE]><script>fixScale(document);</script><![endif]-->
