@@ -50,6 +50,7 @@
     "lodash": "^4.17.4",
     "mongodb": "^2.2.31",
     "redis": "^2.8.0",
-    "sequential-event": "^0.1.0"
+    "sequential-event": "^0.1.0",
+    "stack-trace": "0.0.10"
   }
 }
