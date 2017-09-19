@@ -1,22 +1,33 @@
 'use strict';
 
-require("../index");
-/*let inMemoryAdapter = require("../../lib/adapters/inMemoryAdapter");
-let inMemoryEntity = require("../../lib/dataStoreEntities/inMemoryEntity");
+//require("../index");
+//let inMemoryAdapter = require("../../lib/adapters/inMemoryAdapter");
+//let inMemoryEntity = require("../../lib/dataStoreEntities/inMemoryEntity");
 let Diaspora = require("../../diaspora");
-*/
+
 let testModel;
 let testedEntity;
 const modelName = 'testModel';
 
+let IMsource = Diaspora.createDataSource( 'in-memory', {} );
+Diaspora.registerDataSource( 'test', 'proute', IMsource );
 
 testModel = Diaspora.declareModel( 'test', modelName, {
-    sources:    [ 'inMemory' ],
+    sources:    [ 'proute' ],
     attributes: {
         foo: {
             type: 'string',
         },
     },
+    methods: {
+        myFunc( ){
+            // "this" is entity
+            let promise = this.persist();
+            promise.then( () => {
+               //this is still entity 
+            });
+        },
+    }
 });
 
 const entity1 = testModel.spawn();
@@ -32,6 +43,7 @@ const entities = testModel.spawnMulti([
     undefined,
 ]);
 
+console.log( entities.map(entity=>entity.toObject()) );
 
 testedEntity = testModel.spawn({
     foo: 'bar',
