@@ -1257,6 +1257,9 @@ $padTop: 45px;
 	width: 100%;
 	margin: 20px 0px 30px;
 }
+#jump_to{
+	top: 44px!important;
+}
 body.default{
 	.toc-h1 {
 		margin-left: -$pad;
@@ -1289,6 +1292,47 @@ body.docpage{
 	.wrapper{
 		padding-left: 35px;
 		flex-direction: column;
+
+		#content #container{
+			margin-left: -86px;
+			margin-right: -25px;
+
+			#background{
+				position: static;
+			}
+			table{
+				tr td{
+					border-top: 1px solid #eee;
+					border-bottom: 1px solid #eee;
+				}
+				td.code, td.docs {
+					padding: 10px!important;
+				}
+				th{
+					background: none;
+
+					h1{
+						margin-top: 5px;
+					}
+				}
+				.code {
+					padding: 0;
+
+					.highlight{
+						&, & > pre{
+							border: none;
+							background: transparent;
+							padding: 0;
+							margin: 0;
+							box-shadow: none;
+						}
+					}
+				}
+				.docs .dox{
+					border: none;
+				}
+			}
+		}
 	}
 	section{
 		padding: 0;

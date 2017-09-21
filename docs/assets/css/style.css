@@ -1664,6 +1664,9 @@ dt.name [id$="__anchor"] {
   width: 100%;
   margin: 20px 0px 30px; }
 
+#jump_to {
+  top: 44px !important; }
+
 body.default .toc-h1 {
   margin-left: -15px; }
   body.default .toc-h1 > a {
@@ -1686,6 +1689,30 @@ body.docpage #main header {
 body.docpage .wrapper {
   padding-left: 35px;
   flex-direction: column; }
+  body.docpage .wrapper #content #container {
+    margin-left: -86px;
+    margin-right: -25px; }
+    body.docpage .wrapper #content #container #background {
+      position: static; }
+    body.docpage .wrapper #content #container table tr td {
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee; }
+    body.docpage .wrapper #content #container table td.code, body.docpage .wrapper #content #container table td.docs {
+      padding: 10px !important; }
+    body.docpage .wrapper #content #container table th {
+      background: none; }
+      body.docpage .wrapper #content #container table th h1 {
+        margin-top: 5px; }
+    body.docpage .wrapper #content #container table .code {
+      padding: 0; }
+      body.docpage .wrapper #content #container table .code .highlight, body.docpage .wrapper #content #container table .code .highlight > pre {
+        border: none;
+        background: transparent;
+        padding: 0;
+        margin: 0;
+        box-shadow: none; }
+    body.docpage .wrapper #content #container table .docs .dox {
+      border: none; }
 body.docpage section {
   padding: 0; }
 body.docpage footer {
