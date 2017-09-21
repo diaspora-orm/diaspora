@@ -1,0 +1,43 @@
+<nav id="header" class="navbar navbar-default navbar-fixed-top">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="{{ 'index.html' | relative_path_to_root }}">Diaspora</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#mainNav">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+	</div>
+	<div class="navbar-collapse collapse" id="mainNav" aria-expanded="false">
+		<ul class="nav navbar-nav">
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Guide<b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="{{ 'index.html' | relative_path_to_root }}">Home</a></li>
+					{% for page in site.pages %}
+					{% unless page.inMenu != true or page.url contains '/assets/' %}
+					<li><a href="{{ page.url | relative_path_to_root }}">{{ page.title }}</a></li>
+					{% endunless %}
+					{% endfor %}
+				</ul>
+			</li>
+			<li><a href="{{ 'docco/index.html' | relative_path_to_root }}">Quick Code Review</a></li>
+			<li class="dropdown">
+				<a href="{{ 'jsdoc/index.html' | relative_path_to_root }}" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">API Documentation<b class="caret"></b></a>
+				{% assign treeData = site.pages | to_tree base:'/jsdoc/' %}
+				<ul class="dropdown-menu">
+					{% include jsdocNavtree.html treeData=treeData %}
+				</ul>
+			</li>
+		</ul>
+		<div class="col-sm-3 col-md-3">
+			<form class="navbar-form" role="search" action="{{ 'search.html' | relative_path_to_root }}">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+					<div class="input-group-btn">
+						<button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav >

@@ -7,7 +7,9 @@ require( 'chalk' );
 module.exports = function gruntInit( grunt ) {
 	// Project configuration.
 
-	const baseDocPath = 'doc';
+	const baseDocPath = 'site';
+	const doccoPath = `${baseDocPath}/docco`;
+	const jsdocPath = `${baseDocPath}/jsdoc`;
 	const jsAssets = [
 		'Gruntfile.js',
 		'diaspora.js',
@@ -37,6 +39,9 @@ module.exports = function gruntInit( grunt ) {
 		},
 		docco_husky: {
 			project_name: 'Diaspora',
+			output_dir: doccoPath,
+			readme: 'README-docco.md',
+			template: 'yolo.jst',
 			files:        {
 				expand: true,
 				src:    jsAssets,
@@ -47,8 +52,8 @@ module.exports = function gruntInit( grunt ) {
 			src:     jsAssets,
 			options: {
 				private:     true,
-				destination: `${ baseDocPath }/jsdoc/`,
-				config:	     'jsdoc.json',
+				destination: jsdocPath,
+				config:	     'site/jsdoc.json',
 				template:    './node_modules/ink-docstrap/template2',
 				readme:      'README-jsdoc.md',
 			},
@@ -57,8 +62,7 @@ module.exports = function gruntInit( grunt ) {
 			dist: {
 				expand: true,
 				src: [
-					'doc/docco/**/*.html',
-					'doc/jsdoc/**/*.html',
+					`${ doccoPath }/**/*.html`,
 				],
 				dest: './',
 			},
@@ -114,7 +118,7 @@ toc: false
 			//			'markdown:index',
 			'jsdoc',
 			'docco_husky',
-			'concat:dist',
+			'concat',
 		]
 	);
 	grunt.registerTask(

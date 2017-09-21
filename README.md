@@ -10,7 +10,7 @@ This documentation section is a readable version of the code, for quick review. 
 >
 > * *Relations*: Not implemented
 > * *Browser version*: Not ready
-> * *Query language*: Only supports equality
+> * *[Query language](https://diaspora.ithoughts.io/query-language)*: Only supports equality
 > * *Registering external adapter*: Soon
 
 ---
