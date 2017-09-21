@@ -1099,9 +1099,11 @@ $menuHeight: 36px;
 	&.tabs-code {
 		> nav > ul{
 			padding-left: 10px;
+			list-style: none;
 
 			li{
 				transition: 0.5s background;
+				display: inline-block;
 			}
 		}
 		p + .note, .highlight + .note{

@@ -1546,9 +1546,11 @@ nav ul li {
     pointer-events: all;
     opacity: 1; }
 .tabs-init.tabs-code > nav > ul {
-  padding-left: 10px; }
+  padding-left: 10px;
+  list-style: none; }
   .tabs-init.tabs-code > nav > ul li {
-    transition: 0.5s background; }
+    transition: 0.5s background;
+    display: inline-block; }
 .tabs-init.tabs-code p + .note, .tabs-init.tabs-code .highlight + .note {
   margin-top: 0; }
 .tabs-init.tabs-code .highlight pre {
