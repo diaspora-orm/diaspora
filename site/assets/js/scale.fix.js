@@ -28,7 +28,8 @@ function loadHash(){
 		});
 		tab.classList.add('active');
 	});
-	document.querySelectorAll('.tabs nav li a[href="' + location.hash + '"]').forEach(function(li){
+	document.querySelectorAll('.tabs nav li a[href="' + location.hash + '"]').forEach(function(a){
+		var li = a.parentElement;
 		li.parentElement.querySelectorAll('.active').forEach(function(otherLi){
 			otherLi.classList.remove('active');
 		});

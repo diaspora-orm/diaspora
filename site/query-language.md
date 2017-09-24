@@ -76,7 +76,42 @@ db.getCollection( 'PhoneBook' ).find({ phone: { $exists: false } }).then(...);
 </div>
 </div>
 
-### Match by a value or not, with **==** and **!=** ^\(2\)
+### Match by a value defined or not, with **~** ^\(2\)
+
+<div class="tabs tabs-code">
+<div class="tab" data-ref="diaspora">
+
+<h4>Diaspora</h4>
+
+{% highlight javascript %}
+PhoneBook.find({ email: { '~': true } }).then(...);
+PhoneBook.find({ email: { '~': false } }).then(...);
+{% endhighlight %}
+The usage of <code>==</code> is optional, you can replace <code>{'==': value}</code> with <code>value</code>
+</div>
+<div class="tab" data-ref="sql">
+
+<h4>SQL</h4>
+
+{% highlight sql %}
+SELECT * FROM `PhoneBook` WHERE `email` IS NULL;
+SELECT * FROM `PhoneBook` WHERE `email` IS NOT NULL;
+{% endhighlight %}
+</div>
+<div class="tab" data-ref="mongodb">
+
+<h4>MongoDB</h4>
+
+{% highlight javascript %}
+db.getCollection( 'PhoneBook' ).find({ number : { $exists: true } }).then(...);
+db.getCollection( 'PhoneBook' ).find({ number : { $exists: false } }).then(...);
+{% endhighlight %}
+</div>
+</div>
+
+ * `~` can be replaced by `$exists`
+
+### Match by a value equal or not, with **==** and **!=** ^\(2\)
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
@@ -273,6 +308,10 @@ db.getCollection('PhoneBook').find({ _id : { $in: [
 ## Update queries
 
 Update queries are used only with `update` operations.
+
+## Query options
+
+Query options can be passed to `find`, `update` and `delete` operations.
 
 ## Comments
 

@@ -60,7 +60,11 @@ chai.use(function (_chai, utils) {
 		const check = (entity, props) => {
 			try{
 				l.forEach(props, (val, key) => {
-					expect(entity).to.have.property(key, val);
+					if(c.undefined(val)){
+						expect(entity).to.not.have.property(key);
+					} else {
+						expect(entity).to.have.property(key, val);
+					}
 				});
 				expect(entity).to.include.all.keys('id', 'idHash');
 				expect(entity.idHash).to.be.an('object').that.have.property(adapter.name, entity.id);
