@@ -87,7 +87,6 @@ db.getCollection( 'PhoneBook' ).find({ phone: { $exists: false } }).then(...);
 PhoneBook.find({ email: { '~': true } }).then(...);
 PhoneBook.find({ email: { '~': false } }).then(...);
 {% endhighlight %}
-The usage of <code>==</code> is optional, you can replace <code>{'==': value}</code> with <code>value</code>
 </div>
 <div class="tab" data-ref="sql">
 
@@ -146,6 +145,10 @@ db.getCollection( 'PhoneBook' ).find({ number : { $ne: '(251) 546-9442' } }).the
 
  * `==` can be replaced by `$equal`
  * `!=` can be replaced by `$diff`
+
+<div class="note info">
+Note that <code>!=</code> will match only if entity's value is <em>defined</em> <b>and</b> <em>different</em>.
+</div>
 
 ### Match by number comparaison, with **<**, **<=**, **>** and **>=** ^\(2\)
 

@@ -61,7 +61,9 @@ chai.use(function (_chai, utils) {
 			try{
 				l.forEach(props, (val, key) => {
 					if(c.undefined(val)){
-						expect(entity).to.not.have.property(key);
+						expect(entity).to.satisfy(obj => {
+							return c.undefined(obj[key]) || !obj.hasOwnProperty(key);
+						});
 					} else {
 						expect(entity).to.have.property(key, val);
 					}
