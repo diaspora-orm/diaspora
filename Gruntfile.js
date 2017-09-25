@@ -10,7 +10,7 @@ module.exports = function gruntInit( grunt ) {
 	const baseDocPath = 'site';
 	const doccoPath = `${baseDocPath}/docco`;
 	const jsdocPath = `${baseDocPath}/jsdoc`;
-	const jsAssets = [
+	const jsAssets = 'lib/adapters/baseAdapter.js' || [
 		'Gruntfile.js',
 		'diaspora.js',
 		'lib/**/*.js',
@@ -41,7 +41,7 @@ module.exports = function gruntInit( grunt ) {
 			project_name: 'Diaspora',
 			output_dir: doccoPath,
 			readme: 'README-docco.md',
-			template: 'yolo.jst',
+			//template_dir: 'node_modules/jekyll-docco-husky/template',
 			files:        {
 				expand: true,
 				src:    jsAssets,
