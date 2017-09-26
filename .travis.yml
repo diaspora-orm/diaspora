@@ -9,5 +9,5 @@ notifications:
       - altenter-project:Pc8sMyCuHNPBCg1TOw0weD9S#tech
 addons:
   sauce_connect:
-    username: "gerkin"
+    username: "Gerkin"
     access_key: "bcc962ee-af76-4e36-bf15-ce3cbbbb5b8c"
