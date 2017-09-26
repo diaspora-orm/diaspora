@@ -39,7 +39,7 @@ describe("Test Diaspora in the browser", function() {
 			const request = require('request');
 
 			return new Promise((resolve, reject) => {
-				request.put( `https://saucelabs.com/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${process.env.TRAVIS_JOB_NUMBER}`, {
+				const args = {
 					json: {
 						passed,
 						name: "Diaspora Browser build"
@@ -49,9 +49,10 @@ describe("Test Diaspora in the browser", function() {
 						pass: process.env.SAUCE_ACCESS_KEY,
 						sendImmediately: false
 					},
-				}, (err, ...others) => {
+				};
+				request.put( `https://saucelabs.com/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${process.env.TRAVIS_JOB_NUMBER}`, args, (err, ...others) => {
 					return browser.quit().then(() => {
-						console.log({err, others});
+						console.log({args, err, others});
 						if(err){
 							console.error(err);
 							return reject(err);
