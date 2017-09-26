@@ -3,8 +3,10 @@ var webdriver = require("selenium-webdriver");
 var path = require('path');
 
 describe("testing javascript in the browser", function() {
+	this.timeout(1000);
+	
 	beforeEach(function() {
-		this.timeout = 10000;
+		this.timeout(10000);
 		let ret;
 		if (process.env.SAUCE_USERNAME != undefined) {
 			this.browser = new webdriver.Builder()
@@ -30,12 +32,11 @@ describe("testing javascript in the browser", function() {
 	});
 
 	afterEach(function() {
-		this.timeout = 10000;
+		this.timeout(10000);
 		return this.browser.quit();
 	});
 
 	it("should handle clicking on a headline", function() {
-		this.timeout = 5000;
 		var headline = this.browser.findElement(webdriver.By.css('h1'));
 
 		headline.click();
