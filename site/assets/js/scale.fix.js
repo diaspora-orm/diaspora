@@ -150,5 +150,7 @@ $(document).ready(function(event) {
 
 
 	var table = $('#container > table');
-	table.tableHeadFixer({left: 1, head: false})
+	if(table.length > 0){
+		table.tableHeadFixer({left: 1, head: false});
+	}
 });
