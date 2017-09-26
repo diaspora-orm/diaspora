@@ -49,9 +49,11 @@ describe("Test Diaspora in the browser", function() {
 						pass: process.env.SAUCE_ACCESS_KEY,
 						sendImmediately: false
 					},
-				}, err => {
+				}, (err, ...others) => {
 					return browser.quit().then(() => {
+						console.log({err, others});
 						if(err){
+							console.error(err);
 							return reject(err);
 						}
 						return resolve();
