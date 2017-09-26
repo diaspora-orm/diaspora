@@ -324,3 +324,5 @@ it( '"default" feature', () => {
 
 importTest(chalk.bold.underline.blue('Adapters'), './adapters/index.js');
 //importTest(chalk.bold.underline.blue('Models'), './models/index.js');
+
+require('./browserTests/seleniumTest.js');
