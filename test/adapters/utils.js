@@ -129,8 +129,9 @@ const AdapterTestUtils = {
 				});
 				it(`${chalk.bold('!=')} ($diff)`, () => {
 					expect(me({foo: {$diff: 'bar'}}, {foo: 'bar'})).to.be.false;
-					expect(me({foo: {$diff: 'bar'}}, {foo: undefined})).to.be.true;
 					expect(me({foo: {$diff: 'bar'}}, {foo: 'baz'})).to.be.true;
+					expect(me({foo: {$diff: 'bar'}}, {foo: undefined})).to.be.false;
+					expect(me({foo: {$diff: 'bar'}}, {bar: 'qux'})).to.be.false;
 				});
 				it(`${chalk.bold('<')} ($less)`, () => {
 					expect(me({foo: {$less: 2}}, {foo: undefined})).to.be.false;
@@ -300,13 +301,16 @@ const AdapterTestUtils = {
 						expect(output).to.be.a.dataStoreEntity(adapter, {foo: 1});
 					});
 				});
-				it(`${chalk.bold('!=')} ($equal) operator`, () => {
+				it(`${chalk.bold('!=')} ($diff) operator`, () => {
 					return Promise.all([
-						adapter.findOne(TABLE, { foo: { '!=': 1 } }).then(output => {
-							expect(output).to.be.a.dataStoreEntity(adapter, {foo: undefined});
-						}),
 						adapter.findOne(TABLE, { bar: { '!=': 1 } }).then(output => {
 							expect(output).to.be.a.dataStoreEntity(adapter, {bar: 2});
+						}),
+						adapter.findOne(TABLE, { foo: { '!=': 1 } }).then(output => {
+							expect(output).to.be.undefined;
+						}),
+						adapter.findOne(TABLE, { foo: { '!=': 2 } }).then(output => {
+							expect(output).to.be.a.dataStoreEntity(adapter, {foo: 1});
 						}),
 					]);
 				});

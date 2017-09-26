@@ -3,3 +3,7 @@ node_js:
   - "node"
   - "8"
   - "7"
+notifications:
+  slack:
+    rooms:
+      - altenter-project:Pc8sMyCuHNPBCg1TOw0weD9S#tech

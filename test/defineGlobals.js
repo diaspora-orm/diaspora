@@ -59,6 +59,10 @@ chai.use(function (_chai, utils) {
 		const collection = utils.flag(this, 'collection');
 		const check = (entity, props) => {
 			try{
+				expect(entity).to.be.an('object');
+				expect(entity.idHash).to.be.an('object').that.have.property(adapter.name, entity.id);
+				expect(entity).to.include.all.keys('id', 'idHash');
+				expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${adapter.baseName}Entity` );
 				l.forEach(props, (val, key) => {
 					if(c.undefined(val)){
 						expect(entity).to.satisfy(obj => {
@@ -68,9 +72,6 @@ chai.use(function (_chai, utils) {
 						expect(entity).to.have.property(key, val);
 					}
 				});
-				expect(entity).to.include.all.keys('id', 'idHash');
-				expect(entity.idHash).to.be.an('object').that.have.property(adapter.name, entity.id);
-				expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${adapter.baseName}Entity` );
 				valid = true;
 			} catch(e){
 				return e;

@@ -7,7 +7,8 @@ module.exports = (adapter, data, tableName) => {
 			return Promise.resolve();
 		});
 	});
-	it('✨ Insert test data', () => {
+	it('✨ Insert test data', function insertTestData(){
+		this.timeout(20000);
 		return adapter.insertMany(tableName, data).then(entities => {
 			expect(entities).to.be.a.set.of.dataStoreEntity(adapter, data).that.have.lengthOf(data.length);
 			return Promise.resolve();

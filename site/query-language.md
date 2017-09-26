@@ -13,6 +13,10 @@ inMenu: true
 Match queries are used when you use `find`, `update` or `delete` operations.
 
 <div class="note info">
+If you put several operators in a condition object, they'll be combined using an `AND` operator.
+</div>
+
+<div class="note info">
 Numbers in parenthesis in operations' name indicates the Query Language Specification Level. Check your adapters' documentation to see the level supported by adapters you use.
 </div>
 
@@ -148,7 +152,7 @@ db.getCollection( 'PhoneBook' ).find({ number : { $ne: '(251) 546-9442' } }).the
  * `!=` can be replaced by `$diff`
 
 <div class="note info">
-Note that <code>!=</code> will match only if entity's value is <em>defined</em> <b>and</b> <em>different</em>.
+<code>!=</code> will match only if entity's value is <em>defined</em> <b>and</b> <em>different</em>.
 </div>
 
 ### Match by number comparaison, with **<**, **<=**, **>** and **>=** ^\(2\)
@@ -206,23 +210,20 @@ db.getCollection( 'PhoneBook' ).find({ index: { $lte: 12 } }).then(...);
 <h4>Diaspora</h4>
 
 {% highlight javascript %}
-PhoneBook.find({ index:{ '||': [
+PhoneBook.find({ index: { '||': [
 	{ '<': 5 },
 	{ '==': 9 },
-] }).then(...); // Will retrieve items with index [0, 1, 2, 3, 4, 9]
-PhoneBook.find({ index:{ '&&': [
+] } }).then(...); // Will retrieve items with index [0, 1, 2, 3, 4, 9]
+PhoneBook.find({ index: { '&&': [
 	{ '<': 10 },
 	{ '>=': 5 },
-] }).then(...); // Will retrieve items with index [5, 6, 7, 8, 9]
-PhoneBook.find({ index:{ '^^': [
+] } }).then(...); // Will retrieve items with index [5, 6, 7, 8, 9]
+PhoneBook.find({ index: { '^^': [
 	{ email: 'foobar@example.com' },
 	{ phone: '(251) 546-9442' },
-] }).then(...); // Will retrieve items with either the provided email or address, but not both
+] } }).then(...); // Will retrieve items with either the provided email or address, but not both
 PhoneBook.find({ index: { '!': { '==': 5 } } }).then(...);
 {% endhighlight %}
-<div class="note info">
-The usage of <code>==</code> is optional, you can replace <code>{'==': value}</code> with <code>value</code>
-</div>
 </div>
 <div class="tab" data-ref="sql">
 
@@ -273,6 +274,18 @@ Last query is not exactly the same though... TODO Improve
  * `&&` can be replaced by `$and`
  * `^^` can be replaced by `$xor`
  * `!` can be replaced by `$not`
+
+The usage of <code>&&</code> is optional: if several conditions are in a same condition object, they'll be combined using a `&&` operator by default. So, both lines below are equivalent:
+{% highlight javascript %}
+PhoneBook.find({ index: { '&&': [
+	{ '<': 10 },
+	{ '>=': 5 },
+] } }).then(...);
+PhoneBook.find({ index: {
+	'<': 10,
+	'>=': 5,
+} }).then(...);
+{% endhighlight %}
 
 ### Match by value in array, with **$in** ^\(3\)
 
