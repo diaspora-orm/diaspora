@@ -1,39 +1,81 @@
-path = require( 'path' );
-l = require( 'lodash' );
-c = require( 'check-types' );
-CheckTypes = c;
-projectPath = path.resolve( '../' );
-chalk = require( 'chalk' );
-const chai = require( 'chai' );
-assert = chai.assert;
-expect = chai.expect;
-util = require( 'util' );
-SequentialEvent = require( 'sequential-event' );
-Promise = require( 'bluebird' );
-chalk = require('chalk');
-const stackTrace = require( 'stack-trace' );
-let config;
-try{
-	config = require('./config.js');
-} catch(err){
-	if('MODULE_NOT_FOUND' === err.code){
-		console.error('Missing required file "config.js", please copy "config-sample.js" and edit it.');
-	} else {
-		console.error(err);
+if('undefined' === typeof window){
+	path = require( 'path' );
+	projectPath = path.resolve( '../' );
+	chalk = require( 'chalk' );
+
+	const stackTrace = require( 'stack-trace' );
+	getCurrentDir = () => {
+		const stackItem = stackTrace.get()[2];
+		return path.dirname( stackItem.getFileName());
+	};
+
+	chalk = require('chalk');
+	try{
+		config = require('./config.js');
+	} catch(err){
+		if('MODULE_NOT_FOUND' === err.code){
+			console.error('Missing required file "config.js", please copy "config-sample.js" and edit it.');
+		} else {
+			console.error(err);
+		}
+		process.exit();
 	}
-	process.exit();
+
+} else {
+	getCurrentDir = () => {
+		return '';
+		var scriptPath = '';
+		try {
+			//Throw an error to generate a stack trace
+			throw new Error();
+		}
+		catch(e) {
+			console.log(e, e.stack);
+			//Split the stack trace into each line
+			var stackLines = e.stack.split('\n');
+			console.log(stackLines);
+			var callerIndex = 0;
+			//Now walk though each line until we find a path reference
+			for(var i in stackLines){
+				if(!stackLines[i].match(/(?:https?|file):\/\//)) continue;
+				//We skipped all the lines with out an http so we now have a script reference
+				//This one is the class constructor, the next is the getScriptPath() call
+				//The one after that is the user code requesting the path info (so offset by 2)
+				callerIndex = Number(i) + 2;
+				break;
+			}
+			//Now parse the string for each section we want to return
+			pathParts = stackLines[callerIndex].match(/((?:https?|file):\/\/.+\/)([^\/]+\.js)/);
+			return pathParts[1];
+		}
+	};
 }
 
+getConfig = adapterName => {
+	return (config && config[adapterName]) || {};
+};
+
 importTest = ( name, modulePath ) => {
-	const stackItem = stackTrace.get()[1];
-	const fullPath = `${ path.dirname( stackItem.getFileName()) }/${ modulePath }`;
+	const fullPath = 'undefined' === typeof window ? path.resolve(getCurrentDir(), modulePath) : modulePath;
 	describe( name, () => {
 		require( fullPath );
 	});
 };
-getConfig = adapterName => {
-	return config[adapterName] || {};
+
+l = require( 'lodash' );
+c = require( 'check-types' );
+CheckTypes = c;
+const chai = require( 'chai' );
+assert = chai.assert;
+expect = chai.expect;
+SequentialEvent = require( 'sequential-event' );
+Promise = require( 'bluebird' );
+
+style = {
+	white: 'undefined' === typeof window ? chalk.underline.white : v => v,
+	bold: 'undefined' === typeof window ? chalk.bold : v => v,
 };
+
 chai.use(function (_chai, utils) {
 	utils.addProperty(chai.Assertion.prototype, 'set', function () {
 		var obj = utils.flag(this, 'object');
@@ -62,7 +104,9 @@ chai.use(function (_chai, utils) {
 				expect(entity).to.be.an('object');
 				expect(entity.idHash).to.be.an('object').that.have.property(adapter.name, entity.id);
 				expect(entity).to.include.all.keys('id', 'idHash');
-				expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${adapter.baseName}Entity` );
+				if('undefined' === typeof window){
+					expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${adapter.baseName}Entity` );
+				}
 				l.forEach(props, (val, key) => {
 					if(c.undefined(val)){
 						expect(entity).to.satisfy(obj => {
@@ -72,7 +116,6 @@ chai.use(function (_chai, utils) {
 						expect(entity).to.have.property(key, val);
 					}
 				});
-				valid = true;
 			} catch(e){
 				return e;
 			}

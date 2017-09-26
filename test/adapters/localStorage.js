@@ -1,56 +1,38 @@
 'use strict';
 
-const LocalStorage = require('node-localstorage').LocalStorage;
-const fs = require('fs');
+(() => {
+	const ADAPTER_LABEL = 'localstorage';
+	const adapterConfig = getConfig(ADAPTER_LABEL);
 
-const ADAPTER_LABEL = 'localstorage';
-const adapterConfig = getConfig(ADAPTER_LABEL);
-if(!adapterConfig.data_dir){
-	return it('LocalStorage adapter unconfigured', function(){
-		this.skip();
-	});
-}
+	if('undefined' === typeof window){
+		if(!adapterConfig.data_dir){
+			it('LocalStorage adapter unconfigured', function(){
+				this.skip();
+			});
+		}
 
-const localStorageDir = adapterConfig.data_dir;
-if('undefined' === typeof window){
-	try{
-		const dataDir = path.resolve(__dirname, '../../', localStorageDir);
-		/**
-	 * @see https://stackoverflow.com/a/32197381/4839162
-	 */
-		const deleteFolderRecursive = path => {
-			if (fs.existsSync(path)) {
-				fs.readdirSync(path).forEach(file => {
-					const curPath = path + "/" + file;
-
-					if (fs.lstatSync(curPath).isDirectory()) {
-						// recurse
-						deleteFolderRecursive(curPath);
-					} else { 
-						// delete file
-						fs.unlinkSync(curPath);
-					}
-				});
-				fs.rmdirSync(path);
-			}
-		};
-		deleteFolderRecursive(dataDir);
-	} catch(e){
-		console.error(e);
+		const LocalStorage = require('node-localstorage').LocalStorage;
+		const fs = require('fs');
+		const localStorageDir = adapterConfig.data_dir;
+		global.localStorage = new LocalStorage(localStorageDir);
+		localStorage.clear();
+	} else {
+		localStorage.clear();
+		sessionStorage.clear();
 	}
-	global.localStorage = new LocalStorage(localStorageDir);
-}
 
-const AdapterTestUtils = require('./utils');
+	var AdapterTestUtils = require('./utils');
 
-AdapterTestUtils.createDataSource(ADAPTER_LABEL, {});
-AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'LocalStorage');
-AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);
-AdapterTestUtils.checkApplications(ADAPTER_LABEL);
-AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'localStorage');
-if('undefined' !== typeof window){
-	AdapterTestUtils.createDataSource(ADAPTER_LABEL, {session: true});
-	AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'SessionStorage');
-	AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);
-	AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'sessionStorage');
-}
+	AdapterTestUtils.createDataSource(ADAPTER_LABEL, {}, 'localStorage');
+	AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'LocalStorage', 'localStorage');
+	AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL, 'localStorage');
+	AdapterTestUtils.checkApplications(ADAPTER_LABEL, 'localStorage');
+	AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'localStorage', 'localStorage');
+	if('undefined' !== typeof window){
+		AdapterTestUtils.createDataSource(ADAPTER_LABEL, {session: true}, 'sessionStorage');
+		AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'SessionStorage', 'sessionStorage');
+		AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL, 'sessionStorage');
+		AdapterTestUtils.checkApplications(ADAPTER_LABEL, 'sessionStorage');
+		AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'sessionStorage', 'sessionStorage');
+	}
+})();
