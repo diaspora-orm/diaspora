@@ -4,7 +4,7 @@ var path = require('path');
 
 describe("testing javascript in the browser", function() {
 	beforeEach(function() {
-//		this.timeout = 10000;
+		this.timeout = 10000;
 		let ret;
 		if (process.env.SAUCE_USERNAME != undefined) {
 			this.browser = new webdriver.Builder()
@@ -30,6 +30,7 @@ describe("testing javascript in the browser", function() {
 	});
 
 	afterEach(function() {
+		this.timeout = 10000;
 		return this.browser.quit();
 	});
 
