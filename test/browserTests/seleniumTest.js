@@ -53,7 +53,12 @@ describe("Test Diaspora in the browser", function() {
 				};
 				request.put( url, args, (err, ...others) => {
 					return browser.getSession().then(function (session) {
-						console.log('SauceOnDemandSessionID=' + session.getId() + ' job-name=' + jobName, session);
+						var printSessionId = function (jobName) {
+							browser.getSession().then(function (session) {
+								console.log('SauceOnDemandSessionID=' + session.getId() + ' job-name=' + jobName, session);
+							});
+						}
+						printSessionId(args.json.name);
 					}).then(() => {
 						return browser.quit().then(() => {
 							console.log({url, args, err, others, env: process.env});
