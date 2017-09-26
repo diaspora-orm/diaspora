@@ -17,8 +17,14 @@ module Jekyll
 				if page.url.start_with?(basetree)
 					stripedUrl = page.url.sub(basetree, '').sub('.html', '');
 					title = page['title'];
-					segments = stripedUrl.split('.');
-					if segments.length > 1 && segments.last == 'list'
+					splitter = nil;
+					if basetree == '/jsdoc/'
+						splitter = '.'
+					else
+						splitter = '/'
+					end
+					segments = stripedUrl.split(splitter);
+					if basetree == '/jsdoc/' && segments.length > 1 && segments.last == 'list'
 						segments.pop(1)
 					end
 					segsCount = segments.length;
@@ -33,6 +39,10 @@ module Jekyll
 								subtree['children'][segmentUp] = {}
 							end
 							subtree = subtree['children'][segmentUp];
+							if basetree == '/jsdoc/'
+							else
+								subtree['page'] = {'title' => segment}
+							end
 							if segment == segments.last
 								subtree['page'] = page;
 							end

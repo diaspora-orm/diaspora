@@ -1231,7 +1231,7 @@ $padTop: 45px;
 			margin: 0;
 		}
 	}
-	
+
 	&.col-md-3{
 		top: $padTop;
 		max-height: calc(100% - #{$padTop + 2px});
@@ -1359,6 +1359,11 @@ body.docpage{
 section{
 	float: none;
 }
+.pilwrap {
+	float: left;
+	width: 0;
+	margin-left: -13px;
+}
 
 // Per page
 
@@ -1372,6 +1377,99 @@ section{
 		}
 	}
 }
+
+.doccopage {
+	h1{
+		color: #f8f8f8;
+	}
+	table td, table th {
+		word-break: normal;
+	}
+	.code_stats th {
+		font-size: 14px;
+	}
+	.wrapper {
+		padding-left: 0;
+		margin-top: 44px;
+		flex-direction: column;
+
+		footer{
+			float: none;
+			position: static;
+			width: auto;
+			text-align: center;
+			padding: 0;
+			margin: 0;
+
+			p{
+				margin: 0;
+			}
+		}
+	}
+	#container{
+		max-height: calc(100vh - 70px);
+
+		> table{
+			margin: 0;
+		}
+	}
+	#content {
+		padding-right: 0;
+
+		> section{
+			padding: 0;
+		}
+	}
+	tr.section > td {
+		border-top: 1px solid #ddd;
+		padding: 5px;
+	}
+	td.docs {
+		padding-left: 25px;
+		padding-top: 0;
+		vertical-align: top;
+
+		.dox_tag_title{
+			font-weight: bold;
+		}
+		td{
+			vertical-align: middle;
+			p {
+				margin: 0;
+				text-align: justify;
+			}
+		}
+		p:last-child {
+			margin: 0;
+		}
+	}
+	td.code {
+		background: #eee;
+
+		.highlight, pre{
+			background: none;
+			border:none;
+			margin:0;
+		}
+		.highlight > pre > span{
+			display: block;
+			width: 100%;
+			padding-left: 5px;
+			box-sizing: border-box;
+
+			&:nth-child(even) {
+				background-color: #e6e6e6;
+			}
+		}
+		&, .highlight, pre{
+			padding: 0!important;
+		}
+	}
+	table.readme .code{
+		padding: 10px!important;
+	}
+}
+
 
 @media print, screen and (max-width: 960px){
 	header, section, footer {

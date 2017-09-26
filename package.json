@@ -26,10 +26,10 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chalk": "^2.1.0",
+    "diaspora_doc": "git+https://github.com/GerkinDev/DiasporaDoc.git",
     "docco-husky": "git+https://github.com/GerkinDev/docco-husky.git",
     "grunt": "^1.0.1",
     "grunt-changed": "^1.1.1",
-    "grunt-contrib-concat": "^1.0.1",
     "grunt-docco-husky": "git+https://github.com/GerkinDev/grunt-docco-husky.git",
     "grunt-jsdoc": "^2.1.1",
     "grunt-markdown": "^0.7.0",

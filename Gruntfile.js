@@ -8,9 +8,9 @@ module.exports = function gruntInit( grunt ) {
 	// Project configuration.
 
 	const baseDocPath = 'site';
-	const doccoPath = `${baseDocPath}/docco`;
-	const jsdocPath = `${baseDocPath}/jsdoc`;
-	const jsAssets = 'lib/adapters/baseAdapter.js' || [
+	const doccoPath = `${ baseDocPath }/docco`;
+	const jsdocPath = `${ baseDocPath }/jsdoc`;
+	const jsAssets = /*['lib/adapters/baseAdapter.js'] ||*/ [
 		'Gruntfile.js',
 		'diaspora.js',
 		'lib/**/*.js',
@@ -38,41 +38,23 @@ module.exports = function gruntInit( grunt ) {
 			},
 		},
 		docco_husky: {
-			project_name: 'Diaspora',
-			output_dir: doccoPath,
-			readme: 'README-docco.md',
-			//template_dir: 'node_modules/jekyll-docco-husky/template',
-			files:        {
+			files: {
 				expand: true,
 				src:    jsAssets,
 			},
-			// Project name, output path, etc etc have to be configured in package.json
+			output_dir:   doccoPath,
+			project_name: 'Diaspora',
+			template_dir: 'node_modules/diaspora_doc/docco',
+			readme:       'README-docco.md',
 		},
 		jsdoc: {
 			src:     jsAssets,
 			options: {
 				private:     true,
 				destination: jsdocPath,
-				config:	     'site/jsdoc.json',
-				template:    './node_modules/ink-docstrap/template2',
+				plugins:     [ 'plugins/markdown' ],
+				template:    'node_modules/diaspora_doc/jsdoc',
 				readme:      'README-jsdoc.md',
-			},
-		},
-		concat: {
-			dist: {
-				expand: true,
-				src: [
-					`${ doccoPath }/**/*.html`,
-				],
-				dest: './',
-			},
-			options: {
-				banner: `---
-layout: docpage
-#title: Home
-toc: false
----
-`,
 			},
 		},
 		/*		markdown: {
@@ -107,18 +89,15 @@ toc: false
 	grunt.loadNpmTasks( 'grunt-docco-husky' );
 	grunt.loadNpmTasks( 'grunt-markdown' );
 	grunt.loadNpmTasks( 'gruntify-eslint' );
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-changed');
+	grunt.loadNpmTasks( 'grunt-changed' );
 
 	require( 'load-grunt-tasks' )( grunt );
 
 	grunt.registerTask(
 		'documentate',
 		[
-			//			'markdown:index',
 			'jsdoc',
 			'docco_husky',
-			'concat',
 		]
 	);
 	grunt.registerTask(

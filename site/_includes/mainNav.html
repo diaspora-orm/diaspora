@@ -20,7 +20,13 @@
 					{% endfor %}
 				</ul>
 			</li>
-			<li id="QCR"><a href="{{ 'docco/index.html' | relative_path_to_root }}">Quick Code Review</a></li>
+			<li id="QCR" class="dropdown">
+				<a href="{{ 'docco/index.html' | relative_path_to_root }}" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Quick Code Review<b class="caret"></b></a>
+				{% assign treeData = site.pages | to_tree base:'/docco/' %}
+				<ul class="dropdown-menu">
+					{% include jsdocNavtree.html treeData=treeData %}
+				</ul>
+			</li>
 			<li id="API" class="dropdown">
 				<a href="{{ 'jsdoc/index.html' | relative_path_to_root }}" class="dropdown-toggle long" data-toggle="dropdown" aria-expanded="false">API Documentation<b class="caret"></b></a>
 				<a href="{{ 'jsdoc/index.html' | relative_path_to_root }}" class="dropdown-toggle short" data-toggle="dropdown" aria-expanded="false">API<b class="caret"></b></a>

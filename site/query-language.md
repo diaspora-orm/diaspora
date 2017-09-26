@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Query Language
+description: Learn how to write find, delete or update queries. Check how to use each operations, and master the Diaspora's Query Language.
 toc: true
 inMenu: true
 ---
@@ -12,7 +13,7 @@ inMenu: true
 Match queries are used when you use `find`, `update` or `delete` operations.
 
 <div class="note info">
-Numbers in parenthesis in name indicates the Query Language Specification Level. Check your adapters' documentation to see the level supported by adapters you use.
+Numbers in parenthesis in operations' name indicates the Query Language Specification Level. Check your adapters' documentation to see the level supported by adapters you use.
 </div>
 
 ### Match all ^\(1\)

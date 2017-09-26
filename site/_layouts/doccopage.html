@@ -8,13 +8,14 @@
 		<link href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="{{ 'assets/css/style.css?v='|append: site.github.build_revision|relative_path_to_root }}">
 		<script src="{{ 'assets/js/docstrap.lib.js'|relative_path_to_root }}" defer></script>
+		<script src="{{ 'assets/js/tableHeadFixer.js'|relative_path_to_root }}" defer></script>
 		<script src="{{ 'assets/js/scale.fix.js'|relative_path_to_root }}" defer></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 		<!--[if lt IE 9]>
 <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 	</head>
-	<body data-page="{{ page.url }}" class="docpage">
+	<body data-page="{{ page.url }}" class="doccopage">
 		{% include mainNav.html %}
 		<div class="wrapper">
 
@@ -22,18 +23,13 @@
 				<section>
 					{{ content }}
 				</section>
-				{% if page.toc %}
-				<div id="toc">
-					{{ content | toc_only }}
-				</div>
-				{% endif %}
 			</div>
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
 			</footer>
 		</div>
-		<!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		<!--[if !IE]><script defer>fixScale(document);</script><![endif]-->
 		{% include trackers.html %}
 		<script>
 			/**

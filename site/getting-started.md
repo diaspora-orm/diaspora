@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Getting started
+description: Get started with Diaspora NodeJS & Browser ORM in 5 minutes. These quick steps will help you to create your own models on your own data-sources.
 inMenu: true
 toc: true
 ---
