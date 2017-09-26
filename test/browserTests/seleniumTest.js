@@ -39,6 +39,7 @@ describe("Test Diaspora in the browser", function() {
 			const request = require('request');
 
 			return new Promise((resolve, reject) => {
+				const url = `https://saucelabs.com/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${process.env.TRAVIS_JOB_NUMBER}`;
 				const args = {
 					json: {
 						passed,
@@ -50,9 +51,9 @@ describe("Test Diaspora in the browser", function() {
 						sendImmediately: false
 					},
 				};
-				request.put( `https://saucelabs.com/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${process.env.TRAVIS_JOB_NUMBER}`, args, (err, ...others) => {
+				request.put( url, args, (err, ...others) => {
 					return browser.quit().then(() => {
-						console.log({args, err, others});
+						console.log({url, args, err, others});
 						if(err){
 							console.error(err);
 							return reject(err);
