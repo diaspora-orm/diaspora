@@ -2,328 +2,330 @@
 
 /* globals l: false, c: false */
 
-global.Diaspora = require('../diaspora');
-global.dataSources = {};
 require('./defineGlobals');
 
-describe( '"check" feature', () => {
-	it( 'Basic tests with types', () => {
-		expect( Diaspora.check({
-			test: 'string',
-		}, {
-			test: {
-				type: 'any',
-			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			test: 1,
-		}, {
-			test: {
-				type: 'any',
-			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			string: 'string',
-			number: 1,
-			float:  1.5,
-		}, {
-			string: {
-				type: 'string',
-			},
-			number: {
-				type: 'integer',
-			},
-			float: {
-				type: 'float',
-			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			object: {
+if(process.env.SAUCE_ONLY !== 'true'){
+	global.Diaspora = require('../diaspora');
+	global.dataSources = {};
+	describe( '"check" feature', () => {
+		it( 'Basic tests with types', () => {
+			expect( Diaspora.check({
+				test: 'string',
+			}, {
+				test: {
+					type: 'any',
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				test: 1,
+			}, {
+				test: {
+					type: 'any',
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
 				string: 'string',
-			},
-			objectUndef: {
-				aze: 'hello',
-			},
-			array: [
-				1, 2, 3,
-			],
-			arrayUndef: [
-				1, 'aze', false, {},
-			],
-			arrayMultiDef: [
-				1, 'aze', 1.5,
-			],
-		}, {
-			object: {
-				type:       'object',
-				attributes: {
-					string: {
-						type: 'string',
-					},
+				number: 1,
+				float:  1.5,
+			}, {
+				string: {
+					type: 'string',
 				},
-			},
-			objectUndef: {
-				type: 'object',
-			},
-			array: {
-				type: 'array',
-				of:   {
+				number: {
 					type: 'integer',
 				},
-			},
-			arrayUndef: {
-				type: 'array',
-			},
-			arrayMultiDef: {
-				type: 'array',
-				of:   [
-					{
-						type: 'float',
-					},
-					{
-						type: 'string',
-					},
+				float: {
+					type: 'float',
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				object: {
+					string: 'string',
+				},
+				objectUndef: {
+					aze: 'hello',
+				},
+				array: [
+					1, 2, 3,
 				],
-			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			object: {
-				string: null,
-			},
-			objectUndef: {
-				aze: null,
-			},
-			array: [
-				null,
-			],
-			arrayUndef: [
-				1, 'aze', false, null,
-			],
-			arrayMultiDef: [
-				1, 'aze', 1.5, null,
-			],
-		}, {
-			object: {
-				type:       'object',
-				attributes: {
-					string: {
-						type: 'string',
-					},
-				},
-			},
-			objectUndef: {
-				type: 'object',
-			},
-			array: {
-				type: 'array',
-				of:   {
-					type: 'integer',
-				},
-			},
-			arrayUndef: {
-				type: 'array',
-			},
-			arrayMultiDef: {
-				type: 'array',
-				of:   [
-					{
-						type: 'float',
-					},
-					{
-						type: 'string',
-					},
+				arrayUndef: [
+					1, 'aze', false, {},
 				],
-			},
-		})).to.be.empty;
-	});
-	it( '"required" property', () => {
-		expect( Diaspora.check({
-			test: 1,
-		}, {
-			test: {
-				type:     'any',
-				required: true,
-			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			test: 'string',
-		}, {
-			test: {
-				type:     'any',
-				required: true,
-			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			test: null,
-		}, {
-			test: {
-				type:     'any',
-				required: true,
-			},
-		})).to.be.not.empty;
-		expect( Diaspora.check({
-			test: 'a',
-		}, {
-			test: {
-				type:     'any',
-				required: true,
-			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			object: {
-				string: null,
-			},
-		}, {
-			object: {
-				type:       'object',
-				attributes: {
-					string: {
-						type:     'string',
-						required: true,
+				arrayMultiDef: [
+					1, 'aze', 1.5,
+				],
+			}, {
+				object: {
+					type:       'object',
+					attributes: {
+						string: {
+							type: 'string',
+						},
 					},
 				},
-			},
-		})).to.be.not.empty;
-		expect( Diaspora.check({
-			object: null,
-		}, {
-			object: {
-				type:       'object',
-				required:   true,
-				attributes: {
-					string: {
-						type: 'string',
+				objectUndef: {
+					type: 'object',
+				},
+				array: {
+					type: 'array',
+					of:   {
+						type: 'integer',
 					},
 				},
-			},
-		})).to.be.not.empty;
-		expect( Diaspora.check({
-			object: null,
-		}, {
-			object: {
-				type:       'object',
-				attributes: {
-					string: {
-						type:     'string',
-						required: true,
+				arrayUndef: {
+					type: 'array',
+				},
+				arrayMultiDef: {
+					type: 'array',
+					of:   [
+						{
+							type: 'float',
+						},
+						{
+							type: 'string',
+						},
+					],
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				object: {
+					string: null,
+				},
+				objectUndef: {
+					aze: null,
+				},
+				array: [
+					null,
+				],
+				arrayUndef: [
+					1, 'aze', false, null,
+				],
+				arrayMultiDef: [
+					1, 'aze', 1.5, null,
+				],
+			}, {
+				object: {
+					type:       'object',
+					attributes: {
+						string: {
+							type: 'string',
+						},
 					},
 				},
-			},
-		})).to.be.empty;
-		expect( Diaspora.check({}, {
-			rand: {
-				type:     'number',
-				required: true,
-			},
-		})).to.be.not.empty;
-		expect( Diaspora.check({
-			rand: null,
-		}, {
-			rand: {
-				type:     'integer',
-				required: true,
-			},
-		})).to.be.not.empty;
-		expect( Diaspora.check({
-			rand: l.random( 0, 100 ),
-		}, {
-			rand: {
-				type:     'integer',
-				required: true,
-			},
-		})).to.be.empty;
+				objectUndef: {
+					type: 'object',
+				},
+				array: {
+					type: 'array',
+					of:   {
+						type: 'integer',
+					},
+				},
+				arrayUndef: {
+					type: 'array',
+				},
+				arrayMultiDef: {
+					type: 'array',
+					of:   [
+						{
+							type: 'float',
+						},
+						{
+							type: 'string',
+						},
+					],
+				},
+			})).to.be.empty;
+		});
+		it( '"required" property', () => {
+			expect( Diaspora.check({
+				test: 1,
+			}, {
+				test: {
+					type:     'any',
+					required: true,
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				test: 'string',
+			}, {
+				test: {
+					type:     'any',
+					required: true,
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				test: null,
+			}, {
+				test: {
+					type:     'any',
+					required: true,
+				},
+			})).to.be.not.empty;
+			expect( Diaspora.check({
+				test: 'a',
+			}, {
+				test: {
+					type:     'any',
+					required: true,
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				object: {
+					string: null,
+				},
+			}, {
+				object: {
+					type:       'object',
+					attributes: {
+						string: {
+							type:     'string',
+							required: true,
+						},
+					},
+				},
+			})).to.be.not.empty;
+			expect( Diaspora.check({
+				object: null,
+			}, {
+				object: {
+					type:       'object',
+					required:   true,
+					attributes: {
+						string: {
+							type: 'string',
+						},
+					},
+				},
+			})).to.be.not.empty;
+			expect( Diaspora.check({
+				object: null,
+			}, {
+				object: {
+					type:       'object',
+					attributes: {
+						string: {
+							type:     'string',
+							required: true,
+						},
+					},
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({}, {
+				rand: {
+					type:     'number',
+					required: true,
+				},
+			})).to.be.not.empty;
+			expect( Diaspora.check({
+				rand: null,
+			}, {
+				rand: {
+					type:     'integer',
+					required: true,
+				},
+			})).to.be.not.empty;
+			expect( Diaspora.check({
+				rand: l.random( 0, 100 ),
+			}, {
+				rand: {
+					type:     'integer',
+					required: true,
+				},
+			})).to.be.empty;
+		});
+		it( '"enum" property', () => {
+			expect( Diaspora.check({
+				test: 1,
+			}, {
+				test: {
+					type: 'any',
+					enum: [ 1, 2, 'aze' ],
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				test: 'string',
+			}, {
+				test: {
+					type: 'string',
+					enum: [ 'string', 'hello' ],
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				test: 'string',
+			}, {
+				test: {
+					type: 'string',
+					enum: [ 'hello', 'world' ],
+				},
+			})).to.be.not.empty;
+			expect( Diaspora.check({
+				test: 'string',
+			}, {
+				test: {
+					type: 'string',
+					enum: [ 'hello', /^str/ ],
+				},
+			})).to.be.empty;
+			expect( Diaspora.check({
+				test: 'string',
+			}, {
+				test: {
+					type: 'string',
+					enum: [ 'hello', /^wo/ ],
+				},
+			})).to.be.not.empty;
+		});
 	});
-	it( '"enum" property', () => {
-		expect( Diaspora.check({
-			test: 1,
+	it( '"default" feature', () => {
+		expect( Diaspora.default({
+			aze: 123,
 		}, {
-			test: {
-				type: 'any',
-				enum: [ 1, 2, 'aze' ],
+			foo: {
+				type:    'text',
+				default: 'bar',
 			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			test: 'string',
+		})).to.deep.equal({
+			aze: 123,
+			foo: 'bar',
+		});
+		const now = l.now();
+		expect( Diaspora.default({
+			aze: 123,
 		}, {
-			test: {
-				type: 'string',
-				enum: [ 'string', 'hello' ],
+			foo: {
+				type:    'datetime',
+				default: () => now,
 			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			test: 'string',
+		})).to.deep.equal({
+			aze: 123,
+			foo: now,
+		});
+		expect( Diaspora.default({
+			aze: 'baz',
 		}, {
-			test: {
-				type: 'string',
-				enum: [ 'hello', 'world' ],
+			aze: {
+				type:    'text',
+				default: 'bar',
 			},
-		})).to.be.not.empty;
-		expect( Diaspora.check({
-			test: 'string',
+		})).to.deep.equal({
+			aze: 'baz',
+		});
+		expect( Diaspora.default({
+			aze: 'baz',
 		}, {
-			test: {
-				type: 'string',
-				enum: [ 'hello', /^str/ ],
+			aze: {
+				type:    'datetime',
+				default: () => 'bar',
 			},
-		})).to.be.empty;
-		expect( Diaspora.check({
-			test: 'string',
-		}, {
-			test: {
-				type: 'string',
-				enum: [ 'hello', /^wo/ ],
-			},
-		})).to.be.not.empty;
+		})).to.deep.equal({
+			aze: 'baz',
+		});
 	});
-});
-it( '"default" feature', () => {
-	expect( Diaspora.default({
-		aze: 123,
-	}, {
-		foo: {
-			type:    'text',
-			default: 'bar',
-		},
-	})).to.deep.equal({
-		aze: 123,
-		foo: 'bar',
-	});
-	const now = l.now();
-	expect( Diaspora.default({
-		aze: 123,
-	}, {
-		foo: {
-			type:    'datetime',
-			default: () => now,
-		},
-	})).to.deep.equal({
-		aze: 123,
-		foo: now,
-	});
-	expect( Diaspora.default({
-		aze: 'baz',
-	}, {
-		aze: {
-			type:    'text',
-			default: 'bar',
-		},
-	})).to.deep.equal({
-		aze: 'baz',
-	});
-	expect( Diaspora.default({
-		aze: 'baz',
-	}, {
-		aze: {
-			type:    'datetime',
-			default: () => 'bar',
-		},
-	})).to.deep.equal({
-		aze: 'baz',
-	});
-});
 
-importTest(chalk.bold.underline.blue('Adapters'), './adapters/index.js');
-//importTest(chalk.bold.underline.blue('Models'), './models/index.js');
+	importTest(chalk.bold.underline.blue('Adapters'), './adapters/index.js');
+	//importTest(chalk.bold.underline.blue('Models'), './models/index.js');
+}
 
 if(process.env.NO_SAUCE !== 'true'){
 	require('./browserTests/seleniumTest.js');
