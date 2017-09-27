@@ -10,7 +10,7 @@ const getTestPath = fileName => {
 }
 const SauceLabs = require('saucelabs');
 
-describe("Test Diaspora in the browser", function() {
+describe(`Test Diaspora in the browser (${process.env.BROWSER_NAME || 'chrome'})`, function() {
 	this.timeout(20000);
 	let browser;
 	let passed;
