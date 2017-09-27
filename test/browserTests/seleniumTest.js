@@ -18,18 +18,19 @@ describe("Test Diaspora in the browser", function() {
 		passed = false;
 		if (process.env.SAUCE_USERNAME != undefined) {
 			browser = new webdriver.Builder()
+				.forBrowser(process.env.BROWSER_NAME)
 				.usingServer('http://'+ process.env.SAUCE_USERNAME+':'+process.env.SAUCE_ACCESS_KEY+'@ondemand.saucelabs.com:80/wd/hub')
 				.withCapabilities({
 				'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
 				build: process.env.TRAVIS_BUILD_NUMBER,
 				username: process.env.SAUCE_USERNAME,
 				accessKey: process.env.SAUCE_ACCESS_KEY,
-				browserName: "chrome"
+				browserName: process.env.BROWSER_NAME
 			}).build();
 		} else {
 			browser = new webdriver.Builder()
 				.withCapabilities({
-				browserName: process.env.BROWSER_NAME
+				browserName: "chrome"
 			}).build();
 		}
 	});

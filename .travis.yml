@@ -13,8 +13,10 @@ matrix:
       env: NO_SAUCE=true
     - node_js: "7"
       env: NO_SAUCE=true
-env:
-  global: SAUCE_USERNAME=Gerkin SAUCE_ACCESS_KEY=bcc962ee-af76-4e36-bf15-ce3cbbbb5b8c
+env: 
+  global:
+    - SAUCE_USERNAME=Gerkin
+	- SAUCE_ACCESS_KEY=bcc962ee-af76-4e36-bf15-ce3cbbbb5b8c
 notifications:
   slack:
     rooms:
