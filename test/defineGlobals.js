@@ -85,8 +85,7 @@ chai.use(function (_chai, utils) {
 			'expected #{this} to not be a collection');
 		utils.flag(this, 'collection', true);
 	});
-	utils.addProperty(chai.Assertion.prototype, 'of', function () {
-	});
+	utils.addProperty(chai.Assertion.prototype, 'of', function () {});
 	utils.addChainableMethod(chai.Assertion.prototype, 'boolean', function checkBool(){
 		const elem = this._obj;
 		const collection = utils.flag(this, 'collection');
@@ -99,7 +98,8 @@ chai.use(function (_chai, utils) {
 	utils.addChainableMethod(chai.Assertion.prototype, 'dataStoreEntity', function checkDataStoreEntity(adapter, properties){
 		const data = this._obj;
 		const collection = utils.flag(this, 'collection');
-		const check = (entity, props) => {
+		utils.flag(this, 'entityType', 'dataStoreEntity');
+		const check = (entity, props = {}) => {
 			try{
 				expect(entity).to.be.an('object');
 				expect(entity.idHash).to.be.an('object').that.have.property(adapter.name, entity.id);
@@ -138,8 +138,81 @@ chai.use(function (_chai, utils) {
 		}
 		this.assert(
 			!errorOut,
-			`expected #{this} to be a ${collection ? 'collection of ' : '' }AdapterEntity: failed because of ${errorOut}`,
-			`expected #{this} to not be a ${collection ? 'collection of ' : '' }AdapterEntity: failed because of ${errorOut}`
+			`expected #{this} to be a ${collection ? 'collection of ' : '' }DataStoreEntity: failed because of ${errorOut}`,
+			`expected #{this} to not be a ${collection ? 'collection of ' : '' }DataStoreEntity: failed because of ${errorOut}`
+		);
+	});
+	utils.addChainableMethod(chai.Assertion.prototype, 'entity', function checkDataStoreEntity(model, properties, orphan = null){
+		const data = this._obj;
+		const collection = utils.flag(this, 'collection');
+		utils.flag(this, 'entityType', 'entity');
+		const check = (entity, props = {}) => {
+			try{
+				expect(entity.model).to.equal(model);
+				var dataSource = typeof orphan === 'string' ? orphan : false;
+				orphan = dataSource ? false : orphan;
+				switch(orphan){
+					case true:{
+						expect( entity.getState(), 'Entity should be orphan').to.equal( 'orphan' );
+					} break;
+
+					case false:{
+						expect( entity.getState(), 'Entity should not be orphan').to.not.equal( 'orphan' );
+					} break;
+
+					default: {
+						orphan = entity.getState() === 'orphan';
+					} break;
+							 }
+				if(orphan){
+					expect( entity.getLastDataSource(), 'Orphans should not have a last data source').to.be.eql( null );
+					expect( entity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
+					expect( entity, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
+				} else {
+					if(dataSource){
+						expect( entity.getLastDataSource()).to.be.eql( dataSource );
+					} else{
+						expect( entity.getLastDataSource(), 'Non orphans should have a last data source').to.be.not.eql( null );
+					}
+					expect( entity, 'id should be a defined value on non-orphan items' ).to.be.an( 'object' ).that.have.property( 'id' );
+					expect( entity, 'idHash should be a hash on non-orphan items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+				}
+				expect( entity ).to.respondTo( 'persist' );
+				expect( entity ).to.respondTo( 'toObject' );
+				const toObj = entity.toObject();
+				l.forEach(props, (val, key) => {
+					if(c.undefined(val)){
+						expect(toObj).to.satisfy(obj => {
+							return c.undefined(obj[key]) || !obj.hasOwnProperty(key);
+						});
+					} else {
+						expect(toObj).to.have.property(key, val);
+					}
+				});
+			} catch(e){
+				return e;
+			}
+		}
+		let errorOut;
+		if(collection){
+			if(c.array(properties) && properties.length === data.length){
+				l.forEach(data, (entity, index) => {
+					errorOut = check(entity, properties[index]);
+					return !errorOut;
+				})
+			} else {
+				l.forEach(data, entity => {
+					errorOut = check(entity, properties);
+					return !errorOut;
+				})
+			}
+		} else {
+			errorOut = check(data, properties);
+		}
+		this.assert(
+			!errorOut,
+			`expected #{this} to be a${collection ? ' collection of' : 'n' } Entity: failed because of ${errorOut}`,
+			`expected #{this} to not be a${collection ? ' collection of' : 'n' } Entity: failed because of ${errorOut}`
 		);
 	});
 });

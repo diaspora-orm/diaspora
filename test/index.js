@@ -324,7 +324,7 @@ if(process.env.SAUCE_ONLY !== 'true'){
 	});
 
 	importTest(chalk.bold.underline.blue('Adapters'), './adapters/index.js');
-	//importTest(chalk.bold.underline.blue('Models'), './models/index.js');
+	importTest(chalk.bold.underline.blue('Models'), './models/index.js');
 }
 
 if(process.env.NO_SAUCE !== 'true'){

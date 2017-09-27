@@ -18,7 +18,7 @@ First, install the package (and add it to your project's *dependencies*)
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="npm">
-<h3>With NPM</h3>
+<h4>With NPM</h4>
 {% highlight shell %}
 npm install --save diaspora
 {% endhighlight %}
@@ -34,15 +34,54 @@ npm install --save diaspora
 
 Once installed, simply load it using *Node*'s `require`
 
-```javascript
+{% highlight javascript %}
 const Diaspora = require( 'diaspora' );
-```
+{% endhighlight %}
 
 ### For the browser
 
-<div class="note warning">
-Diaspora is not yet ready to be used in the browser. Come back later
-</div>
+Diaspora is built in 2 versions:
+
+#### Standalone
+
+This build contains Diaspora and all of its dependencies, packaged in a single (*big*) script file. You may prefer to use this file if you want to load Diaspora on every page of your site, or if you don't want to worry with loading each dependencies.
+
+> This build export following libraries:
+>
+>  * `lodash` as `_`
+>  * `bluebird` as `Promise`
+>  * `check-types` as `c`
+>  * `sequential-event` as `SequentialEvent`
+
+{% highlight html %}
+<html>
+	<head><!-- Your document's `head` --></head>
+	<body>
+		<!-- Your page content -->
+		<script type="text/javascript" src="diaspora.min.js"></script>
+		<script type="text/javascript" src="..."></script><!-- Load here your main page script. -->
+	</body>
+</html>
+{% endhighlight %}
+
+#### Isolated
+
+This version, much lighter, requires that you load each dependencies before loading Diaspora. You may use this version if you use Diaspora on some pages only, but you want some libraries (such as `lodash` or `bluebird`) to be loaded everywhere. You'll improve your overall performance by using efficiently the browser cache.
+
+{% highlight html %}
+<html>
+	<head><!-- Your document's `head` --></head>
+	<body>
+		<!-- Your page content -->
+		<script type="text/javascript" src="lodash.min.js"></script>
+		<script type="text/javascript" src="bluebird.min.js"></script>
+		<script type="text/javascript" src="check-types.min.js"></script>
+		<script type="text/javascript" src="sequential-event.min.js"></script>
+		<script type="text/javascript" src="diaspora.min.js"></script>
+		<script type="text/javascript" src="..."></script><!-- Load here your main page script. -->
+	</body>
+</html>
+{% endhighlight %}
 
 ## Use Diaspora
 

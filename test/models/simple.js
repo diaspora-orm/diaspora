@@ -8,7 +8,7 @@ const SOURCE = ([
 	'localStorage',
 	'mongo',
 	'redis',
-])[1];
+])[0];
 it( 'Should create a model', () => {
 	testModel = Diaspora.declareModel( 'test', modelName, {
 		sources:    [ SOURCE ],
@@ -58,65 +58,6 @@ it( 'Should be able to create multiple entities.', () => {
 		foo: undefined,
 	});
 });
-describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
-	it( 'Persist should change the entity', () => {
-		testedEntity = testModel.spawn({
-			foo: 'bar',
-		});
-		expect( testedEntity.getState()).to.be.eql( 'orphan' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( null );
-		expect( testedEntity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
-		expect( testedEntity, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
-		expect( testedEntity ).to.respondTo( 'persist' );
-		const retPromise = testedEntity.persist();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-		return retPromise.then(() => {
-			expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
-			expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-			expect( testedEntity.getState()).to.be.eql( 'sync' );
-			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-			return Promise.resolve();
-		});
-	});
-	it( 'Fetch should change the entity', () => {
-		testedEntity.foo = 'baz';
-		expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
-		expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
-		expect( testedEntity ).to.respondTo( 'fetch' );
-		expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
-		expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-		const retPromise = testedEntity.fetch();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-		return retPromise.then(() => {
-			expect( testedEntity.getState()).to.be.eql( 'sync' );
-			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-			expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
-			expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-			expect( testedEntity, '"foo" should be reset to "bar"' ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
-			return Promise.resolve();
-		});
-	});
-	it( 'Destroy should change the entity', () => {
-		expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
-		expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
-		expect( testedEntity ).to.respondTo( 'destroy' );
-		expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
-		expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-		const retPromise = testedEntity.destroy();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-		return retPromise.then(() => {
-			expect( testedEntity.getState()).to.be.eql( 'orphan' );
-			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-			expect( testedEntity, 'id should be a undefined value or key on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'id' );
-			expect( testedEntity, 'idHash should be undefined on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'idHash' );
-			expect( testedEntity, '"foo" should still be set to "bar"' ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
-			return Promise.resolve();
-		});
-	});
-});
 describe( 'Should be able to use model methods to find, update, delete & create', () => {
 	let entities;
 	describe( '- Create instances', () => {
@@ -150,18 +91,10 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 	describe( '- Find instances', () => {
 		function checkFind( query, many = true ) {
 			return testModel[many ? 'findMany' : 'find']( query ).then( foundEntities => {
-				function checkSingle( entity ) {
-					l.forEach( query, ( val, key ) => {
-						expect( entity ).to.have.property( key ).that.is.equal( val );
-					});
-				}
-
 				if ( many ) {
-					expect( foundEntities ).to.be.an( 'array' );
-					l.forEach( foundEntities, checkSingle );
+					expect( foundEntities ).to.be.a.set.of.entity( testModel, {foo: 'bar'}, SOURCE );
 				} else if(c.assigned(foundEntities)) {
-					expect( foundEntities.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
-					checkSingle( foundEntities );
+					expect( foundEntities ).to.be.an.entity( testModel, {foo: 'bar'}, SOURCE );
 				}
 				return Promise.resolve( foundEntities );
 			});
@@ -172,10 +105,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				{ foo: undefined },
 				{ foo: 'baz' },
 				{ foo: 'bar' },
-			], item => checkFind(item, false ).then(foundItem => {
-				expect(foundItem).to.be.an('object');
-				return Promise.resolve();
-			}));
+			], item => checkFind(item, false ));
 		});
 		it( 'Find multiple instances', () => {
 			expect( testModel ).to.respondTo( 'findMany' );
@@ -302,6 +232,60 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		});
 		it( 'Delete all instances', () => {
 			return testModel.deleteMany({})
+		});
+	});
+});
+describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
+	it( 'Persist should change the entity', () => {
+		testedEntity = testModel.spawn({
+			foo: 'bar',
+		});
+		expect( testedEntity ).to.be.an.entity( testModel, {foo: 'bar'}, true );
+		const retPromise = testedEntity.persist();
+		expect( testedEntity.getState()).to.be.eql( 'syncing' );
+		expect( testedEntity ).to.be.an.entity( testModel, {foo: 'bar'}, SOURCE );
+		return retPromise.then(() => {
+			expect( testedEntity ).to.be.an.entity( testModel, {foo: 'bar'}, false );
+			expect( testedEntity.getState()).to.be.eql( 'sync' );
+			expect( testedEntity ).to.be.an.entity( testModel, {foo: 'bar'}, SOURCE );
+			return Promise.resolve();
+		});
+	});
+	it( 'Fetch should change the entity', () => {
+		testedEntity.foo = 'baz';
+		expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
+		expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
+		expect( testedEntity ).to.respondTo( 'fetch' );
+		expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
+		expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+		const retPromise = testedEntity.fetch();
+		expect( testedEntity.getState()).to.be.eql( 'syncing' );
+		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
+		return retPromise.then(() => {
+			expect( testedEntity.getState()).to.be.eql( 'sync' );
+			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
+			expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
+			expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+			expect( testedEntity, '"foo" should be reset to "bar"' ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
+			return Promise.resolve();
+		});
+	});
+	it( 'Destroy should change the entity', () => {
+		expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
+		expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
+		expect( testedEntity ).to.respondTo( 'destroy' );
+		expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
+		expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+		const retPromise = testedEntity.destroy();
+		expect( testedEntity.getState()).to.be.eql( 'syncing' );
+		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
+		return retPromise.then(() => {
+			expect( testedEntity.getState()).to.be.eql( 'orphan' );
+			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
+			expect( testedEntity, 'id should be a undefined value or key on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'id' );
+			expect( testedEntity, 'idHash should be undefined on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'idHash' );
+			expect( testedEntity, '"foo" should still be set to "bar"' ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
+			return Promise.resolve();
 		});
 	});
 });

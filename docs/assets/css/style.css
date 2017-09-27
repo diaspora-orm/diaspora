@@ -1163,6 +1163,12 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .glyphicon-search:before {
   content: "\e003"; }
 
+.glyphicon-repeat:before {
+  content: "\e030"; }
+
+.glyphicon-remove:before {
+  content: "\e014"; }
+
 .list-group {
   margin-bottom: 20px;
   padding-left: 0; }
@@ -1740,6 +1746,38 @@ section {
   width: 0;
   margin-left: -13px; }
 
+.loader:after {
+  content: '';
+  display: block;
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #D9230F;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite; }
+
+.lazyload {
+  position: relative; }
+  .lazyload.unloaded {
+    height: 140px; }
+    .lazyload.unloaded > * {
+      opacity: 0; }
+    .lazyload.unloaded .loader {
+      display: block;
+      opacity: 1; }
+  .lazyload .loader {
+    display: none;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
 [data-page="/query-language.html"] section h2 {
   margin: 0 0 10px; }
 [data-page="/query-language.html"] #toc .toc-h3 ul {
@@ -1766,6 +1804,8 @@ section {
     word-break: normal;
     border-top: 1px solid #eee;
     border-left: 1px solid #d5d5d5; }
+.trydiaspora #resetData {
+  width: 100%; }
 
 .doccopage h1 {
   color: #f8f8f8; }

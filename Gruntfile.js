@@ -65,15 +65,33 @@ module.exports = function gruntInit( grunt ) {
 				},
 			},
 			standalone: {
-				src:  [ 'diaspora.js' ],
+				src:     [ 'diaspora.js' ],
+				require: [
+					[ 'lodash', {
+						entry:  true,
+						expose: '_',
+					}],
+					[ 'bluebird', {
+						entry:  true,
+						expose: 'Promise',
+					}],
+					[ 'check-types', {
+						entry:  true,
+						expose: 'c',
+					}],
+					[ 'sequential-event', {
+						entry:  true,
+						expose: 'SequentialEvent',
+					}],
+				],
 				dest: 'build/standalone/src/diaspora.js',	
 			},
-			composed: {
+			isolated: {
 				options: {
 					external: [ 'lodash', 'bluebird', 'check-types', 'sequential-event' ],
 				},
 				src:  [ 'diaspora.js' ],
-				dest: 'build/composed/src/diaspora.js',	
+				dest: 'build/isolated/src/diaspora.js',	
 			},
 		},
 		babel: {
@@ -90,12 +108,12 @@ module.exports = function gruntInit( grunt ) {
 					ext:    '.js',
 				}],
 			},
-			composed: {
+			isolated: {
 				files: [{
 					expand: true,
-					cwd:    'build/composed/src',
+					cwd:    'build/isolated/src',
 					src:    [ 'diaspora.js' ],
-					dest:   'build/composed/dist',
+					dest:   'build/isolated/dist',
 					ext:    '.js',
 				}],
 			},
@@ -116,10 +134,10 @@ module.exports = function gruntInit( grunt ) {
 					rename: ( dst, src ) => path.resolve( dst, src.replace( /\.js$/, '.min.js' )),
 				}],
 			},
-			composed: {
+			isolated: {
 				files: [{
 					expand: true,
-					src:    [ 'build/composed/dist/diaspora.js' ],
+					src:    [ 'build/isolated/dist/diaspora.js' ],
 					dest:	  '.',
 					rename: ( dst, src ) => path.resolve( dst, src.replace( /\.js$/, '.min.js' )),
 				}],
@@ -182,7 +200,7 @@ module.exports = function gruntInit( grunt ) {
 	grunt.registerTask( 'refreshScripts', [
 		'lint',
 		'buildStandalone',
-		'buildComposed',
+		'buildIsolated',
 	]);
 	grunt.registerTask( 'buildStandalone', [
 		'browserify:standalone',
@@ -190,10 +208,10 @@ module.exports = function gruntInit( grunt ) {
 		'uglify:standalone',
 		'copy:diaspora_to_docs_site',
 	]);
-	grunt.registerTask( 'buildComposed', [
-		'browserify:composed',
-		'babel:composed',
-		'uglify:composed',
+	grunt.registerTask( 'buildIsolated', [
+		'browserify:isolated',
+		'babel:isolated',
+		'uglify:isolated',
 	]);
 	grunt.registerTask( 'lint', [
 		'eslint:info',
