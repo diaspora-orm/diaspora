@@ -325,4 +325,6 @@ it( '"default" feature', () => {
 importTest(chalk.bold.underline.blue('Adapters'), './adapters/index.js');
 //importTest(chalk.bold.underline.blue('Models'), './models/index.js');
 
-require('./browserTests/seleniumTest.js');
+if(process.env.NO_SAUCE !== 'true'){
+	require('./browserTests/seleniumTest.js');
+}
