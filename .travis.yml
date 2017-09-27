@@ -2,18 +2,24 @@ language: node_js
 matrix:
   include:
     - node_js: "node"
+      addons:
+        sauce_connect: true
+      env: BROWSER_NAME=chrome
+    - node_js: "node"
+      addons:
+        sauce_connect: true
+      env: BROWSER_NAME=firefox
     - node_js: "8"
       env: NO_SAUCE=true
     - node_js: "7"
       env: NO_SAUCE=true
+env:
+  SAUCE_USERNAME: "Gerkin"
+  SAUCE_ACCESS_KEY: "bcc962ee-af76-4e36-bf15-ce3cbbbb5b8c"
 notifications:
   slack:
     rooms:
       - altenter-project:Pc8sMyCuHNPBCg1TOw0weD9S#tech
-addons:
-  sauce_connect:
-    username: "Gerkin"
-    access_key: "bcc962ee-af76-4e36-bf15-ce3cbbbb5b8c"
 before_script:
   - python -m SimpleHTTPServer &
   - sleep 2

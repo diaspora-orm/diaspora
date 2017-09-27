@@ -29,7 +29,7 @@ describe("Test Diaspora in the browser", function() {
 		} else {
 			browser = new webdriver.Builder()
 				.withCapabilities({
-				browserName: "chrome"
+				browserName: process.env.BROWSER_NAME
 			}).build();
 		}
 	});
