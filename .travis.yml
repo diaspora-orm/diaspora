@@ -14,3 +14,6 @@ addons:
 before_script:
   - python -m SimpleHTTPServer &
   - sleep 2
+cache:
+  directories:
+    - "node_modules"

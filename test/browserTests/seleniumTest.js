@@ -38,8 +38,8 @@ describe("Test Diaspora in the browser", function() {
 		if(process.env.SAUCE_USERNAME != undefined){
 			const request = require('request');
 
-			return new Promise((resolve, reject) => {
-				const url = `https://saucelabs.com/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${process.env.TRAVIS_BUILD_NUMBER}`;
+			return browser.getSession().then(session => {
+				const url = `https://saucelabs.com/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${session.getId()}`;
 				const args = {
 					json: {
 						passed,
@@ -51,25 +51,12 @@ describe("Test Diaspora in the browser", function() {
 						sendImmediately: false
 					},
 				};
-				request.put( url, args, (err, ...others) => {
-					return browser.getSession().then(function (session) {
-						var printSessionId = function (jobName) {
-							browser.getSession().then(function (session) {
-								console.log('SauceOnDemandSessionID=' + session.getId() + ' job-name=' + jobName, session);
-							});
-						}
-						printSessionId(args.json.name);
-					}).then(() => {
-						return browser.quit().then(() => {
-							console.log({url, args, err, others, env: process.env});
-							if(err){
-								console.error(err);
-								return reject(err);
-							}
-							return resolve();
-						});
-					});
-				});
+				return Promise.promisify(request.put)(url, args);
+			}).catch(e => {
+				console.error(e);
+				return Promise.reject(e);
+			}).finally(() => {
+				return browser.quit()
 			});
 		} else {
 			return browser.quit();
