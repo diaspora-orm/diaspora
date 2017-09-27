@@ -2,8 +2,11 @@
 
 ***Multi-source ORM for NodeJS & the browser***
 
-[![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
-[![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
+## Build status
+
+Travis CI status: [![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
+
+SauceLabs status: [![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
 
 ## GitHub repository
 

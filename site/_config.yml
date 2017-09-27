@@ -10,7 +10,7 @@ port: ""
 baseurl: ""
 plugins:
   - jekyll-toc
-  - jekyll-minifier
+#  - jekyll-minifier
 destination: ../docs
 lsi: true
 incremental: false

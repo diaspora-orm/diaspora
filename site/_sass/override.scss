@@ -1377,6 +1377,44 @@ section{
 		}
 	}
 }
+.trydiaspora{
+	#content{
+		padding-right: 15px;
+
+		.input-group{
+			display: flex;
+		}
+		#query{
+			min-height: 50px;
+			flex: 1 1 100%;
+			border: none;
+		}
+		.input-group-btn{
+			flex: 0 0 68px;
+
+			button{
+				width: 100%;
+				height: 100%;
+			}
+		}
+		#datatable_wrapper{
+			table{
+				border-collapse: collapse;
+			}
+			.dataTables_wrapper{
+				//overflow-x: auto;
+			}
+			.DTFC_LeftBodyLiner{
+				overflow: hidden;
+			}
+			th, td{
+				word-break: normal;
+				border-top: 1px solid #eee;
+				border-left: 1px solid #d5d5d5;
+			}
+		}
+	}
+}
 
 .doccopage {
 	h1{

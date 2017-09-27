@@ -1,1 +1,368 @@
-!function(t){t.fn.tableHeadFixer=function(n){function o(){function o(){var n=t(h.table);if(h.head){if(h.left>0){var o=n.find("> thead > tr");o.each(function(n,o){l(o,function(n){t(n).css("z-index",h["z-index"]+1)})})}if(h.right>0){var o=n.find("> thead > tr");o.each(function(n,o){solveRightColspan(o,function(n){t(n).css("z-index",h["z-index"]+1)})})}}if(h.foot){if(h.left>0){var o=n.find("> tfoot > tr");o.each(function(n,o){l(o,function(n){t(n).css("z-index",h["z-index"])})})}if(h.right>0){var o=n.find("> tfoot > tr");o.each(function(n,o){solveRightColspan(o,function(n){t(n).css("z-index",h["z-index"])})})}}}function i(){var n=t(h.parent),o=t(h.table);n.append(o),n.css({"overflow-x":"auto","overflow-y":"auto"}),n.scroll(function(){var t=n[0].scrollWidth,o=n[0].clientWidth,i=n[0].scrollHeight,r=n[0].clientHeight,a=n.scrollTop(),e=n.scrollLeft();h.head&&this.find("thead > tr > *").css("top",a),h.foot&&this.find("tfoot > tr > *").css("bottom",i-r-a),h.left>0&&h.leftColumns.css("left",e),h.right>0&&h.rightColumns.css("right",t-o-e)}.bind(o))}function r(){var n=t(h.table).find("> thead"),o=(n.find("> tr"),n.find("> tr > *"));c(o),o.css({position:"relative"})}function a(){var n=t(h.table).find("> tfoot"),o=(n.find("> tr"),n.find("> tr > *"));c(o),o.css({position:"relative"})}function e(){var n=t(h.table);h.leftColumns=t(),n.find("> * > tr").each(function(t,n){l(n,function(t){h.leftColumns=h.leftColumns.add(t)})}),h.leftColumns.each(function(n,o){var o=t(o);c(o),o.css({position:"relative"})})}function f(){var n=t(h.table);h.right;h.rightColumns=t();var o=n.find("> thead").find("> tr"),i=n.find("> tbody").find("> tr"),r=null;o.each(function(t,n){s(n,function(n){0===t&&(r=n),h.rightColumns=h.rightColumns.add(r)})}),i.each(function(t,n){d(n,function(t){h.rightColumns=h.rightColumns.add(t)})}),h.rightColumns.each(function(n,o){var o=t(o);c(o),o.css({position:"relative","z-index":"9999"})})}function c(n){n.each(function(n,o){var o=t(o),i=t(o).parent(),r=o.css("background-color");r="transparent"==r||"rgba(0, 0, 0, 0)"==r?null:r;var a=i.css("background-color");a="transparent"==a||"rgba(0, 0, 0, 0)"==a?null:a;var e=a||"white";e=r||e,o.css("background-color",e)})}function l(n,o){for(var i=h.left,r=1,a=1;a<=i;a+=r){var e=r>1?a-1:a,f=t(n).find("> *:nth-child("+e+")"),c=f.prop("colspan");f.cellPos().left<i&&o(f),r=c}}function s(n,o){for(var i=h.right,r=1,a=1;a<=i;a+=r){var e=r>1?a-1:a,f=t(n).find("> *:nth-last-child("+e+")"),c=f.prop("colspan");o(f),r=c}}function d(n,o){for(var i=h.right,r=1,a=1;a<=i;a+=r){var e=r>1?a-1:a,f=t(n).find("> *:nth-last-child("+e+")"),c=f.prop("colspan");o(f),r=c}}var u={head:!0,foot:!1,left:0,right:0,"z-index":0},h=t.extend({},u,n);h.table=this,h.parent=t(h.table).parent(),i(),1==h.head&&r(),1==h.foot&&a(),h.left>0&&e(),h.right>0&&f(),o(),t(h.parent).trigger("scroll"),t(window).resize(function(){t(h.parent).trigger("scroll")})}return this.each(function(){o.call(this)})}}(jQuery),function(t){function n(n){var o=[],i="";"table"===n.prop("tagName").toLowerCase()&&(i="> * "),n.find(i+"> tr").each(function(n,i){t(i).children("td, th").each(function(i,r){var a,e,f=t(r),c=0|f.attr("colspan"),l=0|f.attr("rowspan");for(c=c||1,l=l||1;o[n]&&o[n][i];++i);for(a=i;a<i+c;++a)for(e=n;e<n+l;++e)o[e]||(o[e]=[]),o[e][a]=!0;var s={top:n,left:i};f.data("cellPos",s)})})}t.fn.cellPos=function(t){var o=this.first(),i=o.data("cellPos");if(!i||t){n(o.closest("table, thead, tbody, tfoot")),i=o.data("cellPos")}return i}}(jQuery);
+(function ($) {
+
+	$.fn.tableHeadFixer = function (param) {
+
+		return this.each(function () {
+			table.call(this);
+		});
+
+		function table() {
+
+			{
+				var defaults = {
+					head: true,
+					foot: false,
+					left: 0,
+					right: 0,
+					'z-index': 0
+				};
+
+				var settings = $.extend({}, defaults, param);
+
+				settings.table  = this;
+				settings.parent = $(settings.table).parent();
+				setParent();
+
+				if (settings.head == true) {
+					fixHead();
+				}
+
+				if (settings.foot == true) {
+					fixFoot();
+				}
+
+				if (settings.left > 0) {
+					fixLeft();
+				}
+
+				if (settings.right > 0) {
+					fixRight();
+				}
+
+				setCorner();
+
+				$(settings.parent).trigger("scroll");
+
+				$(window).resize(function () {
+					$(settings.parent).trigger("scroll");
+				});
+
+
+				/*
+                 This function solver z-index problem in corner cell where fix row and column at the same time,
+                 set corner cells z-index 1 more then other fixed cells
+                 */
+				function setCorner() {
+					var table = $(settings.table);
+
+					if (settings.head) {
+						if (settings.left > 0) {
+							var tr = table.find("> thead > tr");
+
+							tr.each(function (k, row) {
+								solverLeftColspan(row, function (cell) {
+									$(cell).css("z-index", settings['z-index'] + 1);
+								});
+							});
+						}
+
+						if (settings.right > 0) {
+							var tr = table.find("> thead > tr");
+
+							tr.each(function (k, row) {
+								solveRightColspan(row, function (cell) {
+									$(cell).css("z-index", settings['z-index'] + 1);
+								});
+							});
+						}
+					}
+
+					if (settings.foot) {
+						if (settings.left > 0) {
+							var tr = table.find("> tfoot > tr");
+
+							tr.each(function (k, row) {
+								solverLeftColspan(row, function (cell) {
+									$(cell).css("z-index", settings['z-index']);
+								});
+							});
+						}
+
+						if (settings.right > 0) {
+							var tr = table.find("> tfoot > tr");
+
+							tr.each(function (k, row) {
+								solveRightColspan(row, function (cell) {
+									$(cell).css("z-index", settings['z-index']);
+								});
+							});
+						}
+					}
+				}
+
+				// Set style of table parent
+				function setParent() {
+					var parent = $(settings.parent);
+					var table  = $(settings.table);
+
+					parent.append(table);
+					parent
+						.css({
+						'overflow-x': 'auto',
+						'overflow-y': 'auto'
+					});
+
+					parent.scroll(function () {
+						var scrollWidth  = parent[0].scrollWidth;
+						var clientWidth  = parent[0].clientWidth;
+						var scrollHeight = parent[0].scrollHeight;
+						var clientHeight = parent[0].clientHeight;
+						var top          = parent.scrollTop();
+						var left         = parent.scrollLeft();
+
+						if (settings.head)
+							this.find("thead > tr > *").css("top", top);
+
+						if (settings.foot)
+							this.find("tfoot > tr > *").css("bottom", scrollHeight - clientHeight - top);
+
+						if (settings.left > 0)
+							settings.leftColumns.css("left", left);
+
+						if (settings.right > 0)
+							settings.rightColumns.css("right", scrollWidth - clientWidth - left);
+					}.bind(table));
+				}
+
+				// Set table head fixed
+				function fixHead() {
+					var thead = $(settings.table).find("> thead");
+					var tr    = thead.find("> tr");
+					var cells = thead.find("> tr > *");
+
+					setBackground(cells);
+					cells.css({
+						'position': 'relative'
+					});
+				}
+
+				// Set table foot fixed
+				function fixFoot() {
+					var tfoot = $(settings.table).find("> tfoot");
+					var tr    = tfoot.find("> tr");
+					var cells = tfoot.find("> tr > *");
+
+					setBackground(cells);
+					cells.css({
+						'position': 'relative'
+					});
+				}
+
+				// Set table left column fixed
+				function fixLeft() {
+					var table = $(settings.table);
+
+					// var fixColumn = settings.left;
+
+					settings.leftColumns = $();
+
+					var tr = table.find("> * > tr");
+					tr.each(function (k, row) {
+
+						solverLeftColspan(row, function (cell) {
+							settings.leftColumns = settings.leftColumns.add(cell);
+						});
+						// var inc = 1;
+
+						// for(var i = 1; i <= fixColumn; i = i + inc) {
+						// 	var nth = inc > 1 ? i - 1 : i;
+
+						// 	var cell = $(row).find("*:nth-child(" + nth + ")");
+						// 	var colspan = cell.prop("colspan");
+
+						// 	settings.leftColumns = settings.leftColumns.add(cell);
+
+						// 	inc = colspan;
+						// }
+					});
+
+					var column = settings.leftColumns;
+
+					column.each(function (k, cell) {
+						var cell = $(cell);
+
+						setBackground(cell);
+						cell.css({
+							'position': 'relative'
+						});
+					});
+				}
+
+				// Set table right column fixed
+				function fixRight() {
+					var table = $(settings.table);
+
+					var fixColumn = settings.right;
+
+					settings.rightColumns = $();
+
+					var tr_head = table.find('> thead').find("> tr");
+					var tr_body = table.find('> tbody').find("> tr");
+					var fcell = null;
+					tr_head.each(function (k, row) {
+						solveRightColspanHead(row, function (cell) {
+							if (k === 0) {
+								fcell = cell;
+							}
+							settings.rightColumns = settings.rightColumns.add(fcell);
+						});
+					});
+
+					tr_body.each(function (k, row) {
+						solveRightColspanBody(row, function (cell) {
+							settings.rightColumns = settings.rightColumns.add(cell);
+						});
+					});
+
+					var column = settings.rightColumns;
+
+					column.each(function (k, cell) {
+						var cell = $(cell);
+
+						setBackground(cell);
+						cell.css({
+							'position': 'relative',
+							'z-index': '9999'
+						});
+					});
+
+				}
+
+				// Set fixed cells backgrounds
+				function setBackground(elements) {
+					elements.each(function (k, element) {
+						var element = $(element);
+						var parent  = $(element).parent();
+
+						var elementBackground = element.css("background-color");
+						elementBackground     = (elementBackground == "transparent" || elementBackground == "rgba(0, 0, 0, 0)") ? null : elementBackground;
+
+						var parentBackground = parent.css("background-color");
+						parentBackground     = (parentBackground == "transparent" || parentBackground == "rgba(0, 0, 0, 0)") ? null : parentBackground;
+
+						var background = parentBackground ? parentBackground : "white";
+						background     = elementBackground ? elementBackground : background;
+
+						element.css("background-color", background);
+					});
+				}
+
+				function solverLeftColspan(row, action) {
+					var fixColumn = settings.left;
+					var inc       = 1;
+
+					for (var i = 1; i <= fixColumn; i = i + inc) {
+						var nth = inc > 1 ? i - 1 : i;
+
+						var cell    = $(row).find("> *:nth-child(" + nth + ")");
+						var colspan = cell.prop("colspan");
+
+						if (cell.cellPos().left < fixColumn) {
+							action(cell);
+						}
+
+						inc = colspan;
+					}
+				}
+
+				function solveRightColspanHead(row, action) {
+					var fixColumn = settings.right;
+					var inc       = 1;
+					for (var i = 1; i <= fixColumn; i = i + inc) {
+						var nth = inc > 1 ? i - 1 : i;
+
+						var cell    = $(row).find("> *:nth-last-child(" + nth + ")");
+						var colspan = cell.prop("colspan");
+
+						action(cell);
+
+						inc = colspan;
+					}
+				}
+
+				function solveRightColspanBody(row, action) {
+					var fixColumn = settings.right;
+					var inc       = 1;
+					for (var i = 1; i <= fixColumn; i = i + inc) {
+						var nth = inc > 1 ? i - 1 : i;
+
+						var cell    = $(row).find("> *:nth-last-child(" + nth + ")");
+						var colspan = cell.prop("colspan");
+						action(cell);
+						inc = colspan;
+					}
+				}
+
+			}
+
+		}
+
+
+
+
+	};
+
+})(jQuery);
+
+/*  cellPos jQuery plugin
+ ---------------------
+ Get visual position of cell in HTML table (or its block like thead).
+ Return value is object with "top" and "left" properties set to row and column index of top-left cell corner.
+ Example of use:
+ $("#myTable tbody td").each(function(){
+ $(this).text( $(this).cellPos().top +", "+ $(this).cellPos().left );
+ });
+ */
+(function ($) {
+	/* scan individual table and set "cellPos" data in the form { left: x-coord, top: y-coord } */
+	function scanTable($table) {
+		var m = [];
+		var prefix = '';
+		if($table.prop('tagName').toLowerCase() === 'table'){
+			prefix = '> * ';
+		}
+		$table.find(prefix + "> tr").each(function (y, row) {
+			$(row).children("td, th").each(function (x, cell) {
+				var $cell = $(cell),
+					cspan = $cell.attr("colspan") | 0,
+					rspan = $cell.attr("rowspan") | 0,
+					tx, ty;
+				cspan     = cspan ? cspan : 1;
+				rspan     = rspan ? rspan : 1;
+				for (; m[y] && m[y][x]; ++x);  //skip already occupied cells in current row
+				for (tx = x; tx < x + cspan; ++tx) {  //mark matrix elements occupied by current cell with true
+					for (ty = y; ty < y + rspan; ++ty) {
+						if (!m[ty]) {  //fill missing rows
+							m[ty] = [];
+						}
+						m[ty][tx] = true;
+					}
+				}
+				var pos = {top: y, left: x};
+				$cell.data("cellPos", pos);
+			});
+		});
+	};
+
+	/* plugin */
+	$.fn.cellPos = function (rescan) {
+		var $cell = this.first(),
+			pos   = $cell.data("cellPos");
+		if (!pos || rescan) {
+			var $table = $cell.closest("table, thead, tbody, tfoot");
+			scanTable($table);
+			pos = $cell.data("cellPos");
+		}
+		return pos;
+	}
+})(jQuery);

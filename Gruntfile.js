@@ -180,7 +180,7 @@ module.exports = function gruntInit( grunt ) {
 		'docco_husky',
 	]);
 	grunt.registerTask( 'refreshScripts', [
-		'eslint:info',
+		'lint',
 		'buildStandalone',
 		'buildComposed',
 	]);

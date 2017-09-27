@@ -14,7 +14,10 @@ describe(`Test Diaspora in the browser (${process.env.BROWSER_NAME || 'chrome'}
 	this.timeout(20000);
 	let browser;
 	let passed;
-	let saucelabs;
+	let saucelabs = new SauceLabs({
+		username : process.env.SAUCE_USERNAME,
+		password : process.env.SAUCE_ACCESS_KEY,
+	});
 
 	beforeEach(() => {
 		let ret;
@@ -29,10 +32,6 @@ describe(`Test Diaspora in the browser (${process.env.BROWSER_NAME || 'chrome'}
 				accessKey: process.env.SAUCE_ACCESS_KEY,
 				browserName: process.env.BROWSER_NAME
 			}).build();
-			saucelabs = new SauceLabs({
-				username : process.env.SAUCE_USERNAME,
-				password : process.env.SAUCE_ACCESS_KEY,
-			});
 		} else {
 			browser = new webdriver.Builder()
 				.withCapabilities({

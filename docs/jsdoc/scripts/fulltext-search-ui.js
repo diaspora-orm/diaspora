@@ -1,1 +1,89 @@
-window.SearcherDisplay=function(e){function t(){}return t.prototype.init=function(){this._displayQuickSearch()},t.prototype._displayQuickSearch=function(){function t(){var t=e("#search-input").prop("value");t&&n[0].contentWindow.postMessage({searchTerms:t,msgid:"docstrap.quicksearch.start"},"*")}var n=e(document.createElement("iframe")),a=e("body"),r=this;n.attr("src","quicksearch.html"),n.css("width","0px"),n.css("height","0px"),a.append(n),e(window).on("message",function(e){var t=e.originalEvent.data;if("docstrap.quicksearch.done"==t.msgid){var n=t.results||[];r._displaySearchResults(n)}}),e("#search-input").on("keyup",function(e){if(13==e.keyCode)return t(),!1}),e("#search-submit").on("click",function(){return t(),!1})},t.prototype._displaySearchResults=function(t){var n=e(e("#searchResults").find(".modal-body")),a=document.createDocumentFragment(),r=document.createElement("ul");n.empty();for(var c=0;c<t.length;c++){var i=t[c],s=document.createElement("li"),o=document.createElement("a");o.href=i.id,o.innerHTML=i.title,s.appendChild(o),r.appendChild(s)}a.appendChild(r),n.append(a),e("#searchResults").modal({show:!0})},new t}($);
+window.SearcherDisplay = (function($) {
+    /**
+     * This class provides support for displaying quick search text results to users.
+     */
+    function SearcherDisplay() { }
+
+    SearcherDisplay.prototype.init = function() {
+        this._displayQuickSearch();
+    };
+
+    /**
+     * This method creates the quick text search entry in navigation menu and wires all required events.
+     */
+    SearcherDisplay.prototype._displayQuickSearch = function() {
+            var quickSearch = $(document.createElement("iframe")),
+                   body = $("body"),
+                   self = this;
+
+            quickSearch.attr("src", "quicksearch.html");
+            quickSearch.css("width", "0px");
+            quickSearch.css("height", "0px");
+
+            body.append(quickSearch);
+
+            $(window).on("message", function(msg) {
+                var msgData = msg.originalEvent.data;
+
+                if (msgData.msgid != "docstrap.quicksearch.done") {
+                    return;
+                }
+
+                var results = msgData.results || [];
+
+                self._displaySearchResults(results);
+            });
+
+            function startSearch() {
+              var searchTerms = $('#search-input').prop("value");
+              if (searchTerms) {
+                quickSearch[0].contentWindow.postMessage({
+                  "searchTerms": searchTerms,
+                  "msgid": "docstrap.quicksearch.start"
+                }, "*");
+              }
+            }
+
+            $('#search-input').on('keyup', function(evt) {
+              if (evt.keyCode != 13) {
+                return;
+              }
+              startSearch();
+              return false;
+            });
+            $('#search-submit').on('click', function() {
+              startSearch();
+              return false;
+            });
+    };
+
+    /**
+     * This method displays the quick text search results in a modal dialog.
+     */
+    SearcherDisplay.prototype._displaySearchResults = function(results) {
+            var resultsHolder = $($("#searchResults").find(".modal-body")),
+                  fragment = document.createDocumentFragment(),
+                  resultsList = document.createElement("ul");
+
+            resultsHolder.empty();
+
+            for (var idx = 0; idx < results.length; idx++) {
+                var result = results[idx],
+                       item = document.createElement("li"),
+                       link = document.createElement("a");
+
+                link.href = result.id;
+                link.innerHTML = result.title;
+
+                item.appendChild(link)
+                resultsList.appendChild(item);
+            }
+
+            fragment.appendChild(resultsList);
+            resultsHolder.append(fragment);
+
+            $("#searchResults").modal({"show": true});
+    };
+
+    return new SearcherDisplay();
+})($);

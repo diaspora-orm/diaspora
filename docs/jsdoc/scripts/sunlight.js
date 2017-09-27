@@ -1,1 +1,1157 @@
-!function(e,n,t){function r(e){function n(n){var t;return 0===n?"":(n=n||1,t=e.substring(o+1,o+n+1),""===t?d:t)}var r,a,u,o=0,l=1,s=1,d=t;return e=e.replace(/\r\n/g,"\n").replace(/\r/g,"\n"),r=e.length,a=r>0?e.charAt(0):d,{toString:function(){return"length: "+r+", index: "+o+", line: "+l+", column: "+s+", current: ["+a+"]"},peek:function(e){return n(e)},substring:function(){return e.substring(o)},peekSubstring:function(){return e.substring(o+1)},read:function(e){var t,g,c=n(e);return""===c?c:(c!==d?(o+=c.length,s+=c.length,u&&(l++,s=1,u=!1),t=c.substring(0,c.length-1).replace(/[^\n]/g,"").length,t>0&&(l+=t,s=1),g=i(c),"\n"===g&&(u=!0),a=g):(o=r,a=d),c)},text:function(){return e},getLine:function(){return l},getColumn:function(){return s},isEof:function(){return o>=r},isSol:function(){return 1===s},isSolWs:function(){var n,t=o;if(1===s)return!0;for(;""!==(n=e.charAt(--t));){if("\n"===n)return!0;if(!/\s/.test(n))return!1}return!0},isEol:function(){return u},EOF:d,current:function(){return a}}}function a(e){function n(){}return n.prototype=e,new n}function u(e,n){var t;for(t=0;t<n.length;t++)e.appendChild(n[t])}function i(e){return e.charAt?e.charAt(e.length-1):e[e.length-1]}function o(e,n,t){var r;if(e.indexOf&&!t)return e.indexOf(n)>=0;for(r=0;r<e.length;r++){if(e[r]===n)return!0;if(t&&"string"==typeof e[r]&&"string"==typeof n&&e[r].toUpperCase()===n.toUpperCase())return!0}return!1}function l(e,n){var t;if(!n)return e;for(t in n)e[t]=n[t];return e}function s(e){return l({},e)}function d(e){return e.replace(/[-\/\\^$*+?.()|[\]{}]/g,"\\$&")}function g(e,n,r,a){return r=r.slice(0),function(u){var i,l,s,d=e;for(1===n&&r.reverse(),i=0;i<r.length;i++)if(s=u[d+i*n],l=r[r.length-1-i],s===t){if(l.optional===t||!l.optional)return!1;d-=n}else{if(s.name===l.token&&(l.values===t||o(l.values,s.value,a)))continue;if(l.optional===t||!l.optional)return!1;d-=n}return!0}}function c(e,n,r,a){return function(u){for(var i,l=e,s=!1;(i=u[--l])!==t;){if(i.name===r.token&&o(r.values,i.value)){if(i.name===n.token&&o(n.values,i.value,a)){s=!0;break}return!1}if(i.name===n.token&&o(n.values,i.value,a)){s=!0;break}}if(!s)return!1;for(l=e;(i=u[++l])!==t;){if(i.name===n.token&&o(n.values,i.value,a)){if(i.name===r.token&&o(r.values,i.value,a)){s=!0;break}return!1}if(i.name===r.token&&o(r.values,i.value,a)){s=!0;break}}return s}}function f(e,n,t,r){var a,u,i,o=e.reader.current(),l=e.reader.getLine(),s=e.reader.getColumn();if(n=n||[],e.language.caseInsensitive&&(o=o.toUpperCase()),!n[o])return null;for(n=n[o],a=0;a<n.length;a++)if(u=n[a].value,i=o+e.reader.peek(u.length),u===i||n[a].regex.test(i))return e.createToken(t,e.reader.current()+e.reader[r?"peek":"read"](u.length-1),l,s);return null}function h(e,n,r,a){var u,i=1;for(r=r||1;u=e[n+r*i++];)if(!a(u))return u;return t}function p(e,n,t){var r,a,u,i={};for(r=0;r<e.length;r++)a=t?e[r].toUpperCase():e[r],u=a.charAt(0),i[u]||(i[u]=[]),i[u].push({value:a,regex:new RegExp("^"+d(a)+n,t?"i":"")});return i}function m(e){var n,t,r=e.reader.current(),a=e.reader.getLine(),u=e.reader.getColumn(),i=!0;if(/\d/.test(r))n=r,"0"===r&&"."!==e.reader.peek()&&(i=!1);else{if("."!==r||!/\d/.test(e.reader.peek()))return null;n=r+e.reader.read(),i=!1}for(;(t=e.reader.peek())!==e.reader.EOF;){if(!/[A-Za-z0-9]/.test(t)){if("."===t&&i&&/\d$/.test(e.reader.peek(2))){n+=e.reader.read(),i=!1;continue}break}n+=e.reader.read()}return e.createToken("number",n,a,u)}function v(e,n,t){var r,a=P[e]||[];for(r=0;r<a.length;r++)a[r].call(n,t)}function k(e){this.options=l(s(S),e)}var x,b,N=!1,C=N?"\r":"\n",y=function(){return null},T=0,w="plaintext",L="sunlight-",S={tabWidth:4,classPrefix:L,showWhitespace:!1,maxHeight:!1},A={},I={},P={beforeHighlightNode:[],beforeHighlight:[],beforeTokenize:[],afterTokenize:[],beforeAnalyze:[],afterAnalyze:[],afterHighlight:[],afterHighlightNode:[]};x=function(){function e(e){return function(t){var r=n.createElement("span");return r.className=t.options.classPrefix+e,r.appendChild(t.createTextNode(t.tokens[t.index])),t.addNode(r)||!0}}return{handleToken:function(n){return e(n.tokens[n.index].name)(n)},handle_default:function(e){return e.addNode(e.createTextNode(e.tokens[e.index]))},handle_ident:function(n){var t=function(t,r){var a;for(t=t||[],a=0;a<t.length;a++)if("function"==typeof t[a]){if(t[a](n))return e("named-ident")(n)}else if(r&&r(t[a])(n.tokens))return e("named-ident")(n);return!1};return t(n.language.namedIdentRules.custom)||t(n.language.namedIdentRules.follows,function(e){return g(n.index-1,-1,e,n.language.caseInsensitive)})||t(n.language.namedIdentRules.precedes,function(e){return g(n.index+1,1,e,n.language.caseInsensitive)})||t(n.language.namedIdentRules.between,function(e){return c(n.index,e.opener,e.closer,n.language.caseInsensitive)})||e("ident")(n)}}}(),I={analyzer:a(x),customTokens:[],namedIdentRules:{},punctuation:/[^\w\s]/,numberParser:m,caseInsensitive:!1,doNotParse:/\s/,contextItems:{},embeddedLanguages:{}},b=function(){var e=null;return e=n.defaultView&&n.defaultView.getComputedStyle?n.defaultView.getComputedStyle:function(e){return e.currentStyle||{}},function(n,t){return e(n,null)[t]}}(),k.prototype=function(){function e(e,n){var t=e[2]||[],r=e[1].length,a="string"==typeof e[1]?new RegExp(d(e[1])):e[1].regex,u=e[3]||!1;return function(e,i,o,l,s,d){function g(n){var u,i,l=e.reader.current();for(i=0;i<t.length;i++)if((u=(n?l:"")+e.reader.peek(t[i].length-n))===t[i])return o+=e.reader.read(u.length-n),!0;return u=(n?l:"")+e.reader.peek(r-n),a.test(u)?(c=!0,!1):(o+=n?l:e.reader.read(),!0)}var c=!1;if(o=o||"",!(d=d?1:0)||g(!0))for(;e.reader.peek()!==e.reader.EOF&&g(!1););return d?(o+=e.reader.current(),e.reader.read()):o+=u||e.reader.peek()===e.reader.EOF?"":e.reader.read(r),c||(e.continuation=i),e.createToken(n,o,l,s)}}function a(e){var n,t;for(n=0;n<e.language.embeddedLanguages.length;n++)if(A[e.language.embeddedLanguages[n].language]&&(t=s(e.language.embeddedLanguages[n]),t.switchTo(e))){t.oldItems=s(e.items),e.embeddedLanguageStack.push(t),e.language=A[t.language],e.items=l(e.items,s(e.language.contextItems));break}}function o(e){var n,t=i(e.embeddedLanguageStack);t&&t.switchBack(e)&&(e.language=A[t.parentLanguage],n=e.embeddedLanguageStack.pop(),e.items=s(n.oldItems),n.oldItems={})}function g(e,n,u,i){var l,d,g,c=[];for(v("beforeTokenize",this,{code:e,language:n}),l={reader:r(e),language:n,items:s(n.contextItems),token:function(e){return c[e]},getAllTokens:function(){return c.slice(0)},count:function(){return c.length},options:i,embeddedLanguageStack:[],defaultData:{text:"",line:1,column:1},createToken:function(e,n,t,r){return{name:e,line:t,value:N?n.replace(/\n/g,"\r"):n,column:r,language:this.language.name}}},u.continuation&&(d=u.continuation,u.continuation=null,c.push(d(l,d,"",l.reader.getLine(),l.reader.getColumn(),!0)));!l.reader.isEof();)a(l),g=k(l),null!==g&&(""!==l.defaultData.text&&(c.push(l.createToken("default",l.defaultData.text,l.defaultData.line,l.defaultData.column)),l.defaultData.text=""),g[0]!==t?c=c.concat(g):c.push(g)),o(l),l.reader.read();return""!==l.defaultData.text&&c.push(l.createToken("default",l.defaultData.text,l.defaultData.line,l.defaultData.column)),v("afterTokenize",this,{code:e,parserContext:l}),l}function c(e,t,r){var a=[],u=function(){var e,n;return r.showWhitespace?(e=String.fromCharCode(183),n=new Array(r.tabWidth).join(String.fromCharCode(8212))+String.fromCharCode(8594)):(e=String.fromCharCode(160),n=new Array(r.tabWidth+1).join(e)),function(t){for(var a,u,i,o,l=t.value.split(" ").join(e);(a=l.indexOf("\t"))>=0;)u=l.lastIndexOf(C,a),i=-1===u?a:a-u-1,o=r.tabWidth-i%r.tabWidth,l=l.substring(0,a)+n.substring(r.tabWidth-o)+l.substring(a+1);return l}}();return{tokens:(t.tokens||[]).concat(e.getAllTokens()),index:t.index?t.index+1:0,language:null,getAnalyzer:y,options:r,continuation:e.continuation,addNode:function(e){a.push(e)},createTextNode:function(e){return n.createTextNode(u(e))},getNodes:function(){return a},resetNodes:function(){a=[]},items:e.items}}function h(e,n,r){var a,u=A[n];return r=r||{},u===t&&(u=A[w]),v("beforeHighlight",this,{code:e,language:u,previousContext:r}),a=c(g.call(this,e,u,r,this.options),r,this.options),m.call(this,a,r.index?r.index+1:0),v("afterHighlight",this,{analyzerContext:a}),a}function p(e){var t=n.createElement("span");return t.className=e.options.classPrefix+e.language.name,t}function m(e,n){var t,r,a,i,o,l,s;if(v("beforeAnalyze",this,{analyzerContext:e}),e.tokens.length>0){for(e.language=A[e.tokens[0].language]||A[w],t=[],0,r=p(e),a=n;a<e.tokens.length;a++)l=A[e.tokens[a].language]||A[w],l.name!==e.language.name&&(u(r,e.getNodes()),e.resetNodes(),t.push(r),e.language=l,r=p(e)),e.index=a,i=e.tokens[a].name,o="handle_"+i,s=e.getAnalyzer.call(e)||e.language.analyzer,s[o]?s[o](e):s.handleToken(e);for(u(r,e.getNodes()),t.push(r),e.resetNodes(),a=0;a<t.length;a++)e.addNode(t[a])}v("afterAnalyze",this,{analyzerContext:e})}var k=function(){function n(e){return e.language.identFirstLetter&&e.language.identFirstLetter.test(e.reader.current())}function r(e){return f(e,e.language.keywords,"keyword")}function a(e){var n,r;if(e.language.customTokens===t)return null;for(n in e.language.customTokens)if(null!==(r=f(e,e.language.customTokens[n],n)))return r;return null}function u(e){return f(e,e.language.operators,"operator")}function i(e){var n=e.reader.current();return e.language.punctuation.test(d(n))?e.createToken("punctuation",n,e.reader.getLine(),e.reader.getColumn()):null}function o(e){var t,r,a=e.reader.getLine(),u=e.reader.getColumn();if(!n(e))return null;for(t=e.reader.current();(r=e.reader.peek())!==e.reader.EOF&&e.language.identAfterFirstLetter.test(r);)t+=e.reader.read();return e.createToken("ident",t,a,u)}function l(e){return""===e.defaultData.text&&(e.defaultData.line=e.reader.getLine(),e.defaultData.column=e.reader.getColumn()),e.defaultData.text+=e.reader.current(),null}function s(n){var t,r,a,u,i,o,l,s,d=n.reader.current();for(t in n.language.scopes)for(r=n.language.scopes[t],a=0;a<r.length;a++)if(u=r[a][0],s=d+n.reader.peek(u.length-1),u===s||n.language.caseInsensitive&&s.toUpperCase()===u.toUpperCase())return i=n.reader.getLine(),o=n.reader.getColumn(),n.reader.read(u.length-1),(l=e(r[a],t))(n,l,s,i,o);return null}function g(e){return e.language.numberParser(e)}function c(e){var n,r,a=e.language.customParseRules;if(a===t)return null;for(n=0;n<a.length;n++)if(r=a[n](e))return r;return null}return function(e){return e.language.doNotParse.test(e.reader.current())?l(e):c(e)||a(e)||r(e)||s(e)||o(e)||g(e)||u(e)||i(e)||l(e)}}();return{matchSunlightNode:function(){var e;return function(n){return e||(e=new RegExp("(?:\\s|^)"+this.options.classPrefix+"highlight-(\\S+)(?:\\s|$)")),e.exec(n.className)}}(),isAlreadyHighlighted:function(){var e;return function(n){return e||(e=new RegExp("(?:\\s|^)"+this.options.classPrefix+"highlighted(?:\\s|$)")),e.test(n.className)}}(),highlight:function(e,n){return h.call(this,e,n)},highlightNode:function e(t){var r,a,u,i,o,l,s,d,g;if(!this.isAlreadyHighlighted(t)&&null!==(r=this.matchSunlightNode(t))){for(a=r[1],u=0,v("beforeHighlightNode",this,{node:t}),i=0;i<t.childNodes.length;i++)if(3===t.childNodes[i].nodeType)for(s=h.call(this,t.childNodes[i].nodeValue,a,s),T++,u=u||T,o=s.getNodes(),t.replaceChild(o[0],t.childNodes[i]),l=1;l<o.length;l++)t.insertBefore(o[l],o[l-1].nextSibling);else 1===t.childNodes[i].nodeType&&e.call(this,t.childNodes[i]);t.className+=" "+this.options.classPrefix+"highlighted","block"===b(t,"display")&&(d=n.createElement("div"),d.className=this.options.classPrefix+"container",g=n.createElement("div"),g.className=this.options.classPrefix+"code-container",!1!==this.options.maxHeight&&(g.style.overflowY="auto",g.style.maxHeight=this.options.maxHeight+(/^\d+$/.test(this.options.maxHeight)?"px":"")),d.appendChild(g),t.parentNode.insertBefore(g,t),t.parentNode.removeChild(t),g.appendChild(t),g.parentNode.insertBefore(d,g),g.parentNode.removeChild(g),d.appendChild(g)),v("afterHighlightNode",this,{container:d,codeContainer:g,node:t,count:u})}}}}(),e.Sunlight={version:"1.18",Highlighter:k,createAnalyzer:function(){return a(x)},globalOptions:S,highlightAll:function(e){var t,r=new k(e),a=n.getElementsByTagName("*");for(t=0;t<a.length;t++)r.highlightNode(a[t])},registerLanguage:function(e,n){var t,r,a;if(!e)throw'Languages must be registered with an identifier, e.g. "php" for PHP';n=l(l({},I),n),n.name=e,n.keywords=p(n.keywords||[],"\\b",n.caseInsensitive),n.operators=p(n.operators||[],"",n.caseInsensitive);for(t in n.customTokens)n.customTokens[t]=p(n.customTokens[t].values,n.customTokens[t].boundary,n.caseInsensitive);r=[];for(a in n.embeddedLanguages)r.push({parentLanguage:n.name,language:a,switchTo:n.embeddedLanguages[a].switchTo,switchBack:n.embeddedLanguages[a].switchBack});n.embeddedLanguages=r,A[n.name]=n},isRegistered:function(e){return A[e]!==t},bind:function(e,n){if(!P[e])throw'Unknown event "'+e+'"';P[e].push(n)},util:{last:i,regexEscape:d,eol:C,clone:s,escapeSequences:["\\n","\\t","\\r","\\\\","\\v","\\f"],contains:o,matchWord:f,createHashMap:p,createBetweenRule:c,createProceduralRule:g,getNextNonWsToken:function(e,n){return h(e,n,1,function(e){return"default"===e.name})},getPreviousNonWsToken:function(e,n){return h(e,n,-1,function(e){return"default"===e.name})},getNextWhile:function(e,n,t){return h(e,n,1,t)},getPreviousWhile:function(e,n,t){return h(e,n,-1,t)},whitespace:{token:"default",optional:!0},getComputedStyle:b}},e.Sunlight.registerLanguage(w,{punctuation:/(?!x)x/,numberParser:y})}(this,document);
+/**
+ * Sunlight
+ *    Intelligent syntax highlighting
+ *
+ * http://sunlightjs.com/
+ *
+ * by Tommy Montgomery <http://tmont.com>
+ * Licensed under WTFPL <http://sam.zoy.org/wtfpl/>
+ */
+(function(window, document, undefined){
+
+	var 
+		//http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
+		//we have to sniff this because IE requires \r
+		isIe = !+"\v1", 
+		EOL = isIe ? "\r" : "\n",
+		EMPTY = function() { return null; },
+		HIGHLIGHTED_NODE_COUNT = 0,
+		DEFAULT_LANGUAGE = "plaintext",
+		DEFAULT_CLASS_PREFIX = "sunlight-",
+		
+		//global sunlight variables
+		defaultAnalyzer,
+		getComputedStyle,
+		globalOptions = {
+			tabWidth: 4,
+			classPrefix: DEFAULT_CLASS_PREFIX,
+			showWhitespace: false,
+			maxHeight: false
+		},
+		languages = {},
+		languageDefaults = {},
+		events = {
+			beforeHighlightNode: [],
+			beforeHighlight: [],
+			beforeTokenize: [],
+			afterTokenize: [],
+			beforeAnalyze: [],
+			afterAnalyze: [],
+			afterHighlight: [],
+			afterHighlightNode: []
+		};
+
+	defaultAnalyzer = (function() {
+		function defaultHandleToken(suffix) {
+			return function(context) {
+				var element = document.createElement("span");
+				element.className = context.options.classPrefix + suffix;
+				element.appendChild(context.createTextNode(context.tokens[context.index]));
+				return context.addNode(element) || true;
+			};
+		}
+
+		return {
+			handleToken: function(context) { 
+				return defaultHandleToken(context.tokens[context.index].name)(context); 
+			},
+
+			//just append default content as a text node
+			handle_default: function(context) { 
+				return context.addNode(context.createTextNode(context.tokens[context.index])); 
+			},
+
+			//this handles the named ident mayhem
+			handle_ident: function(context) {
+				var evaluate = function(rules, createRule) {
+					var i;
+					rules = rules || [];
+					for (i = 0; i < rules.length; i++) {
+						if (typeof(rules[i]) === "function") {
+							if (rules[i](context)) {
+								return defaultHandleToken("named-ident")(context);
+							}
+						} else if (createRule && createRule(rules[i])(context.tokens)) {
+							return defaultHandleToken("named-ident")(context);
+						}
+					}
+
+					return false;
+				};
+
+				return evaluate(context.language.namedIdentRules.custom)
+					|| evaluate(context.language.namedIdentRules.follows, function(ruleData) { return createProceduralRule(context.index - 1, -1, ruleData, context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.precedes, function(ruleData) { return createProceduralRule(context.index + 1, 1, ruleData, context.language.caseInsensitive); })
+					|| evaluate(context.language.namedIdentRules.between, function(ruleData) { return createBetweenRule(context.index, ruleData.opener, ruleData.closer, context.language.caseInsensitive); })
+					|| defaultHandleToken("ident")(context);
+			}
+		};
+	}());
+
+	languageDefaults = {
+		analyzer: create(defaultAnalyzer),
+		customTokens: [],
+		namedIdentRules: {},
+		punctuation: /[^\w\s]/,
+		numberParser: defaultNumberParser,
+		caseInsensitive: false,
+		doNotParse: /\s/,
+		contextItems: {},
+		embeddedLanguages: {}
+	};
+	
+	//adapted from http://blargh.tommymontgomery.com/2010/04/get-computed-style-in-javascript/
+	getComputedStyle = (function() {
+		var func = null;
+		if (document.defaultView && document.defaultView.getComputedStyle) {
+			func = document.defaultView.getComputedStyle;
+		} else {
+			func = function(element, anything) {
+				return element["currentStyle"] || {};
+			};
+		}
+
+		return function(element, style) {
+			return func(element, null)[style];
+		}
+	}());
+	
+	//-----------
+	//FUNCTIONS
+	//-----------
+
+	function createCodeReader(text) {
+		var index = 0,
+			line = 1,
+			column = 1,
+			length,
+			EOF = undefined,
+			currentChar,
+			nextReadBeginsLine;
+
+		text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n"); //normalize line endings to unix
+
+		length = text.length;
+		currentChar = length > 0 ? text.charAt(0) : EOF;
+
+		function getCharacters(count) {
+			var value;
+			if (count === 0) {
+				return "";
+			}
+
+			count = count || 1;
+
+			value = text.substring(index + 1, index + count + 1);
+			return value === "" ? EOF : value;
+		}
+
+		return {
+			toString: function() {
+				return "length: " + length + ", index: " + index + ", line: " + line + ", column: " + column + ", current: [" + currentChar + "]";
+			},
+
+			peek: function(count) {
+				return getCharacters(count);
+			},
+
+			substring: function() {
+				return text.substring(index);
+			},
+
+			peekSubstring: function() {
+				return text.substring(index + 1);
+			},
+
+			read: function(count) {
+				var value = getCharacters(count),
+					newlineCount,
+					lastChar;
+
+				if (value === "") {
+					//this is a result of reading/peeking/doing nothing
+					return value;
+				}
+
+				if (value !== EOF) {
+					//advance index
+					index += value.length;
+					column += value.length;
+
+					//update line count
+					if (nextReadBeginsLine) {
+						line++;
+						column = 1;
+						nextReadBeginsLine = false;
+					}
+
+					newlineCount = value.substring(0, value.length - 1).replace(/[^\n]/g, "").length;
+					if (newlineCount > 0) {
+						line += newlineCount;
+						column = 1;
+					}
+
+					lastChar = last(value);
+					if (lastChar === "\n") {
+						nextReadBeginsLine = true;
+					}
+
+					currentChar = lastChar;
+				} else {
+					index = length;
+					currentChar = EOF;
+				}
+
+				return value;
+			},
+
+			text: function() { return text; },
+
+			getLine: function() { return line; },
+			getColumn: function() { return column; },
+			isEof: function() { return index >= length; },
+			isSol: function() { return column === 1; },
+			isSolWs: function() {
+				var temp = index,
+					c;
+				if (column === 1) {
+					return true;
+				}
+
+				//look backward until we find a newline or a non-whitespace character
+				while ((c = text.charAt(--temp)) !== "") {
+					if (c === "\n") {
+						return true;
+					}
+					if (!/\s/.test(c)) {
+						return false;
+					}
+				}
+
+				return true;
+			},
+			isEol: function() { return nextReadBeginsLine; },
+			EOF: EOF,
+			current: function() { return currentChar; }
+		};
+	}
+
+	//http://javascript.crockford.com/prototypal.html
+	function create(o) {
+		function F() {}
+		F.prototype = o;
+		return new F();
+	}
+	
+	function appendAll(parent, children) {
+		var i;
+		for (i = 0; i < children.length; i++) {
+			parent.appendChild(children[i]);
+		}
+	}
+	
+	//gets the last character in a string or the last element in an array
+	function last(thing) {
+		return thing.charAt ? thing.charAt(thing.length - 1) : thing[thing.length - 1];
+	}
+
+	//array.contains()
+	function contains(arr, value, caseInsensitive) {
+		var i;
+		if (arr.indexOf && !caseInsensitive) {
+			return arr.indexOf(value) >= 0;
+		}
+		
+		for (i = 0; i < arr.length; i++) {
+			if (arr[i] === value) {
+				return true;
+			}
+
+			if (caseInsensitive && typeof(arr[i]) === "string" && typeof(value) === "string" && arr[i].toUpperCase() === value.toUpperCase()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	//non-recursively merges one object into the other
+	function merge(defaultObject, objectToMerge) {
+		var key;
+		if (!objectToMerge) {
+			return defaultObject;
+		}
+
+		for (key in objectToMerge) {
+			defaultObject[key] = objectToMerge[key];
+		}
+
+		return defaultObject;
+	}
+	
+	function clone(object) {
+		return merge({}, object);
+	}
+
+	//http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
+	function regexEscape(s) {
+		return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+	}
+
+	function createProceduralRule(startIndex, direction, tokenRequirements, caseInsensitive) {
+		tokenRequirements = tokenRequirements.slice(0);
+		return function(tokens) {
+			var tokenIndexStart = startIndex,
+				j,
+				expected,
+				actual;
+				
+			if (direction === 1) {
+				tokenRequirements.reverse();
+			}
+
+			for (j = 0; j < tokenRequirements.length; j++) {
+				actual = tokens[tokenIndexStart + (j * direction)];
+				expected = tokenRequirements[tokenRequirements.length - 1 - j];
+
+				if (actual === undefined) {
+					if (expected["optional"] !== undefined && expected.optional) {
+						tokenIndexStart -= direction;
+					} else {
+						return false;
+					}
+				} else if (actual.name === expected.token && (expected["values"] === undefined || contains(expected.values, actual.value, caseInsensitive))) {
+					//derp
+					continue;
+				} else if (expected["optional"] !== undefined && expected.optional) {
+					tokenIndexStart -= direction; //we need to reevaluate against this token again
+				} else {
+					return false;
+				}
+			}
+
+			return true;
+		};
+	}
+
+	function createBetweenRule(startIndex, opener, closer, caseInsensitive) {
+		return function(tokens) {
+			var index = startIndex,
+				token,
+				success = false;
+
+			//check to the left: if we run into a closer or never run into an opener, fail
+			while ((token = tokens[--index]) !== undefined) {
+				if (token.name === closer.token && contains(closer.values, token.value)) {
+					if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
+						//if the closer is the same as the opener that's okay
+						success = true;
+						break;
+					}
+
+					return false;
+				}
+
+				if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
+					success = true;
+					break;
+				}
+			}
+
+			if (!success) {
+				return false;
+			}
+
+			//check to the right for the closer
+			index = startIndex;
+			while ((token = tokens[++index]) !== undefined) {
+				if (token.name === opener.token && contains(opener.values, token.value, caseInsensitive)) {
+					if (token.name === closer.token && contains(closer.values, token.value, caseInsensitive)) {
+						//if the closer is the same as the opener that's okay
+						success = true;
+						break;
+					}
+
+					return false;
+				}
+
+				if (token.name === closer.token && contains(closer.values, token.value, caseInsensitive)) {
+					success = true;
+					break;
+				}
+			}
+
+			return success;
+		};
+	}
+
+	function matchWord(context, wordMap, tokenName, doNotRead) {
+		var current = context.reader.current(),
+			i,
+			word,
+			peek,
+			line = context.reader.getLine(),
+			column = context.reader.getColumn();
+			
+		wordMap = wordMap || [];
+		if (context.language.caseInsensitive) {
+			current = current.toUpperCase();
+		}
+
+		if (!wordMap[current]) {
+			return null;
+		}
+
+		wordMap = wordMap[current];
+		for (i = 0; i < wordMap.length; i++) {
+			word = wordMap[i].value;
+
+			peek = current + context.reader.peek(word.length);
+			if (word === peek || wordMap[i].regex.test(peek)) {
+				return context.createToken(
+					tokenName,
+					context.reader.current() + context.reader[doNotRead ? "peek" : "read"](word.length - 1),
+					line,
+					column
+				);
+			}
+		}
+
+		return null;
+	}
+
+	//gets the next token in the specified direction while matcher matches the current token
+	function getNextWhile(tokens, index, direction, matcher) {
+		var count = 1, 
+			token;
+		
+		direction = direction || 1;
+		while (token = tokens[index + (direction * count++)]) {
+			if (!matcher(token)) {
+				return token;
+			}
+		}
+		
+		return undefined;
+	}
+
+	//this is crucial for performance
+	function createHashMap(wordMap, boundary, caseInsensitive) {
+		//creates a hash table where the hash is the first character of the word
+		var newMap = { },
+			i,
+			word,
+			firstChar;
+		
+		for (i = 0; i < wordMap.length; i++) {
+			word = caseInsensitive ? wordMap[i].toUpperCase() : wordMap[i];
+			firstChar = word.charAt(0);
+			if (!newMap[firstChar]) {
+				newMap[firstChar] = [];
+			}
+
+			newMap[firstChar].push({ value: word, regex: new RegExp("^" + regexEscape(word) + boundary, caseInsensitive ? "i" : "") });
+		}
+
+		return newMap;
+	}
+
+	function defaultNumberParser(context) {
+		var current = context.reader.current(), 
+			number, 
+			line = context.reader.getLine(), 
+			column = context.reader.getColumn(),
+			allowDecimal = true,
+			peek;
+
+		if (!/\d/.test(current)) {
+			//is it a decimal followed by a number?
+			if (current !== "." || !/\d/.test(context.reader.peek())) {
+				return null;
+			}
+
+			//decimal without leading zero
+			number = current + context.reader.read();
+			allowDecimal = false;
+		} else {
+			number = current;
+			if (current === "0" && context.reader.peek() !== ".") {
+				//hex or octal
+				allowDecimal = false;
+			}
+		}
+
+		//easy way out: read until it's not a number or letter
+		//this will work for hex (0xef), octal (012), decimal and scientific notation (1e3)
+		//anything else and you're on your own
+
+		while ((peek = context.reader.peek()) !== context.reader.EOF) {
+			if (!/[A-Za-z0-9]/.test(peek)) {
+				if (peek === "." && allowDecimal && /\d$/.test(context.reader.peek(2))) {
+					number += context.reader.read();
+					allowDecimal = false;
+					continue;
+				}
+				
+				break;
+			}
+
+			number += context.reader.read();
+		}
+
+		return context.createToken("number", number, line, column);
+	}
+
+	function fireEvent(eventName, highlighter, eventContext) {
+		var delegates = events[eventName] || [],
+			i;
+		
+		for (i = 0; i < delegates.length; i++) {
+			delegates[i].call(highlighter, eventContext);
+		}
+	}
+	
+	function Highlighter(options) {
+		this.options = merge(clone(globalOptions), options);
+	}
+
+	Highlighter.prototype = (function() {
+		var parseNextToken = (function() {
+			function isIdentMatch(context) {
+				return context.language.identFirstLetter && context.language.identFirstLetter.test(context.reader.current());
+			}
+
+			//token parsing functions
+			function parseKeyword(context) {
+				return matchWord(context, context.language.keywords, "keyword");
+			}
+
+			function parseCustomTokens(context) {
+				var tokenName,
+					token;
+				if (context.language.customTokens === undefined) {
+					return null;
+				}
+
+				for (tokenName in context.language.customTokens) {
+					token = matchWord(context, context.language.customTokens[tokenName], tokenName);
+					if (token !== null) {
+						return token;
+					}
+				}
+
+				return null;
+			}
+
+			function parseOperator(context) {
+				return matchWord(context, context.language.operators, "operator");
+			}
+
+			function parsePunctuation(context) {
+				var current = context.reader.current();
+				if (context.language.punctuation.test(regexEscape(current))) {
+					return context.createToken("punctuation", current, context.reader.getLine(), context.reader.getColumn());
+				}
+
+				return null;
+			}
+
+			function parseIdent(context) {
+				var ident,
+					peek,
+					line = context.reader.getLine(),
+					column = context.reader.getColumn();
+
+				if (!isIdentMatch(context)) {
+					return null;
+				}
+
+				ident = context.reader.current();
+				while ((peek = context.reader.peek()) !== context.reader.EOF) {
+					if (!context.language.identAfterFirstLetter.test(peek)) {
+						break;
+					}
+
+					ident += context.reader.read();
+				}
+
+				return context.createToken("ident", ident, line, column);
+			}
+
+			function parseDefault(context) {
+				if (context.defaultData.text === "") {
+					//new default token
+					context.defaultData.line = context.reader.getLine();
+					context.defaultData.column = context.reader.getColumn();
+				}
+
+				context.defaultData.text += context.reader.current();
+				return null;
+			}
+
+			function parseScopes(context) {
+				var current = context.reader.current(),
+					tokenName,
+					specificScopes,
+					j,
+					opener,
+					line,
+					column,
+					continuation,
+					value;
+
+				for (tokenName in context.language.scopes) {
+					specificScopes = context.language.scopes[tokenName];
+					for (j = 0; j < specificScopes.length; j++) {
+						opener = specificScopes[j][0];
+
+						value = current + context.reader.peek(opener.length - 1);
+
+						if (opener !== value && (!context.language.caseInsensitive || value.toUpperCase() !== opener.toUpperCase())) {
+							continue;
+						}
+
+						line = context.reader.getLine(), column = context.reader.getColumn();
+						context.reader.read(opener.length - 1);
+						continuation = getScopeReaderFunction(specificScopes[j], tokenName);
+						return continuation(context, continuation, value, line, column);
+					}
+				}
+
+				return null;
+			}
+
+			function parseNumber(context) {
+				return context.language.numberParser(context);
+			}
+
+			function parseCustomRules(context) {
+				var customRules = context.language.customParseRules,
+					i,
+					token;
+
+				if (customRules === undefined) {
+					return null;
+				}
+
+				for (i = 0; i < customRules.length; i++) {
+					token = customRules[i](context);
+					if (token) {
+						return token;
+					}
+				}
+
+				return null;
+			}
+
+			return function(context) {
+				if (context.language.doNotParse.test(context.reader.current())) {
+					return parseDefault(context);
+				}
+
+				return parseCustomRules(context)
+					|| parseCustomTokens(context)
+					|| parseKeyword(context)
+					|| parseScopes(context)
+					|| parseIdent(context)
+					|| parseNumber(context)
+					|| parseOperator(context)
+					|| parsePunctuation(context)
+					|| parseDefault(context);
+			}
+		}());
+		
+		function getScopeReaderFunction(scope, tokenName) {
+			var escapeSequences = scope[2] || [],
+				closerLength = scope[1].length,
+				closer = typeof(scope[1]) === "string" ? new RegExp(regexEscape(scope[1])) : scope[1].regex,
+				zeroWidth = scope[3] || false;
+
+			//processCurrent indicates that this is being called from a continuation
+			//which means that we need to process the current char, rather than peeking at the next
+			return function(context, continuation, buffer, line, column, processCurrent) {
+				var foundCloser = false;
+				buffer = buffer || "";
+					
+				processCurrent = processCurrent ? 1 : 0;
+
+				function process(processCurrent) {
+					//check for escape sequences
+					var peekValue,
+						current = context.reader.current(),
+						i;
+					
+					for (i = 0; i < escapeSequences.length; i++) {
+						peekValue = (processCurrent ? current : "") + context.reader.peek(escapeSequences[i].length - processCurrent);
+						if (peekValue === escapeSequences[i]) {
+							buffer += context.reader.read(peekValue.length - processCurrent);
+							return true;
+						}
+					}
+
+					peekValue = (processCurrent ? current : "") + context.reader.peek(closerLength - processCurrent);
+					if (closer.test(peekValue)) {
+						foundCloser = true;
+						return false;
+					}
+
+					buffer += processCurrent ? current : context.reader.read();
+					return true;
+				};
+
+				if (!processCurrent || process(true)) {
+					while (context.reader.peek() !== context.reader.EOF && process(false)) { }
+				}
+
+				if (processCurrent) {
+					buffer += context.reader.current();
+					context.reader.read();
+				} else {
+					buffer += zeroWidth || context.reader.peek() === context.reader.EOF ? "" : context.reader.read(closerLength);
+				}
+
+				if (!foundCloser) {
+					//we need to signal to the context that this scope was never properly closed
+					//this has significance for partial parses (e.g. for nested languages)
+					context.continuation = continuation;
+				}
+
+				return context.createToken(tokenName, buffer, line, column);
+			};
+		}
+		
+		//called before processing the current
+		function switchToEmbeddedLanguageIfNecessary(context) {
+			var i,
+				embeddedLanguage;
+			
+			for (i = 0; i < context.language.embeddedLanguages.length; i++) {
+				if (!languages[context.language.embeddedLanguages[i].language]) {
+					//unregistered language
+					continue;
+				}
+				
+				embeddedLanguage = clone(context.language.embeddedLanguages[i]);
+				
+				if (embeddedLanguage.switchTo(context)) {
+					embeddedLanguage.oldItems = clone(context.items);
+					context.embeddedLanguageStack.push(embeddedLanguage);
+					context.language = languages[embeddedLanguage.language];
+					context.items = merge(context.items, clone(context.language.contextItems));
+					break;
+				}
+			}
+		}
+		
+		//called after processing the current
+		function switchBackFromEmbeddedLanguageIfNecessary(context) {
+			var current = last(context.embeddedLanguageStack),
+				lang;
+			
+			if (current && current.switchBack(context)) {
+				context.language = languages[current.parentLanguage];
+				lang = context.embeddedLanguageStack.pop();
+				
+				//restore old items
+				context.items = clone(lang.oldItems);
+				lang.oldItems = {};
+			}
+		}
+		
+		function tokenize(unhighlightedCode, language, partialContext, options) {
+			var tokens = [],
+				context,
+				continuation,
+				token;
+				
+			fireEvent("beforeTokenize", this, { code: unhighlightedCode, language: language });
+			context = {
+				reader: createCodeReader(unhighlightedCode),
+				language: language,
+				items: clone(language.contextItems),
+				token: function(index) { return tokens[index]; },
+				getAllTokens: function() { return tokens.slice(0); },
+				count: function() { return tokens.length; },
+				options: options,
+				embeddedLanguageStack: [],
+				
+				defaultData: {
+					text: "",
+					line: 1,
+					column: 1
+				},
+				createToken: function(name, value, line, column) {
+					return {
+						name: name,
+						line: line,
+						value: isIe ? value.replace(/\n/g, "\r") : value,
+						column: column,
+						language: this.language.name
+					};
+				}
+			};
+
+			//if continuation is given, then we need to pick up where we left off from a previous parse
+			//basically it indicates that a scope was never closed, so we need to continue that scope
+			if (partialContext.continuation) {
+				continuation = partialContext.continuation;
+				partialContext.continuation = null;
+				tokens.push(continuation(context, continuation, "", context.reader.getLine(), context.reader.getColumn(), true));
+			}
+
+			while (!context.reader.isEof()) {
+				switchToEmbeddedLanguageIfNecessary(context);
+				token = parseNextToken(context);
+
+				//flush default data if needed (in pretty much all languages this is just whitespace)
+				if (token !== null) {
+					if (context.defaultData.text !== "") {
+						tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column));
+						context.defaultData.text = "";
+					}
+
+					if (token[0] !== undefined) {
+						//multiple tokens
+						tokens = tokens.concat(token);
+					} else {
+						//single token
+						tokens.push(token);
+					}
+				}
+
+				switchBackFromEmbeddedLanguageIfNecessary(context);
+				context.reader.read();
+			}
+
+			//append the last default token, if necessary
+			if (context.defaultData.text !== "") {
+				tokens.push(context.createToken("default", context.defaultData.text, context.defaultData.line, context.defaultData.column));
+			}
+
+			fireEvent("afterTokenize", this, { code: unhighlightedCode, parserContext: context });
+			return context;
+		}
+
+		function createAnalyzerContext(parserContext, partialContext, options) {
+			var nodes = [],
+				prepareText = function() {
+					var nbsp, tab;
+					if (options.showWhitespace) {
+						nbsp = String.fromCharCode(0xB7);
+						tab = new Array(options.tabWidth).join(String.fromCharCode(0x2014)) + String.fromCharCode(0x2192);
+					} else {
+						nbsp = String.fromCharCode(0xA0);
+						tab = new Array(options.tabWidth + 1).join(nbsp);
+					}
+					
+					return function(token) {
+						var value = token.value.split(" ").join(nbsp),
+							tabIndex,
+							lastNewlineColumn,
+							actualColumn,
+							tabLength;
+						
+						//tabstop madness: replace \t with the appropriate number of characters, depending on the tabWidth option and its relative position in the line
+						while ((tabIndex = value.indexOf("\t")) >= 0) {
+							lastNewlineColumn = value.lastIndexOf(EOL, tabIndex);
+							actualColumn = lastNewlineColumn === -1 ? tabIndex : tabIndex - lastNewlineColumn - 1;
+							tabLength = options.tabWidth - (actualColumn % options.tabWidth); //actual length of the TAB character
+							
+							value = value.substring(0, tabIndex) + tab.substring(options.tabWidth - tabLength) + value.substring(tabIndex + 1);
+						}
+						
+						return value;
+					};
+				}();
+
+			return {
+				tokens: (partialContext.tokens || []).concat(parserContext.getAllTokens()),
+				index: partialContext.index ? partialContext.index + 1 : 0,
+				language: null,
+				getAnalyzer: EMPTY,
+				options: options,
+				continuation: parserContext.continuation,
+				addNode: function(node) { nodes.push(node); },
+				createTextNode: function(token) { return document.createTextNode(prepareText(token)); },
+				getNodes: function() { return nodes; },
+				resetNodes: function() { nodes = []; },
+				items: parserContext.items
+			};
+		}
+
+		//partialContext allows us to perform a partial parse, and then pick up where we left off at a later time
+		//this functionality enables nested highlights (language within a language, e.g. PHP within HTML followed by more PHP)
+		function highlightText(unhighlightedCode, languageId, partialContext) {
+			var language = languages[languageId],
+				analyzerContext;
+			
+			partialContext = partialContext || { };
+			if (language === undefined) {
+				//use default language if one wasn't specified or hasn't been registered
+				language = languages[DEFAULT_LANGUAGE];
+			}
+
+			fireEvent("beforeHighlight", this, { code: unhighlightedCode, language: language, previousContext: partialContext });
+			
+			analyzerContext = createAnalyzerContext(
+				tokenize.call(this, unhighlightedCode, language, partialContext, this.options),
+				partialContext,
+				this.options
+			);
+			
+			analyze.call(this, analyzerContext, partialContext.index ? partialContext.index + 1 : 0);
+			
+			fireEvent("afterHighlight", this, { analyzerContext: analyzerContext });
+
+			return analyzerContext;
+		}
+		
+		function createContainer(ctx) {
+			var container = document.createElement("span");
+			container.className = ctx.options.classPrefix + ctx.language.name;
+			return container;
+		}
+		
+		function analyze(analyzerContext, startIndex) {
+			var nodes,
+				lastIndex,
+				container,
+				i,
+				tokenName,
+				func,
+				language,
+				analyzer;
+			
+			fireEvent("beforeAnalyze", this, { analyzerContext: analyzerContext });
+			
+			if (analyzerContext.tokens.length > 0) {
+				analyzerContext.language = languages[analyzerContext.tokens[0].language] || languages[DEFAULT_LANGUAGE];;
+				nodes = [];
+				lastIndex = 0;
+				container = createContainer(analyzerContext);
+				
+				for (i = startIndex; i < analyzerContext.tokens.length; i++) {
+					language = languages[analyzerContext.tokens[i].language] || languages[DEFAULT_LANGUAGE];
+					if (language.name !== analyzerContext.language.name) {
+						appendAll(container, analyzerContext.getNodes());
+						analyzerContext.resetNodes();
+						
+						nodes.push(container);
+						analyzerContext.language = language;
+						container = createContainer(analyzerContext);
+					}
+					
+					analyzerContext.index = i;
+					tokenName = analyzerContext.tokens[i].name;
+					func = "handle_" + tokenName;
+
+					analyzer = analyzerContext.getAnalyzer.call(analyzerContext) || analyzerContext.language.analyzer;
+					analyzer[func] ? analyzer[func](analyzerContext) : analyzer.handleToken(analyzerContext);
+				}
+				
+				//append the last nodes, and add the final nodes to the context
+				appendAll(container, analyzerContext.getNodes());
+				nodes.push(container);
+				analyzerContext.resetNodes();
+				for (i = 0; i < nodes.length; i++) {
+					analyzerContext.addNode(nodes[i]);
+				}
+			}
+			
+			fireEvent("afterAnalyze", this, { analyzerContext: analyzerContext });
+		}
+
+		return {
+			//matches the language of the node to highlight
+			matchSunlightNode: function() {
+				var regex;
+				
+				return function(node) {
+					if (!regex) {
+						regex = new RegExp("(?:\\s|^)" + this.options.classPrefix + "highlight-(\\S+)(?:\\s|$)");
+					}
+					
+					return regex.exec(node.className);
+				};
+			}(),
+			
+			//determines if the node has already been highlighted
+			isAlreadyHighlighted: function() {
+				var regex;
+				return function(node) {
+					if (!regex) {
+						regex = new RegExp("(?:\\s|^)" + this.options.classPrefix + "highlighted(?:\\s|$)");
+					}
+					
+					return regex.test(node.className);
+				};
+			}(),
+			
+			//highlights a block of text
+			highlight: function(code, languageId) { return highlightText.call(this, code, languageId); },
+
+			//recursively highlights a DOM node
+			highlightNode: function highlightRecursive(node) {
+				var match,
+					languageId,
+					currentNodeCount,
+					j,
+					nodes,
+					k,
+					partialContext,
+					container,
+					codeContainer;
+				
+				if (this.isAlreadyHighlighted(node) || (match = this.matchSunlightNode(node)) === null) {
+					return;
+				}
+
+				languageId = match[1];
+				currentNodeCount = 0;
+				fireEvent("beforeHighlightNode", this, { node: node });
+				for (j = 0; j < node.childNodes.length; j++) {
+					if (node.childNodes[j].nodeType === 3) {
+						//text nodes
+						partialContext = highlightText.call(this, node.childNodes[j].nodeValue, languageId, partialContext);
+						HIGHLIGHTED_NODE_COUNT++;
+						currentNodeCount = currentNodeCount || HIGHLIGHTED_NODE_COUNT;
+						nodes = partialContext.getNodes();
+
+						node.replaceChild(nodes[0], node.childNodes[j]);
+						for (k = 1; k < nodes.length; k++) {
+							node.insertBefore(nodes[k], nodes[k - 1].nextSibling);
+						}
+					} else if (node.childNodes[j].nodeType === 1) {
+						//element nodes
+						highlightRecursive.call(this, node.childNodes[j]);
+					}
+				}
+
+				//indicate that this node has been highlighted
+				node.className += " " + this.options.classPrefix + "highlighted";
+				
+				//if the node is block level, we put it in a container, otherwise we just leave it alone
+				if (getComputedStyle(node, "display") === "block") {
+					container = document.createElement("div");
+					container.className = this.options.classPrefix + "container";
+					
+					codeContainer = document.createElement("div");
+					codeContainer.className = this.options.classPrefix + "code-container";
+
+					//apply max height if specified in options
+					if (this.options.maxHeight !== false) {
+						codeContainer.style.overflowY = "auto";
+						codeContainer.style.maxHeight = this.options.maxHeight + (/^\d+$/.test(this.options.maxHeight) ? "px" : "");
+					}
+					
+					container.appendChild(codeContainer);
+					
+					node.parentNode.insertBefore(codeContainer, node);
+					node.parentNode.removeChild(node);
+					codeContainer.appendChild(node);
+					
+					codeContainer.parentNode.insertBefore(container, codeContainer);
+					codeContainer.parentNode.removeChild(codeContainer);
+					container.appendChild(codeContainer);
+				}
+				
+				fireEvent("afterHighlightNode", this, { 
+					container: container,
+					codeContainer: codeContainer,
+					node: node, 
+					count: currentNodeCount
+				});
+			}
+		};
+	}());
+
+	//public facing object
+	window.Sunlight = {
+		version: "1.18",
+		Highlighter: Highlighter,
+		createAnalyzer: function() { return create(defaultAnalyzer); },
+		globalOptions: globalOptions,
+
+		highlightAll: function(options) {
+			var highlighter = new Highlighter(options),
+				tags = document.getElementsByTagName("*"),
+				i;
+			
+			for (i = 0; i < tags.length; i++) {
+				highlighter.highlightNode(tags[i]);
+			}
+		},
+
+		registerLanguage: function(languageId, languageData) {
+			var tokenName,
+				embeddedLanguages,
+				languageName;
+			
+			if (!languageId) {
+				throw "Languages must be registered with an identifier, e.g. \"php\" for PHP";
+			}
+
+			languageData = merge(merge({}, languageDefaults), languageData);
+			languageData.name = languageId;
+
+			//transform keywords, operators and custom tokens into a hash map
+			languageData.keywords = createHashMap(languageData.keywords || [], "\\b", languageData.caseInsensitive);
+			languageData.operators = createHashMap(languageData.operators || [], "", languageData.caseInsensitive);
+			for (tokenName in languageData.customTokens) {
+				languageData.customTokens[tokenName] = createHashMap(
+					languageData.customTokens[tokenName].values,
+					languageData.customTokens[tokenName].boundary,
+					languageData.caseInsensitive
+				);
+			}
+			
+			//convert the embedded language object to an easier-to-use array
+			embeddedLanguages = [];
+			for (languageName in languageData.embeddedLanguages) {
+				embeddedLanguages.push({
+					parentLanguage: languageData.name,
+					language: languageName,
+					switchTo: languageData.embeddedLanguages[languageName].switchTo,
+					switchBack: languageData.embeddedLanguages[languageName].switchBack
+				});
+			}
+			
+			languageData.embeddedLanguages = embeddedLanguages;
+
+			languages[languageData.name] = languageData;
+		},
+		
+		isRegistered: function(languageId) { return languages[languageId] !== undefined; },
+		
+		bind: function(event, callback) {
+			if (!events[event]) {
+				throw "Unknown event \"" + event + "\"";
+			}
+			
+			events[event].push(callback);
+		},
+
+		util: {
+			last: last,
+			regexEscape: regexEscape,
+			eol: EOL,
+			clone: clone,
+			escapeSequences: ["\\n", "\\t", "\\r", "\\\\", "\\v", "\\f"],
+			contains: contains,
+			matchWord: matchWord,
+			createHashMap: createHashMap,
+			createBetweenRule: createBetweenRule,
+			createProceduralRule: createProceduralRule,
+			getNextNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, 1, function(token) { return token.name === "default"; }); },
+			getPreviousNonWsToken: function(tokens, index) { return getNextWhile(tokens, index, -1, function(token) { return token.name === "default"; }); },
+			getNextWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, 1, matcher); },
+			getPreviousWhile: function(tokens, index, matcher) { return getNextWhile(tokens, index, -1, matcher); },
+			whitespace: { token: "default", optional: true },
+			getComputedStyle: getComputedStyle
+		}
+	};
+
+	//register the default language
+	window.Sunlight.registerLanguage(DEFAULT_LANGUAGE, { punctuation: /(?!x)x/, numberParser: EMPTY });
+
+}(this, document));
