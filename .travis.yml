@@ -5,8 +5,14 @@ matrix:
       addons:
         sauce_connect: true
       env:
-        - SAUCE_ONLY=true BROWSER_NAME=chrome
-        - SAUCE_ONLY=true BROWSER_NAME=firefox
+        - SAUCE_ONLY=true
+        - BROWSER_NAME=chrome
+    - node_js: "node"
+      addons:
+        sauce_connect: true
+      env:
+        - SAUCE_ONLY=true
+        - BROWSER_NAME=firefox
     - node_js: "8"
       env: NO_SAUCE=true
     - node_js: "7"
