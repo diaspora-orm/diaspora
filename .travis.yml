@@ -13,6 +13,12 @@ matrix:
       env:
         - SAUCE_ONLY=true
         - BROWSER_NAME=firefox
+    - node_js: "node"
+      addons:
+        sauce_connect: true
+      env:
+        - SAUCE_ONLY=true
+        - BROWSER_NAME="internet explorer"
     - node_js: "8"
       env: NO_SAUCE=true
     - node_js: "7"

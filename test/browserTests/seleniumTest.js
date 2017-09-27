@@ -21,7 +21,6 @@ describe(`Test Diaspora in the browser (${process.env.BROWSER_NAME || 'chrome'}
 		passed = false;
 		if (process.env.SAUCE_USERNAME != undefined) {
 			browser = new webdriver.Builder()
-				.forBrowser(process.env.BROWSER_NAME)
 				.usingServer('http://'+ process.env.SAUCE_USERNAME+':'+process.env.SAUCE_ACCESS_KEY+'@ondemand.saucelabs.com:80/wd/hub')
 				.withCapabilities({
 				'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
@@ -47,7 +46,7 @@ describe(`Test Diaspora in the browser (${process.env.BROWSER_NAME || 'chrome'}
 			return browser.getSession().then(session => {
 				return saucelabs.updateJob(session.getId(), {
 					passed,
-					name: "Diaspora Browser build"
+					name: `Diaspora Browser build on ${process.env.BROWSER_NAME}`,
 				});
 			}).catch(e => {
 				console.error(e);
