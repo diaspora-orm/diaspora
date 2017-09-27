@@ -8,10 +8,13 @@ const getTestPath = fileName => {
 		return 'file://'+path.resolve(__dirname, fileName);
 	}
 }
+const SauceLabs = require('saucelabs');
+
 describe("Test Diaspora in the browser", function() {
 	this.timeout(20000);
 	let browser;
 	let passed;
+	let saucelabs;
 
 	beforeEach(() => {
 		let ret;
@@ -27,6 +30,10 @@ describe("Test Diaspora in the browser", function() {
 				accessKey: process.env.SAUCE_ACCESS_KEY,
 				browserName: process.env.BROWSER_NAME
 			}).build();
+			saucelabs = new SauceLabs({
+				username : process.env.SAUCE_USERNAME,
+				password : process.env.SAUCE_ACCESS_KEY,
+			});
 		} else {
 			browser = new webdriver.Builder()
 				.withCapabilities({
@@ -37,22 +44,11 @@ describe("Test Diaspora in the browser", function() {
 
 	afterEach(() => {
 		if(process.env.SAUCE_USERNAME != undefined){
-			const request = require('request');
-
 			return browser.getSession().then(session => {
-				const url = `https://saucelabs.com/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${session.getId()}`;
-				const args = {
-					json: {
-						passed,
-						name: "Diaspora Browser build"
-					},
-					auth: {
-						user: process.env.SAUCE_USERNAME,
-						pass: process.env.SAUCE_ACCESS_KEY,
-						sendImmediately: false
-					},
-				};
-				return Promise.promisify(request.put)(url, args);
+				return saucelabs.updateJob(session.getId(), {
+					passed,
+					name: "Diaspora Browser build"
+				});
 			}).catch(e => {
 				console.error(e);
 				return Promise.reject(e);
