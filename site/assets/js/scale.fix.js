@@ -154,11 +154,11 @@ $(document).ready(function(event) {
 		table.tableHeadFixer({left: 1, head: false});
 	}
 
-	
-	
-	
-	
-	
+
+
+
+
+
 
 	$( "[id*='$']" ).each( function () {
 		var $this = $( this );
@@ -197,23 +197,24 @@ $(document).ready(function(event) {
 		enableDoclinks : true
 	} );
 
-	$.catchAnchorLinks( {
-		navbarOffset: 10
-	} );
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "#main h1,#main h2,#main h3,#main h4",
-		showAndHide : false,
-		smoothScrolling: true
-	} );
+	if($.catchAnchorLinks){
+		$.catchAnchorLinks( {
+			navbarOffset: 10
+		} );
+		$( "#toc" ).toc( {
+			anchorName  : function ( i, heading, prefix ) {
+				return $( heading ).attr( "id" ) || ( prefix + i );
+			},
+			selectors   : "#main h1,#main h2,#main h3,#main h4",
+			showAndHide : false,
+			smoothScrolling: true
+		} );
+	}
 
 	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
 	//		$( '.dropdown-toggle' ).dropdown();
 
 	$( "table" ).each( function () {
-		var $this = $( this );
-		$this.addClass('table');
+		$( this ).addClass('table');
 	} );
 });

@@ -20,12 +20,12 @@ If you put several operators in a condition object, they'll be combined using an
 Numbers in parenthesis in operations' name indicates the Query Language Specification Level. Check your adapters' documentation to see the level supported by adapters you use.
 </div>
 
-### Match all ^\(1\)
+### Match all <sup>(1)</sup>
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+#### Diaspora
 
 {% highlight javascript %}
 PhoneBook.findMany({}).then(...);
@@ -33,7 +33,7 @@ PhoneBook.findMany({}).then(...);
 </div>
 <div class="tab" data-ref="sql">
 
-<h4>SQL</h4>
+#### SQL
 
 {% highlight sql %}
 SELECT * FROM `PhoneBook`;
@@ -41,7 +41,7 @@ SELECT * FROM `PhoneBook`;
 </div>
 <div class="tab" data-ref="mongodb">
 
-<h4>MongoDB</h4>
+#### MongoDB
 
 {% highlight javascript %}
 db.getCollection( 'PhoneBook' ).find({}).then(...);
@@ -49,12 +49,12 @@ db.getCollection( 'PhoneBook' ).find({}).then(...);
 </div>
 </div>
 
-### Match by field value ^\(1\)
+### Match by field value <sup>(1)</sup>
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+#### Diaspora
 
 {% highlight javascript %}
 PhoneBook.find({ id: '9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6' }).then(...); // Match a single entity that have this value
@@ -63,7 +63,7 @@ PhoneBook.findMany({ phone: undefined }).then(...); // Match all entities that d
 </div>
 <div class="tab" data-ref="sql">
 
-<h4>SQL</h4>
+#### SQL
 
 {% highlight sql %}
 SELECT * FROM `PhoneBook` WHERE `id`=15;
@@ -72,7 +72,7 @@ SELECT * FROM `PhoneBook` WHERE `phone` IS NULL;
 </div>
 <div class="tab" data-ref="mongodb">
 
-<h4>MongoDB</h4>
+#### MongoDB
 
 {% highlight javascript %}
 db.getCollection( 'PhoneBook' ).find({ _id: ObjectId("59bf7e38945e5adadfd83b1c") }).then(...);
@@ -81,12 +81,12 @@ db.getCollection( 'PhoneBook' ).find({ phone: { $exists: false } }).then(...);
 </div>
 </div>
 
-### Match by a value defined or not, with **~** ^\(2\)
+### Match by a value defined or not, with **~** <sup>(2)</sup>
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+#### Diaspora
 
 {% highlight javascript %}
 PhoneBook.find({ email: { '~': true } }).then(...);
@@ -95,7 +95,7 @@ PhoneBook.find({ email: { '~': false } }).then(...);
 </div>
 <div class="tab" data-ref="sql">
 
-<h4>SQL</h4>
+#### SQL
 
 {% highlight sql %}
 SELECT * FROM `PhoneBook` WHERE `email` IS NULL;
@@ -104,7 +104,7 @@ SELECT * FROM `PhoneBook` WHERE `email` IS NOT NULL;
 </div>
 <div class="tab" data-ref="mongodb">
 
-<h4>MongoDB</h4>
+#### MongoDB
 
 {% highlight javascript %}
 db.getCollection( 'PhoneBook' ).find({ number : { $exists: true } }).then(...);
@@ -115,22 +115,22 @@ db.getCollection( 'PhoneBook' ).find({ number : { $exists: false } }).then(...);
 
  * `~` can be replaced by `$exists`
 
-### Match by a value equal or not, with **==** and **!=** ^\(2\)
+### Match by a value equal or not, with **==** and **!=** <sup>(2)</sup>
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+#### Diaspora
 
 {% highlight javascript %}
 PhoneBook.find({ number: { '==': '(251) 546-9442' } }).then(...);
 PhoneBook.find({ number: { '!=': '(251) 546-9442' } }).then(...);
 {% endhighlight %}
-The usage of <code>==</code> is optional, you can replace <code>{'==': value}</code> with <code>value</code>
+The usage of `==` is optional, you can replace `{'==': value}` with `value`
 </div>
 <div class="tab" data-ref="sql">
 
-<h4>SQL</h4>
+#### SQL
 
 {% highlight sql %}
 SELECT * FROM `PhoneBook` WHERE `number` = "(251) 546-9442";
@@ -139,7 +139,7 @@ SELECT * FROM `PhoneBook` WHERE `number` != "(251) 546-9442";
 </div>
 <div class="tab" data-ref="mongodb">
 
-<h4>MongoDB</h4>
+#### MongoDB
 
 {% highlight javascript %}
 db.getCollection( 'PhoneBook' ).find({ number : '(251) 546-9442' }).then(...);
@@ -152,15 +152,15 @@ db.getCollection( 'PhoneBook' ).find({ number : { $ne: '(251) 546-9442' } }).the
  * `!=` can be replaced by `$diff`
 
 <div class="note info">
-<code>!=</code> will match only if entity's value is <em>defined</em> <b>and</b> <em>different</em>.
+`!=` will match only if entity's value is *defined* **and** *different*.
 </div>
 
-### Match by number comparaison, with **<**, **<=**, **>** and **>=** ^\(2\)
+### Match by number comparaison, with **<**, **<=**, **>** and **>=** <sup>(2)</sup>
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+#### Diaspora
 
 {% highlight javascript %}
 PhoneBook.find({ index: { '>': 12 } }).then(...);
@@ -168,14 +168,14 @@ PhoneBook.find({ index: { '>=': 12 } }).then(...);
 PhoneBook.find({ index: { '<': 12 } }).then(...);
 PhoneBook.find({ index: { '<=': 12 } }).then(...);
 {% endhighlight %}
-<blockquote>
-<b>Tip: </b> You should read comparaison operators like this:
-<code>"Index is greater that 12"</code>
-</blockquote>
+
+>**Tip:** You should read comparaison operators like this:
+>`"Index is greater that 12"`
+
 </div>
 <div class="tab" data-ref="sql">
 
-<h4>SQL</h4>
+#### SQL
 
 {% highlight sql %}
 SELECT * FROM `PhoneBook` WHERE `index` > 12;
@@ -186,7 +186,7 @@ SELECT * FROM `PhoneBook` WHERE `index` <= 12;
 </div>
 <div class="tab" data-ref="mongodb">
 
-<h4>MongoDB</h4>
+#### MongoDB
 
 {% highlight javascript %}
 db.getCollection( 'PhoneBook' ).find({ index: { $gt: 12 } }).then(...);
@@ -202,12 +202,12 @@ db.getCollection( 'PhoneBook' ).find({ index: { $lte: 12 } }).then(...);
  * `>` can be replaced by `$greater`
  * `>=` can be replaced by `$greaterEqual`
  
-### Do logical operations, with **||**, **&&**, **\^\^** and **!** ^\(3\)
+### Do logical operations, with **||**, **&&**, **\^\^** and **!** <sup>(3)</sup>
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+#### Diaspora
 
 {% highlight javascript %}
 PhoneBook.find({ index: { '||': [
@@ -227,7 +227,7 @@ PhoneBook.find({ index: { '!': { '==': 5 } } }).then(...);
 </div>
 <div class="tab" data-ref="sql">
 
-<h4>SQL</h4>
+#### SQL
 
 {% highlight sql %}
 SELECT * FROM `PhoneBook` WHERE 
@@ -247,7 +247,7 @@ SELECT * FROM `PhoneBook` WHERE NOT (`index` == 5);
 </div>
 <div class="tab" data-ref="mongodb">
 
-<h4>MongoDB</h4>
+#### MongoDB
 
 {% highlight javascript %}
 db.getCollection( 'PhoneBook' ).find({ $or: [
@@ -265,7 +265,7 @@ db.getCollection( 'PhoneBook' ).find({ $or: [
 db.getCollection( 'PhoneBook' ).find({ index: { $ne: 5 } }).then(...);
 {% endhighlight %}
 <div class="note warning">
-Last query is not exactly the same though... TODO Improve
+Last query is not exactly the same though... **TODO Improve**
 </div>
 </div>
 </div>
@@ -275,7 +275,7 @@ Last query is not exactly the same though... TODO Improve
  * `^^` can be replaced by `$xor`
  * `!` can be replaced by `$not`
 
-The usage of <code>&&</code> is optional: if several conditions are in a same condition object, they'll be combined using a `&&` operator by default. So, both lines below are equivalent:
+The usage of `&&` is optional: if several conditions are in a same condition object, they'll be combined using a `&&` operator by default. So, both lines below are equivalent:
 {% highlight javascript %}
 PhoneBook.find({ index: { '&&': [
 	{ '<': 10 },
@@ -287,12 +287,12 @@ PhoneBook.find({ index: {
 } }).then(...);
 {% endhighlight %}
 
-### Match by value in array, with **$in** ^\(3\)
+### Match by value in array, with **$in** <sup>(3)</sup>
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+#### Diaspora
 
 {% highlight javascript %}
 PhoneBook.find({ id: { $in: [
@@ -303,7 +303,7 @@ PhoneBook.find({ id: { $in: [
 </div>
 <div class="tab" data-ref="sql">
 
-<h4>SQL</h4>
+#### SQL
 
 {% highlight sql %}
 SELECT * FROM `PhoneBook` WHERE `id` IN (15, 16);
@@ -311,7 +311,7 @@ SELECT * FROM `PhoneBook` WHERE `id` IN (15, 16);
 </div>
 <div class="tab" data-ref="mongodb">
 
-<h4>MongoDB</h4>
+#### MongoDB
 
 {% highlight javascript %}
 db.getCollection('PhoneBook').find({ _id : { $in: [

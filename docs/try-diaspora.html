@@ -8,11 +8,11 @@
 <title>Try Diaspora online | Diaspora</title>
 <meta property="og:title" content="Try Diaspora online" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Multi-source ORM for node.js &amp; the browser" />
-<meta property="og:description" content="Multi-source ORM for node.js &amp; the browser" />
+<meta name="description" content="Try Diaspora online in your browser: test your queries and explore the API" />
+<meta property="og:description" content="Try Diaspora online in your browser: test your queries and explore the API" />
 <meta property="og:site_name" content="Diaspora" />
 <script type="application/ld+json">
-{"name":null,"description":"Multi-source ORM for node.js &amp; the browser","author":null,"@type":"WebPage","url":"/try-diaspora.html","publisher":null,"image":null,"headline":"Try Diaspora online","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+{"name":null,"description":"Try Diaspora online in your browser: test your queries and explore the API","author":null,"@type":"WebPage","url":"/try-diaspora.html","publisher":null,"image":null,"headline":"Try Diaspora online","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 		<link href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic' rel='stylesheet' type='text/css'>
@@ -100,6 +100,8 @@
 					
 					
 					<li><a href="/getting-started.html">Getting started</a></li>
+					
+					
 					
 					
 					
@@ -362,27 +364,35 @@
 			</header>
 
 			<div id="content">
-				<h1>Try Diaspora online</h1>
+				<h1 id="try-diaspora-online">Try Diaspora online</h1>
 
-<p>You can test <em>Diaspora</em> using the Query Editor below. Collections available are <code class="prettyprint">PhoneBook</code> and <code class="prettyprint">Queries</code>. See the <a href="query-language.html">Query Language</a> to see how you can query <em>Diaspora</em>.</p>
+<p>You can test <em>Diaspora</em> using the Query Editor below. Collections available are <code class="highlighter-rouge">PhoneBook</code> and <code class="highlighter-rouge">Queries</code>. See the <a href="query-language.html">Query Language</a> to see how you can query <em>Diaspora</em>.</p>
 
 <div class="note info">
-Currently, only Query Language Specification level 2 is implemented. Some operators (such as <code>&&</code>, <code>!</code> or <code>$in</code>) are not yet available
+  <p>Currently, only Query Language Specification level 2 is implemented. Some operators (such as <code>&amp;&amp;</code>, <code>!</code> or <code>$in</code>) are not yet available</p>
 </div>
 
-<h2>History</h2>
+<h2 id="history">History</h2>
 
-<div class="lazyload unloaded"><div class="loader"></div><table><thead><tr><th>Id</th><th>Query</th><th>Date</th><th>Action</th></tr></thead><tbody id="queriesHistory"></tbody></table></div>
+<div class="lazyload unloaded">
+  <div class="loader"></div>
+  <table><thead><tr><th>Id</th><th>Query</th><th>Date</th><th>Action</th></tr></thead><tbody id="queriesHistory"></tbody></table>
+</div>
 
-<h2>Query Editor</h2>
+<h2 id="query-editor">Query Editor</h2>
 
-<div class="lazyload unloaded"><div class="loader"></div><div class="input-group"><div id="query" class="form-control">PhoneBook.findMany({})</div><div class="input-group-btn"><button id="execquery" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button></div></div>
+<div class="lazyload unloaded">
+  <div class="loader"></div>
+  <div class="input-group">
+    <div id="query" class="form-control">
+      <p>PhoneBook.findMany({})&lt;/div&gt;&lt;div class="input-group-btn"&gt;<button id="execquery" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>&lt;/div&gt;&lt;/div&gt;
+<button class="btn btn-default" id="resetData">Reset all data</button>&lt;/div&gt;</p>
 
-<p><button class="btn btn-default" id="resetData">Reset all data</button></div></p>
+      <h2 id="results">Results</h2>
 
-<h2>Results</h2>
-
-<div class="lazyload unloaded"><div class="loader"></div><table id="datatable">
+      <div class="lazyload unloaded">
+        <div class="loader"></div>
+        <table id="datatable">
 <thead>
 <tr>
 <th>Id</th>
@@ -397,13 +407,17 @@ Currently, only Query Language Specification level 2 is implemented. Some operat
 </tr>
 </thead>
 <tbody></tbody>
-</table></div>
+</table>
+      </div>
+    </div>
+  </div>
+</div>
 
 			</div>
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-				<p><small>Page built the 27 of Sep 2017 at 22:39</small></p>
+				<p><small>Page built the 28 of Sep 2017 at 01:53</small></p>
 			</footer>
 		</div>
 		<!--[if !IE]><script>fixScale(document);</script><![endif]-->

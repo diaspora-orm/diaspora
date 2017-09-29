@@ -68,18 +68,22 @@ document.addEventListener('DOMContentLoaded', function(){
 			"November", "December"
 		];
 
-		var day = date.getDate();
-		var monthIndex = date.getMonth();
-		var year = date.getFullYear();
-
-		return day + ' ' + monthNames[monthIndex].slice(0, 3) + '. ' + year;
+		function toSize(str, filler, len){
+			var fullStr = str + '';
+			while(fullStr.length < len){
+				fullStr = filler + fullStr;
+			}
+			return fullStr.slice(-len);
+		}
+		
+		return toSize(date.getDate(), ' ', 2) + ' ' + monthNames[date.getMonth()].slice(0, 3) + '. ' + toSize(date.getHours(), '0', 2) + ':' + toSize(date.getMinutes(), '0', 2) + ':' + toSize(date.getSeconds(), '0', 2);
 	}
 	function refreshOldQueries(){
 		$queriesHistory.empty();
 		Queries.findMany({}).then(queries => {
 			queries = queries.sort(function(a,b){
 				return a.timestamp - b.timestamp;
-			});
+			}).slice(-10);
 			queries.forEach(function(query, index){
 				var $row = $($.parseHTML(`<tr data-query-id="${query.id}"><th>${ index + 1 }</th><td>${ escapeHtml(query.query) }</td><td>${ formatDate(new Date(query.timestamp)) }</td><td style="vertical-align:middle;text-align:center;"><button class="repeat btn btn-default" title="Re-execute query"><i class="glyphicon glyphicon-repeat"></i></button><button class="delete btn btn-default" title="Delete query"><i class="glyphicon glyphicon-remove"></i></button></td></tr>`));
 				$row.find('.delete').click(function(){

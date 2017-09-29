@@ -14,9 +14,9 @@ plugins:
 destination: ../docs
 lsi: true
 incremental: false
-markdown: redcarpet
-redcarpet:
-  extensions: ["no_intra_emphasis", "underline", "highlight", "quote", "footnotes", "superscript", "prettify", "xhtml"]#"smart"
+markdown: kramdown
+kramdown:
+  parse_block_html: true
 github:
   zip_url: https://github.com/Nihilivin/Diaspora/archive/master.zip
   tar_url: https://github.com/Nihilivin/Diaspora/archive/master.tar

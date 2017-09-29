@@ -114,6 +114,8 @@
 					
 					
 					
+					
+					
 					<li><a href="/query-language.html">Query Language</a></li>
 					
 					
@@ -352,93 +354,95 @@
 
 			<div id="content">
 				<section>
-					<h1>Diaspora</h1>
+					<h1 id="diaspora">Diaspora</h1>
 
 <p><strong><em>Multi-source ORM for NodeJS &amp; modern web browsers</em></strong></p>
 
 <blockquote>
-<p>You are on the manual website. You may check the <a href="docco/index.html">Quick Code Review</a> or the <a href="jsdoc/index.html">API Documentation</a></p>
+  <p>You are on the manual website. You may check the <a href="docco/index.html">Quick Code Review</a> or the <a href="jsdoc/index.html">API Documentation</a></p>
 </blockquote>
 
-<hr/>
+<hr />
 
-<h2>What is Diaspora</h2>
+<h2 id="what-is-diaspora">What is Diaspora</h2>
 
 <blockquote>
-<p>A <em>diaspora</em> (from Greek διασπορά, <q>scattering, dispersion</q>) is a scattered population whose origin lies within a smaller geographic locale
-- Wikipedia</p>
+  <p>A <em>diaspora</em> (from Greek διασπορά, “scattering, dispersion”) is a scattered population whose origin lies within a smaller geographic locale</p>
+  <ul>
+    <li>Wikipedia</li>
+  </ul>
 </blockquote>
 
 <p>Diaspora considers data as populations and like human beings these data can move from their original app memory to databases.
 A Diaspora based app may thus use data from several sources and can interact with each source independently with the same payload data.
 Here are some examples :</p>
 
-<h3>Example 1: <q>Diaspora Docs</q></h3>
+<h3 id="example-1-diaspora-docs">Example 1: “Diaspora Docs”</h3>
 
-<p>Let&#39;s consider an <em>online office suite app</em> with both desktop and browser interface : you can load, edit and save your documents and your account synchronises them all.
-If working offline, the app keeps all changes locally on an offline version and when working online, it will send it on the server to be saved on one or many of the server&#39;s databases upon saving.</p>
+<p>Let’s consider an <em>online office suite app</em> with both desktop and browser interface : you can load, edit and save your documents and your account synchronises them all.
+If working offline, the app keeps all changes locally on an offline version and when working online, it will send it on the server to be saved on one or many of the server’s databases upon saving.</p>
 
-<h3>Example 2: Update search engine datas</h3>
+<h3 id="example-2-update-search-engine-datas">Example 2: Update search engine datas</h3>
 
-<p>A website article is stored on a database (let&#39;s say MySQL or MongoDB). When you create, update or delete the article, your website search engine data have to be refreshed.</p>
+<p>A website article is stored on a database (let’s say MySQL or MongoDB). When you create, update or delete the article, your website search engine data have to be refreshed.</p>
 
-<h2>How does it work?</h2>
+<h2 id="how-does-it-work">How does it work?</h2>
 
 <p>Diaspora is both a server and a client library, loading the same configuation structure.
 Diaspora allows you to create models, entities and data sources :</p>
 
-<h3>Models</h3>
+<h3 id="models">Models</h3>
 
 <p>Models describe data and how to interact with them. Models instantiate and manage their <a href="#">entities</a>, and interacts with <a href="">data sources</a>. We can assimilate it to a table in MySQL or a collection in MongoDB.</p>
 
 <p><a href="jsdoc/Model.html" class="btn">See the <b>Model API</b></a></p>
 
-<h3>Entities</h3>
+<h3 id="entities">Entities</h3>
 
 <p>An entity represent a data, like a row in MySQL, or a document in MongoDB. Each entities are attached to a single <a href="">model</a>, and contains its value for each <a href="">data source</a>. Thus, an entity can know and interact with its state in each data source.</p>
 
 <p><a href="jsdoc/Entity.html" class="btn">See the <b>Entity API</b></a></p>
 
-<h3>Data sources</h3>
+<h3 id="data-sources">Data sources</h3>
 
 <p>Data sources are data stores we interact with through <a href="">adapters</a>. A store is, for example, your MySQL, Mongo, Redis server, an HTTP REST API, or even a block of memory in your program. You are not supposed to use adapters &amp; data-sources directly: Diaspora is in charge for this.</p>
 
 <p><a href="create-an-adapter.html" class="btn">Learn how to <b>create an adapter</b></a></p>
 
-<h2>Planned or unsure Diaspora behaviors</h2>
+<h2 id="planned-or-unsure-diaspora-behaviors">Planned or unsure Diaspora behaviors</h2>
 
 <blockquote>
-<p>Manual change of ID</p>
+  <p>Manual change of ID</p>
 </blockquote>
 
-<p><em>Unsure</em> &gt; Entity may change mode to <code class="prettyprint">desync</code> ?</p>
+<p><em>Unsure</em> &gt; Entity may change mode to <code class="highlighter-rouge">desync</code> ?</p>
 
 <blockquote>
-<p>P2P Adapter</p>
+  <p>P2P Adapter</p>
 </blockquote>
 
-<p><em>Unsure</em> &gt; May be interesting... Check for possible problems about data modification, etc etc.</p>
+<p><em>Unsure</em> &gt; May be interesting… Check for possible problems about data modification, etc etc.</p>
 
 <blockquote>
-<p>Mongo Adapter</p>
-</blockquote>
-
-<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
-
-<blockquote>
-<p>Redis Adapter</p>
+  <p>Mongo Adapter</p>
 </blockquote>
 
 <p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
 
 <blockquote>
-<p>LocalStorage/SessionStorage Adapter</p>
+  <p>Redis Adapter</p>
 </blockquote>
 
 <p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
 
 <blockquote>
-<p>Auto-switch to API server/client</p>
+  <p>LocalStorage/SessionStorage Adapter</p>
+</blockquote>
+
+<p><em>Planned</em> &gt; Wait for definitive adapter structure</p>
+
+<blockquote>
+  <p>Auto-switch to API server/client</p>
 </blockquote>
 
 <p><em>Planned</em> &gt; Wait for at least Mongo &amp; Localstorage adapters.</p>
@@ -453,7 +457,7 @@ Diaspora allows you to create models, entities and data sources :</p>
 <ul>
 <li class="toc-entry toc-h2"><a href="#what-is-diaspora">What is Diaspora</a>
 <ul>
-<li class="toc-entry toc-h3"><a href="#example-1-diaspora-docs">Example 1: Diaspora Docs</a></li>
+<li class="toc-entry toc-h3"><a href="#example-1-diaspora-docs">Example 1: “Diaspora Docs”</a></li>
 <li class="toc-entry toc-h3"><a href="#example-2-update-search-engine-datas">Example 2: Update search engine datas</a></li>
 </ul>
 </li>
@@ -474,7 +478,7 @@ Diaspora allows you to create models, entities and data sources :</p>
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-				<p><small>Page built the 27 of Sep 2017 at 22:39</small></p>
+				<p><small>Page built the 28 of Sep 2017 at 01:53</small></p>
 			</footer>
 		</div>
 		<!--[if !IE]><script>fixScale(document);</script><![endif]-->

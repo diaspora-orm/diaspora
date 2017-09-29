@@ -8,11 +8,11 @@
 <title>Query Language | Diaspora</title>
 <meta property="og:title" content="Query Language" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Learn how to write find, delete or update queries. Check how to use each operations, and master the Diaspora&#39;s Query Language." />
-<meta property="og:description" content="Learn how to write find, delete or update queries. Check how to use each operations, and master the Diaspora&#39;s Query Language." />
+<meta name="description" content="Learn how to write find, delete or update queries. Check how to use each operations, and master the Diaspora’s Query Language." />
+<meta property="og:description" content="Learn how to write find, delete or update queries. Check how to use each operations, and master the Diaspora’s Query Language." />
 <meta property="og:site_name" content="Diaspora" />
 <script type="application/ld+json">
-{"name":null,"description":"Learn how to write find, delete or update queries. Check how to use each operations, and master the Diaspora&#39;s Query Language.","author":null,"@type":"WebPage","url":"/query-language.html","publisher":null,"image":null,"headline":"Query Language","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+{"name":null,"description":"Learn how to write find, delete or update queries. Check how to use each operations, and master the Diaspora’s Query Language.","author":null,"@type":"WebPage","url":"/query-language.html","publisher":null,"image":null,"headline":"Query Language","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 		<link href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic' rel='stylesheet' type='text/css'>
@@ -89,6 +89,8 @@
 					
 					
 					<li><a href="/getting-started.html">Getting started</a></li>
+					
+					
 					
 					
 					
@@ -352,274 +354,275 @@
 
 			<div id="content">
 				<section>
-					<h1>Query language</h1>
+					<h1 id="query-language">Query language</h1>
 
-<h2>Match queries</h2>
+<h2 id="match-queries">Match queries</h2>
 
-<p>Match queries are used when you use <code class="prettyprint">find</code>, <code class="prettyprint">update</code> or <code class="prettyprint">delete</code> operations.</p>
-
-<div class="note info">
-If you put several operators in a condition object, they'll be combined using an `AND` operator.
-</div>
+<p>Match queries are used when you use <code class="highlighter-rouge">find</code>, <code class="highlighter-rouge">update</code> or <code class="highlighter-rouge">delete</code> operations.</p>
 
 <div class="note info">
-Numbers in parenthesis in operations' name indicates the Query Language Specification Level. Check your adapters' documentation to see the level supported by adapters you use.
+  <p>If you put several operators in a condition object, they’ll be combined using an <code class="highlighter-rouge">AND</code> operator.</p>
 </div>
 
-<h3>Match all <sup>(1)</sup></h3>
+<div class="note info">
+  <p>Numbers in parenthesis in operations’ name indicates the Query Language Specification Level. Check your adapters’ documentation to see the level supported by adapters you use.</p>
+</div>
+
+<h3 id="match-all-1">Match all <sup>(1)</sup></h3>
 
 <div class="tabs tabs-code">
-<div class="tab" data-ref="diaspora">
+  <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+    <h4 id="diaspora">Diaspora</h4>
 
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">findMany</span><span class="p">({}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">findMany</span><span class="p">({}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+  </div>
+  <div class="tab" data-ref="sql">
 
+    <h4 id="sql">SQL</h4>
+
+    <figure class="highlight">
+      <pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span><span class="p">;</span></code></pre>
+    </figure>
+
+  </div>
+  <div class="tab" data-ref="mongodb">
+
+    <h4 id="mongodb">MongoDB</h4>
+
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
+
+  </div>
 </div>
 
-<div class="tab" data-ref="sql">
-
-<h4>SQL</h4>
-
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span><span class="p">;</span></code></pre></figure>
-
-</div>
-
-<div class="tab" data-ref="mongodb">
-
-<h4>MongoDB</h4>
-
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
-
-</div>
-
-<p></div></p>
-
-<h3>Match by field value <sup>(1)</sup></h3>
+<h3 id="match-by-field-value-1">Match by field value <sup>(1)</sup></h3>
 
 <div class="tabs tabs-code">
-<div class="tab" data-ref="diaspora">
+  <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+    <h4 id="diaspora-1">Diaspora</h4>
 
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="s1">'9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6'</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span> <span class="c1">// Match a single entity that have this value</span>
+<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">findMany</span><span class="p">({</span> <span class="na">phone</span><span class="p">:</span> <span class="kc">undefined</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span> <span class="c1">// Match all entities that does not have a `phone`</span></code></pre>
+    </figure>
 
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="s1">'9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6'</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span> <span class="c1">// Match a single entity that have this value</span>
-<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">findMany</span><span class="p">({</span> <span class="na">phone</span><span class="p">:</span> <span class="kc">undefined</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span> <span class="c1">// Match all entities that does not have a `phone`</span></code></pre></figure>
+  </div>
+  <div class="tab" data-ref="sql">
 
+    <h4 id="sql-1">SQL</h4>
+
+    <figure class="highlight">
+      <pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`id`</span><span class="o">=</span><span class="mi">15</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`phone`</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span></code></pre>
+    </figure>
+
+  </div>
+  <div class="tab" data-ref="mongodb">
+
+    <h4 id="mongodb-1">MongoDB</h4>
+
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">_id</span><span class="p">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">"59bf7e38945e5adadfd83b1c"</span><span class="p">)</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">phone</span><span class="p">:</span> <span class="p">{</span> <span class="na">$exists</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
+
+  </div>
 </div>
 
-<div class="tab" data-ref="sql">
-
-<h4>SQL</h4>
-
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`id`</span><span class="o">=</span><span class="mi">15</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`phone`</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span></code></pre></figure>
-
-</div>
-
-<div class="tab" data-ref="mongodb">
-
-<h4>MongoDB</h4>
-
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">_id</span><span class="p">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">"59bf7e38945e5adadfd83b1c"</span><span class="p">)</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
-<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">phone</span><span class="p">:</span> <span class="p">{</span> <span class="na">$exists</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
-
-</div>
-
-<p></div></p>
-
-<h3>Match by a value defined or not, with <strong>~</strong> <sup>(2)</sup></h3>
+<h3 id="match-by-a-value-defined-or-not-with--2">Match by a value defined or not, with <strong>~</strong> <sup>(2)</sup></h3>
 
 <div class="tabs tabs-code">
-<div class="tab" data-ref="diaspora">
+  <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+    <h4 id="diaspora-2">Diaspora</h4>
 
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">email</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'~'</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
+<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">email</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'~'</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">email</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'~'</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
-<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">email</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'~'</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+  </div>
+  <div class="tab" data-ref="sql">
 
+    <h4 id="sql-2">SQL</h4>
+
+    <figure class="highlight">
+      <pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`email`</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`email`</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span></code></pre>
+    </figure>
+
+  </div>
+  <div class="tab" data-ref="mongodb">
+
+    <h4 id="mongodb-2">MongoDB</h4>
+
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span> <span class="p">:</span> <span class="p">{</span> <span class="na">$exists</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span> <span class="p">:</span> <span class="p">{</span> <span class="na">$exists</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
+
+  </div>
 </div>
-
-<div class="tab" data-ref="sql">
-
-<h4>SQL</h4>
-
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`email`</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`email`</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span></code></pre></figure>
-
-</div>
-
-<div class="tab" data-ref="mongodb">
-
-<h4>MongoDB</h4>
-
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span> <span class="p">:</span> <span class="p">{</span> <span class="na">$exists</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
-<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span> <span class="p">:</span> <span class="p">{</span> <span class="na">$exists</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
-
-</div>
-
-<p></div></p>
 
 <ul>
-<li><code class="prettyprint">~</code> can be replaced by <code class="prettyprint">$exists</code></li>
+  <li><code class="highlighter-rouge">~</code> can be replaced by <code class="highlighter-rouge">$exists</code></li>
 </ul>
 
-<h3>Match by a value equal or not, with <strong>==</strong> and <strong>!=</strong> <sup>(2)</sup></h3>
+<h3 id="match-by-a-value-equal-or-not-with--and--2">Match by a value equal or not, with <strong>==</strong> and <strong>!=</strong> <sup>(2)</sup></h3>
 
 <div class="tabs tabs-code">
-<div class="tab" data-ref="diaspora">
+  <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+    <h4 id="diaspora-3">Diaspora</h4>
 
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'=='</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
+<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'!='</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'=='</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
-<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'!='</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+    <p>The usage of <code class="highlighter-rouge">==</code> is optional, you can replace <code class="highlighter-rouge"><span class="p">{</span><span class="err">'==':</span><span class="w"> </span><span class="err">value</span><span class="p">}</span></code> with <code class="highlighter-rouge">value</code></p>
+  </div>
+  <div class="tab" data-ref="sql">
 
-The usage of <code>==</code> is optional, you can replace <code>{'==': value}</code> with <code>value</code>
+    <h4 id="sql-3">SQL</h4>
+
+    <figure class="highlight">
+      <pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`number`</span> <span class="o">=</span> <span class="nv">"(251) 546-9442"</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`number`</span> <span class="o">!=</span> <span class="nv">"(251) 546-9442"</span><span class="p">;</span></code></pre>
+    </figure>
+
+  </div>
+  <div class="tab" data-ref="mongodb">
+
+    <h4 id="mongodb-3">MongoDB</h4>
+
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span> <span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span> <span class="p">:</span> <span class="p">{</span> <span class="na">$ne</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
+
+  </div>
 </div>
-
-<div class="tab" data-ref="sql">
-
-<h4>SQL</h4>
-
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`number`</span> <span class="o">=</span> <span class="nv">"(251) 546-9442"</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`number`</span> <span class="o">!=</span> <span class="nv">"(251) 546-9442"</span><span class="p">;</span></code></pre></figure>
-
-</div>
-
-<div class="tab" data-ref="mongodb">
-
-<h4>MongoDB</h4>
-
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span> <span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
-<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">number</span> <span class="p">:</span> <span class="p">{</span> <span class="na">$ne</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
-
-</div>
-
-<p></div></p>
 
 <ul>
-<li><code class="prettyprint">==</code> can be replaced by <code class="prettyprint">$equal</code></li>
-<li><code class="prettyprint">!=</code> can be replaced by <code class="prettyprint">$diff</code></li>
+  <li><code class="highlighter-rouge">==</code> can be replaced by <code class="highlighter-rouge">$equal</code></li>
+  <li><code class="highlighter-rouge">!=</code> can be replaced by <code class="highlighter-rouge">$diff</code></li>
 </ul>
 
 <div class="note info">
-<code>!=</code> will match only if entity's value is <em>defined</em> <b>and</b> <em>different</em>.
+  <p><code class="highlighter-rouge">!=</code> will match only if entity’s value is <em>defined</em> <strong>and</strong> <em>different</em>.</p>
 </div>
 
-<h3>Match by number comparaison, with <strong>&lt;</strong>, <strong>&lt;=</strong>, <strong>&gt;</strong> and <strong>&gt;=</strong> <sup>(2)</sup></h3>
+<h3 id="match-by-number-comparaison-with----and--2">Match by number comparaison, with <strong>&lt;</strong>, <strong>&lt;=</strong>, <strong>&gt;</strong> and <strong>&gt;=</strong> <sup>(2)</sup></h3>
 
 <div class="tabs tabs-code">
-<div class="tab" data-ref="diaspora">
+  <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+    <h4 id="diaspora-4">Diaspora</h4>
 
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&gt;'</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&gt;'</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
 <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&gt;='</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
 <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
-<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&lt;='</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&lt;='</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
-<blockquote>
-<b>Tip: </b> You should read comparaison operators like this:
-<code>"Index is greater that 12"</code>
-</blockquote>
-</div>
+    <blockquote>
+      <p><strong>Tip:</strong> You should read comparaison operators like this:
+<code class="highlighter-rouge">"Index is greater that 12"</code></p>
+    </blockquote>
 
-<div class="tab" data-ref="sql">
+  </div>
+  <div class="tab" data-ref="sql">
 
-<h4>SQL</h4>
+    <h4 id="sql-4">SQL</h4>
 
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`index`</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">;</span>
+    <figure class="highlight">
+      <pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`index`</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">;</span>
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`index`</span> <span class="o">&gt;=</span> <span class="mi">12</span><span class="p">;</span>
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`index`</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`index`</span> <span class="o">&lt;=</span> <span class="mi">12</span><span class="p">;</span></code></pre></figure>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`index`</span> <span class="o">&lt;=</span> <span class="mi">12</span><span class="p">;</span></code></pre>
+    </figure>
 
-</div>
+  </div>
+  <div class="tab" data-ref="mongodb">
 
-<div class="tab" data-ref="mongodb">
+    <h4 id="mongodb-4">MongoDB</h4>
 
-<h4>MongoDB</h4>
-
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$gt</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$gt</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
 <span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$gte</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
 <span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$lt</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
-<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$lte</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$lte</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
+  </div>
 </div>
-
-<p></div></p>
 
 <ul>
-<li><code class="prettyprint">&lt;</code> can be replaced by <code class="prettyprint">$less</code></li>
-<li><code class="prettyprint">&lt;=</code> can be replaced by <code class="prettyprint">$lessEqual</code></li>
-<li><code class="prettyprint">&gt;</code> can be replaced by <code class="prettyprint">$greater</code></li>
-<li><code class="prettyprint">&gt;=</code> can be replaced by <code class="prettyprint">$greaterEqual</code></li>
+  <li><code class="highlighter-rouge">&lt;</code> can be replaced by <code class="highlighter-rouge">$less</code></li>
+  <li><code class="highlighter-rouge">&lt;=</code> can be replaced by <code class="highlighter-rouge">$lessEqual</code></li>
+  <li><code class="highlighter-rouge">&gt;</code> can be replaced by <code class="highlighter-rouge">$greater</code></li>
+  <li><code class="highlighter-rouge">&gt;=</code> can be replaced by <code class="highlighter-rouge">$greaterEqual</code></li>
 </ul>
 
-<h3>Do logical operations, with <strong>||</strong>, <strong>&amp;&amp;</strong>, <strong>^^</strong> and <strong>!</strong> <sup>(3)</sup></h3>
+<h3 id="do-logical-operations-with----and--3">Do logical operations, with <strong>||</strong>, <strong>&amp;&amp;</strong>, <strong>\^\^</strong> and <strong>!</strong> <sup>(3)</sup></h3>
 
 <div class="tabs tabs-code">
-<div class="tab" data-ref="diaspora">
+  <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+    <h4 id="diaspora-5">Diaspora</h4>
 
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'||'</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span> <span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">5</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="s1">'=='</span><span class="p">:</span> <span class="mi">9</span> <span class="p">},</span>
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'||'</span><span class="p">:</span> <span class="p">[</span>
+	<span class="p">{</span> <span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">5</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="s1">'=='</span><span class="p">:</span> <span class="mi">9</span> <span class="p">},</span>
 <span class="p">]</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span> <span class="c1">// Will retrieve items with index [0, 1, 2, 3, 4, 9]</span>
 <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&amp;&amp;'</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span> <span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">10</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="s1">'&gt;='</span><span class="p">:</span> <span class="mi">5</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">10</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="s1">'&gt;='</span><span class="p">:</span> <span class="mi">5</span> <span class="p">},</span>
 <span class="p">]</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span> <span class="c1">// Will retrieve items with index [5, 6, 7, 8, 9]</span>
 <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'^^'</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span> <span class="na">email</span><span class="p">:</span> <span class="s1">'foobar@example.com'</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="na">phone</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="na">email</span><span class="p">:</span> <span class="s1">'foobar@example.com'</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="na">phone</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">},</span>
 <span class="p">]</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span> <span class="c1">// Will retrieve items with either the provided email or address, but not both</span>
-<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'!'</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'=='</span><span class="p">:</span> <span class="mi">5</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'!'</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'=='</span><span class="p">:</span> <span class="mi">5</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
-</div>
+  </div>
+  <div class="tab" data-ref="sql">
 
-<div class="tab" data-ref="sql">
+    <h4 id="sql-5">SQL</h4>
 
-<h4>SQL</h4>
-
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> 
-    <span class="p">(</span><span class="nv">`index`</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)</span> <span class="k">OR</span>
-    <span class="p">(</span><span class="nv">`index`</span> <span class="o">=</span> <span class="mi">9</span><span class="p">);</span>
-    
+    <figure class="highlight">
+      <pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> 
+	<span class="p">(</span><span class="nv">`index`</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)</span> <span class="k">OR</span>
+	<span class="p">(</span><span class="nv">`index`</span> <span class="o">=</span> <span class="mi">9</span><span class="p">);</span>
+	
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span>
-    <span class="p">(</span><span class="nv">`index`</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="k">AND</span>
-    <span class="p">(</span><span class="nv">`index`</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">);</span>
-    
+	<span class="p">(</span><span class="nv">`index`</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="k">AND</span>
+	<span class="p">(</span><span class="nv">`index`</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">);</span>
+	
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span>
-    <span class="p">(</span><span class="nv">`email`</span> <span class="o">=</span> <span class="nv">"foobar@example.com"</span><span class="p">)</span> <span class="n">XOR</span>
-    <span class="p">(</span><span class="nv">`phone`</span> <span class="o">=</span> <span class="nv">"(251) 546-9442"</span><span class="p">);</span>
-    
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="k">NOT</span> <span class="p">(</span><span class="nv">`index`</span> <span class="o">==</span> <span class="mi">5</span><span class="p">);</span></code></pre></figure>
+	<span class="p">(</span><span class="nv">`email`</span> <span class="o">=</span> <span class="nv">"foobar@example.com"</span><span class="p">)</span> <span class="n">XOR</span>
+	<span class="p">(</span><span class="nv">`phone`</span> <span class="o">=</span> <span class="nv">"(251) 546-9442"</span><span class="p">);</span>
+	
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="k">NOT</span> <span class="p">(</span><span class="nv">`index`</span> <span class="o">==</span> <span class="mi">5</span><span class="p">);</span></code></pre>
+    </figure>
 
-</div>
+  </div>
+  <div class="tab" data-ref="mongodb">
 
-<div class="tab" data-ref="mongodb">
+    <h4 id="mongodb-5">MongoDB</h4>
 
-<h4>MongoDB</h4>
-
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">$or</span><span class="p">:</span> <span class="p">[</span>
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">$or</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$lt</span><span class="p">:</span> <span class="mi">5</span> <span class="p">}</span> <span class="p">},</span>
     <span class="p">{</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$eq</span><span class="p">:</span> <span class="mi">9</span> <span class="p">}</span> <span class="p">},</span>
  <span class="p">]</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
@@ -628,83 +631,85 @@ The usage of <code>==</code> is optional, you can replace <code>{'==': value}</c
     <span class="p">{</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$gte</span><span class="p">:</span> <span class="mi">5</span> <span class="p">}</span> <span class="p">},</span>
  <span class="p">]</span> <span class="p">})</span>
  <span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">$xor</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span> <span class="na">email</span><span class="p">:</span> <span class="p">{</span> <span class="na">$eq</span><span class="p">:</span> <span class="s1">'foobar@example.com'</span> <span class="p">}</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="na">phone</span><span class="p">:</span> <span class="p">{</span> <span class="na">$eq</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="na">email</span><span class="p">:</span> <span class="p">{</span> <span class="na">$eq</span><span class="p">:</span> <span class="s1">'foobar@example.com'</span> <span class="p">}</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="na">phone</span><span class="p">:</span> <span class="p">{</span> <span class="na">$eq</span><span class="p">:</span> <span class="s1">'(251) 546-9442'</span> <span class="p">}</span> <span class="p">},</span>
  <span class="p">]</span> <span class="p">})</span>
-<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$ne</span><span class="p">:</span> <span class="mi">5</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+<span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span> <span class="s1">'PhoneBook'</span> <span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="na">$ne</span><span class="p">:</span> <span class="mi">5</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
-<div class="note warning">
-Last query is not exactly the same though... TODO Improve
+    <div class="note warning">
+      <p>Last query is not exactly the same though… <strong>TODO Improve</strong></p>
+    </div>
+  </div>
 </div>
-
-<p></div>
-</div></p>
 
 <ul>
-<li><code class="prettyprint">||</code> can be replaced by <code class="prettyprint">$or</code></li>
-<li><code class="prettyprint">&amp;&amp;</code> can be replaced by <code class="prettyprint">$and</code></li>
-<li><code class="prettyprint">^^</code> can be replaced by <code class="prettyprint">$xor</code></li>
-<li><code class="prettyprint">!</code> can be replaced by <code class="prettyprint">$not</code></li>
+  <li><code class="highlighter-rouge">||</code> can be replaced by <code class="highlighter-rouge">$or</code></li>
+  <li><code class="highlighter-rouge">&amp;&amp;</code> can be replaced by <code class="highlighter-rouge">$and</code></li>
+  <li><code class="highlighter-rouge">^^</code> can be replaced by <code class="highlighter-rouge">$xor</code></li>
+  <li><code class="highlighter-rouge">!</code> can be replaced by <code class="highlighter-rouge">$not</code></li>
 </ul>
 
-<p>The usage of <code>&amp;&amp;</code> is optional: if several conditions are in a same condition object, they&#39;ll be combined using a <code class="prettyprint">&amp;&amp;</code> operator by default. So, both lines below are equivalent:</p>
+<p>The usage of <code class="highlighter-rouge">&amp;&amp;</code> is optional: if several conditions are in a same condition object, they’ll be combined using a <code class="highlighter-rouge">&amp;&amp;</code> operator by default. So, both lines below are equivalent:</p>
 
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&amp;&amp;'</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span> <span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">10</span> <span class="p">},</span>
-    <span class="p">{</span> <span class="s1">'&gt;='</span><span class="p">:</span> <span class="mi">5</span> <span class="p">},</span>
+<figure class="highlight">
+  <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'&amp;&amp;'</span><span class="p">:</span> <span class="p">[</span>
+	<span class="p">{</span> <span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">10</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="s1">'&gt;='</span><span class="p">:</span> <span class="mi">5</span> <span class="p">},</span>
 <span class="p">]</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span>
 <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">index</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="s1">'&gt;='</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-<span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+	<span class="s1">'&lt;'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+	<span class="s1">'&gt;='</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+<span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+</figure>
 
-<h3>Match by value in array, with <strong>$in</strong> <sup>(3)</sup></h3>
+<h3 id="match-by-value-in-array-with-in-3">Match by value in array, with <strong>$in</strong> <sup>(3)</sup></h3>
 
 <div class="tabs tabs-code">
-<div class="tab" data-ref="diaspora">
+  <div class="tab" data-ref="diaspora">
 
-<h4>Diaspora</h4>
+    <h4 id="diaspora-6">Diaspora</h4>
 
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="p">{</span> <span class="na">$in</span><span class="p">:</span> <span class="p">[</span>
+	<span class="s1">'9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6'</span><span class="p">,</span>
+	<span class="s1">'d3d23cc1-46cd-4619-a044-4a30b75a38f6'</span><span class="p">,</span>
+<span class="p">]</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="p">{</span> <span class="na">$in</span><span class="p">:</span> <span class="p">[</span>
-    <span class="s1">'9ff2c6d2-9b90-43b8-b6b6-d8767966a3e6'</span><span class="p">,</span>
-    <span class="s1">'d3d23cc1-46cd-4619-a044-4a30b75a38f6'</span><span class="p">,</span>
-<span class="p">]</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+  </div>
+  <div class="tab" data-ref="sql">
 
-</div>
+    <h4 id="sql-6">SQL</h4>
 
-<div class="tab" data-ref="sql">
+    <figure class="highlight">
+      <pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`id`</span> <span class="k">IN</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">);</span></code></pre>
+    </figure>
 
-<h4>SQL</h4>
+  </div>
+  <div class="tab" data-ref="mongodb">
 
+    <h4 id="mongodb-6">MongoDB</h4>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="nv">`PhoneBook`</span> <span class="k">WHERE</span> <span class="nv">`id`</span> <span class="k">IN</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">);</span></code></pre></figure>
-
-</div>
-
-<div class="tab" data-ref="mongodb">
-
-<h4>MongoDB</h4>
-
-
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span><span class="s1">'PhoneBook'</span><span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">_id</span> <span class="p">:</span> <span class="p">{</span> <span class="na">$in</span><span class="p">:</span> <span class="p">[</span>
+    <figure class="highlight">
+      <pre><code class="language-javascript" data-lang="javascript"><span class="nx">db</span><span class="p">.</span><span class="nx">getCollection</span><span class="p">(</span><span class="s1">'PhoneBook'</span><span class="p">).</span><span class="nx">find</span><span class="p">({</span> <span class="na">_id</span> <span class="p">:</span> <span class="p">{</span> <span class="na">$in</span><span class="p">:</span> <span class="p">[</span>
     <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">"59bf7e38945e5adadfd83b1c"</span><span class="p">),</span>
     <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">"59a56875ab7388e9b823331b"</span><span class="p">),</span>
-<span class="p">]</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre></figure>
+<span class="p">]</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">then</span><span class="p">(...);</span></code></pre>
+    </figure>
 
+  </div>
 </div>
 
-<p></div></p>
+<h2 id="update-queries">Update queries</h2>
 
-<h2>Update queries</h2>
+<p>Update queries are used only with <code class="highlighter-rouge">update</code> operations.</p>
 
-<p>Update queries are used only with <code class="prettyprint">update</code> operations.</p>
+<h2 id="query-options">Query options</h2>
 
-<h2>Query options</h2>
+<p>Query options can be passed to <code class="highlighter-rouge">find</code>, <code class="highlighter-rouge">update</code> and <code class="highlighter-rouge">delete</code> operations.</p>
 
-<p>Query options can be passed to <code class="prettyprint">find</code>, <code class="prettyprint">update</code> and <code class="prettyprint">delete</code> operations.</p>
-
-<h2>Comments</h2>
+<h2 id="comments">Comments</h2>
 
 <div id="disqus_thread"></div>
 
@@ -751,7 +756,7 @@ Last query is not exactly the same though... TODO Improve
 <li class="toc-entry toc-h4"><a href="#mongodb-4">MongoDB</a></li>
 </ul>
 </li>
-<li class="toc-entry toc-h3"><a href="#do-logical-operations-with----and--3">Do logical operations, with ||, &&, ^^ and ! (3)</a>
+<li class="toc-entry toc-h3"><a href="#do-logical-operations-with----and--3">Do logical operations, with ||, &&, \^\^ and ! (3)</a>
 <ul>
 <li class="toc-entry toc-h4"><a href="#diaspora-5">Diaspora</a></li>
 <li class="toc-entry toc-h4"><a href="#sql-5">SQL</a></li>
@@ -779,7 +784,7 @@ Last query is not exactly the same though... TODO Improve
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-				<p><small>Page built the 27 of Sep 2017 at 22:39</small></p>
+				<p><small>Page built the 28 of Sep 2017 at 01:53</small></p>
 			</footer>
 		</div>
 		<!--[if !IE]><script>fixScale(document);</script><![endif]-->

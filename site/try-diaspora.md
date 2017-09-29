@@ -2,6 +2,7 @@
 layout: tryDiaspora
 title: Try Diaspora online
 inMenu: true
+description: "Try Diaspora online in your browser: test your queries and explore the API"
 datasourceName: data1.js
 ---
 

@@ -18,18 +18,24 @@ First, install the package (and add it to your project's *dependencies*)
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="npm">
-<h4>With NPM</h4>
+
+#### With NPM
+
 {% highlight shell %}
 npm install --save diaspora
 {% endhighlight %}
 </div>
 
-<!--<div class="tab" data-ref="yarn">
-<h3>With Yarn</h3>
+{::comment}
+<div class="tab" data-ref="yarn">
+
+#### With Yarn
+
 {% highlight shell %}
 #npm install --save diaspora
 {% endhighlight %}
-</div> -->
+</div>
+{:/comment}
 </div>
 
 Once installed, simply load it using *Node*'s `require`
@@ -89,14 +95,14 @@ This version, much lighter, requires that you load each dependencies before load
 
 ### Create a data source
 
-```javascript
+{% highlight javascript %}
 const NAMESPACE = 'myApp';
 const inMemoryDataSource = Diaspora.createDataSource( 'in-memory', {} );
 Diaspora.registerDataSource( NAMESPACE, 'myDataSource', inMemoryDataSource );
-```
+{% endhighlight %}
 
 <div class="note info">
-Note the constant <code>NAMESPACE</code>. Use case & infos about namespacing is detailed on <a href="#">this page</a>.
+Note the constant `NAMESPACE`. Use case & infos about namespacing is detailed on [this page](#).
 </div>
 
 ### Working with models
@@ -108,12 +114,12 @@ Interactions with your data sources is done through **Models**. Models will allo
 To create a model, use the `declareModel`'s *Diaspora* method.
 
 <div class="note">
-<strong><a href="jsdoc/Diaspora.html#.declareModel__anchor">declareModel</a></strong>(<em>String</em> <code class="prettyprint">moduleName</code>, <em>String</em> <code class="prettyprint">name</code>, <em>Object</em> <code class="prettyprint">modelDesc</code>) ► <em><a href="jsdoc/Model.html">Model</a></em>
+**[declareModel](jsdoc/Diaspora.html#.declareModel__anchor)**(*String* `moduleName`, *String* `name`, *Object* `modelDesc`) ► *[Model](jsdoc/Model.html)*
 </div>
 
 Let's create a **model** describing a phone book, with a name, a phone, an email and a numeric index.
 
-```javascript
+{% highlight javascript %}
 const PhoneBook = Diaspora.declareModel( NAMESPACE, 'PhoneBook', {
 	sources:    [ 'myDataSource' ],
 	attributes: {
@@ -129,13 +135,13 @@ const PhoneBook = Diaspora.declareModel( NAMESPACE, 'PhoneBook', {
 		}
 	},
 });
-```
+{% endhighlight %}
 
 `PhoneBook` is now an instance of **[Model](jsdoc/Model.html)**.
 
 #### Using models
 
-<a href="query-language.html" class="btn">Learn more about <b>Query Language</b></a>
+<a href="query-language.html" class="btn">Learn more about *Query Language*</a>
 
 ### Working with entities
 

@@ -114,6 +114,8 @@
 					
 					
 					
+					
+					
 					<li><a href="/query-language.html">Query Language</a></li>
 					
 					
@@ -352,135 +354,151 @@
 
 			<div id="content">
 				<section>
-					<h1>Getting started</h1>
+					<h1 id="getting-started">Getting started</h1>
 
-<h2>Install Diaspora</h2>
+<h2 id="install-diaspora">Install Diaspora</h2>
 
 <p>Diaspora is available on both the browser &amp; Node.JS. Follow these steps to include Diaspora in your app:</p>
 
-<h3>For Node.JS</h3>
+<h3 id="for-nodejs">For Node.JS</h3>
 
-<p>First, install the package (and add it to your project&#39;s <em>dependencies</em>)</p>
+<p>First, install the package (and add it to your project’s <em>dependencies</em>)</p>
 
 <div class="tabs tabs-code">
-<div class="tab" data-ref="npm">
-<h4>With NPM</h4>
+  <div class="tab" data-ref="npm">
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">npm install --save diaspora</code></pre></figure>
+    <h4 id="with-npm">With NPM</h4>
 
-</div>
+    <figure class="highlight">
+      <pre><code class="language-shell" data-lang="shell">npm install --save diaspora</code></pre>
+    </figure>
 
-<!--<div class="tab" data-ref="yarn">
-<h3>With Yarn</h3>
+  </div>
+
+  <!-- <div class="tab" data-ref="yarn">
+
+#### With Yarn
+
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#npm install --save diaspora</span></code></pre></figure>
 
 </div> -->
+</div>
 
-<p></div></p>
+<p>Once installed, simply load it using <em>Node</em>’s <code class="highlighter-rouge">require</code></p>
 
-<p>Once installed, simply load it using <em>Node</em>&#39;s <code class="prettyprint">require</code></p>
+<figure class="highlight">
+  <pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">Diaspora</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">'diaspora'</span> <span class="p">);</span></code></pre>
+</figure>
 
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">Diaspora</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">'diaspora'</span> <span class="p">);</span></code></pre></figure>
-
-<h3>For the browser</h3>
+<h3 id="for-the-browser">For the browser</h3>
 
 <p>Diaspora is built in 2 versions:</p>
 
-<h4>Standalone</h4>
+<h4 id="standalone">Standalone</h4>
 
-<p>This build contains Diaspora and all of its dependencies, packaged in a single (<em>big</em>) script file. You may prefer to use this file if you want to load Diaspora on every page of your site, or if you don&#39;t want to worry with loading each dependencies.</p>
+<p>This build contains Diaspora and all of its dependencies, packaged in a single (<em>big</em>) script file. You may prefer to use this file if you want to load Diaspora on every page of your site, or if you don’t want to worry with loading each dependencies.</p>
 
 <blockquote>
-<p>This build export following libraries:</p>
+  <p>This build export following libraries:</p>
 
-<ul>
-<li><code class="prettyprint">lodash</code> as <code class="prettyprint">_</code></li>
-<li><code class="prettyprint">bluebird</code> as <code class="prettyprint">Promise</code></li>
-<li><code class="prettyprint">check-types</code> as <code class="prettyprint">c</code></li>
-<li><code class="prettyprint">sequential-event</code> as <code class="prettyprint">SequentialEvent</code></li>
-</ul>
+  <ul>
+    <li><code class="highlighter-rouge">lodash</code> as <code class="highlighter-rouge">_</code></li>
+    <li><code class="highlighter-rouge">bluebird</code> as <code class="highlighter-rouge">Promise</code></li>
+    <li><code class="highlighter-rouge">check-types</code> as <code class="highlighter-rouge">c</code></li>
+    <li><code class="highlighter-rouge">sequential-event</code> as <code class="highlighter-rouge">SequentialEvent</code></li>
+  </ul>
 </blockquote>
 
-<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;html&gt;</span>
-    <span class="nt">&lt;head&gt;</span><span class="c">&lt;!-- Your document's `head` --&gt;</span><span class="nt">&lt;/head&gt;</span>
-    <span class="nt">&lt;body&gt;</span>
-        <span class="c">&lt;!-- Your page content --&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"diaspora.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"..."</span><span class="nt">&gt;&lt;/script&gt;</span><span class="c">&lt;!-- Load here your main page script. --&gt;</span>
-    <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+<figure class="highlight">
+  <pre><code class="language-html" data-lang="html"><span class="nt">&lt;html&gt;</span>
+	<span class="nt">&lt;head&gt;</span><span class="c">&lt;!-- Your document's `head` --&gt;</span><span class="nt">&lt;/head&gt;</span>
+	<span class="nt">&lt;body&gt;</span>
+		<span class="c">&lt;!-- Your page content --&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"diaspora.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"..."</span><span class="nt">&gt;&lt;/script&gt;</span><span class="c">&lt;!-- Load here your main page script. --&gt;</span>
+	<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span></code></pre>
+</figure>
 
-<h4>Isolated</h4>
+<h4 id="isolated">Isolated</h4>
 
-<p>This version, much lighter, requires that you load each dependencies before loading Diaspora. You may use this version if you use Diaspora on some pages only, but you want some libraries (such as <code class="prettyprint">lodash</code> or <code class="prettyprint">bluebird</code>) to be loaded everywhere. You&#39;ll improve your overall performance by using efficiently the browser cache.</p>
+<p>This version, much lighter, requires that you load each dependencies before loading Diaspora. You may use this version if you use Diaspora on some pages only, but you want some libraries (such as <code class="highlighter-rouge">lodash</code> or <code class="highlighter-rouge">bluebird</code>) to be loaded everywhere. You’ll improve your overall performance by using efficiently the browser cache.</p>
 
-<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;html&gt;</span>
-    <span class="nt">&lt;head&gt;</span><span class="c">&lt;!-- Your document's `head` --&gt;</span><span class="nt">&lt;/head&gt;</span>
-    <span class="nt">&lt;body&gt;</span>
-        <span class="c">&lt;!-- Your page content --&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"lodash.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"bluebird.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"check-types.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"sequential-event.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"diaspora.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"..."</span><span class="nt">&gt;&lt;/script&gt;</span><span class="c">&lt;!-- Load here your main page script. --&gt;</span>
-    <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+<figure class="highlight">
+  <pre><code class="language-html" data-lang="html"><span class="nt">&lt;html&gt;</span>
+	<span class="nt">&lt;head&gt;</span><span class="c">&lt;!-- Your document's `head` --&gt;</span><span class="nt">&lt;/head&gt;</span>
+	<span class="nt">&lt;body&gt;</span>
+		<span class="c">&lt;!-- Your page content --&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"lodash.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"bluebird.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"check-types.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"sequential-event.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"diaspora.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+		<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"..."</span><span class="nt">&gt;&lt;/script&gt;</span><span class="c">&lt;!-- Load here your main page script. --&gt;</span>
+	<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span></code></pre>
+</figure>
 
-<h2>Use Diaspora</h2>
+<h2 id="use-diaspora">Use Diaspora</h2>
 
 <p><strong>Here we finally are</strong>. Now <em>Diaspora</em> is available in your app. You just have to configure and use it.</p>
 
-<h3>Create a data source</h3>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">NAMESPACE</span> <span class="o">=</span> <span class="s1">'myApp'</span><span class="p">;</span>
+<h3 id="create-a-data-source">Create a data source</h3>
+
+<figure class="highlight">
+  <pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">NAMESPACE</span> <span class="o">=</span> <span class="s1">'myApp'</span><span class="p">;</span>
 <span class="kr">const</span> <span class="nx">inMemoryDataSource</span> <span class="o">=</span> <span class="nx">Diaspora</span><span class="p">.</span><span class="nx">createDataSource</span><span class="p">(</span> <span class="s1">'in-memory'</span><span class="p">,</span> <span class="p">{}</span> <span class="p">);</span>
-<span class="nx">Diaspora</span><span class="p">.</span><span class="nx">registerDataSource</span><span class="p">(</span> <span class="nx">NAMESPACE</span><span class="p">,</span> <span class="s1">'myDataSource'</span><span class="p">,</span> <span class="nx">inMemoryDataSource</span> <span class="p">);</span>
-</code></pre></div>
+<span class="nx">Diaspora</span><span class="p">.</span><span class="nx">registerDataSource</span><span class="p">(</span> <span class="nx">NAMESPACE</span><span class="p">,</span> <span class="s1">'myDataSource'</span><span class="p">,</span> <span class="nx">inMemoryDataSource</span> <span class="p">);</span></code></pre>
+</figure>
+
 <div class="note info">
-Note the constant <code>NAMESPACE</code>. Use case & infos about namespacing is detailed on <a href="#">this page</a>.
+  <p>Note the constant <code class="highlighter-rouge">NAMESPACE</code>. Use case &amp; infos about namespacing is detailed on <a href="#">this page</a>.</p>
 </div>
 
-<h3>Working with models</h3>
+<h3 id="working-with-models">Working with models</h3>
 
 <p>Interactions with your data sources is done through <strong>Models</strong>. Models will allow you to manage your complete collection, and retrieve or create <em>entities</em>.</p>
 
-<h4>Create a model</h4>
+<h4 id="create-a-model">Create a model</h4>
 
-<p>To create a model, use the <code class="prettyprint">declareModel</code>&#39;s <em>Diaspora</em> method.</p>
+<p>To create a model, use the <code class="highlighter-rouge">declareModel</code>’s <em>Diaspora</em> method.</p>
 
 <div class="note">
-<strong><a href="jsdoc/Diaspora.html#.declareModel__anchor">declareModel</a></strong>(<em>String</em> <code class="prettyprint">moduleName</code>, <em>String</em> <code class="prettyprint">name</code>, <em>Object</em> <code class="prettyprint">modelDesc</code>) ► <em><a href="jsdoc/Model.html">Model</a></em>
+  <p><strong><a href="jsdoc/Diaspora.html#.declareModel__anchor">declareModel</a></strong>(<em>String</em> <code class="highlighter-rouge">moduleName</code>, <em>String</em> <code class="highlighter-rouge">name</code>, <em>Object</em> <code class="highlighter-rouge">modelDesc</code>) ► <em><a href="jsdoc/Model.html">Model</a></em></p>
 </div>
 
-<p>Let&#39;s create a <strong>model</strong> describing a phone book, with a name, a phone, an email and a numeric index.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">PhoneBook</span> <span class="o">=</span> <span class="nx">Diaspora</span><span class="p">.</span><span class="nx">declareModel</span><span class="p">(</span> <span class="nx">NAMESPACE</span><span class="p">,</span> <span class="s1">'PhoneBook'</span><span class="p">,</span> <span class="p">{</span>
-    <span class="na">sources</span><span class="p">:</span>    <span class="p">[</span> <span class="s1">'myDataSource'</span> <span class="p">],</span>
-    <span class="na">attributes</span><span class="p">:</span> <span class="p">{</span>
-        <span class="na">name</span><span class="p">:</span> <span class="p">{</span>
-            <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="na">phone</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">,</span>
-        <span class="na">email</span><span class="p">:</span> <span class="p">{</span>
-            <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="na">index</span><span class="p">:</span> <span class="p">{</span>
-            <span class="na">type</span><span class="p">:</span> <span class="s1">'integer'</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="p">},</span>
-<span class="p">});</span>
-</code></pre></div>
-<p><code class="prettyprint">PhoneBook</code> is now an instance of <strong><a href="jsdoc/Model.html">Model</a></strong>.</p>
+<p>Let’s create a <strong>model</strong> describing a phone book, with a name, a phone, an email and a numeric index.</p>
 
-<h4>Using models</h4>
+<figure class="highlight">
+  <pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">PhoneBook</span> <span class="o">=</span> <span class="nx">Diaspora</span><span class="p">.</span><span class="nx">declareModel</span><span class="p">(</span> <span class="nx">NAMESPACE</span><span class="p">,</span> <span class="s1">'PhoneBook'</span><span class="p">,</span> <span class="p">{</span>
+	<span class="na">sources</span><span class="p">:</span>    <span class="p">[</span> <span class="s1">'myDataSource'</span> <span class="p">],</span>
+	<span class="na">attributes</span><span class="p">:</span> <span class="p">{</span>
+		<span class="na">name</span><span class="p">:</span> <span class="p">{</span>
+			<span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">,</span>
+		<span class="p">},</span>
+		<span class="na">phone</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">,</span>
+		<span class="na">email</span><span class="p">:</span> <span class="p">{</span>
+			<span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">,</span>
+		<span class="p">},</span>
+		<span class="na">index</span><span class="p">:</span> <span class="p">{</span>
+			<span class="na">type</span><span class="p">:</span> <span class="s1">'integer'</span><span class="p">,</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+<span class="p">});</span></code></pre>
+</figure>
 
-<p><a href="query-language.html" class="btn">Learn more about <b>Query Language</b></a></p>
+<p><code class="highlighter-rouge">PhoneBook</code> is now an instance of <strong><a href="jsdoc/Model.html">Model</a></strong>.</p>
 
-<h3>Working with entities</h3>
+<h4 id="using-models">Using models</h4>
 
-<h4>Create &amp; manage entities</h4>
+<p><a href="query-language.html" class="btn">Learn more about <em>Query Language</em></a></p>
 
-<h4>Validation methods</h4>
+<h3 id="working-with-entities">Working with entities</h3>
+
+<h4 id="create--manage-entities">Create &amp; manage entities</h4>
+
+<h4 id="validation-methods">Validation methods</h4>
 
 				</section>
 				
@@ -529,7 +547,7 @@ Note the constant <code>NAMESPACE</code>. Use case & infos about namespacing is 
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-				<p><small>Page built the 27 of Sep 2017 at 22:39</small></p>
+				<p><small>Page built the 28 of Sep 2017 at 01:53</small></p>
 			</footer>
 		</div>
 		<!--[if !IE]><script>fixScale(document);</script><![endif]-->

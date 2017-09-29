@@ -1,9 +1,26 @@
 'use strict';
 
 let testModel;
-const modelName = 'testModel';
+let store;
+const modelName = 'remapped';
 const SOURCE = 'inMemory';
 it( 'Should create a model', () => {
+	testModel = Diaspora.declareModel( 'test', modelName, {
+		sources:    {
+			[ SOURCE ]: {
+				foo: 'bar',
+			},
+		},
+		attributes: {
+			foo: {
+				type: 'string',
+			},
+		},
+	});
+	expect( testModel ).to.be.an( 'object' );
+	expect( testModel.constructor.name ).to.be.eql( 'Model' );
+	store = Diaspora.dataSources.test.inMemory.store.remapped;
+	console.log(store);
 });
 it( 'Should be able to create an entity of the defined model.', () => {
 });
@@ -14,9 +31,11 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 	describe( '- Create instances', () => {
 		it( 'Create a single instance', () => {
 			expect( testModel ).to.respondTo( 'insert' );
-		});
-		it( 'Create multiple instances', () => {
-			expect( testModel ).to.respondTo( 'insertMany' );
+			return testModel.insert({foo: 'baz'}).then(newItem => {
+				expect( newItem ).to.be.an.entity( testModel, {foo: 'baz'}, false );
+				const dataStoreItem = l.find(store.items, {id: newItem.dataSources.inMemory.id});
+				expect(dataStoreItem).to.be.an('object').that.have.property('bar', 'baz').and.not.have.property('foo');
+			});
 		});
 	});
 	describe( '- Find instances', () => {

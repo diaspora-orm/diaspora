@@ -1853,7 +1853,7 @@ function EntityFactory( name, modelAttrs, model ) {
 					const dataSource = this.model.getDataSource( sourceName );
 					let promise;
 					if ( 'orphan' === state ) {
-						promise = Promise.reject( new Error('Can\'t destroy an orphan entity') );
+						promise = Promise.reject( new Error( 'Can\'t destroy an orphan entity' ));
 					} else {
 						promise = dataSource.deleteOne( this.getTable( sourceName ), this.getUidQuery( dataSource ));
 					}
@@ -2058,7 +2058,7 @@ class Model {
 			if ( !c.assigned( dataSourceEntity )) {
 				return Promise.resolve();
 			}
-			const newEntity = new this.entityFactory( dataSourceEntity.toObject());
+			const newEntity = new this.entityFactory( dataSourceEntity );
 			newEntity.dataSources[dataSource.name] = dataSourceEntity;
 			return Promise.resolve( newEntity );
 		});
@@ -2076,7 +2076,7 @@ class Model {
 		const dataSource = this.getDataSource( dataSourceName );
 		return dataSource.findMany( this.name, queryFind, options ).then( dataSourceEntities => {
 			const entities = _.map( dataSourceEntities, dataSourceEntity => {
-				const newEntity = new this.entityFactory( dataSourceEntity.toObject());
+				const newEntity = new this.entityFactory( dataSourceEntity );
 				newEntity.dataSources[dataSource.name] = dataSourceEntity;
 				return newEntity;
 			});
