@@ -1,0 +1,58 @@
+---
+layout: doccopage
+title: "setup.js"
+toc: false
+---
+<div id="container"><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>setup.js</h1><div class="filepath">test/browserTests/setup.js</div></th><th class="code"></th></tr></thead><tbody><tr class="section" id="section-1"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-1">&#182;</a></div></td><td class="code"><div class="highlight"><pre><span></span><span id="line-1"><span class="nx">requirejs</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+</span><span id="line-2">    <span class="nx">paths</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-3">        <span class="nx">bluebird</span><span class="o">:</span>           <span class="s1">&#39;https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.5.0/bluebird.min&#39;</span><span class="p">,</span>
+</span><span id="line-4">        <span class="nx">lodash</span><span class="o">:</span>             <span class="s1">&#39;https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min&#39;</span><span class="p">,</span>
+</span><span id="line-5">        <span class="nx">defineGlobals</span><span class="o">:</span>      <span class="s1">&#39;../defineGlobals&#39;</span><span class="p">,</span>
+</span><span id="line-6">        <span class="s1">&#39;check-types&#39;</span><span class="o">:</span>      <span class="s1">&#39;https://rawgit.com/philbooth/check-types.js/master/src/check-types.min&#39;</span><span class="p">,</span>
+</span><span id="line-7">        <span class="nx">chai</span><span class="o">:</span>               <span class="s1">&#39;https://cdnjs.cloudflare.com/ajax/libs/chai/4.1.2/chai.min&#39;</span><span class="p">,</span>
+</span><span id="line-8">        <span class="s1">&#39;sequential-event&#39;</span><span class="o">:</span> <span class="s1">&#39;https://rawgit.com/GerkinDev/SequentialEvent.js/master/dist/sequential-event.min&#39;</span><span class="p">,</span>
+</span><span id="line-9">
+</span><span id="line-10">        <span class="nx">diasporaStandalone</span><span class="o">:</span> <span class="s1">&#39;../../build/standalone/dist/diaspora&#39;</span><span class="p">,</span>
+</span><span id="line-11">        <span class="nx">diasporaComposed</span><span class="o">:</span>   <span class="s1">&#39;../../build/composed/dist/diaspora&#39;</span><span class="p">,</span>
+</span><span id="line-12">
+</span><span id="line-13">        <span class="nx">TestModels</span><span class="o">:</span>       <span class="s1">&#39;../models/index&#39;</span><span class="p">,</span>
+</span><span id="line-14">        <span class="nx">TestInMemory</span><span class="o">:</span>     <span class="s1">&#39;../adapters/inMemory&#39;</span><span class="p">,</span>
+</span><span id="line-15">        <span class="nx">TestLocalStorage</span><span class="o">:</span> <span class="s1">&#39;../adapters/localStorage&#39;</span><span class="p">,</span>
+</span><span id="line-16">        <span class="nx">utils</span><span class="o">:</span>            <span class="s1">&#39;../adapters/utils&#39;</span><span class="p">,</span>
+</span><span id="line-17">    <span class="p">},</span>
+</span><span id="line-18">    <span class="nx">shim</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-19">        <span class="nx">utils</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-20">            <span class="nx">deps</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;bluebird&#39;</span> <span class="p">],</span>
+</span><span id="line-21">        <span class="p">},</span>
+</span><span id="line-22">        <span class="nx">TestModels</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-23">            <span class="nx">deps</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;utils&#39;</span><span class="p">,</span> <span class="s1">&#39;../models/simple&#39;</span><span class="p">,</span> <span class="s1">&#39;../models/simple-remapping&#39;</span> <span class="p">],</span>
+</span><span id="line-24">        <span class="p">},</span>
+</span><span id="line-25">        <span class="nx">TestInMemory</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-26">            <span class="nx">deps</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;utils&#39;</span> <span class="p">],</span>
+</span><span id="line-27">        <span class="p">},</span>
+</span><span id="line-28">        <span class="nx">TestLocalStorage</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-29">            <span class="nx">deps</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;utils&#39;</span> <span class="p">],</span>
+</span><span id="line-30">        <span class="p">},</span>
+</span><span id="line-31">        <span class="nx">defineGlobals</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-32">            <span class="nx">deps</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;bluebird&#39;</span><span class="p">,</span> <span class="s1">&#39;lodash&#39;</span><span class="p">,</span> <span class="s1">&#39;check-types&#39;</span><span class="p">,</span> <span class="s1">&#39;chai&#39;</span><span class="p">,</span> <span class="s1">&#39;sequential-event&#39;</span> <span class="p">],</span>
+</span><span id="line-33">            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;adaptersUtils&#39;</span><span class="p">,</span>
+</span><span id="line-34">        <span class="p">},</span>
+</span><span id="line-35">        <span class="nx">diasporaStandalone</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-36">            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;Diaspora&#39;</span><span class="p">,</span>
+</span><span id="line-37">        <span class="p">},</span>
+</span><span id="line-38">        <span class="nx">diasporaComposed</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-39">            <span class="nx">deps</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;bluebird&#39;</span><span class="p">,</span> <span class="s1">&#39;lodash&#39;</span><span class="p">,</span> <span class="s1">&#39;check-types&#39;</span><span class="p">,</span> <span class="s1">&#39;sequential-event&#39;</span> <span class="p">],</span>
+</span><span id="line-40">            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;Diaspora&#39;</span><span class="p">,</span>
+</span><span id="line-41">        <span class="p">},</span>
+</span><span id="line-42">    <span class="p">},</span>
+</span><span id="line-43"><span class="p">});</span>
+</span><span id="line-44">
+</span><span id="line-45"><span class="nb">window</span><span class="p">.</span><span class="nx">dataSources</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span id="line-46">
+</span><span id="line-47"><span class="nx">mocha</span><span class="p">.</span><span class="nx">setup</span><span class="p">(</span> <span class="s1">&#39;bdd&#39;</span> <span class="p">);</span>
+</span><span id="line-48"><span class="nx">mocha</span><span class="p">.</span><span class="nx">checkLeaks</span><span class="p">();</span>
+</span><span id="line-49"><span class="nx">config</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span id="line-50"><span class="nx">require</span><span class="p">([</span> <span class="s1">&#39;defineGlobals&#39;</span><span class="p">,</span> <span class="s1">&#39;bluebird&#39;</span><span class="p">,</span> <span class="nx">target</span> <span class="p">],</span> <span class="p">(</span> <span class="nx">g</span><span class="p">,</span> <span class="nb">Promise</span><span class="p">,</span> <span class="nx">Diaspora</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span><span id="line-51">    <span class="nb">window</span><span class="p">.</span><span class="nx">Diaspora</span> <span class="o">=</span> <span class="nx">Diaspora</span><span class="p">;</span>
+</span><span id="line-52">    <span class="nx">describe</span><span class="p">(</span> <span class="s1">&#39;Testing adapters&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span><span id="line-53"> </pre></div></td></tr></tbody></table></div>

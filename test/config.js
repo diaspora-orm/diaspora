@@ -2,12 +2,12 @@ module.exports = {
 	mongo: {
 		database: 'diaspora_test',
 		username: 'admin',
-//		password: false,
+		//		password: false,
 	},
 	redis: {
 		database: 3,
 	},
 	localstorage: {
-		data_dir: '.localStorageTest'
-	}
-}
+		data_dir: '.localStorageTest',
+	},
+};

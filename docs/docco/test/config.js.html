@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en-US">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+		<!-- Begin Jekyll SEO tag v2.3.0 -->
+<title>config.js | Diaspora</title>
+<meta property="og:title" content="config.js" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Multi-source ORM for node.js &amp; the browser" />
+<meta property="og:description" content="Multi-source ORM for node.js &amp; the browser" />
+<meta property="og:site_name" content="Diaspora" />
+<script type="application/ld+json">
+{"name":null,"description":"Multi-source ORM for node.js &amp; the browser","author":null,"@type":"WebPage","url":"/docco/test/config.js.html","publisher":null,"image":null,"headline":"config.js","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+		<link href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="../../assets/css/style.css?v=">
+		<script src="../../assets/js/docstrap.lib.js" defer></script>
+		<script src="../../assets/js/tableHeadFixer.js" defer></script>
+		<script src="../../assets/js/scale.fix.js" defer></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<!--[if lt IE 9]>
+<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+	</head>
+	<body data-page="/docco/test/config.js.html" class="doccopage">
+		<nav id="header" class="navbar navbar-default navbar-fixed-top">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="../../index.html">Diaspora</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#mainNav">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+	</div>
+	<div class="navbar-collapse collapse" id="mainNav" aria-expanded="false">
+		<ul class="nav navbar-nav">
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Guide<b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="../../index.html">Home</a></li>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<li><a href="../..//create-an-adapter.html">Create a custom adapter</a></li>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<li><a href="../..//getting-started.html">Getting started</a></li>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<li><a href="../..//query-language.html">Query Language</a></li>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<li><a href="../..//try-diaspora.html">Try Diaspora online</a></li>
+					
+					
+					
+					
+				</ul>
+			</li>
+			<li id="QCR" class="dropdown">
+				<a href="../../docco/index.html" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Quick Code Review<b class="caret"></b></a>
+				
+				<ul class="dropdown-menu">
+					
+
+<li ><a href="../../docco/Gruntfile.js.html" >Gruntfile.js</a>
+	
+</li>
+
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">test<b class="caret"></b></a>
+	
+	<!--{&quot;TestApps&quot;=&gt;{&quot;page&quot;=&gt;{&quot;title&quot;=&gt;&quot;testApps&quot;}, &quot;children&quot;=&gt;{&quot;Adapters&quot;=&gt;{&quot;page&quot;=&gt;{&quot;title&quot;=&gt;&quot;adapters&quot;}, &quot;children&quot;=&gt;{&quot;App1-matchmail-simple.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;app1-matchmail-simple.js.html&quot;&gt;}, &quot;Index.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;index.js.html&quot;&gt;}}}}}, &quot;Config-sample.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;config-sample.js.html&quot;&gt;}, &quot;Config.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;config.js.html&quot;&gt;}, &quot;DefineGlobals.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;defineGlobals.js.html&quot;&gt;}, &quot;Adapters&quot;=&gt;{&quot;page&quot;=&gt;{&quot;title&quot;=&gt;&quot;adapters&quot;}, &quot;children&quot;=&gt;{&quot;InMemory.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;inMemory.js.html&quot;&gt;}, &quot;Index.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;index.js.html&quot;&gt;}, &quot;LocalStorage.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;localStorage.js.html&quot;&gt;}, &quot;Utils.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;utils.js.html&quot;&gt;}}}, &quot;Index.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;index.js.html&quot;&gt;}, &quot;Models&quot;=&gt;{&quot;page&quot;=&gt;{&quot;title&quot;=&gt;&quot;models&quot;}, &quot;children&quot;=&gt;{&quot;Index.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;index.js.html&quot;&gt;}, &quot;Simple-remapping.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;simple-remapping.js.html&quot;&gt;}, &quot;Simple.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;simple.js.html&quot;&gt;}}}, &quot;BrowserTests&quot;=&gt;{&quot;page&quot;=&gt;{&quot;title&quot;=&gt;&quot;browserTests&quot;}, &quot;children&quot;=&gt;{&quot;SeleniumTest.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;seleniumTest.js.html&quot;&gt;}, &quot;Setup.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;setup.js.html&quot;&gt;}, &quot;Test.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;test.js.html&quot;&gt;}}}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">testApps<b class="caret"></b></a>
+	
+	<!--{&quot;Adapters&quot;=&gt;{&quot;page&quot;=&gt;{&quot;title&quot;=&gt;&quot;adapters&quot;}, &quot;children&quot;=&gt;{&quot;App1-matchmail-simple.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;app1-matchmail-simple.js.html&quot;&gt;}, &quot;Index.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;index.js.html&quot;&gt;}}}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">adapters<b class="caret"></b></a>
+	
+	<!--{&quot;App1-matchmail-simple.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;app1-matchmail-simple.js.html&quot;&gt;}, &quot;Index.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;index.js.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li ><a href="../../docco/test/testApps/adapters/app1-matchmail-simple.js.html" >app1-matchmail-simple.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/testApps/adapters/index.js.html" >index.js</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li ><a href="../../docco/test/config-sample.js.html" >config-sample.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/config.js.html" >config.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/defineGlobals.js.html" >defineGlobals.js</a>
+	
+</li>
+
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">adapters<b class="caret"></b></a>
+	
+	<!--{&quot;InMemory.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;inMemory.js.html&quot;&gt;}, &quot;Index.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;index.js.html&quot;&gt;}, &quot;LocalStorage.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;localStorage.js.html&quot;&gt;}, &quot;Utils.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;utils.js.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li ><a href="../../docco/test/adapters/inMemory.js.html" >inMemory.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/adapters/index.js.html" >index.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/adapters/localStorage.js.html" >localStorage.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/adapters/utils.js.html" >utils.js</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li ><a href="../../docco/test/index.js.html" >index.js</a>
+	
+</li>
+
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">models<b class="caret"></b></a>
+	
+	<!--{&quot;Index.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;index.js.html&quot;&gt;}, &quot;Simple-remapping.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;simple-remapping.js.html&quot;&gt;}, &quot;Simple.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;simple.js.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li ><a href="../../docco/test/models/index.js.html" >index.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/models/simple-remapping.js.html" >simple-remapping.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/models/simple.js.html" >simple.js</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">browserTests<b class="caret"></b></a>
+	
+	<!--{&quot;SeleniumTest.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;seleniumTest.js.html&quot;&gt;}, &quot;Setup.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;setup.js.html&quot;&gt;}, &quot;Test.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;test.js.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li ><a href="../../docco/test/browserTests/seleniumTest.js.html" >seleniumTest.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/browserTests/setup.js.html" >setup.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/test/browserTests/test.js.html" >test.js</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">lib<b class="caret"></b></a>
+	
+	<!--{&quot;Adapters&quot;=&gt;{&quot;page&quot;=&gt;{&quot;title&quot;=&gt;&quot;adapters&quot;}, &quot;children&quot;=&gt;{&quot;BaseAdapter.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;baseAdapter.js.html&quot;&gt;}, &quot;InMemoryAdapter.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;inMemoryAdapter.js.html&quot;&gt;}, &quot;LocalStorageAdapter.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;localStorageAdapter.js.html&quot;&gt;}}}, &quot;DataStoreEntities&quot;=&gt;{&quot;page&quot;=&gt;{&quot;title&quot;=&gt;&quot;dataStoreEntities&quot;}, &quot;children&quot;=&gt;{&quot;BaseEntity.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;baseEntity.js.html&quot;&gt;}, &quot;InMemoryEntity.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;inMemoryEntity.js.html&quot;&gt;}, &quot;LocalStorageEntity.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;localStorageEntity.js.html&quot;&gt;}}}, &quot;Diaspora.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;diaspora.js.html&quot;&gt;}, &quot;EntityFactory.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;entityFactory.js.html&quot;&gt;}, &quot;Model.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;model.js.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">adapters<b class="caret"></b></a>
+	
+	<!--{&quot;BaseAdapter.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;baseAdapter.js.html&quot;&gt;}, &quot;InMemoryAdapter.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;inMemoryAdapter.js.html&quot;&gt;}, &quot;LocalStorageAdapter.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;localStorageAdapter.js.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li ><a href="../../docco/lib/adapters/baseAdapter.js.html" >baseAdapter.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/lib/adapters/inMemoryAdapter.js.html" >inMemoryAdapter.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/lib/adapters/localStorageAdapter.js.html" >localStorageAdapter.js</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">dataStoreEntities<b class="caret"></b></a>
+	
+	<!--{&quot;BaseEntity.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;baseEntity.js.html&quot;&gt;}, &quot;InMemoryEntity.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;inMemoryEntity.js.html&quot;&gt;}, &quot;LocalStorageEntity.js&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;localStorageEntity.js.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li ><a href="../../docco/lib/dataStoreEntities/baseEntity.js.html" >baseEntity.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/lib/dataStoreEntities/inMemoryEntity.js.html" >inMemoryEntity.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/lib/dataStoreEntities/localStorageEntity.js.html" >localStorageEntity.js</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li ><a href="../../docco/lib/diaspora.js.html" >diaspora.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/lib/entityFactory.js.html" >entityFactory.js</a>
+	
+</li>
+
+
+<li ><a href="../../docco/lib/model.js.html" >model.js</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li ><a href="../../docco/diaspora.js.html" >diaspora.js</a>
+	
+</li>
+
+				</ul>
+			</li>
+			<li id="API" class="dropdown">
+				<a href="../../jsdoc/index.html" class="dropdown-toggle long" data-toggle="dropdown" aria-expanded="false">API Documentation<b class="caret"></b></a>
+				<a href="../../jsdoc/index.html" class="dropdown-toggle short" data-toggle="dropdown" aria-expanded="false">API<b class="caret"></b></a>
+				
+				<ul class="dropdown-menu">
+					
+
+<li class="dropdown"><a href="../../jsdoc/Adapters.html" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Namespace: Adapters<b class="caret"></b></a>
+	
+	<!--{&quot;DiasporaAdapter&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;Adapters.DiasporaAdapter.html&quot;&gt;}, &quot;InMemoryDiasporaAdapter&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;Adapters.InMemoryDiasporaAdapter.html&quot;&gt;}, &quot;LocalStorageDiasporaAdapter&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;Adapters.LocalStorageDiasporaAdapter.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li ><a href="../../jsdoc/Adapters.DiasporaAdapter.html" >Class: DiasporaAdapter</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/Adapters.InMemoryDiasporaAdapter.html" >Class: InMemoryDiasporaAdapter</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/Adapters.LocalStorageDiasporaAdapter.html" >Class: LocalStorageDiasporaAdapter</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/ConstrainedTypes.html" >Namespace: ConstrainedTypes</a>
+	
+</li>
+
+
+<li class="dropdown"><a href="../../jsdoc/DataStoreEntities.html" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Namespace: DataStoreEntities<b class="caret"></b></a>
+	
+	<!--{&quot;DataStoreEntity&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;DataStoreEntities.DataStoreEntity.html&quot;&gt;}, &quot;InMemoryEntity&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;DataStoreEntities.InMemoryEntity.html&quot;&gt;}, &quot;LocalStorageEntity&quot;=&gt;{&quot;page&quot;=&gt;#&lt;Jekyll:Page @name=&quot;DataStoreEntities.LocalStorageEntity.html&quot;&gt;}}-->
+	<ul class="dropdown-submenu">
+		
+
+<li ><a href="../../jsdoc/DataStoreEntities.DataStoreEntity.html" >Class: DataStoreEntity</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/DataStoreEntities.InMemoryEntity.html" >Class: InMemoryEntity</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/DataStoreEntities.LocalStorageEntity.html" >Class: LocalStorageEntity</a>
+	
+</li>
+
+	</ul>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/Diaspora.html" >Namespace: Diaspora</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/Entity.html" >Class: Entity</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/Model.html" >Class: Model</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/QueryLanguage.html" >Namespace: QueryLanguage</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/classes.list.html" >Classes</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/global.html" >Global</a>
+	
+</li>
+
+
+<li ><a href="../../jsdoc/namespaces.list.html" >Namespaces</a>
+	
+</li>
+
+				</ul>
+			</li>
+		</ul>
+		<div class="col-sm-3 col-md-3">
+			<form class="navbar-form" role="search" action="../../search.html">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+					<div class="input-group-btn">
+						<button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav >
+		<div class="wrapper">
+
+			<div id="content">
+				<section>
+					<div id="container"><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>config.js</h1><div class="filepath">test/config.js</div></th><th class="code"></th></tr></thead><tbody><tr class="section" id="section-1"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-1">&#182;</a></div></td><td class="code"><div class="highlight"><pre><span></span><span id="line-1"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="line-2">    <span class="nx">mongo</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-3">        <span class="nx">database</span><span class="o">:</span> <span class="s1">&#39;diaspora_test&#39;</span><span class="p">,</span>
+</span><span id="line-4">        <span class="nx">username</span><span class="o">:</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span>
+</span><span id="line-5">
+</span><span id="line-6"></pre></div></td></tr><tr class="section" id="section-2"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-2">&#182;</a></div><pre><code>password: false,
+</code></pre></td><td class="code"><div class="highlight"><pre></span><span id="line-7">    <span class="p">},</span>
+</span><span id="line-8">    <span class="nx">redis</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-9">        <span class="nx">database</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span id="line-10">    <span class="p">},</span>
+</span><span id="line-11">    <span class="nx">localstorage</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-12">        <span class="nx">data_dir</span><span class="o">:</span> <span class="s1">&#39;.localStorageTest&#39;</span><span class="p">,</span>
+</span><span id="line-13">    <span class="p">},</span>
+</span><span id="line-14"><span class="p">};</span>
+</span>
+</pre></div></td></tr></tbody></table></div>
+				</section>
+			</div>
+
+			<footer>
+				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+			</footer>
+		</div>
+		<!--[if !IE]><script defer>fixScale(document);</script><![endif]-->
+		
+<script type="text/javascript">
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+							})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-61219056-7', 'auto');
+	ga('send', 'pageview');
+</script>
+
+
+<script type="text/javascript">
+	window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
+	heap.load("3159885702");
+</script>
+
+		<script>
+			/**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+			var disqus_config = function () {
+				this.page.url = "https://diaspora.ithoughts.io/docco/test/config.js.html";  // Replace PAGE_URL with your page's canonical URL variable
+				this.page.identifier = "config.js"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+			};
+			(function() {  // DON'T EDIT BELOW THIS LINE
+				var d = document, s = d.createElement('script');
+
+				s.src = 'https://diaspora-orm.disqus.com/embed.js';
+
+				s.setAttribute('data-timestamp', +new Date());
+				(d.head || d.body).appendChild(s);
+			})();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+	</body>
+</html>

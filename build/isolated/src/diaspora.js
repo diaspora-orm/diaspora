@@ -10,7 +10,6 @@ module.exports = Diaspora;
 
 const SequentialEvent = require( 'sequential-event' );
 const _ = require( 'lodash' );
-const c = require( 'check-types' );
 const Promise = require( 'bluebird' );
 
 
@@ -114,12 +113,12 @@ const Promise = require( 'bluebird' );
  * @param {DataStoreEntity} classEntity Class used to spawn source entities
  */
 class DiasporaAdapter extends SequentialEvent {
-	constructor( classEntity, remaps = {}, filters = {}) {
+	constructor( classEntity ) {
 		super();
-		this.remaps = remaps;
-		this.remapsInverted = _.invert( remaps );
+		this.remaps = {};
+		this.remapsInverted = {};
+		this.filters = {};
 		this.classEntity = classEntity;
-		this.filters = filters;
 		this.on( 'ready', () => {
 			this.state = 'ready';
 		}).on( 'error', err => {
@@ -128,8 +127,27 @@ class DiasporaAdapter extends SequentialEvent {
 		});
 	}
 
+	configureCollection( tableName, remaps, filters ) {
+		this.remaps[tableName] = remaps;
+		this.remapsInverted[tableName] = _.invert( remaps );
+		this.filters = filters || {};
+	}
+
 	// -----
 	// ### Utils
+
+	remapFields( tableName, query, invert = false ) {
+		const keysMap = ( invert ? this.remapsInverted : this.remaps )[tableName];
+		if ( _.isNil( keysMap )) {
+			return query;
+		}
+		return _.mapKeys( query, ( value, key ) => {
+			if ( keysMap.hasOwnProperty( key )) {
+				return keysMap[key];
+			}
+			return key;
+		});
+	}
 
 	/**
 	 * @method waitReady
@@ -168,7 +186,7 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @returns {Object} Remapped object
 	 */
 	remapInput( table, query ) {
-		if ( !c.assigned( query )) {
+		if ( _.isNil( query )) {
 			return query;
 		}
 		const filtered = _.mapValues( query, ( value, key ) => {
@@ -199,7 +217,7 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @returns {Object} Remapped object
 	 */
 	remapOutput( table, query ) {
-		if ( !c.assigned( query )) {
+		if ( _.isNil( query )) {
 			return query;
 		}
 		const filtered = _.mapValues( query, ( value, key ) => {
@@ -269,7 +287,7 @@ class DiasporaAdapter extends SequentialEvent {
 						case '$greaterEqual': {
 							return !c.undefined( entityVal ) && entityVal >= val;
 						}
-					}
+									   }
 					return false;
 				});
 			}
@@ -301,7 +319,7 @@ class DiasporaAdapter extends SequentialEvent {
 		opts = _.cloneDeep( opts );
 		if ( opts.hasOwnProperty( 'limit' )) {
 			let limitOpt = opts.limit;
-			if ( c.string( limitOpt )) {
+			if ( _.isString( limitOpt )) {
 				limitOpt = parseInt( limitOpt );
 			}
 			if ( !( c.integer( limitOpt ) || Infinity === limitOpt ) || limitOpt < 0 ) {
@@ -311,7 +329,7 @@ class DiasporaAdapter extends SequentialEvent {
 		}
 		if ( opts.hasOwnProperty( 'skip' )) {
 			let skipOpt = opts.skip;
-			if ( c.string( skipOpt )) {
+			if ( _.isString( skipOpt )) {
 				skipOpt = parseInt( skipOpt );
 			}
 			if ( !c.integer( skipOpt ) || skipOpt < 0 || !isFinite( skipOpt )) {
@@ -330,7 +348,7 @@ class DiasporaAdapter extends SequentialEvent {
 				throw new Error( 'Use either "options.page" or "options.skip"' );
 			}
 			let pageOpt = opts.page;
-			if ( c.string( pageOpt )) {
+			if ( _.isString( pageOpt )) {
 				pageOpt = parseInt( pageOpt );
 			}
 			if ( !c.integer( pageOpt ) || pageOpt < 0 ) {
@@ -358,8 +376,8 @@ class DiasporaAdapter extends SequentialEvent {
 			'>=': '$greaterEqual',
 		};
 		const normalizedQuery = true === options.remapInput ? _( _.cloneDeep( originalQuery )).mapValues(( attrSearch, attrName ) => {
-			if ( !( c.assigned( attrSearch ) && attrSearch instanceof Object )) {
-				if ( c.assigned( attrSearch )) {
+			if ( !( !_.isNil( attrSearch ) && attrSearch instanceof Object )) {
+				if ( !_.isNil( attrSearch )) {
 					return {
 						$equal: attrSearch,
 					};
@@ -473,7 +491,7 @@ class DiasporaAdapter extends SequentialEvent {
 		// We are going to loop until we find enough items
 		const loopFind = found => {
 			// If the search returned nothing, then just finish the findMany
-			if ( !c.assigned( found )) {
+			if ( _.isNil( found )) {
 				return Promise.resolve( foundEntities );
 				// Else, if this is a value and not the initial `true`, add it to the list
 			} else if ( found !== true ) {
@@ -535,7 +553,7 @@ class DiasporaAdapter extends SequentialEvent {
 		// We are going to loop until we find enough items
 		const loopFind = found => {
 			// If the search returned nothing, then just finish the findMany
-			if ( !c.assigned( found )) {
+			if ( _.isNil( found )) {
 				return Promise.resolve( foundEntities );
 				// Else, if this is a value and not the initial `true`, add it to the list
 			} else if ( found !== true ) {
@@ -596,7 +614,7 @@ class DiasporaAdapter extends SequentialEvent {
 			// First, search for the item.
 			return this.findOne( table, queryFind, options ).then( found => {
 				// If the search returned nothing, then just finish the findMany
-				if ( !c.assigned( found )) {
+				if ( _.isNil( found )) {
 					return Promise.resolve();
 					// Else, if this is a value and not the initial `true`, add it to the list
 				}
@@ -616,11 +634,10 @@ class DiasporaAdapter extends SequentialEvent {
 
 module.exports = DiasporaAdapter;
 
-},{"bluebird":"bluebird","check-types":"check-types","lodash":"lodash","sequential-event":"sequential-event"}],3:[function(require,module,exports){
+},{"bluebird":"bluebird","lodash":"lodash","sequential-event":"sequential-event"}],3:[function(require,module,exports){
 'use strict';
 
 const _ = require( 'lodash' );
-const c = require( 'check-types' );
 const Promise = require( 'bluebird' );
 const DiasporaAdapter = require( './baseAdapter.js' );
 const InMemoryEntity = require( '../dataStoreEntities/inMemoryEntity.js' );
@@ -640,6 +657,11 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 		super( InMemoryEntity );
 		this.state = 'ready';
 		this.store = {};
+	}
+	
+	configureCollection( name, remap ) {
+		super.configureCollection( name, remap );
+		this.ensureCollectionExists( name );
 	}
 
 	// -----
@@ -669,7 +691,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * @method getSafeTableExists
+	 * @method ensureCollectionExists
 	 * @description Get or create the store hash
 	 * @memberof Adapters.InMemoryDiasporaAdapter
 	 * @public
@@ -678,7 +700,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @param   {String} table  Name of the table
 	 * @returns {DataStoreTable} In memory table to use
 	 */
-	getSafeTableExists( table ) {
+	ensureCollectionExists( table ) {
 		if ( this.store.hasOwnProperty( table )) {
 			return this.store[table];
 		} else {
@@ -728,7 +750,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 */
 	insertOne( table, entity ) {
 		entity = _.cloneDeep( entity );
-		const storeTable = this.getSafeTableExists( table );
+		const storeTable = this.ensureCollectionExists( table );
 		entity.id = this.generateUUID();
 		this.setIdHash( entity );
 		storeTable.items.push( entity );
@@ -752,7 +774,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
 	 */
 	findOne( table, queryFind, options = {}) {
-		const storeTable = this.getSafeTableExists( table );
+		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
 		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
 		return Promise.resolve( reducedMatches.length > 0 ? new this.classEntity( _.first( reducedMatches ), this ) : undefined );
@@ -772,7 +794,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`)
 	 */
 	findMany( table, queryFind, options = {}) {
-		const storeTable = this.getSafeTableExists( table );
+		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
 		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
 		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity( entity, this )));
@@ -796,7 +818,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`)
 	 */
 	updateOne( table, queryFind, update, options = {}) {
-		const storeTable = this.getSafeTableExists( table );
+		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
 		const firstMatch = _.first( matches );
 		this.applyUpdateEntity( update, firstMatch );
@@ -818,7 +840,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`)
 	 */
 	updateMany( table, queryFind, update, options = {}) {
-		const storeTable = this.getSafeTableExists( table );
+		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
 		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
 		_.forEach( reducedMatches, match => {
@@ -844,7 +866,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*)
 	 */
 	deleteOne( table, queryFind, options = {}) {
-		const storeTable = this.getSafeTableExists( table );
+		const storeTable = this.ensureCollectionExists( table );
 		return this.findOne( table, queryFind, options ).then( entityToDelete => {
 			storeTable.items = _.reject( storeTable.items, entity => entity.id === entityToDelete.idHash[this.name]);
 			return Promise.resolve();
@@ -865,7 +887,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
 	 */
 	deleteMany( table, queryFind, options = {}) {
-		const storeTable = this.getSafeTableExists( table );
+		const storeTable = this.ensureCollectionExists( table );
 		return this.findMany( table, queryFind, options ).then( entitiesToDelete => {
 			const entitiesIds = _.map( entitiesToDelete, entity => _.get( entity, `idHash.${ this.name }` ));
 			storeTable.items = _.reject( storeTable.items, entity => {
@@ -878,11 +900,10 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 module.exports = InMemoryDiasporaAdapter;
 
-},{"../dataStoreEntities/inMemoryEntity.js":6,"./baseAdapter.js":2,"bluebird":"bluebird","check-types":"check-types","lodash":"lodash"}],4:[function(require,module,exports){
+},{"../dataStoreEntities/inMemoryEntity.js":6,"./baseAdapter.js":2,"bluebird":"bluebird","lodash":"lodash"}],4:[function(require,module,exports){
 'use strict';
 
 const _ = require( 'lodash' );
-const c = require( 'check-types' );
 const Promise = require( 'bluebird' );
 const DiasporaAdapter = require( './baseAdapter.js' );
 const LocalStorageEntity = require( '../dataStoreEntities/localStorageEntity.js' );
@@ -906,6 +927,11 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 		});
 		this.state = 'ready';
 		this.source = ( true === config.session ? sessionStorage : localStorage );
+	}
+
+	configureCollection( name, remap ) {
+		super.configureCollection( name, remap );
+		this.ensureCollectionExists( name );
 	}
 
 	// -----
@@ -934,7 +960,7 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * @method ensureTableExists
+	 * @method ensureCollectionExists
 	 * @description Create the table key if it does not exist
 	 * @memberof Adapters.LocalStorageDiasporaAdapter
 	 * @public
@@ -942,10 +968,15 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @author gerkin
 	 * @param   {String} table  Name of the table
 	 */
-	ensureTableExists( table ) {
-		if ( !c.assigned( this.source.getItem( table ))) {
-			this.source.setItem( table, '[]' );
+	ensureCollectionExists( table ) {
+		let index = this.source.getItem( table );
+		if ( _.isNil( index )) {
+			index = [];
+			this.source.setItem( table, JSON.stringify( index ));
+		} else {
+			index = JSON.parse( index );
 		}
+		return index;
 	}
 
 	/**
@@ -1002,11 +1033,10 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 */
 	insertOne( table, entity ) {
 		entity = _.cloneDeep( entity || {});
-		this.ensureTableExists( table );
 		entity.id = this.generateUUID();
 		this.setIdHash( entity );
 		try {
-			const tableIndex = JSON.parse( this.source.getItem( table ));
+			const tableIndex = this.ensureCollectionExists( table );
 			tableIndex.push( entity.id );
 			this.source.setItem( table, JSON.stringify( tableIndex ));
 			this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
@@ -1030,9 +1060,8 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 */
 	insertMany( table, entities ) {
 		entities = _.cloneDeep( entities );
-		this.ensureTableExists( table );
 		try {
-			const tableIndex = JSON.parse( this.source.getItem( table ));
+			const tableIndex = this.ensureCollectionExists( table );
 			entities = entities.map(( entity = {}, i ) => {
 				entity.id = this.generateUUID();
 				this.setIdHash( entity );
@@ -1052,7 +1081,7 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 
 	findOneById( table, id ) {
 		const item = this.source.getItem( this.getItemName( table, id ));
-		if ( c.assigned( item )) {
+		if ( !_.isNil( item )) {
 			return Promise.resolve( new this.classEntity( JSON.parse( item ), this ));
 		}
 		return Promise.resolve();
@@ -1075,13 +1104,12 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 		_.defaults( options, {
 			skip: 0,
 		});
-		this.ensureTableExists( table );
 		if ( !c.object( queryFind )) {
 			return this.findOneById( table, queryFind );
 		} else if ( _.isEqual( _.keys( queryFind ), [ 'id' ]) && _.isEqual( _.keys( queryFind.id ), [ '$equal' ])) {
 			return this.findOneById( table, queryFind.id.$equal );
 		}
-		const items = JSON.parse( this.source.getItem( table ));
+		const items = this.ensureCollectionExists( table );
 		let returnedItem;
 		let matched = 0;
 		_.each( items, itemId => {
@@ -1095,12 +1123,12 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 				}
 			}
 		});
-		return Promise.resolve( c.assigned( returnedItem ) ? new this.classEntity( returnedItem, this ) : undefined );
+		return Promise.resolve( !_.isNil( returnedItem ) ? new this.classEntity( returnedItem, this ) : undefined );
 	}
 
 
 	/*	findMany( table, queryFind, options = {}) {
-		this.ensureTableExists( table );
+		this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, queryFind );
 		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
 		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity(entity, this )));
@@ -1127,9 +1155,8 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 		_.defaults( options, {
 			skip: 0,
 		});
-		this.ensureTableExists( table );
 		return this.findOne( table, queryFind, options ).then( entity => {
-			if ( !c.assigned( entity )) {
+			if ( _.isNil( entity )) {
 				return Promise.resolve();
 			}
 			entity = entity.toObject();
@@ -1144,7 +1171,7 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/* updateMany( table, queryFind, update, options ) {
-		this.ensureTableExists( table );
+		this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, queryFind );
 		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
 		_.forEach( reducedMatches, match => {
@@ -1170,10 +1197,9 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*)
 	 */
 	deleteOne( table, queryFind, options = {}) {
-		this.ensureTableExists( table );
 		return this.findOne( table, queryFind, options ).then( entityToDelete => {
 			try {
-				const tableIndex = JSON.parse( this.source.getItem( table ));
+				const tableIndex = this.ensureCollectionExists( table );
 				_.pull( tableIndex, entityToDelete.id );
 				this.source.setItem( table, JSON.stringify( tableIndex ));
 				this.source.removeItem( this.getItemName( table, entityToDelete.id ));
@@ -1198,10 +1224,9 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
 	 */
 	deleteMany( table, queryFind, options = {}) {
-		this.ensureTableExists( table );
 		try {
-			const tableIndex = JSON.parse( this.source.getItem( table ));
 			return this.findMany( table, queryFind, options ).then( entitiesToDelete => {
+				const tableIndex = this.ensureCollectionExists( table );
 				_.pullAll( tableIndex, _.map( entitiesToDelete, 'id' ));
 				this.source.setItem( table, JSON.stringify( tableIndex ));
 				_.forEach( entitiesToDelete, entityToDelete => {
@@ -1217,11 +1242,10 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 
 module.exports = LocalStorageDiasporaAdapter;
 
-},{"../dataStoreEntities/localStorageEntity.js":7,"./baseAdapter.js":2,"bluebird":"bluebird","check-types":"check-types","lodash":"lodash"}],5:[function(require,module,exports){
+},{"../dataStoreEntities/localStorageEntity.js":7,"./baseAdapter.js":2,"bluebird":"bluebird","lodash":"lodash"}],5:[function(require,module,exports){
 'use strict';
 
 const _ = require( 'lodash' );
-const c = require( 'check-types' );
 
 /**
  * @namespace DataStoreEntities
@@ -1237,7 +1261,7 @@ const c = require( 'check-types' );
  */
 class DataStoreEntity {
 	constructor( entity, dataSource ) {
-		if ( !c.assigned( entity )) {
+		if ( _.isNil( entity )) {
 			return undefined;
 		}
 		Object.defineProperties( this, {
@@ -1250,13 +1274,13 @@ class DataStoreEntity {
 		_.assign( this, entity );
 	}
 	toObject() {
-		return _.omit( this, 'dataSource' );
+		return _.omit( this, [ 'dataSource', 'id' ]);
 	}
 }
 
 module.exports = DataStoreEntity;
 
-},{"check-types":"check-types","lodash":"lodash"}],6:[function(require,module,exports){
+},{"lodash":"lodash"}],6:[function(require,module,exports){
 'use strict';
 
 const DataStoreEntity = require( './baseEntity.js' );
@@ -1304,7 +1328,8 @@ module.exports = LocalStorageEntity;
 'use strict';
 
 const _ = require( 'lodash' );
-const c = require( 'check-types' );
+const Promise = require( 'bluebird' );
+const SequentialEvent = require( 'sequential-event' );
 const DiasporaAdapter = require( './adapters/baseAdapter.js' );
 
 const adapters = {
@@ -1332,16 +1357,18 @@ function cloneKeysAdd( keys, newKey ) {
 }
 
 const wrapDataSourceAction = ( callback, queryType, adapter ) => {
-	// Filter our results
-	const filterResults = ( entity, table ) => {
-		// Force results to be class instances
-		if ( !( entity instanceof adapter.classEntity ) && c.assigned( entity )) {
-			return new adapter.classEntity( entity, adapter );
-		}
-		return entity;
-	};
-
 	return ( table, ...args ) => {
+		// Filter our results
+		const filterResults = entity => {
+			// Remap fields
+			entity = adapter.remapFields( table, entity, true );
+			// Force results to be class instances
+			if ( !( entity instanceof adapter.classEntity ) && !_.isNil( entity )) {
+				return new adapter.classEntity( entity, adapter );
+			}
+			return entity;
+		};
+
 		// Transform arguments for find, update & delete
 		let optIndex = false;
 		let upd = false;
@@ -1354,18 +1381,28 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 			upd = true;
 		}
 		try {
+			//console.log('Before query transformed', args[0]);
 			if ( false !== optIndex ) {
+				// Options to canonical
 				args[optIndex] = adapter.normalizeOptions( args[optIndex]);
-				args[0] = adapter.normalizeQuery( args[0], args[optIndex]);
-				if ( true === args[optIndex].remapInputs ) {
-					args[0] = adapter.remapFields( args[0]);
+				// Query search to cannonical
+				if ( true === args[optIndex].remapInput ) {
+					args[0] = adapter.remapFields( table, args[0], false );
 
 					if ( true === upd ) {
-						args[1] = adapter.remapFields( args[1]);
+						args[1] = adapter.remapFields( table, args[1], false );
 					}
 				}
+				args[0] = adapter.normalizeQuery( args[0], args[optIndex]);
 				args[optIndex].remapInput = false;
+			} else if ( 'insert' === queryType.query ) {
+				if ( 'many' === queryType.number ) {
+					args[0] = _.map( args[0], insertion => adapter.remapFields( table, insertion, false ));
+				} else {
+					args[0] = adapter.remapFields( table, args[0], false );
+				}
 			}
+			//console.log('Query transformed:', args[0]);
 		} catch ( err ) {
 			return Promise.reject( err );
 		}
@@ -1373,9 +1410,9 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 		// Hook after promise resolution
 		const queryPromise = callback.call( adapter, table, ...args );
 		return queryPromise.then( results => {
-			if ( c.array( results )) {
+			if ( _.isArrayLike( results )) {
 				results = _.map( results, filterResults );
-			} else {
+			} else if ( !_.isNil( results )) {
 				results = filterResults( results );
 			}
 			return Promise.resolve( results );
@@ -1421,7 +1458,7 @@ const Diaspora = {
 	 * @returns {Error[]} Array of errors
 	 */
 	checkField( value, fieldDesc, keys ) {
-		if ( c.not.object( fieldDesc )) {
+		if ( !c.object( fieldDesc )) {
 			return;
 		}
 		_.defaults( fieldDesc, {
@@ -1438,7 +1475,7 @@ const Diaspora = {
 		}
 
 		// Check the type and the required status
-		if ( c.assigned( fieldDesc.type ) && c.assigned( fieldDesc.model )) {
+		if ( !_.isNil( fieldDesc.type ) && !_.isNil( fieldDesc.model )) {
 			errors.push( `${ keys.join( '.' ) } spec can't have both a type and a model` );
 		} else {
 			// Apply the `required` modifier
@@ -1446,9 +1483,9 @@ const Diaspora = {
 			if ( fieldDesc.required !== true ) {
 				tester = c.maybe;
 			}
-			if ( c.assigned( fieldDesc.model )) {
+			if ( !_.isNil( fieldDesc.model )) {
 				let model = false;
-				if ( c.string( fieldDesc.model )) {
+				if ( _.isString( fieldDesc.model )) {
 					/*if ( _.has( collections, fieldDesc.model )) {
 						model = collections[fieldDesc.model].model;
 					} else {*/
@@ -1464,7 +1501,7 @@ const Diaspora = {
 						errors.push( `${ keys.join( '.' ) } expected to be a ${ model.modelName }` );
 					}
 				}
-			} else if ( c.string( fieldDesc.type )) {
+			} else if ( _.isString( fieldDesc.type )) {
 				switch ( fieldDesc.type ) {
 					case 'string': {
 						if ( !tester.string( value )) {
@@ -1517,7 +1554,7 @@ const Diaspora = {
 								fieldDesc.of
 							) ? _( value ).map(
 									( propVal, propName ) => {
-										if ( c.array( fieldDesc.of )) {
+										if ( _.isArrayLike( fieldDesc.of )) {
 											const subErrors = _( fieldDesc.of ).map( desc => this.checkField( propVal, desc, cloneKeysAdd( keys, propName )));
 											if ( !_.find( subErrors, v => 0 === v.length )) {
 												return subErrors;
@@ -1547,7 +1584,7 @@ const Diaspora = {
 				errors.push( `${ keys.join( '.' ) } spec "type" must be a string` );
 			}
 		}
-		if ( c.assigned( fieldDesc.enum )) {
+		if ( !_.isNil( fieldDesc.enum )) {
 			const result = _.some( fieldDesc.enum, enumVal => {
 				if ( c.instance( enumVal, RegExp )) {
 					return c.match( value, enumVal );
@@ -1597,13 +1634,13 @@ const Diaspora = {
 	 * @returns {Any} Defaulted value
 	 */
 	defaultField( value, fieldDesc ) {
-		var out;
+		let out;
 		if ( c.not.undefined( value )) {
 			out = value;
 		} else {
-			out = c.function( fieldDesc.default ) ? fieldDesc.default() : fieldDesc.default;
+			out = _.isFunction( fieldDesc.default ) ? fieldDesc.default() : fieldDesc.default;
 		}
-		if ( 'object' === fieldDesc.type && c.nonEmptyObject( fieldDesc.attributes ) && c.assigned( out )) {
+		if ( 'object' === fieldDesc.type && _.isObject( fieldDesc.attributes ) && _.keys( fieldDesc.attributes ).length > 0 && !_.isNil( out )) {
 			return this.default( out, fieldDesc.attributes );
 		} else {
 			return out;
@@ -1618,13 +1655,15 @@ const Diaspora = {
 		const newDataSource = new Proxy( baseAdapter, {
 			get: function( target, key ) {
 				// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
-				let method;
-				if ( c.string( key ) && ( method = key.match( /^(find|update|insert|delete)(Many|One)$/ ))) {
-					method[2] = method[2].toLowerCase();
-					method = _.mapKeys( method.slice( 0, 3 ), ( val, key ) => {
-						return [ 'full', 'query', 'number' ][key];
-					});
-					return wrapDataSourceAction( target[key], method, target );
+				if ( _.isString( key )) {
+					let method;
+					if ( method = key.match( /^(find|update|insert|delete)(Many|One)$/ )) {
+						method[2] = method[2].toLowerCase();
+						method = _.mapKeys( method.slice( 0, 3 ), ( val, key ) => {
+							return [ 'full', 'query', 'number' ][key];
+						});
+						return wrapDataSourceAction( target[key], method, target );
+					}
 				}
 				return target[key];
 			},
@@ -1644,10 +1683,10 @@ const Diaspora = {
 	 * @param {DiasporaAdapter} dataSource Datasource itself
 	 */
 	registerDataSource( moduleName, name, dataSource ) {
-		if ( !c.nonEmptyString( moduleName )) {
+		if ( !_.isString( moduleName ) && moduleName.length > 0 ) {
 			throw new Error( `Module name must be a non empty string, had "${ moduleName }"` );
 		}
-		if ( !c.nonEmptyString( name )) {
+		if ( !_.isString( name ) && name.length > 0 ) {
 			throw new Error( `DataSource name must be a non empty string, had "${ name }"` );
 		}
 		if ( dataSources.hasOwnProperty( name )) {
@@ -1676,10 +1715,10 @@ const Diaspora = {
 	 * @param {Object} modelDesc Description of the model to define
 	 */
 	declareModel( moduleName, name, modelDesc ) {
-		if ( !c.nonEmptyString( moduleName )) {
+		if ( !_.isString( moduleName ) && moduleName.length > 0 ) {
 			throw new Error( `Module name must be a non empty string, had "${ moduleName }"` );
 		}
-		if ( !c.nonEmptyString( name )) {
+		if ( !_.isString( name ) && name.length > 0 ) {
 			throw new Error( `DataSource name must be a non empty string, had "${ name }"` );
 		}
 		if ( !c.object( modelDesc )) {
@@ -1696,6 +1735,11 @@ const Diaspora = {
 	models,
 	dataSources,
 	adapters,
+	dependencies: {
+		lodash:             _,
+		bluebird:           Promise,
+		'sequential-event': SequentialEvent,
+	},
 };
 
 module.exports = Diaspora;
@@ -1703,7 +1747,7 @@ module.exports = Diaspora;
 // Load Model class after, so that Model requires Diaspora once it is declared
 const Model = require( './model' );
 
-},{"./adapters/baseAdapter.js":2,"./adapters/inMemoryAdapter":3,"./adapters/localStorageAdapter":4,"./model":10,"check-types":"check-types","lodash":"lodash"}],9:[function(require,module,exports){
+},{"./adapters/baseAdapter.js":2,"./adapters/inMemoryAdapter":3,"./adapters/localStorageAdapter":4,"./model":10,"bluebird":"bluebird","lodash":"lodash","sequential-event":"sequential-event"}],9:[function(require,module,exports){
 'use strict';
 
 const _ = require( 'lodash' );
@@ -1771,12 +1815,12 @@ function EntityFactory( name, modelAttrs, model ) {
 		let state = 'orphan';
 		let lastDataSource = null;
 		const dataSources = Object.seal( _.mapValues( model.dataSources, () => undefined ));
-		
+
 		if ( source instanceof DataStoreEntity ) {
 			state = 'sync';
 			lastDataSource = source.dataSource.name;
 			dataSources[lastDataSource] = source;
-			source = source.toObject();
+			source = _.omit( source.toObject(), [ 'id' ]);
 		}
 		// Check keys provided in source
 		const sourceKeys = _.keys( source );
@@ -1863,8 +1907,6 @@ function EntityFactory( name, modelAttrs, model ) {
 						// If this was our only data source, then go back to orphan state
 						if ( 0 === _.without( model.dataSources, dataSource.name ).length ) {
 							state = 'orphan';
-							delete attributes.id;
-							delete attributes.idHash;
 						} else {
 							state = 'sync';
 							delete attributes.idHash[dataSource.name];
@@ -1968,7 +2010,6 @@ module.exports = EntityFactory;
 'use strict';
 
 const _ = require( 'lodash' );
-const c = require( 'check-types' );
 const Promise = require( 'bluebird' );
 const EntityFactory = require( './entityFactory' );
 const Diaspora = require( './diaspora' );
@@ -1993,19 +2034,34 @@ class Model {
 		if ( 0 !== reservedPropIntersect.length ) {
 			throw new Error( `${ JSON.stringify( reservedPropIntersect ) } is/are reserved property names. To match those column names in data source, please use the data source mapper property` );
 		}
-		if ( !modelDesc.hasOwnProperty( 'sources' ) || !( c.array( modelDesc.sources ) || c.object( modelDesc.sources ))) {
+		if ( !modelDesc.hasOwnProperty( 'sources' ) || !( _.isArrayLike( modelDesc.sources ) || c.object( modelDesc.sources ))) {
 			throw new TypeError( `Expect model sources to be either an array or an object, had ${ JSON.stringify( modelDesc.sources ) }.` );
 		}
+		// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
+		const sourcesNormalized = _.isArrayLike( modelDesc.sources ) ? _.zipObject( modelDesc.sources, _.times( modelDesc.sources.length, _.constant({}))) : _.mapValues( modelDesc.sources, ( remap, dataSourceName ) => {
+			if ( true === remap ) {
+				return {};
+			} else if ( c.object( remap )) {
+				return remap;
+			} else {
+				throw new TypeError( `Datasource "${ dataSourceName }" value is invalid: expect \`true\` or a remap hash, but have ${ JSON.stringify( remap ) }` );
+			}
+		});
 		// List sources required by this model
-		const sourceNames = c.object( modelDesc.sources ) ? _.keys( modelDesc.sources ) : modelDesc.sources;
+		const sourceNames = _.keys( sourcesNormalized );
 		// Get sources. Later, implement scoping so that modules A requiring module B can access dataSources from module B
 		const scopeAvailableSources = Diaspora.dataSources[namespace];
 		const modelSources = _.pick( scopeAvailableSources, sourceNames );
-		// console.log({scopeAvailableSources, modelSources});
 		const missingSources = _.difference( sourceNames, _.keys( modelSources ));
 		if ( 0 !== missingSources.length ) {
 			throw new Error( `Missing data sources ${ missingSources.map( v => `"${ v }"` ).join( ', ' ) }` );
 		}
+
+		// Now, we are sure that config is valid. We can configure our datasources with model options, and set `this` properties.
+		_.forEach( sourcesNormalized, ( remap, sourceName ) => {
+			const sourceConfiguring = modelSources[sourceName];
+			sourceConfiguring.configureCollection( name, remap );
+		});
 		this.dataSources = modelSources;
 		this.defaultDataSource = sourceNames[0];
 		this.name = name;
@@ -2013,7 +2069,7 @@ class Model {
 	}
 
 	getDataSource( sourceName ) {
-		if ( !c.assigned( sourceName )) {
+		if ( _.isNil( sourceName )) {
 			sourceName = this.defaultDataSource;
 		} else if ( !this.dataSources.hasOwnProperty( sourceName )) {
 			throw new Error( `Unknown data source "${ sourceName }" in model "${ this.name }", available are ${ _.keys( this.dataSources ).map( v => `"${ v }"` ).join( ', ' ) }` );
@@ -2045,17 +2101,17 @@ class Model {
 	}
 
 	find( queryFind = {}, options = {}, dataSourceName ) {
-		if ( c.string( options ) && !c.assigned( dataSourceName )) {
+		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
 			dataSourceName = options;
 			options = {};
-		} else if ( c.string( queryFind ) && !c.assigned( options ) && !c.assigned( dataSourceName )) {
+		} else if ( _.isString( queryFind ) && !!_.isNil( options ) && !!_.isNil( dataSourceName )) {
 			dataSourceName = queryFind;
 			queryFind = {};
 			options = {};
 		}
 		const dataSource = this.getDataSource( dataSourceName );
 		return dataSource.findOne( this.name, queryFind, options ).then( dataSourceEntity => {
-			if ( !c.assigned( dataSourceEntity )) {
+			if ( _.isNil( dataSourceEntity )) {
 				return Promise.resolve();
 			}
 			const newEntity = new this.entityFactory( dataSourceEntity );
@@ -2065,10 +2121,10 @@ class Model {
 	}
 
 	findMany( queryFind = {}, options = {}, dataSourceName ) {
-		if ( c.string( options ) && !c.assigned( dataSourceName )) {
+		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
 			dataSourceName = options;
 			options = {};
-		} else if ( c.string( queryFind ) && !c.assigned( options ) && !c.assigned( dataSourceName )) {
+		} else if ( _.isString( queryFind ) && !!_.isNil( options ) && !!_.isNil( dataSourceName )) {
 			dataSourceName = queryFind;
 			queryFind = {};
 			options = {};
@@ -2085,31 +2141,29 @@ class Model {
 	}
 
 	update( queryFind, update, options = {}, dataSourceName ) {
-		if ( c.string( options ) && !c.assigned( dataSourceName )) {
+		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
 			dataSourceName = options;
 			options = {};
 		}
 		const dataSource = this.getDataSource( dataSourceName );
 		return dataSource.updateOne( this.name, queryFind, update, options ).then( dataSourceEntity => {
-			if ( !c.assigned( dataSourceEntity )) {
+			if ( _.isNil( dataSourceEntity )) {
 				return Promise.resolve();
 			}
-			const newEntity = new this.entityFactory( dataSourceEntity.toObject());
-			newEntity.dataSources[dataSource.name] = dataSourceEntity;
+			const newEntity = new this.entityFactory( dataSourceEntity );
 			return Promise.resolve( newEntity );
 		});
 	}
 
 	updateMany( queryFind, update, options = {}, dataSourceName ) {
-		if ( c.string( options ) && !c.assigned( dataSourceName )) {
+		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
 			dataSourceName = options;
 			options = {};
 		}
 		const dataSource = this.getDataSource( dataSourceName );
 		return dataSource.updateMany( this.name, queryFind, update, options ).then( dataSourceEntities => {
 			const entities = _.map( dataSourceEntities, dataSourceEntity => {
-				const newEntity = new this.entityFactory( dataSourceEntity.toObject());
-				newEntity.dataSources[dataSource.name] = dataSourceEntity;
+				const newEntity = new this.entityFactory( dataSourceEntity );
 				return newEntity;
 			});
 			return Promise.resolve( entities );
@@ -2117,7 +2171,7 @@ class Model {
 	}
 
 	delete( queryFind = {}, options = {}, dataSourceName ) {
-		if ( c.string( options ) && !c.assigned( dataSourceName )) {
+		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
 			dataSourceName = options;
 			options = {};
 		}
@@ -2126,7 +2180,7 @@ class Model {
 	}
 
 	deleteMany( queryFind = {}, options = {}, dataSourceName ) {
-		if ( c.string( options ) && !c.assigned( dataSourceName )) {
+		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
 			dataSourceName = options;
 			options = {};
 		}
@@ -2137,5 +2191,5 @@ class Model {
 
 module.exports = Model;
 
-},{"./diaspora":8,"./entityFactory":9,"bluebird":"bluebird","check-types":"check-types","lodash":"lodash"}]},{},[1])(1)
+},{"./diaspora":8,"./entityFactory":9,"bluebird":"bluebird","lodash":"lodash"}]},{},[1])(1)
 });

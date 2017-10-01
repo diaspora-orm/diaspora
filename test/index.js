@@ -2,10 +2,10 @@
 
 /* globals l: false, c: false */
 
-require('./defineGlobals');
+require( './defineGlobals' );
 
-if(process.env.SAUCE_ONLY !== 'true'){
-	global.Diaspora = require('../diaspora');
+if ( process.env.SAUCE_ONLY !== 'true' ) {
+	global.Diaspora = require( '../diaspora' );
 	global.dataSources = {};
 	describe( '"check" feature', () => {
 		it( 'Basic tests with types', () => {
@@ -323,10 +323,10 @@ if(process.env.SAUCE_ONLY !== 'true'){
 		});
 	});
 
-	importTest(chalk.bold.underline.blue('Adapters'), './adapters/index.js');
-	importTest(chalk.bold.underline.blue('Models'), './models/index.js');
+	importTest( chalk.bold.underline.blue( 'Adapters' ), './adapters/index.js' );
+	importTest( chalk.bold.underline.blue( 'Models' ), './models/index.js' );
 }
 
-if(process.env.NO_SAUCE !== 'true'){
-	require('./browserTests/seleniumTest.js');
+if ( process.env.NO_SAUCE !== 'true' ) {
+	require( './browserTests/seleniumTest.js' );
 }

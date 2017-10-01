@@ -3,50 +3,50 @@
 //require("../index");
 //let inMemoryAdapter = require("../../lib/adapters/inMemoryAdapter");
 //let inMemoryEntity = require("../../lib/dataStoreEntities/inMemoryEntity");
-let Diaspora = require("../../diaspora");
+let Diaspora = require( '../../diaspora' );
 
 let testModel;
 let testedEntity;
 const modelName = 'testModel';
 
-let IMsource = Diaspora.createDataSource( 'in-memory', {} );
+let IMsource = Diaspora.createDataSource( 'in-memory', {});
 Diaspora.registerDataSource( 'test', 'proute', IMsource );
 
 testModel = Diaspora.declareModel( 'test', modelName, {
-    sources:    [ 'proute' ],
-    attributes: {
-        foo: {
-            type: 'string',
-        },
-    },
-    methods: {
-        myFunc( ){
-            // "this" is entity
-            let promise = this.persist();
-            promise.then( () => {
-               //this is still entity 
-            });
-        },
-    }
+	sources:    [ 'proute' ],
+	attributes: {
+		foo: {
+			type: 'string',
+		},
+	},
+	methods: {
+		myFunc() {
+			// "this" is entity
+			let promise = this.persist();
+			promise.then(() => {
+				//this is still entity 
+			});
+		},
+	},
 });
 
 const entity1 = testModel.spawn();
 const entity2 = testModel.spawn({
-    foo: 'bar',
+	foo: 'bar',
 });
 
 
 const entities = testModel.spawnMulti([
-    {
-        foo: 'bar',
-    },
-    undefined,
+	{
+		foo: 'bar',
+	},
+	undefined,
 ]);
 
-console.log( entities.map(entity=>entity.toObject()) );
+console.log( entities.map( entity=>entity.toObject()));
 
 testedEntity = testModel.spawn({
-    foo: 'bar',
+	foo: 'bar',
 });
 /*
 const retPromise = testedEntity.persist();

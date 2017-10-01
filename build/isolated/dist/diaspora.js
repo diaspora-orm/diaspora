@@ -1,5 +1,7 @@
 "use strict";
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -54,7 +56,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			var SequentialEvent = require('sequential-event');
 			var _ = require('lodash');
-			var c = require('check-types');
 			var Promise = require('bluebird');
 
 			/**
@@ -161,17 +162,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				_inherits(DiasporaAdapter, _SequentialEvent);
 
 				function DiasporaAdapter(classEntity) {
-					var remaps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-					var filters = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
 					_classCallCheck(this, DiasporaAdapter);
 
 					var _this = _possibleConstructorReturn(this, (DiasporaAdapter.__proto__ || Object.getPrototypeOf(DiasporaAdapter)).call(this));
 
-					_this.remaps = remaps;
-					_this.remapsInverted = _.invert(remaps);
+					_this.remaps = {};
+					_this.remapsInverted = {};
+					_this.filters = {};
 					_this.classEntity = classEntity;
-					_this.filters = filters;
 					_this.on('ready', function () {
 						_this.state = 'ready';
 					}).on('error', function (err) {
@@ -181,21 +179,45 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					return _this;
 				}
 
-				// -----
-				// ### Utils
-
-				/**
-     * @method waitReady
-     * @description Returns a promise resolved once adapter state is ready
-     * @memberof Adapters.DiasporaAdapter
-     * @public
-     * @instance
-     * @author gerkin
-     * @returns {Promise} Promise resolved when adapter is ready, and rejected if an error occured
-     */
-
-
 				_createClass(DiasporaAdapter, [{
+					key: "configureCollection",
+					value: function configureCollection(tableName, remaps, filters) {
+						this.remaps[tableName] = remaps;
+						this.remapsInverted[tableName] = _.invert(remaps);
+						this.filters = filters || {};
+					}
+
+					// -----
+					// ### Utils
+
+				}, {
+					key: "remapFields",
+					value: function remapFields(tableName, query) {
+						var invert = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+						var keysMap = (invert ? this.remapsInverted : this.remaps)[tableName];
+						if (_.isNil(keysMap)) {
+							return query;
+						}
+						return _.mapKeys(query, function (value, key) {
+							if (keysMap.hasOwnProperty(key)) {
+								return keysMap[key];
+							}
+							return key;
+						});
+					}
+
+					/**
+      * @method waitReady
+      * @description Returns a promise resolved once adapter state is ready
+      * @memberof Adapters.DiasporaAdapter
+      * @public
+      * @instance
+      * @author gerkin
+      * @returns {Promise} Promise resolved when adapter is ready, and rejected if an error occured
+      */
+
+				}, {
 					key: "waitReady",
 					value: function waitReady() {
 						var _this2 = this;
@@ -232,7 +254,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function remapInput(table, query) {
 						var _this3 = this;
 
-						if (!c.assigned(query)) {
+						if (_.isNil(query)) {
 							return query;
 						}
 						var filtered = _.mapValues(query, function (value, key) {
@@ -268,7 +290,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function remapOutput(table, query) {
 						var _this4 = this;
 
-						if (!c.assigned(query)) {
+						if (_.isNil(query)) {
 							return query;
 						}
 						var filtered = _.mapValues(query, function (value, key) {
@@ -393,7 +415,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						opts = _.cloneDeep(opts);
 						if (opts.hasOwnProperty('limit')) {
 							var limitOpt = opts.limit;
-							if (c.string(limitOpt)) {
+							if (_.isString(limitOpt)) {
 								limitOpt = parseInt(limitOpt);
 							}
 							if (!(c.integer(limitOpt) || Infinity === limitOpt) || limitOpt < 0) {
@@ -403,7 +425,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						}
 						if (opts.hasOwnProperty('skip')) {
 							var skipOpt = opts.skip;
-							if (c.string(skipOpt)) {
+							if (_.isString(skipOpt)) {
 								skipOpt = parseInt(skipOpt);
 							}
 							if (!c.integer(skipOpt) || skipOpt < 0 || !isFinite(skipOpt)) {
@@ -422,7 +444,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								throw new Error('Use either "options.page" or "options.skip"');
 							}
 							var pageOpt = opts.page;
-							if (c.string(pageOpt)) {
+							if (_.isString(pageOpt)) {
 								pageOpt = parseInt(pageOpt);
 							}
 							if (!c.integer(pageOpt) || pageOpt < 0) {
@@ -451,8 +473,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							'>=': '$greaterEqual'
 						};
 						var normalizedQuery = true === options.remapInput ? _(_.cloneDeep(originalQuery)).mapValues(function (attrSearch, attrName) {
-							if (!(c.assigned(attrSearch) && attrSearch instanceof Object)) {
-								if (c.assigned(attrSearch)) {
+							if (!(!_.isNil(attrSearch) && attrSearch instanceof Object)) {
+								if (!_.isNil(attrSearch)) {
 									return {
 										$equal: attrSearch
 									};
@@ -592,7 +614,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						// We are going to loop until we find enough items
 						var loopFind = function loopFind(found) {
 							// If the search returned nothing, then just finish the findMany
-							if (!c.assigned(found)) {
+							if (_.isNil(found)) {
 								return Promise.resolve(foundEntities);
 								// Else, if this is a value and not the initial `true`, add it to the list
 							} else if (found !== true) {
@@ -668,7 +690,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						// We are going to loop until we find enough items
 						var loopFind = function loopFind(found) {
 							// If the search returned nothing, then just finish the findMany
-							if (!c.assigned(found)) {
+							if (_.isNil(found)) {
 								return Promise.resolve(foundEntities);
 								// Else, if this is a value and not the initial `true`, add it to the list
 							} else if (found !== true) {
@@ -741,7 +763,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							// First, search for the item.
 							return _this8.findOne(table, queryFind, options).then(function (found) {
 								// If the search returned nothing, then just finish the findMany
-								if (!c.assigned(found)) {
+								if (_.isNil(found)) {
 									return Promise.resolve();
 									// Else, if this is a value and not the initial `true`, add it to the list
 								}
@@ -763,11 +785,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(SequentialEvent);
 
 			module.exports = DiasporaAdapter;
-		}, { "bluebird": "bluebird", "check-types": "check-types", "lodash": "lodash", "sequential-event": "sequential-event" }], 3: [function (require, module, exports) {
+		}, { "bluebird": "bluebird", "lodash": "lodash", "sequential-event": "sequential-event" }], 3: [function (require, module, exports) {
 			'use strict';
 
 			var _ = require('lodash');
-			var c = require('check-types');
 			var Promise = require('bluebird');
 			var DiasporaAdapter = require('./baseAdapter.js');
 			var InMemoryEntity = require('../dataStoreEntities/inMemoryEntity.js');
@@ -796,21 +817,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					return _this9;
 				}
 
-				// -----
-				// ### Utils
-
-				/**
-     * @method generateUUID
-     * @description Create a new unique id for this store's entity
-     * @memberof Adapters.InMemoryDiasporaAdapter
-     * @public
-     * @instance
-     * @author gerkin
-     * @returns {String} Generated unique id
-     */
-
-
 				_createClass(InMemoryDiasporaAdapter, [{
+					key: "configureCollection",
+					value: function configureCollection(name, remap) {
+						_get(InMemoryDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter.prototype), "configureCollection", this).call(this, name, remap);
+						this.ensureCollectionExists(name);
+					}
+
+					// -----
+					// ### Utils
+
+					/**
+      * @method generateUUID
+      * @description Create a new unique id for this store's entity
+      * @memberof Adapters.InMemoryDiasporaAdapter
+      * @public
+      * @instance
+      * @author gerkin
+      * @returns {String} Generated unique id
+      */
+
+				}, {
 					key: "generateUUID",
 					value: function generateUUID() {
 						var d = new Date().getTime();
@@ -827,7 +854,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 
 					/**
-      * @method getSafeTableExists
+      * @method ensureCollectionExists
       * @description Get or create the store hash
       * @memberof Adapters.InMemoryDiasporaAdapter
       * @public
@@ -838,8 +865,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       */
 
 				}, {
-					key: "getSafeTableExists",
-					value: function getSafeTableExists(table) {
+					key: "ensureCollectionExists",
+					value: function ensureCollectionExists(table) {
 						if (this.store.hasOwnProperty(table)) {
 							return this.store[table];
 						} else {
@@ -882,7 +909,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       */
 					value: function insertOne(table, entity) {
 						entity = _.cloneDeep(entity);
-						var storeTable = this.getSafeTableExists(table);
+						var storeTable = this.ensureCollectionExists(table);
 						entity.id = this.generateUUID();
 						this.setIdHash(entity);
 						storeTable.items.push(entity);
@@ -911,7 +938,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function findOne(table, queryFind) {
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-						var storeTable = this.getSafeTableExists(table);
+						var storeTable = this.ensureCollectionExists(table);
 						var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
 						var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
 						return Promise.resolve(reducedMatches.length > 0 ? new this.classEntity(_.first(reducedMatches), this) : undefined);
@@ -938,7 +965,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-						var storeTable = this.getSafeTableExists(table);
+						var storeTable = this.ensureCollectionExists(table);
 						var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
 						var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
 						return Promise.resolve(_.map(reducedMatches, function (entity) {
@@ -969,7 +996,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function updateOne(table, queryFind, update) {
 						var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
-						var storeTable = this.getSafeTableExists(table);
+						var storeTable = this.ensureCollectionExists(table);
 						var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
 						var firstMatch = _.first(matches);
 						this.applyUpdateEntity(update, firstMatch);
@@ -998,7 +1025,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
-						var storeTable = this.getSafeTableExists(table);
+						var storeTable = this.ensureCollectionExists(table);
 						var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
 						var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
 						_.forEach(reducedMatches, function (match) {
@@ -1033,7 +1060,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-						var storeTable = this.getSafeTableExists(table);
+						var storeTable = this.ensureCollectionExists(table);
 						return this.findOne(table, queryFind, options).then(function (entityToDelete) {
 							storeTable.items = _.reject(storeTable.items, function (entity) {
 								return entity.id === entityToDelete.idHash[_this12.name];
@@ -1063,7 +1090,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-						var storeTable = this.getSafeTableExists(table);
+						var storeTable = this.ensureCollectionExists(table);
 						return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
 							var entitiesIds = _.map(entitiesToDelete, function (entity) {
 								return _.get(entity, "idHash." + _this13.name);
@@ -1093,11 +1120,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DiasporaAdapter);
 
 			module.exports = InMemoryDiasporaAdapter;
-		}, { "../dataStoreEntities/inMemoryEntity.js": 6, "./baseAdapter.js": 2, "bluebird": "bluebird", "check-types": "check-types", "lodash": "lodash" }], 4: [function (require, module, exports) {
+		}, { "../dataStoreEntities/inMemoryEntity.js": 6, "./baseAdapter.js": 2, "bluebird": "bluebird", "lodash": "lodash" }], 4: [function (require, module, exports) {
 			'use strict';
 
 			var _ = require('lodash');
-			var c = require('check-types');
 			var Promise = require('bluebird');
 			var DiasporaAdapter = require('./baseAdapter.js');
 			var LocalStorageEntity = require('../dataStoreEntities/localStorageEntity.js');
@@ -1130,21 +1156,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					return _this14;
 				}
 
-				// -----
-				// ### Utils
-
-				/**
-     * @method generateUUID
-     * @description Create a new unique id for this store's entity
-     * @memberof Adapters.LocalStorageDiasporaAdapter
-     * @public
-     * @instance
-     * @author gerkin
-     * @returns {String} Generated unique id
-     */
-
-
 				_createClass(LocalStorageDiasporaAdapter, [{
+					key: "configureCollection",
+					value: function configureCollection(name, remap) {
+						_get(LocalStorageDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter.prototype), "configureCollection", this).call(this, name, remap);
+						this.ensureCollectionExists(name);
+					}
+
+					// -----
+					// ### Utils
+
+					/**
+      * @method generateUUID
+      * @description Create a new unique id for this store's entity
+      * @memberof Adapters.LocalStorageDiasporaAdapter
+      * @public
+      * @instance
+      * @author gerkin
+      * @returns {String} Generated unique id
+      */
+
+				}, {
 					key: "generateUUID",
 					value: function generateUUID() {
 						var d = new Date().getTime();
@@ -1160,7 +1192,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 
 					/**
-      * @method ensureTableExists
+      * @method ensureCollectionExists
       * @description Create the table key if it does not exist
       * @memberof Adapters.LocalStorageDiasporaAdapter
       * @public
@@ -1170,11 +1202,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       */
 
 				}, {
-					key: "ensureTableExists",
-					value: function ensureTableExists(table) {
-						if (!c.assigned(this.source.getItem(table))) {
-							this.source.setItem(table, '[]');
+					key: "ensureCollectionExists",
+					value: function ensureCollectionExists(table) {
+						var index = this.source.getItem(table);
+						if (_.isNil(index)) {
+							index = [];
+							this.source.setItem(table, JSON.stringify(index));
+						} else {
+							index = JSON.parse(index);
 						}
+						return index;
 					}
 
 					/**
@@ -1228,11 +1265,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					key: "insertOne",
 					value: function insertOne(table, entity) {
 						entity = _.cloneDeep(entity || {});
-						this.ensureTableExists(table);
 						entity.id = this.generateUUID();
 						this.setIdHash(entity);
 						try {
-							var tableIndex = JSON.parse(this.source.getItem(table));
+							var tableIndex = this.ensureCollectionExists(table);
 							tableIndex.push(entity.id);
 							this.source.setItem(table, JSON.stringify(tableIndex));
 							this.source.setItem(this.getItemName(table, entity.id), JSON.stringify(entity));
@@ -1261,9 +1297,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var _this15 = this;
 
 						entities = _.cloneDeep(entities);
-						this.ensureTableExists(table);
 						try {
-							var tableIndex = JSON.parse(this.source.getItem(table));
+							var tableIndex = this.ensureCollectionExists(table);
 							entities = entities.map(function () {
 								var entity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 								var i = arguments[1];
@@ -1288,7 +1323,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					key: "findOneById",
 					value: function findOneById(table, id) {
 						var item = this.source.getItem(this.getItemName(table, id));
-						if (c.assigned(item)) {
+						if (!_.isNil(item)) {
 							return Promise.resolve(new this.classEntity(JSON.parse(item), this));
 						}
 						return Promise.resolve();
@@ -1318,13 +1353,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						_.defaults(options, {
 							skip: 0
 						});
-						this.ensureTableExists(table);
 						if (!c.object(queryFind)) {
 							return this.findOneById(table, queryFind);
 						} else if (_.isEqual(_.keys(queryFind), ['id']) && _.isEqual(_.keys(queryFind.id), ['$equal'])) {
 							return this.findOneById(table, queryFind.id.$equal);
 						}
-						var items = JSON.parse(this.source.getItem(table));
+						var items = this.ensureCollectionExists(table);
 						var returnedItem = void 0;
 						var matched = 0;
 						_.each(items, function (itemId) {
@@ -1338,11 +1372,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								}
 							}
 						});
-						return Promise.resolve(c.assigned(returnedItem) ? new this.classEntity(returnedItem, this) : undefined);
+						return Promise.resolve(!_.isNil(returnedItem) ? new this.classEntity(returnedItem, this) : undefined);
 					}
 
 					/*	findMany( table, queryFind, options = {}) {
-     	this.ensureTableExists( table );
+     	this.ensureCollectionExists( table );
      	const matches = _.filter( storeTable.items, queryFind );
      	const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
      	return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity(entity, this )));
@@ -1374,9 +1408,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						_.defaults(options, {
 							skip: 0
 						});
-						this.ensureTableExists(table);
 						return this.findOne(table, queryFind, options).then(function (entity) {
-							if (!c.assigned(entity)) {
+							if (_.isNil(entity)) {
 								return Promise.resolve();
 							}
 							entity = entity.toObject();
@@ -1391,7 +1424,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 
 					/* updateMany( table, queryFind, update, options ) {
-     	this.ensureTableExists( table );
+     	this.ensureCollectionExists( table );
      	const matches = _.filter( storeTable.items, queryFind );
      	const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
      	_.forEach( reducedMatches, match => {
@@ -1424,10 +1457,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-						this.ensureTableExists(table);
 						return this.findOne(table, queryFind, options).then(function (entityToDelete) {
 							try {
-								var tableIndex = JSON.parse(_this18.source.getItem(table));
+								var tableIndex = _this18.ensureCollectionExists(table);
 								_.pull(tableIndex, entityToDelete.id);
 								_this18.source.setItem(table, JSON.stringify(tableIndex));
 								_this18.source.removeItem(_this18.getItemName(table, entityToDelete.id));
@@ -1459,10 +1491,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-						this.ensureTableExists(table);
 						try {
-							var tableIndex = JSON.parse(this.source.getItem(table));
 							return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
+								var tableIndex = _this19.ensureCollectionExists(table);
 								_.pullAll(tableIndex, _.map(entitiesToDelete, 'id'));
 								_this19.source.setItem(table, JSON.stringify(tableIndex));
 								_.forEach(entitiesToDelete, function (entityToDelete) {
@@ -1492,11 +1523,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DiasporaAdapter);
 
 			module.exports = LocalStorageDiasporaAdapter;
-		}, { "../dataStoreEntities/localStorageEntity.js": 7, "./baseAdapter.js": 2, "bluebird": "bluebird", "check-types": "check-types", "lodash": "lodash" }], 5: [function (require, module, exports) {
+		}, { "../dataStoreEntities/localStorageEntity.js": 7, "./baseAdapter.js": 2, "bluebird": "bluebird", "lodash": "lodash" }], 5: [function (require, module, exports) {
 			'use strict';
 
 			var _ = require('lodash');
-			var c = require('check-types');
 
 			/**
     * @namespace DataStoreEntities
@@ -1515,7 +1545,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				function DataStoreEntity(entity, dataSource) {
 					_classCallCheck(this, DataStoreEntity);
 
-					if (!c.assigned(entity)) {
+					if (_.isNil(entity)) {
 						return undefined;
 					}
 					Object.defineProperties(this, {
@@ -1531,7 +1561,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				_createClass(DataStoreEntity, [{
 					key: "toObject",
 					value: function toObject() {
-						return _.omit(this, 'dataSource');
+						return _.omit(this, ['dataSource', 'id']);
 					}
 				}]);
 
@@ -1539,7 +1569,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = DataStoreEntity;
-		}, { "check-types": "check-types", "lodash": "lodash" }], 6: [function (require, module, exports) {
+		}, { "lodash": "lodash" }], 6: [function (require, module, exports) {
 			'use strict';
 
 			var DataStoreEntity = require('./baseEntity.js');
@@ -1599,7 +1629,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			'use strict';
 
 			var _ = require('lodash');
-			var c = require('check-types');
+			var Promise = require('bluebird');
+			var SequentialEvent = require('sequential-event');
 			var DiasporaAdapter = require('./adapters/baseAdapter.js');
 
 			var adapters = {
@@ -1627,19 +1658,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}
 
 			var wrapDataSourceAction = function wrapDataSourceAction(callback, queryType, adapter) {
-				// Filter our results
-				var filterResults = function filterResults(entity, table) {
-					// Force results to be class instances
-					if (!(entity instanceof adapter.classEntity) && c.assigned(entity)) {
-						return new adapter.classEntity(entity, adapter);
-					}
-					return entity;
-				};
-
 				return function (table) {
 					for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 						args[_key - 1] = arguments[_key];
 					}
+
+					// Filter our results
+					var filterResults = function filterResults(entity) {
+						// Remap fields
+						entity = adapter.remapFields(table, entity, true);
+						// Force results to be class instances
+						if (!(entity instanceof adapter.classEntity) && !_.isNil(entity)) {
+							return new adapter.classEntity(entity, adapter);
+						}
+						return entity;
+					};
 
 					// Transform arguments for find, update & delete
 					var optIndex = false;
@@ -1653,18 +1686,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						upd = true;
 					}
 					try {
+						//console.log('Before query transformed', args[0]);
 						if (false !== optIndex) {
+							// Options to canonical
 							args[optIndex] = adapter.normalizeOptions(args[optIndex]);
-							args[0] = adapter.normalizeQuery(args[0], args[optIndex]);
-							if (true === args[optIndex].remapInputs) {
-								args[0] = adapter.remapFields(args[0]);
+							// Query search to cannonical
+							if (true === args[optIndex].remapInput) {
+								args[0] = adapter.remapFields(table, args[0], false);
 
 								if (true === upd) {
-									args[1] = adapter.remapFields(args[1]);
+									args[1] = adapter.remapFields(table, args[1], false);
 								}
 							}
+							args[0] = adapter.normalizeQuery(args[0], args[optIndex]);
 							args[optIndex].remapInput = false;
+						} else if ('insert' === queryType.query) {
+							if ('many' === queryType.number) {
+								args[0] = _.map(args[0], function (insertion) {
+									return adapter.remapFields(table, insertion, false);
+								});
+							} else {
+								args[0] = adapter.remapFields(table, args[0], false);
+							}
 						}
+						//console.log('Query transformed:', args[0]);
 					} catch (err) {
 						return Promise.reject(err);
 					}
@@ -1672,9 +1717,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					// Hook after promise resolution
 					var queryPromise = callback.call.apply(callback, [adapter, table].concat(args));
 					return queryPromise.then(function (results) {
-						if (c.array(results)) {
+						if (_.isArrayLike(results)) {
 							results = _.map(results, filterResults);
-						} else {
+						} else if (!_.isNil(results)) {
 							results = filterResults(results);
 						}
 						return Promise.resolve(results);
@@ -1722,7 +1767,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				checkField: function checkField(value, fieldDesc, keys) {
 					var _this23 = this;
 
-					if (c.not.object(fieldDesc)) {
+					if (!c.object(fieldDesc)) {
 						return;
 					}
 					_.defaults(fieldDesc, {
@@ -1739,7 +1784,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 
 					// Check the type and the required status
-					if (c.assigned(fieldDesc.type) && c.assigned(fieldDesc.model)) {
+					if (!_.isNil(fieldDesc.type) && !_.isNil(fieldDesc.model)) {
 						errors.push(keys.join('.') + " spec can't have both a type and a model");
 					} else {
 						// Apply the `required` modifier
@@ -1747,9 +1792,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						if (fieldDesc.required !== true) {
 							tester = c.maybe;
 						}
-						if (c.assigned(fieldDesc.model)) {
+						if (!_.isNil(fieldDesc.model)) {
 							var model = false;
-							if (c.string(fieldDesc.model)) {
+							if (_.isString(fieldDesc.model)) {
 								/*if ( _.has( collections, fieldDesc.model )) {
         	model = collections[fieldDesc.model].model;
         } else {*/
@@ -1765,7 +1810,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 									errors.push(keys.join('.') + " expected to be a " + model.modelName);
 								}
 							}
-						} else if (c.string(fieldDesc.type)) {
+						} else if (_.isString(fieldDesc.type)) {
 							switch (fieldDesc.type) {
 								case 'string':
 									{
@@ -1815,7 +1860,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 											errors.push(keys.join('.') + " expected to be a " + fieldDesc.type);
 										} else {
 											var _deepTest = c.object(fieldDesc.of) ? _(value).map(function (propVal, propName) {
-												if (c.array(fieldDesc.of)) {
+												if (_.isArrayLike(fieldDesc.of)) {
 													var subErrors = _(fieldDesc.of).map(function (desc) {
 														return _this23.checkField(propVal, desc, cloneKeysAdd(keys, propName));
 													});
@@ -1850,7 +1895,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							errors.push(keys.join('.') + " spec \"type\" must be a string");
 						}
 					}
-					if (c.assigned(fieldDesc.enum)) {
+					if (!_.isNil(fieldDesc.enum)) {
 						var result = _.some(fieldDesc.enum, function (enumVal) {
 							if (c.instance(enumVal, RegExp)) {
 								return c.match(value, enumVal);
@@ -1897,13 +1942,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @returns {Any} Defaulted value
      */
 				defaultField: function defaultField(value, fieldDesc) {
-					var out;
+					var out = void 0;
 					if (c.not.undefined(value)) {
 						out = value;
 					} else {
-						out = c.function(fieldDesc.default) ? fieldDesc.default() : fieldDesc.default;
+						out = _.isFunction(fieldDesc.default) ? fieldDesc.default() : fieldDesc.default;
 					}
-					if ('object' === fieldDesc.type && c.nonEmptyObject(fieldDesc.attributes) && c.assigned(out)) {
+					if ('object' === fieldDesc.type && _.isObject(fieldDesc.attributes) && _.keys(fieldDesc.attributes).length > 0 && !_.isNil(out)) {
 						return this.default(out, fieldDesc.attributes);
 					} else {
 						return out;
@@ -1917,13 +1962,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					var newDataSource = new Proxy(baseAdapter, {
 						get: function get(target, key) {
 							// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
-							var method = void 0;
-							if (c.string(key) && (method = key.match(/^(find|update|insert|delete)(Many|One)$/))) {
-								method[2] = method[2].toLowerCase();
-								method = _.mapKeys(method.slice(0, 3), function (val, key) {
-									return ['full', 'query', 'number'][key];
-								});
-								return wrapDataSourceAction(target[key], method, target);
+							if (_.isString(key)) {
+								var method = void 0;
+								if (method = key.match(/^(find|update|insert|delete)(Many|One)$/)) {
+									method[2] = method[2].toLowerCase();
+									method = _.mapKeys(method.slice(0, 3), function (val, key) {
+										return ['full', 'query', 'number'][key];
+									});
+									return wrapDataSourceAction(target[key], method, target);
+								}
 							}
 							return target[key];
 						}
@@ -1944,10 +1991,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @param {DiasporaAdapter} dataSource Datasource itself
      */
 				registerDataSource: function registerDataSource(moduleName, name, dataSource) {
-					if (!c.nonEmptyString(moduleName)) {
+					if (!_.isString(moduleName) && moduleName.length > 0) {
 						throw new Error("Module name must be a non empty string, had \"" + moduleName + "\"");
 					}
-					if (!c.nonEmptyString(name)) {
+					if (!_.isString(name) && name.length > 0) {
 						throw new Error("DataSource name must be a non empty string, had \"" + name + "\"");
 					}
 					if (dataSources.hasOwnProperty(name)) {
@@ -1973,10 +2020,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @param {Object} modelDesc Description of the model to define
      */
 				declareModel: function declareModel(moduleName, name, modelDesc) {
-					if (!c.nonEmptyString(moduleName)) {
+					if (!_.isString(moduleName) && moduleName.length > 0) {
 						throw new Error("Module name must be a non empty string, had \"" + moduleName + "\"");
 					}
-					if (!c.nonEmptyString(name)) {
+					if (!_.isString(name) && name.length > 0) {
 						throw new Error("DataSource name must be a non empty string, had \"" + name + "\"");
 					}
 					if (!c.object(modelDesc)) {
@@ -1991,14 +2038,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				models: models,
 				dataSources: dataSources,
-				adapters: adapters
+				adapters: adapters,
+				dependencies: {
+					lodash: _,
+					bluebird: Promise,
+					'sequential-event': SequentialEvent
+				}
 			};
 
 			module.exports = Diaspora;
 
 			// Load Model class after, so that Model requires Diaspora once it is declared
 			var Model = require('./model');
-		}, { "./adapters/baseAdapter.js": 2, "./adapters/inMemoryAdapter": 3, "./adapters/localStorageAdapter": 4, "./model": 10, "check-types": "check-types", "lodash": "lodash" }], 9: [function (require, module, exports) {
+		}, { "./adapters/baseAdapter.js": 2, "./adapters/inMemoryAdapter": 3, "./adapters/localStorageAdapter": 4, "./model": 10, "bluebird": "bluebird", "lodash": "lodash", "sequential-event": "sequential-event" }], 9: [function (require, module, exports) {
 			'use strict';
 
 			var _ = require('lodash');
@@ -2075,7 +2127,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						state = 'sync';
 						lastDataSource = source.dataSource.name;
 						dataSources[lastDataSource] = source;
-						source = source.toObject();
+						source = _.omit(source.toObject(), ['id']);
 					}
 					// Check keys provided in source
 					var sourceKeys = _.keys(source);
@@ -2169,8 +2221,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 									// If this was our only data source, then go back to orphan state
 									if (0 === _.without(model.dataSources, dataSource.name).length) {
 										state = 'orphan';
-										delete attributes.id;
-										delete attributes.idHash;
 									} else {
 										state = 'sync';
 										delete attributes.idHash[dataSource.name];
@@ -2273,7 +2323,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			'use strict';
 
 			var _ = require('lodash');
-			var c = require('check-types');
 			var Promise = require('bluebird');
 			var EntityFactory = require('./entityFactory');
 			var Diaspora = require('./diaspora');
@@ -2299,21 +2348,36 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					if (0 !== reservedPropIntersect.length) {
 						throw new Error(JSON.stringify(reservedPropIntersect) + " is/are reserved property names. To match those column names in data source, please use the data source mapper property");
 					}
-					if (!modelDesc.hasOwnProperty('sources') || !(c.array(modelDesc.sources) || c.object(modelDesc.sources))) {
+					if (!modelDesc.hasOwnProperty('sources') || !(_.isArrayLike(modelDesc.sources) || c.object(modelDesc.sources))) {
 						throw new TypeError("Expect model sources to be either an array or an object, had " + JSON.stringify(modelDesc.sources) + ".");
 					}
+					// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
+					var sourcesNormalized = _.isArrayLike(modelDesc.sources) ? _.zipObject(modelDesc.sources, _.times(modelDesc.sources.length, _.constant({}))) : _.mapValues(modelDesc.sources, function (remap, dataSourceName) {
+						if (true === remap) {
+							return {};
+						} else if (c.object(remap)) {
+							return remap;
+						} else {
+							throw new TypeError("Datasource \"" + dataSourceName + "\" value is invalid: expect `true` or a remap hash, but have " + JSON.stringify(remap));
+						}
+					});
 					// List sources required by this model
-					var sourceNames = c.object(modelDesc.sources) ? _.keys(modelDesc.sources) : modelDesc.sources;
+					var sourceNames = _.keys(sourcesNormalized);
 					// Get sources. Later, implement scoping so that modules A requiring module B can access dataSources from module B
 					var scopeAvailableSources = Diaspora.dataSources[namespace];
 					var modelSources = _.pick(scopeAvailableSources, sourceNames);
-					// console.log({scopeAvailableSources, modelSources});
 					var missingSources = _.difference(sourceNames, _.keys(modelSources));
 					if (0 !== missingSources.length) {
 						throw new Error("Missing data sources " + missingSources.map(function (v) {
 							return "\"" + v + "\"";
 						}).join(', '));
 					}
+
+					// Now, we are sure that config is valid. We can configure our datasources with model options, and set `this` properties.
+					_.forEach(sourcesNormalized, function (remap, sourceName) {
+						var sourceConfiguring = modelSources[sourceName];
+						sourceConfiguring.configureCollection(name, remap);
+					});
 					this.dataSources = modelSources;
 					this.defaultDataSource = sourceNames[0];
 					this.name = name;
@@ -2323,7 +2387,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				_createClass(Model, [{
 					key: "getDataSource",
 					value: function getDataSource(sourceName) {
-						if (!c.assigned(sourceName)) {
+						if (_.isNil(sourceName)) {
 							sourceName = this.defaultDataSource;
 						} else if (!this.dataSources.hasOwnProperty(sourceName)) {
 							throw new Error("Unknown data source \"" + sourceName + "\" in model \"" + this.name + "\", available are " + _.keys(this.dataSources).map(function (v) {
@@ -2379,17 +2443,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
 
-						if (c.string(options) && !c.assigned(dataSourceName)) {
+						if (_.isString(options) && !!_.isNil(dataSourceName)) {
 							dataSourceName = options;
 							options = {};
-						} else if (c.string(queryFind) && !c.assigned(options) && !c.assigned(dataSourceName)) {
+						} else if (_.isString(queryFind) && !!_.isNil(options) && !!_.isNil(dataSourceName)) {
 							dataSourceName = queryFind;
 							queryFind = {};
 							options = {};
 						}
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.findOne(this.name, queryFind, options).then(function (dataSourceEntity) {
-							if (!c.assigned(dataSourceEntity)) {
+							if (_.isNil(dataSourceEntity)) {
 								return Promise.resolve();
 							}
 							var newEntity = new _this31.entityFactory(dataSourceEntity);
@@ -2407,10 +2471,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
 
-						if (c.string(options) && !c.assigned(dataSourceName)) {
+						if (_.isString(options) && !!_.isNil(dataSourceName)) {
 							dataSourceName = options;
 							options = {};
-						} else if (c.string(queryFind) && !c.assigned(options) && !c.assigned(dataSourceName)) {
+						} else if (_.isString(queryFind) && !!_.isNil(options) && !!_.isNil(dataSourceName)) {
 							dataSourceName = queryFind;
 							queryFind = {};
 							options = {};
@@ -2433,17 +2497,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 						var dataSourceName = arguments[3];
 
-						if (c.string(options) && !c.assigned(dataSourceName)) {
+						if (_.isString(options) && !!_.isNil(dataSourceName)) {
 							dataSourceName = options;
 							options = {};
 						}
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.updateOne(this.name, queryFind, _update, options).then(function (dataSourceEntity) {
-							if (!c.assigned(dataSourceEntity)) {
+							if (_.isNil(dataSourceEntity)) {
 								return Promise.resolve();
 							}
-							var newEntity = new _this33.entityFactory(dataSourceEntity.toObject());
-							newEntity.dataSources[dataSource.name] = dataSourceEntity;
+							var newEntity = new _this33.entityFactory(dataSourceEntity);
 							return Promise.resolve(newEntity);
 						});
 					}
@@ -2455,15 +2518,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 						var dataSourceName = arguments[3];
 
-						if (c.string(options) && !c.assigned(dataSourceName)) {
+						if (_.isString(options) && !!_.isNil(dataSourceName)) {
 							dataSourceName = options;
 							options = {};
 						}
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.updateMany(this.name, queryFind, update, options).then(function (dataSourceEntities) {
 							var entities = _.map(dataSourceEntities, function (dataSourceEntity) {
-								var newEntity = new _this34.entityFactory(dataSourceEntity.toObject());
-								newEntity.dataSources[dataSource.name] = dataSourceEntity;
+								var newEntity = new _this34.entityFactory(dataSourceEntity);
 								return newEntity;
 							});
 							return Promise.resolve(entities);
@@ -2476,7 +2538,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
 
-						if (c.string(options) && !c.assigned(dataSourceName)) {
+						if (_.isString(options) && !!_.isNil(dataSourceName)) {
 							dataSourceName = options;
 							options = {};
 						}
@@ -2490,7 +2552,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
 
-						if (c.string(options) && !c.assigned(dataSourceName)) {
+						if (_.isString(options) && !!_.isNil(dataSourceName)) {
 							dataSourceName = options;
 							options = {};
 						}
@@ -2503,6 +2565,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = Model;
-		}, { "./diaspora": 8, "./entityFactory": 9, "bluebird": "bluebird", "check-types": "check-types", "lodash": "lodash" }] }, {}, [1])(1);
+		}, { "./diaspora": 8, "./entityFactory": 9, "bluebird": "bluebird", "lodash": "lodash" }] }, {}, [1])(1);
 });
 //# sourceMappingURL=diaspora.js.map

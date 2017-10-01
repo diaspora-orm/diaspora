@@ -9,5 +9,5 @@ module.exports = {
 	},
 	localstorage: {
 		//		data_dir: '.localStorageTest'
-	}
-}
+	},
+};
