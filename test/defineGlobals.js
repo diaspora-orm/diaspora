@@ -103,8 +103,13 @@ chai.use( function( _chai, utils ) {
 		const check = ( entity, props = {}) => {
 			try {
 				expect( entity ).to.be.an( 'object' );
+				//	console.log({name: adapter.name, idHash: entity.idHash, id: entity.id})
 				expect( entity.idHash ).to.be.an( 'object' ).that.have.property( adapter.name, entity.id );
 				expect( entity ).to.include.all.keys( 'id', 'idHash' );
+				expect( entity.id ).to.not.be.undefined;
+				if ( !entity.id ) {
+					throw new Error();
+				}
 				if ( 'undefined' === typeof window ) {
 					expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${ adapter.baseName }Entity` );
 				}
@@ -160,10 +165,10 @@ chai.use( function( _chai, utils ) {
 					case false: {
 						expect( entity.getState(), 'Entity should not be orphan' ).to.not.equal( 'orphan' );
 					} break;
-						
+
 					case null: {
 					} break;
-							 }
+				}
 				if ( orphan ) {
 					expect( entity.getLastDataSource(), 'Orphans should not have a last data source' ).to.be.eql( null );
 					expect( entity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );

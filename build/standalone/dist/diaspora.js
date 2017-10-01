@@ -492,7 +492,7 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 	 * @param   {Object} update Object properties to set
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link LocalStorageEntity}* `entity`)
-	 */},{key:"updateOne",value:function updateOne(table,queryFind,update,options){var _this17=this;_.defaults(options,{skip:0});return this.findOne(table,queryFind,options).then(function(entity){if(_.isNil(entity)){return Promise.resolve();}entity=entity.toObject();_this17.applyUpdateEntity(update,entity);try{_this17.source.setItem(_this17.getItemName(table,entity.id),JSON.stringify(entity));return Promise.resolve(entity);}catch(error){return Promise.reject(error);}});}/* updateMany( table, queryFind, update, options ) {
+	 */},{key:"updateOne",value:function updateOne(table,queryFind,update,options){var _this17=this;_.defaults(options,{skip:0});return this.findOne(table,queryFind,options).then(function(entity){if(_.isNil(entity)){return Promise.resolve();}_this17.applyUpdateEntity(update,entity);try{_this17.source.setItem(_this17.getItemName(table,entity.id),JSON.stringify(entity));return Promise.resolve(entity);}catch(error){return Promise.reject(error);}});}/* updateMany( table, queryFind, update, options ) {
 		this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, queryFind );
 		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );

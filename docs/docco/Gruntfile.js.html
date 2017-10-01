@@ -707,7 +707,33 @@
 </span><span id="line-172">
 </span><span id="line-173">    <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;load-grunt-tasks&#39;</span> <span class="p">)(</span> <span class="nx">grunt</span> <span class="p">);</span>
 </span><span id="line-174">
-</span><span id="line-175">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;documentate&#39;</s</pre></div></td></tr></tbody></table></div>
+</span><span id="line-175">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;documentate&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-176">        <span class="s1">&#39;lint&#39;</span><span class="p">,</span>
+</span><span id="line-177">        <span class="s1">&#39;jsdoc&#39;</span><span class="p">,</span>
+</span><span id="line-178">        <span class="s1">&#39;docco_husky&#39;</span><span class="p">,</span>
+</span><span id="line-179">    <span class="p">]);</span>
+</span><span id="line-180">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;refreshScripts&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-181">        <span class="s1">&#39;lint&#39;</span><span class="p">,</span>
+</span><span id="line-182">        <span class="s1">&#39;buildStandalone&#39;</span><span class="p">,</span>
+</span><span id="line-183">        <span class="s1">&#39;buildIsolated&#39;</span><span class="p">,</span>
+</span><span id="line-184">    <span class="p">]);</span>
+</span><span id="line-185">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildStandalone&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-186">        <span class="s1">&#39;browserify:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-187">        <span class="s1">&#39;babel:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-188">        <span class="s1">&#39;uglify:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-189">        <span class="s1">&#39;copy:diaspora_to_docs_site&#39;</span><span class="p">,</span>
+</span><span id="line-190">    <span class="p">]);</span>
+</span><span id="line-191">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildIsolated&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-192">        <span class="s1">&#39;browserify:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-193">        <span class="s1">&#39;babel:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-194">        <span class="s1">&#39;uglify:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-195">    <span class="p">]);</span>
+</span><span id="line-196">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;lint&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-197">        <span class="s1">&#39;eslint:info&#39;</span><span class="p">,</span>
+</span><span id="line-198">    <span class="p">]);</span>
+</span><span id="line-199"><span class="p">};</span>
+</span>
+</pre></div></td></tr></tbody></table></div>
 				</section>
 			</div>
 

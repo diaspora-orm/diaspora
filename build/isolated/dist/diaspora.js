@@ -1412,7 +1412,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isNil(entity)) {
 								return Promise.resolve();
 							}
-							entity = entity.toObject();
 							_this17.applyUpdateEntity(update, entity);
 							try {
 								_this17.source.setItem(_this17.getItemName(table, entity.id), JSON.stringify(entity));

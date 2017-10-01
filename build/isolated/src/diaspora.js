@@ -1159,7 +1159,6 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 			if ( _.isNil( entity )) {
 				return Promise.resolve();
 			}
-			entity = entity.toObject();
 			this.applyUpdateEntity( update, entity );
 			try {
 				this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));

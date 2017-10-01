@@ -29,17 +29,17 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 			browser = new webdriver.Builder()
 				.usingServer( `http://${  process.env.SAUCE_USERNAME  }:${  process.env.SAUCE_ACCESS_KEY  }@ondemand.saucelabs.com:80/wd/hub` )
 				.withCapabilities({
-					'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
-					build:               process.env.TRAVIS_BUILD_NUMBER,
-					username:            process.env.SAUCE_USERNAME,
-					accessKey:           process.env.SAUCE_ACCESS_KEY,
-					browserName:         process.env.BROWSER_NAME,
-				}).build();
+				'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+				build:               process.env.TRAVIS_BUILD_NUMBER,
+				username:            process.env.SAUCE_USERNAME,
+				accessKey:           process.env.SAUCE_ACCESS_KEY,
+				browserName:         process.env.BROWSER_NAME,
+			}).build();
 		} else {
 			browser = new webdriver.Builder()
 				.withCapabilities({
-					browserName: 'chrome',
-				}).build();
+				browserName: 'chrome',
+			}).build();
 		}
 	});
 
@@ -57,7 +57,7 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 				return browser.quit();
 			});
 		} else {
-			//		return browser.quit();
+			return browser.quit();
 		}
 	});
 

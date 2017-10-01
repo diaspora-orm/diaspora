@@ -11,17 +11,21 @@ requirejs.config({
 		diasporaStandalone: '../../build/standalone/dist/diaspora',
 		diasporaComposed:   '../../build/composed/dist/diaspora',
 
-		TestModels:       '../models/index',
-		TestInMemory:     '../adapters/inMemory',
-		TestLocalStorage: '../adapters/localStorage',
-		utils:            '../adapters/utils',
+		TestModelSimple:      '../models/simple',
+		TestModelSimpleRemap: '../models/simple-remapping',
+		TestInMemory:         '../adapters/inMemory',
+		TestLocalStorage:     '../adapters/localStorage',
+		utils:                '../adapters/utils',
 	},
 	shim: {
 		utils: {
 			deps: [ 'bluebird' ],
 		},
-		TestModels: {
-			deps: [ 'utils', '../models/simple', '../models/simple-remapping' ],
+		TestModelSimple: {
+			deps: [ 'utils' ],
+		},
+		TestModelSimpleRemap: {
+			deps: [ 'utils' ],
 		},
 		TestInMemory: {
 			deps: [ 'utils' ],
@@ -66,14 +70,23 @@ require([ 'defineGlobals', 'bluebird', target ], ( g, Promise, Diaspora ) => {
 				});
 			});
 		}).then(() => {
-			mocha.run();
-		});
-	});
-	describe( 'Testing models', () => {
-		return new Promise( resolve => {
-			require([ 'TestModels' ], () => {	
-				return resolve();
+			return new Promise( resolve => {
+				describe( 'Simple', () => {
+					require([ 'TestModelSimple' ], () => {
+						return resolve();
+					});
+				});
 			});
+		}).then(() => {
+			return new Promise( resolve => {
+				describe( 'Simple with remap', () => {
+					require([ 'TestModelSimpleRemap' ], () => {
+						return resolve();
+					});
+				});
+			});
+		}).then(() => {
+			mocha.run();
 		});
 	});
 });
