@@ -1,5 +1,8 @@
-var webdriver = require("selenium-webdriver");
-var path = require('path');
+const webdriver = require("selenium-webdriver");
+const path = require('path');
+const chai = require( 'chai' );
+assert = chai.assert;
+expect = chai.expect;
 
 const getTestPath = fileName => {
 	if (process.env.SAUCE_USERNAME != undefined) {
@@ -54,7 +57,7 @@ describe(`Test Diaspora in the browser (${process.env.BROWSER_NAME || 'chrome'}
 				return browser.quit()
 			});
 		} else {
-			return browser.quit();
+	//		return browser.quit();
 		}
 	});
 

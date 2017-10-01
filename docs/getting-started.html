@@ -393,22 +393,11 @@
 
 <h3 id="for-the-browser">For the browser</h3>
 
-<p>Diaspora is built in 2 versions:</p>
+<p>Diaspora for the browser is built in 2 versions:</p>
 
 <h4 id="standalone">Standalone</h4>
 
 <p>This build contains Diaspora and all of its dependencies, packaged in a single (<em>big</em>) script file. You may prefer to use this file if you want to load Diaspora on every page of your site, or if you don’t want to worry with loading each dependencies.</p>
-
-<blockquote>
-  <p>This build export following libraries:</p>
-
-  <ul>
-    <li><code class="highlighter-rouge">lodash</code> as <code class="highlighter-rouge">_</code></li>
-    <li><code class="highlighter-rouge">bluebird</code> as <code class="highlighter-rouge">Promise</code></li>
-    <li><code class="highlighter-rouge">check-types</code> as <code class="highlighter-rouge">c</code></li>
-    <li><code class="highlighter-rouge">sequential-event</code> as <code class="highlighter-rouge">SequentialEvent</code></li>
-  </ul>
-</blockquote>
 
 <figure class="highlight">
   <pre><code class="language-html" data-lang="html"><span class="nt">&lt;html&gt;</span>
@@ -420,6 +409,17 @@
 	<span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span></code></pre>
 </figure>
+
+<blockquote>
+  <p>This build export following libraries:</p>
+
+  <ul>
+    <li><code class="highlighter-rouge">lodash</code> as <code class="highlighter-rouge">_</code></li>
+    <li><code class="highlighter-rouge">bluebird</code> as <code class="highlighter-rouge">Promise</code></li>
+    <li><code class="highlighter-rouge">check-types</code> as <code class="highlighter-rouge">c</code></li>
+    <li><code class="highlighter-rouge">sequential-event</code> as <code class="highlighter-rouge">SequentialEvent</code></li>
+  </ul>
+</blockquote>
 
 <h4 id="isolated">Isolated</h4>
 
@@ -490,15 +490,65 @@
 
 <p><code class="highlighter-rouge">PhoneBook</code> is now an instance of <strong><a href="jsdoc/Model.html">Model</a></strong>.</p>
 
+<p>You can see more infos about how to configure a model <a href="#">here</a></p>
+
 <h4 id="using-models">Using models</h4>
+
+<p>With this model, you’ll be able to retrieve or create entities, or perform bulk operations on your whole collection. Remember that a single model can use different storage locations, so be careful to keep your data coherent at every moment (according to the Consistancy requirement of ACID database properties).</p>
+
+<figure class="highlight">
+  <pre><code class="language-javascript" data-lang="javascript"><span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s1">'John Doe'</span><span class="p">,</span> <span class="na">phone</span><span class="p">:</span> <span class="s1">'555-623-987'</span><span class="p">,</span> <span class="na">index</span><span class="p">:</span> <span class="mi">1</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="cm">/**
+ * Create a sinhle entity in the default data source
+ **/</span><span class="p">);</span>
+<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">insertMany</span><span class="p">([</span>
+	<span class="p">{</span><span class="na">name</span><span class="p">:</span> <span class="s1">'Foo Bar'</span><span class="p">,</span> <span class="na">phone</span><span class="p">:</span> <span class="s1">'555-125-428'</span><span class="p">,</span> <span class="na">index</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+	<span class="p">{</span><span class="na">name</span><span class="p">:</span> <span class="s1">'Baz Qux'</span><span class="p">,</span> <span class="na">email</span><span class="p">:</span> <span class="s1">'bazqux@foomail.com'</span><span class="p">,</span> <span class="na">index</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+<span class="p">],</span> <span class="s1">'PermanentStorage'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="cm">/**
+ * Create 2 entities in a specific data source
+ **/</span><span class="p">);</span>
+<span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="na">index</span><span class="p">:</span> <span class="mi">2</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="cm">/**
+ * Find a single entity in default data source, with `index` equals to 2
+ **/</span><span class="p">);</span>
+ <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">findMany</span><span class="p">(</span><span class="cm">/* query, options, dataSource*/</span><span class="p">);</span>
+ <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="cm">/* query, update, options, dataSource*/</span><span class="p">);</span>
+ <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">updateMany</span><span class="p">(</span><span class="cm">/* query, update, options, dataSource*/</span><span class="p">);</span>
+ <span class="nx">PhoneBook</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="cm">/* query, options, dataSource*/</span><span class="p">);</span>
+ <span class="nx">PhoneBook</span><span class="p">.</span><span class="nx">deleteMany</span><span class="p">(</span><span class="cm">/* query, options, dataSource*/</span><span class="p">);</span></code></pre>
+</figure>
 
 <p><a href="query-language.html" class="btn">Learn more about <em>Query Language</em></a></p>
 
+<p>Methods <code class="highlighter-rouge">insert</code>, <code class="highlighter-rouge">find</code> and <code class="highlighter-rouge">update</code> will return Entities, and <code class="highlighter-rouge">insertMany</code>, <code class="highlighter-rouge">findMany</code> and <code class="highlighter-rouge">updateMany</code> will return collections of Entities (for now, collections are just arrays).</p>
+
 <h3 id="working-with-entities">Working with entities</h3>
 
-<h4 id="create--manage-entities">Create &amp; manage entities</h4>
+<p>Entities are objects with a status, some data sources related informations, and their own methods.</p>
+
+<ul>
+  <li>Status of an entity can be checked using <code class="highlighter-rouge">getStatus()</code>.  Currently, there are 3 status implemented:
+    <ol>
+      <li><code class="highlighter-rouge">orphan</code>:</li>
+      <li><code class="highlighter-rouge">syncing</code>:</li>
+      <li><code class="highlighter-rouge">sync</code>:</li>
+    </ol>
+  </li>
+  <li>You can check your entity status in each data sources it is aware of by inspecting the <code class="highlighter-rouge">dataSources</code> property. This hash contains the <code class="highlighter-rouge">DataSourceEntity</code> for each sources. You can also know which data source was lastly used by using <code class="highlighter-rouge">lastDataSource()</code></li>
+  <li>You can use methods to help you working with your Entities. Custom methods can be added by setting the <code class="highlighter-rouge">methods</code> hash in the model configuration.</li>
+</ul>
+
+<h4 id="create-retrieve--manage-entities">Create, retrieve &amp; manage entities</h4>
+
+<p>You can get Entities from model methods. Query methods (<code class="highlighter-rouge">insert</code>, <code class="highlighter-rouge">insertMany</code>, <code class="highlighter-rouge">find</code>, <code class="highlighter-rouge">findMany</code>, <code class="highlighter-rouge">update</code> and <code class="highlighter-rouge">updateMany</code>) will return an entity in a <em>sync</em> status. You can also create <em>orphan</em> entities with <code class="highlighter-rouge">spawn</code>.</p>
+
+<p>Entities can be saved to a specific data source with <strong><a href="#">persist</a></strong>([<em>String</em> <code class="highlighter-rouge">sourceName</code>]) ► <em>Promise</em><br />
+You can reload your entity from a specific data source by using <strong><a href="#">fetch</a></strong>([<em>String</em> <code class="highlighter-rouge">sourceName</code>]) ► <em>Promise</em><br />
+Lastly, you can decide to remove your entity from your data source with <strong><a href="#">destroy</a></strong>([<em>String</em> <code class="highlighter-rouge">sourceName</code>]) ► <em>Promise</em></p>
 
 <h4 id="validation-methods">Validation methods</h4>
+
+<blockquote>
+  <p>Well… Diaspora is very young, and validations are not yet integrated. Some validation methods are nevertheless available in the <code class="highlighter-rouge">Diaspora</code> object.</p>
+</blockquote>
 
 				</section>
 				
@@ -532,7 +582,7 @@
 </li>
 <li class="toc-entry toc-h3"><a href="#working-with-entities">Working with entities</a>
 <ul>
-<li class="toc-entry toc-h4"><a href="#create--manage-entities">Create & manage entities</a></li>
+<li class="toc-entry toc-h4"><a href="#create-retrieve--manage-entities">Create, retrieve & manage entities</a></li>
 <li class="toc-entry toc-h4"><a href="#validation-methods">Validation methods</a></li>
 </ul>
 </li>
@@ -547,7 +597,7 @@
 
 			<footer>
 				<p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-				<p><small>Page built the 28 of Sep 2017 at 01:53</small></p>
+				<p><small>Page built the 01 of Oct 2017 at 17:11</small></p>
 			</footer>
 		</div>
 		<!--[if !IE]><script>fixScale(document);</script><![endif]-->

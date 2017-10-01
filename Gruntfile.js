@@ -16,8 +16,10 @@ module.exports = function gruntInit( grunt ) {
 		'diaspora.js',
 		'lib/**/*.js',
 		'!node_modules/**/*',
-		'tests/**/*.js',
 	];
+	const jsFilesWTests = jsAssets.concat([
+		'test/**/*.js',
+	]);
 
 	grunt.initConfig({
 		pkg:    grunt.file.readJSON( 'package.json' ),
@@ -31,17 +33,17 @@ module.exports = function gruntInit( grunt ) {
 				options: {
 					silent: true,
 				},
-				src: jsAssets,
+				src: jsFilesWTests,
 			},
 			strict: {
 				options: {},
-				src:     jsAssets,
+				src:     jsFilesWTests,
 			},
 		},
 		docco_husky: {
 			files: {
 				expand: true,
-				src:    jsAssets,
+				src:    jsFilesWTests,
 			},
 			output_dir:   doccoPath,
 			project_name: 'Diaspora',

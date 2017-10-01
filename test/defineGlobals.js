@@ -159,23 +159,25 @@ chai.use(function (_chai, utils) {
 					case false:{
 						expect( entity.getState(), 'Entity should not be orphan').to.not.equal( 'orphan' );
 					} break;
-
-					default: {
-						orphan = entity.getState() === 'orphan';
+						
+					case null: {
 					} break;
 							 }
 				if(orphan){
 					expect( entity.getLastDataSource(), 'Orphans should not have a last data source').to.be.eql( null );
 					expect( entity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
 					expect( entity, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
-				} else {
+				} else if(null !== orphan){
 					if(dataSource){
 						expect( entity.getLastDataSource()).to.be.eql( dataSource );
 					} else{
 						expect( entity.getLastDataSource(), 'Non orphans should have a last data source').to.be.not.eql( null );
 					}
-					expect( entity, 'id should be a defined value on non-orphan items' ).to.be.an( 'object' ).that.have.property( 'id' );
-					expect( entity, 'idHash should be a hash on non-orphan items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+					const lds = entity.getLastDataSource();
+					expect( entity.dataSources[lds], 'id should be a defined value on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'id' );
+					expect( entity.dataSources[lds], 'idHash should be a hash on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+					expect( entity, 'id should not be copied in model\'s value' ).to.be.an( 'object' ).that.have.not.property( 'id' );
+					expect( entity, 'idHash should be a hash on non-orphan model' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
 				}
 				expect( entity ).to.respondTo( 'persist' );
 				expect( entity ).to.respondTo( 'toObject' );

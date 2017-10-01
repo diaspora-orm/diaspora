@@ -14,18 +14,26 @@ You can test *Diaspora* using the Query Editor below. Collections available are 
 Currently, only Query Language Specification level 2 is implemented. Some operators (such as <code>&&</code>, <code>!</code> or <code>$in</code>) are not yet available
 </div>
 
+<div class="lazyload unloaded">
+<div class="loader"></div>
+
 ## History
 
-<div class="lazyload unloaded"><div class="loader"></div><table><thead><tr><th>Id</th><th>Query</th><th>Date</th><th>Action</th></tr></thead><tbody id="queriesHistory"></tbody></table></div>
+<table><thead><tr><th>Id</th><th>Query</th><th>Date</th><th>Action</th></tr></thead><tbody id="queriesHistory"></tbody></table>
 
 ## Query Editor
 
-<div class="lazyload unloaded"><div class="loader"></div><div class="input-group"><div id="query" class="form-control">PhoneBook.findMany({})</div><div class="input-group-btn"><button id="execquery" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button></div></div>
-<button class="btn btn-default" id="resetData">Reset all data</button></div>
+<div class="input-group">
+<code id="query" class="form-control" >PhoneBook.findMany({})</code>
+<div class="input-group-btn">
+<button id="execquery" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
+</div>
+</div>
+<button class="btn btn-default" id="resetData">Reset all data</button>
 
 ## Results
 
-<div class="lazyload unloaded"><div class="loader"></div><table id="datatable">
+<table id="datatable">
 <thead>
 <tr>
 <th>Id</th>

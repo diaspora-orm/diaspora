@@ -11,13 +11,17 @@ requirejs.config({
 		diasporaStandalone: '../../build/standalone/dist/diaspora',
 		diasporaComposed: '../../build/composed/dist/diaspora',
 
-		'TestInMemory': '../adapters/inMemory',
-		'TestLocalStorage': '../adapters/localStorage',
-		'utils': '../adapters/utils',
+		TestModels: '../models/index',
+		TestInMemory: '../adapters/inMemory',
+		TestLocalStorage: '../adapters/localStorage',
+		utils: '../adapters/utils',
 	},
 	shim: {
 		utils: {
 			deps: [ 'bluebird' ],
+		},
+		TestModels: {
+			deps: [ 'utils', '../models/simple', '../models/simple-remapping' ],
 		},
 		TestInMemory: {
 			deps: [ 'utils' ],
@@ -47,7 +51,7 @@ config = {};
 require(['defineGlobals', 'bluebird', target], (g, Promise, Diaspora) => {
 	window.Diaspora = Diaspora;
 	describe('Testing adapters', () => {
-		new Promise(resolve => {
+		return new Promise(resolve => {
 			describe('In Memory', () => {
 				require(['TestInMemory'], () => {
 					return resolve();
@@ -63,6 +67,13 @@ require(['defineGlobals', 'bluebird', target], (g, Promise, Diaspora) => {
 			});
 		}).then(() => {
 			mocha.run();
+		});
+	});
+	describe('Testing models', () => {
+		return new Promise(resolve => {
+			require(['TestModels'], () => {	
+				return resolve();
+			});
 		});
 	});
 });

@@ -2,15 +2,12 @@
 
 let testModel;
 let testedEntity;
-const modelName = 'testModel';
-const SOURCE = ([
-	'inMemory',
-	'localStorage',
-	'mongo',
-	'redis',
-])[0];
+const MODEL_NAME = 'testModel';
+const SOURCE = 'inMemory';
+
+
 it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', modelName, {
+	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
 		sources:    [ SOURCE ],
 		attributes: {
 			foo: {
@@ -23,67 +20,40 @@ it( 'Should create a model', () => {
 });
 it( 'Should be able to create an entity of the defined model.', () => {
 	const entity1 = testModel.spawn();
-	expect( entity1 ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.undefined;
-	expect( entity1.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
-	expect( entity1 ).to.respondTo( 'toObject' );
-	expect( entity1.toObject()).to.deep.equal({
-		foo: undefined,
-	});
+	expect( entity1 ).to.be.an.entity( testModel, {}, true );
 	const entity2 = testModel.spawn({
 		foo: 'bar',
 	});
-	expect( entity2 ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
-	expect( entity2.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
-	expect( entity2 ).to.respondTo( 'toObject' );
-	expect( entity2.toObject()).to.deep.equal({
-		foo: 'bar',
-	});
+	expect( entity2 ).to.be.an.entity( testModel, {foo: 'bar'}, true );
 });
 it( 'Should be able to create multiple entities.', () => {
-	const entities = testModel.spawnMulti([
-		{
-			foo: 'bar',
-		},
+	const objects = [
+		{ foo: 'bar' },
 		undefined,
-	]);
-	expect( entities ).to.be.an( 'array' ).that.have.lengthOf( 2 );
-	expect( entities[0]).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
-	expect( entities[0]).to.respondTo( 'toObject' );
-	expect( entities[0].toObject()).to.deep.equal({
-		foo: 'bar',
-	});
-	expect( entities[1]).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.undefined;
-	expect( entities[1]).to.respondTo( 'toObject' );
-	expect( entities[1].toObject()).to.deep.equal({
-		foo: undefined,
-	});
+	];
+	const entities = testModel.spawnMulti(objects);
+	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
 });
 describe( 'Should be able to use model methods to find, update, delete & create', () => {
-	let entities;
 	describe( '- Create instances', () => {
 		it( 'Create a single instance', () => {
 			expect( testModel ).to.respondTo( 'insert' );
-			return testModel.insert({
-				foo: 'bar',
-			}).then( newEntity => {
-				expect( newEntity.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
-				entities = [ newEntity ];
+			const object = { foo: 'bar' };
+			return testModel.insert(object).then( newEntity => {
+				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
 				return Promise.resolve();
 			});
 		});
 		it( 'Create multiple instances', () => {
 			expect( testModel ).to.respondTo( 'insertMany' );
-			return testModel.insertMany([
+			const objects = [
 				{ foo: 'baz' },
 				undefined,
 				{ foo: undefined },
 				{ foo: 'baz' },
-			]).then( newEntities => {
-				expect( newEntities ).to.be.an( 'array' ).that.have.lengthOf( 4 );
-				l.forEach( newEntities, newEntity => {
-					expect( newEntity.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
-				});
-				entities = entities.concat( newEntities );
+			];
+			return testModel.insertMany(objects).then( newEntities => {
+				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
 				return Promise.resolve();
 			});
 		});
@@ -92,9 +62,9 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		function checkFind( query, many = true ) {
 			return testModel[many ? 'findMany' : 'find']( query ).then( foundEntities => {
 				if ( many ) {
-					expect( foundEntities ).to.be.a.set.of.entity( testModel, {foo: 'bar'}, SOURCE );
+					expect( foundEntities ).to.be.a.set.of.entity( testModel, query, SOURCE );
 				} else if(c.assigned(foundEntities)) {
-					expect( foundEntities ).to.be.an.entity( testModel, {foo: 'bar'}, SOURCE );
+					expect( foundEntities ).to.be.an.entity( testModel, query, SOURCE );
 				}
 				return Promise.resolve( foundEntities );
 			});
@@ -126,18 +96,10 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 	describe( '- Update instances', () => {
 		function checkUpdate( query, update, many = true ) {
 			return testModel[many ? 'updateMany' : 'update']( query, update ).then( updatedEntities => {
-				function checkSingle( entity ) {
-					l.forEach( update, ( val, key ) => {
-						expect( entity ).to.have.property( key ).that.is.equal( val );
-					});
-				}
-
 				if ( many ) {
-					expect( updatedEntities ).to.be.an( 'array' );
-					l.forEach( updatedEntities, checkSingle );
-				} else {
-					expect( updatedEntities.constructor ).to.have.property( 'name' ).that.is.equal( `${ modelName  }Entity` );
-					checkSingle( updatedEntities );
+					expect( updatedEntities ).to.be.a.set.of.entity( testModel, update, SOURCE );
+				} else if(c.assigned(updatedEntities)) {
+					expect( updatedEntities ).to.be.an.entity( testModel, update, SOURCE );
 				}
 				return Promise.resolve( updatedEntities );
 			});
@@ -237,55 +199,40 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 });
 describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
 	it( 'Persist should change the entity', () => {
-		testedEntity = testModel.spawn({
-			foo: 'bar',
-		});
-		expect( testedEntity ).to.be.an.entity( testModel, {foo: 'bar'}, true );
+		const object = { foo: 'bar' };
+		testedEntity = testModel.spawn(object);
+		expect( testedEntity ).to.be.an.entity( testModel, object, true );
 		const retPromise = testedEntity.persist();
 		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity ).to.be.an.entity( testModel, {foo: 'bar'}, SOURCE );
+		expect( testedEntity ).to.be.an.entity( testModel, object, null );
 		return retPromise.then(() => {
-			expect( testedEntity ).to.be.an.entity( testModel, {foo: 'bar'}, false );
-			expect( testedEntity.getState()).to.be.eql( 'sync' );
-			expect( testedEntity ).to.be.an.entity( testModel, {foo: 'bar'}, SOURCE );
-			return Promise.resolve();
+			expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
 		});
 	});
 	it( 'Fetch should change the entity', () => {
-		testedEntity.foo = 'baz';
-		expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
-		expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
-		expect( testedEntity ).to.respondTo( 'fetch' );
-		expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
-		expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-		const retPromise = testedEntity.fetch();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-		return retPromise.then(() => {
-			expect( testedEntity.getState()).to.be.eql( 'sync' );
-			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-			expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
-			expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-			expect( testedEntity, '"foo" should be reset to "bar"' ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
-			return Promise.resolve();
+		const object = {foo: 'bar'};
+		return testModel.find(object).then(entity => {
+			expect( entity ).to.respondTo( 'fetch' );
+			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
+			entity.foo = 'baz';
+			expect( entity ).to.be.an.entity( testModel, {foo: 'baz'}, SOURCE );
+			const retPromise = entity.fetch();
+			return retPromise.then(() => {
+				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
+			});
 		});
 	});
 	it( 'Destroy should change the entity', () => {
-		expect( testedEntity.getState()).to.be.not.eql( 'orphan' );
-		expect( testedEntity.getLastDataSource()).to.be.not.eql( null );
-		expect( testedEntity ).to.respondTo( 'destroy' );
-		expect( testedEntity, 'id should be a defined value on synced items' ).to.be.an( 'object' ).that.have.property( 'id' );
-		expect( testedEntity, 'idHash should be a hash on synced items' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-		const retPromise = testedEntity.destroy();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-		return retPromise.then(() => {
-			expect( testedEntity.getState()).to.be.eql( 'orphan' );
-			expect( testedEntity.getLastDataSource()).to.be.eql( SOURCE );
-			expect( testedEntity, 'id should be a undefined value or key on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'id' );
-			expect( testedEntity, 'idHash should be undefined on orphan items' ).to.be.an( 'object' ).that.not.have.property( 'idHash' );
-			expect( testedEntity, '"foo" should still be set to "bar"' ).to.be.an( 'object' ).that.have.property( 'foo' ).that.is.eql( 'bar' );
-			return Promise.resolve();
+		const object = {foo: 'bar'};
+		return testModel.find(object).then(entity => {
+			expect( entity ).to.respondTo( 'destroy' );
+			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
+			const retPromise = entity.destroy();
+			return retPromise.then(() => {
+				expect( entity.getLastDataSource()).to.be.eql( SOURCE );
+				expect( entity.getState()).to.be.eql( 'orphan' );
+				expect( entity ).to.be.an.entity( testModel, {}, null );
+			});
 		});
 	});
 });
