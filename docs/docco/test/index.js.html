@@ -802,7 +802,49 @@
 </span><span id="line-290">            <span class="nx">aze</span><span class="o">:</span> <span class="mi">123</span><span class="p">,</span>
 </span><span id="line-291">            <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span>
 </span><span id="line-292">        <span class="p">});</span>
-</span><span id="line-293">        <span class="kr">const</span> <span class="nx">now</span> <span class</pre></div></td></tr></tbody></table></div>
+</span><span id="line-293">        <span class="kr">const</span> <span class="nx">now</span> <span class="o">=</span> <span class="nx">l</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span><span id="line-294">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">Diaspora</span><span class="p">.</span><span class="k">default</span><span class="p">({</span>
+</span><span id="line-295">            <span class="nx">aze</span><span class="o">:</span> <span class="mi">123</span><span class="p">,</span>
+</span><span id="line-296">        <span class="p">},</span> <span class="p">{</span>
+</span><span id="line-297">            <span class="nx">foo</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-298">                <span class="nx">type</span><span class="o">:</span>    <span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+</span><span id="line-299">                <span class="k">default</span><span class="o">:</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">now</span><span class="p">,</span>
+</span><span id="line-300">            <span class="p">},</span>
+</span><span id="line-301">        <span class="p">})).</span><span class="nx">to</span><span class="p">.</span><span class="nx">deep</span><span class="p">.</span><span class="nx">equal</span><span class="p">({</span>
+</span><span id="line-302">            <span class="nx">aze</span><span class="o">:</span> <span class="mi">123</span><span class="p">,</span>
+</span><span id="line-303">            <span class="nx">foo</span><span class="o">:</span> <span class="nx">now</span><span class="p">,</span>
+</span><span id="line-304">        <span class="p">});</span>
+</span><span id="line-305">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">Diaspora</span><span class="p">.</span><span class="k">default</span><span class="p">({</span>
+</span><span id="line-306">            <span class="nx">aze</span><span class="o">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">,</span>
+</span><span id="line-307">        <span class="p">},</span> <span class="p">{</span>
+</span><span id="line-308">            <span class="nx">aze</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-309">                <span class="nx">type</span><span class="o">:</span>    <span class="s1">&#39;text&#39;</span><span class="p">,</span>
+</span><span id="line-310">                <span class="k">default</span><span class="o">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+</span><span id="line-311">            <span class="p">},</span>
+</span><span id="line-312">        <span class="p">})).</span><span class="nx">to</span><span class="p">.</span><span class="nx">deep</span><span class="p">.</span><span class="nx">equal</span><span class="p">({</span>
+</span><span id="line-313">            <span class="nx">aze</span><span class="o">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">,</span>
+</span><span id="line-314">        <span class="p">});</span>
+</span><span id="line-315">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">Diaspora</span><span class="p">.</span><span class="k">default</span><span class="p">({</span>
+</span><span id="line-316">            <span class="nx">aze</span><span class="o">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">,</span>
+</span><span id="line-317">        <span class="p">},</span> <span class="p">{</span>
+</span><span id="line-318">            <span class="nx">aze</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-319">                <span class="nx">type</span><span class="o">:</span>    <span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+</span><span id="line-320">                <span class="k">default</span><span class="o">:</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+</span><span id="line-321">            <span class="p">},</span>
+</span><span id="line-322">        <span class="p">})).</span><span class="nx">to</span><span class="p">.</span><span class="nx">deep</span><span class="p">.</span><span class="nx">equal</span><span class="p">({</span>
+</span><span id="line-323">            <span class="nx">aze</span><span class="o">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">,</span>
+</span><span id="line-324">        <span class="p">});</span>
+</span><span id="line-325">    <span class="p">});</span>
+</span><span id="line-326">
+</span><span id="line-327">    <span class="nx">importTest</span><span class="p">(</span> <span class="nx">chalk</span><span class="p">.</span><span class="nx">bold</span><span class="p">.</span><span class="nx">underline</span><span class="p">.</span><span class="nx">blue</span><span class="p">(</span> <span class="s1">&#39;Adapters&#39;</span> <span class="p">),</span> <span class="s1">&#39;./adapters/index.js&#39;</span> <span class="p">);</span>
+</span><span id="line-328">    <span class="nx">importTest</span><span class="p">(</span> <span class="nx">chalk</span><span class="p">.</span><span class="nx">bold</span><span class="p">.</span><span class="nx">underline</span><span class="p">.</span><span class="nx">blue</span><span class="p">(</span> <span class="s1">&#39;Models&#39;</span> <span class="p">),</span> <span class="s1">&#39;./models/index.js&#39;</span> <span class="p">);</span>
+</span><span id="line-329"><span class="p">}</span>
+</span><span id="line-330">
+</span><span id="line-331"><span class="k">if</span> <span class="p">(</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NO_SAUCE</span> <span class="o">!==</span> <span class="s1">&#39;true&#39;</span> <span class="p">)</span> <span class="p">{</span>
+</span><span id="line-332">    <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./browserTests/seleniumTest.js&#39;</span> <span class="p">);</span>
+</span><span id="line-333"><span class="p">}</span>
+</span>
+</pre></div></td></tr></tbody></table></div>
 				</section>
 			</div>
 

@@ -339,43 +339,43 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							    key = _ref2[0],
 							    desc = _ref2[1];
 
-							if (c.object(desc)) {
+							if (_.isObject(desc)) {
 								var entityVal = entity[key];
 								return _.every(desc, function (val, operation) {
 									switch (operation) {
 										case '$exists':
 											{
-												return val === !c.undefined(entityVal);
+												return val === !_.isUndefined(entityVal);
 											}
 
 										case '$equal':
 											{
-												return !c.undefined(entityVal) && entityVal === val;
+												return !_.isUndefined(entityVal) && entityVal === val;
 											}
 
 										case '$diff':
 											{
-												return !c.undefined(entityVal) && entityVal !== val;
+												return !_.isUndefined(entityVal) && entityVal !== val;
 											}
 
 										case '$less':
 											{
-												return !c.undefined(entityVal) && entityVal < val;
+												return !_.isUndefined(entityVal) && entityVal < val;
 											}
 
 										case '$lessEqual':
 											{
-												return !c.undefined(entityVal) && entityVal <= val;
+												return !_.isUndefined(entityVal) && entityVal <= val;
 											}
 
 										case '$greater':
 											{
-												return !c.undefined(entityVal) && entityVal > val;
+												return !_.isUndefined(entityVal) && entityVal > val;
 											}
 
 										case '$greaterEqual':
 											{
-												return !c.undefined(entityVal) && entityVal >= val;
+												return !_.isUndefined(entityVal) && entityVal >= val;
 											}
 									}
 									return false;
@@ -389,7 +389,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					key: "applyUpdateEntity",
 					value: function applyUpdateEntity(update, entity) {
 						_.forEach(update, function (val, key) {
-							if (c.undefined(val)) {
+							if (_.isUndefined(val)) {
 								delete entity[key];
 							} else {
 								entity[key] = val;
@@ -418,7 +418,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isString(limitOpt)) {
 								limitOpt = parseInt(limitOpt);
 							}
-							if (!(c.integer(limitOpt) || Infinity === limitOpt) || limitOpt < 0) {
+							if (!(_.isInteger(limitOpt) || Infinity === limitOpt) || limitOpt < 0) {
 								throw new TypeError("Expect \"options.limit\" to be an integer equal to or above 0, have " + limitOpt);
 							}
 							opts.limit = limitOpt;
@@ -428,7 +428,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isString(skipOpt)) {
 								skipOpt = parseInt(skipOpt);
 							}
-							if (!c.integer(skipOpt) || skipOpt < 0 || !isFinite(skipOpt)) {
+							if (!_.isInteger(skipOpt) || skipOpt < 0 || !isFinite(skipOpt)) {
 								throw new TypeError("Expect \"options.skip\" to be a finite integer equal to or above 0, have " + skipOpt);
 							}
 							opts.skip = skipOpt;
@@ -447,7 +447,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isString(pageOpt)) {
 								pageOpt = parseInt(pageOpt);
 							}
-							if (!c.integer(pageOpt) || pageOpt < 0) {
+							if (!_.isInteger(pageOpt) || pageOpt < 0) {
 								throw new TypeError("Expect \"options.page\" to be an integer equal to or above 0, have " + pageOpt);
 							}
 							opts.skip = pageOpt * opts.limit;
@@ -500,7 +500,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								});
 								// For arithmetic comparison, check if values are numeric (TODO later: support date)
 								_.forEach(['$less', '$lessEqual', '$greater', '$greaterEqual'], function (operation) {
-									if (attrSearch.hasOwnProperty(operation) && !c.number(attrSearch[operation])) {
+									if (attrSearch.hasOwnProperty(operation) && !_.isNumber(attrSearch[operation])) {
 										throw new TypeError("Expect \"" + operation + "\" in " + JSON.stringify(attrSearch) + " to be a numeric value");
 									}
 								});
@@ -1353,7 +1353,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						_.defaults(options, {
 							skip: 0
 						});
-						if (!c.object(queryFind)) {
+						if (!_.isObject(queryFind)) {
 							return this.findOneById(table, queryFind);
 						} else if (_.isEqual(_.keys(queryFind), ['id']) && _.isEqual(_.keys(queryFind.id), ['$equal'])) {
 							return this.findOneById(table, queryFind.id.$equal);
@@ -1508,7 +1508,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					key: "applyOptionsToSet",
 					value: function applyOptionsToSet(set, options) {
 						if (options.hasOwnProperty('limit')) {
-							if (c.integer(options.limit)) {
+							if (_.isInteger(options.limit)) {
 								set = set.slice(0, options.limit);
 							} else {
 								ModelExtension.log.warn("Trying to apply a non-integer limit \"" + options.limit + "\".");
@@ -1766,7 +1766,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				checkField: function checkField(value, fieldDesc, keys) {
 					var _this23 = this;
 
-					if (!c.object(fieldDesc)) {
+					if (!_.isObject(fieldDesc)) {
 						return;
 					}
 					_.defaults(fieldDesc, {
@@ -1844,7 +1844,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 										if (!tester.object(value)) {
 											errors.push(keys.join('.') + " expected to be a " + fieldDesc.type);
 										} else {
-											var deepTest = c.object(fieldDesc.attributes) ? _(value).mapValues(function (propVal, propName) {
+											var deepTest = _.isObject(fieldDesc.attributes) ? _(value).mapValues(function (propVal, propName) {
 												return _this23.checkField(propVal, fieldDesc.attributes[propName], cloneKeysAdd(keys, propName));
 											}).values().flatten().compact().value() : [];
 											if (deepTest.length !== 0) {
@@ -1858,7 +1858,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 										if (!tester.array(value)) {
 											errors.push(keys.join('.') + " expected to be a " + fieldDesc.type);
 										} else {
-											var _deepTest = c.object(fieldDesc.of) ? _(value).map(function (propVal, propName) {
+											var _deepTest = _.isObject(fieldDesc.of) ? _(value).map(function (propVal, propName) {
 												if (_.isArrayLike(fieldDesc.of)) {
 													var subErrors = _(fieldDesc.of).map(function (desc) {
 														return _this23.checkField(propVal, desc, cloneKeysAdd(keys, propName));
@@ -1897,9 +1897,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					if (!_.isNil(fieldDesc.enum)) {
 						var result = _.some(fieldDesc.enum, function (enumVal) {
 							if (c.instance(enumVal, RegExp)) {
-								return c.match(value, enumVal);
+								return null !== enumVal.exec(value);
 							} else {
-								return c.equal(value, enumVal);
+								return value === enumVal;
 							}
 						});
 						if (false === result) {
@@ -1942,7 +1942,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      */
 				defaultField: function defaultField(value, fieldDesc) {
 					var out = void 0;
-					if (c.not.undefined(value)) {
+					if (!_.isUndefined(value)) {
 						out = value;
 					} else {
 						out = _.isFunction(fieldDesc.default) ? fieldDesc.default() : fieldDesc.default;
@@ -2025,7 +2025,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					if (!_.isString(name) && name.length > 0) {
 						throw new Error("DataSource name must be a non empty string, had \"" + name + "\"");
 					}
-					if (!c.object(modelDesc)) {
+					if (!_.isObject(modelDesc)) {
 						throw new Error('"modelDesc" must be an object');
 					}
 					var model = new Model(moduleName, name, modelDesc);
@@ -2347,14 +2347,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					if (0 !== reservedPropIntersect.length) {
 						throw new Error(JSON.stringify(reservedPropIntersect) + " is/are reserved property names. To match those column names in data source, please use the data source mapper property");
 					}
-					if (!modelDesc.hasOwnProperty('sources') || !(_.isArrayLike(modelDesc.sources) || c.object(modelDesc.sources))) {
+					if (!modelDesc.hasOwnProperty('sources') || !(_.isArrayLike(modelDesc.sources) || _.isObject(modelDesc.sources))) {
 						throw new TypeError("Expect model sources to be either an array or an object, had " + JSON.stringify(modelDesc.sources) + ".");
 					}
 					// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
 					var sourcesNormalized = _.isArrayLike(modelDesc.sources) ? _.zipObject(modelDesc.sources, _.times(modelDesc.sources.length, _.constant({}))) : _.mapValues(modelDesc.sources, function (remap, dataSourceName) {
 						if (true === remap) {
 							return {};
-						} else if (c.object(remap)) {
+						} else if (_.isObject(remap)) {
 							return remap;
 						} else {
 							throw new TypeError("Datasource \"" + dataSourceName + "\" value is invalid: expect `true` or a remap hash, but have " + JSON.stringify(remap));

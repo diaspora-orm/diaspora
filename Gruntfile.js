@@ -77,10 +77,6 @@ module.exports = function gruntInit( grunt ) {
 						entry:  true,
 						expose: 'Promise',
 					}],
-					[ 'check-types', {
-						entry:  true,
-						expose: 'c',
-					}],
 					[ 'sequential-event', {
 						entry:  true,
 						expose: 'SequentialEvent',
@@ -90,7 +86,7 @@ module.exports = function gruntInit( grunt ) {
 			},
 			isolated: {
 				options: {
-					external: [ 'lodash', 'bluebird', 'check-types', 'sequential-event' ],
+					external: [ 'lodash', 'bluebird', 'sequential-event' ],
 				},
 				src:  [ 'diaspora.js' ],
 				dest: 'build/isolated/src/diaspora.js',	
@@ -217,5 +213,9 @@ module.exports = function gruntInit( grunt ) {
 	]);
 	grunt.registerTask( 'lint', [
 		'eslint:info',
+	]);
+	grunt.registerTask( 'all', [
+		'refreshScripts',
+		'documentate',
 	]);
 };

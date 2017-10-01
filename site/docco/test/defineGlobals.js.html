@@ -211,4 +211,23 @@ The one after that is the user code requesting the path info (so offset by 2)</p
 </span><span id="line-210">            <span class="k">if</span> <span class="p">(</span> <span class="nx">c</span><span class="p">.</span><span class="nx">array</span><span class="p">(</span> <span class="nx">properties</span> <span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">properties</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="nx">data</span><span class="p">.</span><span class="nx">length</span> <span class="p">)</span> <span class="p">{</span>
 </span><span id="line-211">                <span class="nx">l</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span> <span class="nx">data</span><span class="p">,</span> <span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="nx">index</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
 </span><span id="line-212">                    <span class="nx">errorOut</span> <span class="o">=</span> <span class="nx">check</span><span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="nx">properties</span><span class="p">[</span><span class="nx">index</span><span class="p">]);</span>
-</span><spa</pre></div></td></tr></tbody></table></div>
+</span><span id="line-213">                    <span class="k">return</span> <span class="o">!</span><span class="nx">errorOut</span><span class="p">;</span>
+</span><span id="line-214">                <span class="p">});</span>
+</span><span id="line-215">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span id="line-216">                <span class="nx">l</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span><span id="line-217">                    <span class="nx">errorOut</span> <span class="o">=</span> <span class="nx">check</span><span class="p">(</span> <span class="nx">entity</span><span class="p">,</span> <span class="nx">properties</span> <span class="p">);</span>
+</span><span id="line-218">                    <span class="k">return</span> <span class="o">!</span><span class="nx">errorOut</span><span class="p">;</span>
+</span><span id="line-219">                <span class="p">});</span>
+</span><span id="line-220">            <span class="p">}</span>
+</span><span id="line-221">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span id="line-222">            <span class="nx">errorOut</span> <span class="o">=</span> <span class="nx">check</span><span class="p">(</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">properties</span> <span class="p">);</span>
+</span><span id="line-223">        <span class="p">}</span>
+</span><span id="line-224">        <span class="k">this</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span>
+</span><span id="line-225">            <span class="o">!</span><span class="nx">errorOut</span><span class="p">,</span>
+</span><span id="line-226">            <span class="sb">`expected #{this} to be a</span><span class="si">${</span> <span class="nx">collection</span> <span class="o">?</span> <span class="s1">&#39; collection of&#39;</span> <span class="o">:</span> <span class="s1">&#39;n&#39;</span> <span class="si">}</span><span class="sb"> Entity: failed because of </span><span class="si">${</span> <span class="nx">errorOut</span> <span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span><span id="line-227">            <span class="sb">`expected #{this} to not be a</span><span class="si">${</span> <span class="nx">collection</span> <span class="o">?</span> <span class="s1">&#39; collection of&#39;</span> <span class="o">:</span> <span class="s1">&#39;n&#39;</span> <span class="si">}</span><span class="sb"> Entity: failed because of </span><span class="si">${</span> <span class="nx">errorOut</span> <span class="si">}</span><span class="sb">`</span>
+</span><span id="line-228">        <span class="p">);</span>
+</span><span id="line-229">    <span class="p">});</span>
+</span><span id="line-230"><span class="p">});</span>
+</span>
+</pre></div></td></tr></tbody></table></div>

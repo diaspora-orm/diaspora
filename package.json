@@ -1,6 +1,6 @@
 {
   "name": "diaspora",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Multi-Layer ORM for Javascript Client+Server",
   "main": "diaspora.js",
   "directories": {

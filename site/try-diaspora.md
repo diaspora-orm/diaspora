@@ -19,11 +19,21 @@ Currently, only Query Language Specification level 2 is implemented. Some operat
 
 ## History
 
-<table><thead><tr><th>Id</th><th>Query</th><th>Date</th><th>Action</th></tr></thead><tbody id="queriesHistory"></tbody></table>
+<table markdown="0">
+<thead>
+<tr>
+<th>Id</th>
+<th>Query</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="queriesHistory"></tbody>
+</table>
 
 ## Query Editor
 
-<div class="input-group">
+<div class="input-group" markdown="0">
 <code id="query" class="form-control" >PhoneBook.findMany({})</code>
 <div class="input-group-btn">
 <button id="execquery" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
@@ -33,7 +43,7 @@ Currently, only Query Language Specification level 2 is implemented. Some operat
 
 ## Results
 
-<table id="datatable">
+<table id="datatable" markdown="0">
 <thead>
 <tr>
 <th>Id</th>
