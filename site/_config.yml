@@ -11,7 +11,7 @@ baseurl: ""
 plugins:
   - jekyll-toc
 #  - jekyll-minifier
-destination: ../docs
+destination: ../../documentation
 lsi: true
 incremental: false
 markdown: kramdown

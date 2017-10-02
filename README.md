@@ -4,6 +4,8 @@
 
 ## Build status
 
+> Below status reflect the last development commit status. Releases require all tests to pass successfully
+
 Travis CI status:  
 [![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
 
@@ -30,13 +32,13 @@ Here is a short API overview. For a detailed API documentation, check the [Diasp
 
 ### Model methods
 
-#### make/spawn([*object* `props`]) => *Entity*
+#### spawn([*object* `props`]) => *Entity*
 
 Create an entity, defining its properties with provided `props`. The returned entity should be persisted later.
 
-#### makeMany/spawnMany([*object[]* `props`]) => *Entity[]*
+#### spawnMany([*object[]* `props`]) => *Entity[]*
 
-See `make` or `spawn`.
+See `spawn`.
 
 #### insert([*object* `props`]) => *Promise(Entity)*
 

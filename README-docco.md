@@ -14,13 +14,13 @@ Here is a short API overview. For a detailed API documentation, check... The doc
 
 ### Model methods
 
-#### make/spawn([*object* `props`]) => *Entity*
+#### spawn([*object* `props`]) => *Entity*
 
 Create an entity, defining its properties with provided `props`. The returned entity should be persisted later.
 
-#### makeMany/spawnMany([*object[]* `props`]) => *Entity[]*
+#### spawnMany([*object[]* `props`]) => *Entity[]*
 
-See `make` or `spawn`.
+See `spawn`.
 
 #### insert([*object* `props`]) => *Promise(Entity)*
 
