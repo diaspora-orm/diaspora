@@ -28,6 +28,8 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 
 ## API Overview
 
+Need help getting started? We have a page on how to [get started in 5 minutes](https://diaspora.ithoughts.io/getting-started.html).
+
 Here is a short API overview. For a detailed API documentation, check the [Diaspora API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
 
 ### Model methods
@@ -98,7 +100,7 @@ Reload entity from specified `source`.
 
 > IndexedDB Adapter (browser)
 
-*Unsure* > Technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+*Unsure* > IndexedDB technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 
 > Auto-switch to API server/client
 

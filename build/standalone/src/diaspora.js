@@ -110,9 +110,16 @@ const Promise = require( 'bluebird' );
  * @memberof Adapters
  * @public
  * @author gerkin
- * @param {DataStoreEntity} classEntity Class used to spawn source entities
  */
 class DiasporaAdapter extends SequentialEvent {
+	/**
+	 * @description Create a new instance of adapter. This base class should be used by all other adapters.
+	 * @constructs DiasporaAdapter
+	 * @memberof Adapters
+	 * @public
+	 * @author gerkin
+	 * @param {DataStoreEntities.DataStoreEntity} classEntity Entity spawned by this adapter.
+	 */
 	constructor( classEntity ) {
 		super();
 		this.remaps = {};
@@ -127,27 +134,26 @@ class DiasporaAdapter extends SequentialEvent {
 		});
 	}
 
-	configureCollection( tableName, remaps, filters ) {
+	/**
+	 * @method configureCollection
+	 * @description Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities
+	 * @memberof Adapters.DiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param {String} tableName Name of the table (usually, model name)
+	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
+	 * @param {Object} [filters = {}]   Not used yet...
+	 * @returns {undefined}
+	 */
+	configureCollection( tableName, remaps, filters = {}) {
 		this.remaps[tableName] = remaps;
 		this.remapsInverted[tableName] = _.invert( remaps );
-		this.filters = filters || {};
+		this.filters = filters || {};
 	}
 
 	// -----
 	// ### Utils
-
-	remapFields( tableName, query, invert = false ) {
-		const keysMap = ( invert ? this.remapsInverted : this.remaps )[tableName];
-		if ( _.isNil( keysMap )) {
-			return query;
-		}
-		return _.mapKeys( query, ( value, key ) => {
-			if ( keysMap.hasOwnProperty( key )) {
-				return keysMap[key];
-			}
-			return key;
-		});
-	}
 
 	/**
 	 * @method waitReady
@@ -174,6 +180,31 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
+	 * @method remapFields
+	 * @description Cast entity field names to table field name, or the opposite.
+	 * @memberof Adapters.DiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param   {String} tableName Name of the table we are remapping for
+	 * @param   {Object} query Hash representing the raw query to remap
+	 * @param   {Boolean} [invert = false] `false` to cast to `table` field names, `true` to cast to `entity` field name
+	 * @returns {Object} Remapped object.
+	 */
+	remapFields( tableName, query, invert = false ) {
+		const keysMap = ( invert ? this.remapsInverted : this.remaps )[tableName];
+		if ( _.isNil( keysMap )) {
+			return query;
+		}
+		return _.mapKeys( query, ( value, key ) => {
+			if ( keysMap.hasOwnProperty( key )) {
+				return keysMap[key];
+			}
+			return key;
+		});
+	}
+
+	/**
 	 * @method remapInput
 	 * @description TODO
 	 * @memberof Adapters.DiasporaAdapter
@@ -181,11 +212,11 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @instance
 	 * @author gerkin
 	 * @see TODO remapping
-	 * @param   {String} table  Name of the table for which we remap
+	 * @param   {String} tableName  Name of the table for which we remap
 	 * @param   {Object} query Hash representing the entity to remap
 	 * @returns {Object} Remapped object
 	 */
-	remapInput( table, query ) {
+	remapInput( tableName, query ) {
 		if ( _.isNil( query )) {
 			return query;
 		}
@@ -212,11 +243,11 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @instance
 	 * @author gerkin
 	 * @see TODO remapping
-	 * @param   {String} table  Name of the table for which we remap
+	 * @param   {String} tableName  Name of the table for which we remap
 	 * @param   {Object} query Hash representing the entity to remap
 	 * @returns {Object} Remapped object
 	 */
-	remapOutput( table, query ) {
+	remapOutput( tableName, query ) {
 		if ( _.isNil( query )) {
 			return query;
 		}
@@ -287,7 +318,7 @@ class DiasporaAdapter extends SequentialEvent {
 						case '$greaterEqual': {
 							return !_.isUndefined( entityVal ) && entityVal >= val;
 						}
-									   }
+					}
 					return false;
 				});
 			}
@@ -296,6 +327,16 @@ class DiasporaAdapter extends SequentialEvent {
 		return matchResult;
 	}
 
+	/**
+	 * @method applyUpdateEntity
+	 * @description Merge update query with the entity. This operation allows to delete fields.
+	 * @memberof Adapters.DiasporaAdapter
+	 * @public
+	 * @instance
+	 * @param {Object} update Hash representing modified values. A field with an `undefined` value deletes this field from the entity
+	 * @param {Object} entity Entity to update
+	 * @returns {Object} Entity modified
+	 */
 	applyUpdateEntity( update, entity ) {
 		_.forEach( update, ( val, key ) => {
 			if ( _.isUndefined( val )) {
@@ -304,6 +345,7 @@ class DiasporaAdapter extends SequentialEvent {
 				entity[key] = val;
 			}
 		});
+		return entity;
 	}
 
 	/**
@@ -365,6 +407,16 @@ class DiasporaAdapter extends SequentialEvent {
 		return opts;
 	}
 
+	/**
+	 * @method normalizeQuery
+	 * @description Transform a search query to its canonical form, replacing aliases or shorthands by full query.
+	 * @memberof Adapters.DiasporaAdapter
+	 * @public
+	 * @instance
+	 * @param {QueryLanguage.SelectQueryOrCondition} originalQuery Query to cast to its canonical form
+	 * @param {QueryLanguage.Options} options       Options for this query
+	 * @returns {QueryLanguage.SelectQueryOrCondition} Query in its canonical form
+	 */
 	normalizeQuery( originalQuery, options ) {
 		const canonicalOperations = {
 			'~':  '$exists',
@@ -375,7 +427,7 @@ class DiasporaAdapter extends SequentialEvent {
 			'>':  '$greater',
 			'>=': '$greaterEqual',
 		};
-		const normalizedQuery = true === options.remapInput ? _( _.cloneDeep( originalQuery )).mapValues(( attrSearch, attrName ) => {
+		const normalizedQuery = true === options.remapInput ? _( _.cloneDeep( originalQuery )).mapValues( attrSearch => {
 			if ( !( !_.isNil( attrSearch ) && attrSearch instanceof Object )) {
 				if ( !_.isNil( attrSearch )) {
 					return {
@@ -637,6 +689,8 @@ module.exports = DiasporaAdapter;
 },{"bluebird":11,"lodash":13,"sequential-event":15}],3:[function(require,module,exports){
 'use strict';
 
+/* globals window: false */
+
 const _ = require( 'lodash' );
 const Promise = require( 'bluebird' );
 const DiasporaAdapter = require( './baseAdapter.js' );
@@ -653,15 +707,33 @@ const InMemoryEntity = require( '../dataStoreEntities/inMemoryEntity.js' );
  * @param {Object} [config] Options hash. Currently, this adapter does not have any options
  */
 class InMemoryDiasporaAdapter extends DiasporaAdapter {
-	constructor( config ) {
+	/**
+	 * @description Create a new instance of in memory adapter
+	 * @constructs InMemoryDiasporaAdapter
+	 * @memberof Adapters
+	 * @public
+	 * @author gerkin
+	 */
+	constructor() {
 		super( InMemoryEntity );
 		this.state = 'ready';
 		this.store = {};
 	}
-	
-	configureCollection( name, remap ) {
-		super.configureCollection( name, remap );
-		this.ensureCollectionExists( name );
+
+	/**
+	 * @method configureCollection
+	 * @description Create the data store and call {@link Adapters.DiasporaAdapter.configureCollection}
+	 * @memberof Adapters.InMemoryDiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param {String} tableName Name of the table (usually, model name)
+	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
+	 * @returns {undefined}
+	 */
+	configureCollection( tableName, remaps ) {
+		super.configureCollection( tableName, remaps );
+		this.ensureCollectionExists( tableName );
 	}
 
 	// -----
@@ -677,10 +749,10 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {String} Generated unique id
 	 */
 	generateUUID() {
-		var d = new Date().getTime();
+		let d = new Date().getTime();
 		// Use high-precision timer if available
 		if ( 'undefined' !== typeof window && window.performance && 'function' === typeof window.performance.now ) {
-			d += performance.now();
+			d += window.performance.now();
 		}
 		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
 			const r = ( d + Math.random() * 16 ) % 16 | 0;
@@ -818,11 +890,18 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`)
 	 */
 	updateOne( table, queryFind, update, options = {}) {
-		const storeTable = this.ensureCollectionExists( table );
-		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
-		const firstMatch = _.first( matches );
-		this.applyUpdateEntity( update, firstMatch );
-		return Promise.resolve( new this.classEntity( firstMatch ));
+		return this.findOne( table, queryFind, options ).then( found => {
+			if ( !_.isNil( found )) {
+				const storeTable = this.ensureCollectionExists( table );
+				const match = _.find( storeTable.items, {
+					id: found.id,
+				});
+				this.applyUpdateEntity( update, match );
+				return Promise.resolve( new this.classEntity( match, this ));
+			} else {
+				return Promise.resolve();
+			}
+		});
 	}
 
 	/**
@@ -840,13 +919,19 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`)
 	 */
 	updateMany( table, queryFind, update, options = {}) {
-		const storeTable = this.ensureCollectionExists( table );
-		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-		_.forEach( reducedMatches, match => {
-			this.applyUpdateEntity( update, match );
+		return this.findMany( table, queryFind, options ).then( found => {
+			if ( !_.isNil( found ) && found.length > 0 ) {
+				const storeTable = this.ensureCollectionExists( table );
+				const foundIds = _.map( found, 'id' );
+				const matches = _.filter( storeTable.items, item => -1 !== foundIds.indexOf( item.id ));
+				return Promise.resolve( _.map( matches, item => {
+					this.applyUpdateEntity( update, item );
+					return new this.classEntity( item, this );
+				}));
+			} else {
+				return Promise.resolve();
+			}
 		});
-		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity( entity, this )));
 	}
 
 	// -----
@@ -903,6 +988,8 @@ module.exports = InMemoryDiasporaAdapter;
 },{"../dataStoreEntities/inMemoryEntity.js":6,"./baseAdapter.js":2,"bluebird":11,"lodash":13}],4:[function(require,module,exports){
 'use strict';
 
+/* globals localStorage: false, sessionStorage: false, window: false */
+
 const _ = require( 'lodash' );
 const Promise = require( 'bluebird' );
 const DiasporaAdapter = require( './baseAdapter.js' );
@@ -920,6 +1007,15 @@ const LocalStorageEntity = require( '../dataStoreEntities/localStorageEntity.js'
  * @param {Boolean} config.session=false If `false`, data source will use local storage. If `true`, it will use session storage.
  */
 class LocalStorageDiasporaAdapter extends DiasporaAdapter {
+	/**
+	 * @description Create a new instance of local storage adapter
+	 * @constructs LocalStorageDiasporaAdapter
+	 * @memberof Adapters
+	 * @public
+	 * @author gerkin
+	 * @param {Object} config Configuration object
+	 * @param {Boolean} [config.session = false] Set to true to use sessionStorage instead of localStorage
+	 */
 	constructor( config ) {
 		super( LocalStorageEntity );
 		_.defaults( config, {
@@ -929,9 +1025,20 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 		this.source = ( true === config.session ? sessionStorage : localStorage );
 	}
 
-	configureCollection( name, remap ) {
-		super.configureCollection( name, remap );
-		this.ensureCollectionExists( name );
+	/**
+	 * @method configureCollection
+	 * @description Create the collection index and call {@link Adapters.DiasporaAdapter.configureCollection}
+	 * @memberof Adapters.LocalStorageDiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param {String} tableName Name of the table (usually, model name)
+	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
+	 * @returns {undefined}
+	 */
+	configureCollection( tableName, remaps ) {
+		super.configureCollection( tableName, remaps );
+		this.ensureCollectionExists( tableName );
 	}
 
 	// -----
@@ -947,9 +1054,9 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {String} Generated unique id
 	 */
 	generateUUID() {
-		var d = new Date().getTime();
+		let d = new Date().getTime();
 		if ( 'undefined' !== typeof window && window.performance && 'function' === typeof window.performance.now ) {
-			d += performance.now(); //use high-precision timer if available
+			d += window.performance.now(); //use high-precision timer if available
 		}
 		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
 			const r = ( d + Math.random() * 16 ) % 16 | 0;
@@ -967,6 +1074,7 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table
+	 * @returns {String[]} Index of the collection
 	 */
 	ensureCollectionExists( table ) {
 		let index = this.source.getItem( table );
@@ -991,12 +1099,13 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @returns {Object[]} Set with options applied
 	 */
 	static applyOptionsToSet( set, options ) {
-		if ( options.hasOwnProperty( 'limit' )) {
-			if ( _.isInteger( options.limit )) {
-				set = set.slice( 0, options.limit );
-			} else {
-				ModelExtension.log.warn( `Trying to apply a non-integer limit "${ options.limit }".` );
-			}
+		_.defaults( options, {
+			limit: Infinity,
+			skip:  0,
+		});
+		set = set.slice( options.skip );
+		if ( set.length > options.limit ) {
+			set = set.slice( 0, options.limit );
 		}
 		return set;
 	}
@@ -1062,7 +1171,7 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 		entities = _.cloneDeep( entities );
 		try {
 			const tableIndex = this.ensureCollectionExists( table );
-			entities = entities.map(( entity = {}, i ) => {
+			entities = entities.map(( entity = {}) => {
 				entity.id = this.generateUUID();
 				this.setIdHash( entity );
 				tableIndex.push( entity.id );
@@ -1079,6 +1188,17 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	// -----
 	// ### Find
 
+	/**
+	 * @method findOneById
+	 * @description Find a single local storage entity using its id
+	 * @memberof Adapters.LocalStorageDiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param   {String} table Name of the collection to search entity in
+	 * @param   {String} id    Id of the entity to search
+	 * @returns {DataStoreEntities.LocalStorageEntity|undefined} Found entity, or undefined if not found
+	 */
 	findOneById( table, id ) {
 		const item = this.source.getItem( this.getItemName( table, id ));
 		if ( !_.isNil( item )) {
@@ -1126,14 +1246,6 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 		return Promise.resolve( !_.isNil( returnedItem ) ? new this.classEntity( returnedItem, this ) : undefined );
 	}
 
-
-	/*	findMany( table, queryFind, options = {}) {
-		this.ensureCollectionExists( table );
-		const matches = _.filter( storeTable.items, queryFind );
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity(entity, this )));
-	}*/
-
 	// -----
 	// ### Update
 
@@ -1168,16 +1280,6 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 			}
 		});
 	}
-
-	/* updateMany( table, queryFind, update, options ) {
-		this.ensureCollectionExists( table );
-		const matches = _.filter( storeTable.items, queryFind );
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-		_.forEach( reducedMatches, match => {
-			_.assign( match, update );
-		});
-		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity(entity, this )));
-	}*/
 
 	// -----
 	// ### Delete
@@ -1259,9 +1361,21 @@ const _ = require( 'lodash' );
  * @param {Object} source Hash containing properties to copy in this entity
  */
 class DataStoreEntity {
+	/**
+	 * @description Construct a new data source entity with specified content & parent
+	 * @constructs DataStoreEntity
+	 * @memberof DataStoreEntities
+	 * @public
+	 * @author gerkin
+	 * @param {Object} entity Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
+	 * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
+	 */
 	constructor( entity, dataSource ) {
 		if ( _.isNil( entity )) {
 			return undefined;
+		}
+		if ( _.isNil( dataSource )) {
+			throw new TypeError( `Expect 2nd argument to be the parent of this entity, have "${ dataSource }"` );
 		}
 		Object.defineProperties( this, {
 			dataSource: {
@@ -1384,7 +1498,7 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 			if ( false !== optIndex ) {
 				// Options to canonical
 				args[optIndex] = adapter.normalizeOptions( args[optIndex]);
-				// Query search to cannonical
+				// Remap input objects
 				if ( true === args[optIndex].remapInput ) {
 					args[0] = adapter.remapFields( table, args[0], false );
 
@@ -1392,12 +1506,16 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 						args[1] = adapter.remapFields( table, args[1], false );
 					}
 				}
+				// Query search to cannonical
 				args[0] = adapter.normalizeQuery( args[0], args[optIndex]);
 				args[optIndex].remapInput = false;
 			} else if ( 'insert' === queryType.query ) {
+				// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
 				if ( 'many' === queryType.number ) {
+					// If inserting *several* entities, map the array to remap each entity objects...
 					args[0] = _.map( args[0], insertion => adapter.remapFields( table, insertion, false ));
 				} else {
+					// ... or we are inserting a *single* one. We still need to remap entity.
 					args[0] = adapter.remapFields( table, args[0], false );
 				}
 			}

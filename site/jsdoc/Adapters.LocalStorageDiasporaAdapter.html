@@ -641,7 +641,7 @@ toc: false
             
 <hr>
 <dt>
-    <h4 class="name" id="configureCollection"><span class="type-signature"></span>configureCollection(tableName, remaps [, filters])</h4>
+    <h4 class="name" id="configureCollection"><span class="type-signature"></span>configureCollection(tableName, remaps)</h4>
     
     
 </dt>
@@ -649,7 +649,7 @@ toc: false
 
     
     <div class="description">
-        <p>Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models &amp; entities</p>
+        <p>Create the collection index and call Adapters.DiasporaAdapter.configureCollection</p>
     </div>
     
 
@@ -672,11 +672,7 @@ toc: false
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -702,19 +698,7 @@ toc: false
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last"><p>Name of the table (usually, model name)</p></td>
@@ -738,62 +722,10 @@ toc: false
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last"><p>Associative hash that links entity field names with data source field names</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>filters</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last"><p>Not used yet...</p></td>
         </tr>
 
     
@@ -811,16 +743,12 @@ toc: false
 	
 
 	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="Adapters.DiasporaAdapter.html#configureCollection">Adapters.DiasporaAdapter#configureCollection</a>
-			</li>
-		</ul>
-	</dd>
-	
 
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Adapters.DiasporaAdapter.html#configureCollection">Adapters.DiasporaAdapter#configureCollection</a>
+    </li></ul></dd>
     
 
     
@@ -1540,6 +1468,30 @@ toc: false
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Index of the collection</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;String></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
@@ -2052,6 +2004,192 @@ toc: false
     <dd>
         
 <span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="findOneById"><span class="type-signature"></span>findOneById(table, id)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Find a single local storage entity using its id</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>table</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of the collection to search entity in</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Id of the entity to search</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Found entity, or undefined if not found</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="DataStoreEntities.LocalStorageEntity.html">DataStoreEntities.LocalStorageEntity</a></span>
+|
+
+<span class="param-type">undefined</span>
 
 
 
@@ -4914,7 +5052,7 @@ toc: false
             
 <hr>
 <dt>
-    <h4 class="name" id="configureCollection"><span class="type-signature"></span>configureCollection(tableName, remaps [, filters])</h4>
+    <h4 class="name" id="configureCollection"><span class="type-signature"></span>configureCollection(tableName, remaps)</h4>
     
     
 </dt>
@@ -4922,7 +5060,7 @@ toc: false
 
     
     <div class="description">
-        <p>Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models &amp; entities</p>
+        <p>Create the collection index and call Adapters.DiasporaAdapter.configureCollection</p>
     </div>
     
 
@@ -4945,11 +5083,7 @@ toc: false
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -4975,19 +5109,7 @@ toc: false
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last"><p>Name of the table (usually, model name)</p></td>
@@ -5011,62 +5133,10 @@ toc: false
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last"><p>Associative hash that links entity field names with data source field names</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>filters</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last"><p>Not used yet...</p></td>
         </tr>
 
     
@@ -5084,16 +5154,12 @@ toc: false
 	
 
 	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="Adapters.DiasporaAdapter.html#configureCollection">Adapters.DiasporaAdapter#configureCollection</a>
-			</li>
-		</ul>
-	</dd>
-	
 
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Adapters.DiasporaAdapter.html#configureCollection">Adapters.DiasporaAdapter#configureCollection</a>
+    </li></ul></dd>
     
 
     
@@ -5813,6 +5879,30 @@ toc: false
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Index of the collection</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;String></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
@@ -6325,6 +6415,192 @@ toc: false
     <dd>
         
 <span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="findOneById"><span class="type-signature"></span>findOneById(table, id)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Find a single local storage entity using its id</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>table</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of the collection to search entity in</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Id of the entity to search</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Found entity, or undefined if not found</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="DataStoreEntities.LocalStorageEntity.html">DataStoreEntities.LocalStorageEntity</a></span>
+|
+
+<span class="param-type">undefined</span>
 
 
 
@@ -8595,7 +8871,7 @@ toc: false
 	<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 		
-		on 2017-10-02T16:35:13+02:00
+		on 2017-10-02T22:13:24+02:00
 		
 		using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 	</span>

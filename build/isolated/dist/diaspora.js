@@ -155,12 +155,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * @memberof Adapters
     * @public
     * @author gerkin
-    * @param {DataStoreEntity} classEntity Class used to spawn source entities
     */
 
 			var DiasporaAdapter = function (_SequentialEvent) {
 				_inherits(DiasporaAdapter, _SequentialEvent);
 
+				/**
+     * @description Create a new instance of adapter. This base class should be used by all other adapters.
+     * @constructs DiasporaAdapter
+     * @memberof Adapters
+     * @public
+     * @author gerkin
+     * @param {DataStoreEntities.DataStoreEntity} classEntity Entity spawned by this adapter.
+     */
 				function DiasporaAdapter(classEntity) {
 					_classCallCheck(this, DiasporaAdapter);
 
@@ -179,9 +186,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					return _this;
 				}
 
+				/**
+     * @method configureCollection
+     * @description Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities
+     * @memberof Adapters.DiasporaAdapter
+     * @public
+     * @instance
+     * @author gerkin
+     * @param {String} tableName Name of the table (usually, model name)
+     * @param {Object} remaps    Associative hash that links entity field names with data source field names
+     * @param {Object} [filters = {}]   Not used yet...
+     * @returns {undefined}
+     */
+
+
 				_createClass(DiasporaAdapter, [{
 					key: "configureCollection",
-					value: function configureCollection(tableName, remaps, filters) {
+					value: function configureCollection(tableName, remaps) {
+						var filters = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 						this.remaps[tableName] = remaps;
 						this.remapsInverted[tableName] = _.invert(remaps);
 						this.filters = filters || {};
@@ -189,23 +212,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					// -----
 					// ### Utils
-
-				}, {
-					key: "remapFields",
-					value: function remapFields(tableName, query) {
-						var invert = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-						var keysMap = (invert ? this.remapsInverted : this.remaps)[tableName];
-						if (_.isNil(keysMap)) {
-							return query;
-						}
-						return _.mapKeys(query, function (value, key) {
-							if (keysMap.hasOwnProperty(key)) {
-								return keysMap[key];
-							}
-							return key;
-						});
-					}
 
 					/**
       * @method waitReady
@@ -237,6 +243,36 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 
 					/**
+      * @method remapFields
+      * @description Cast entity field names to table field name, or the opposite.
+      * @memberof Adapters.DiasporaAdapter
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {String} tableName Name of the table we are remapping for
+      * @param   {Object} query Hash representing the raw query to remap
+      * @param   {Boolean} [invert = false] `false` to cast to `table` field names, `true` to cast to `entity` field name
+      * @returns {Object} Remapped object.
+      */
+
+				}, {
+					key: "remapFields",
+					value: function remapFields(tableName, query) {
+						var invert = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+						var keysMap = (invert ? this.remapsInverted : this.remaps)[tableName];
+						if (_.isNil(keysMap)) {
+							return query;
+						}
+						return _.mapKeys(query, function (value, key) {
+							if (keysMap.hasOwnProperty(key)) {
+								return keysMap[key];
+							}
+							return key;
+						});
+					}
+
+					/**
       * @method remapInput
       * @description TODO
       * @memberof Adapters.DiasporaAdapter
@@ -244,14 +280,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @see TODO remapping
-      * @param   {String} table  Name of the table for which we remap
+      * @param   {String} tableName  Name of the table for which we remap
       * @param   {Object} query Hash representing the entity to remap
       * @returns {Object} Remapped object
       */
 
 				}, {
 					key: "remapInput",
-					value: function remapInput(table, query) {
+					value: function remapInput(tableName, query) {
 						var _this3 = this;
 
 						if (_.isNil(query)) {
@@ -280,14 +316,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @see TODO remapping
-      * @param   {String} table  Name of the table for which we remap
+      * @param   {String} tableName  Name of the table for which we remap
       * @param   {Object} query Hash representing the entity to remap
       * @returns {Object} Remapped object
       */
 
 				}, {
 					key: "remapOutput",
-					value: function remapOutput(table, query) {
+					value: function remapOutput(tableName, query) {
 						var _this4 = this;
 
 						if (_.isNil(query)) {
@@ -385,6 +421,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						});
 						return matchResult;
 					}
+
+					/**
+      * @method applyUpdateEntity
+      * @description Merge update query with the entity. This operation allows to delete fields.
+      * @memberof Adapters.DiasporaAdapter
+      * @public
+      * @instance
+      * @param {Object} update Hash representing modified values. A field with an `undefined` value deletes this field from the entity
+      * @param {Object} entity Entity to update
+      * @returns {Object} Entity modified
+      */
+
 				}, {
 					key: "applyUpdateEntity",
 					value: function applyUpdateEntity(update, entity) {
@@ -395,6 +443,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								entity[key] = val;
 							}
 						});
+						return entity;
 					}
 
 					/**
@@ -460,6 +509,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						});
 						return opts;
 					}
+
+					/**
+      * @method normalizeQuery
+      * @description Transform a search query to its canonical form, replacing aliases or shorthands by full query.
+      * @memberof Adapters.DiasporaAdapter
+      * @public
+      * @instance
+      * @param {QueryLanguage.SelectQueryOrCondition} originalQuery Query to cast to its canonical form
+      * @param {QueryLanguage.Options} options       Options for this query
+      * @returns {QueryLanguage.SelectQueryOrCondition} Query in its canonical form
+      */
+
 				}, {
 					key: "normalizeQuery",
 					value: function normalizeQuery(originalQuery, options) {
@@ -472,7 +533,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							'>': '$greater',
 							'>=': '$greaterEqual'
 						};
-						var normalizedQuery = true === options.remapInput ? _(_.cloneDeep(originalQuery)).mapValues(function (attrSearch, attrName) {
+						var normalizedQuery = true === options.remapInput ? _(_.cloneDeep(originalQuery)).mapValues(function (attrSearch) {
 							if (!(!_.isNil(attrSearch) && attrSearch instanceof Object)) {
 								if (!_.isNil(attrSearch)) {
 									return {
@@ -788,6 +849,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 		}, { "bluebird": "bluebird", "lodash": "lodash", "sequential-event": "sequential-event" }], 3: [function (require, module, exports) {
 			'use strict';
 
+			/* globals window: false */
+
 			var _ = require('lodash');
 			var Promise = require('bluebird');
 			var DiasporaAdapter = require('./baseAdapter.js');
@@ -807,7 +870,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var InMemoryDiasporaAdapter = function (_DiasporaAdapter) {
 				_inherits(InMemoryDiasporaAdapter, _DiasporaAdapter);
 
-				function InMemoryDiasporaAdapter(config) {
+				/**
+     * @description Create a new instance of in memory adapter
+     * @constructs InMemoryDiasporaAdapter
+     * @memberof Adapters
+     * @public
+     * @author gerkin
+     */
+				function InMemoryDiasporaAdapter() {
 					_classCallCheck(this, InMemoryDiasporaAdapter);
 
 					var _this9 = _possibleConstructorReturn(this, (InMemoryDiasporaAdapter.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this, InMemoryEntity));
@@ -817,11 +887,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					return _this9;
 				}
 
+				/**
+     * @method configureCollection
+     * @description Create the data store and call {@link Adapters.DiasporaAdapter.configureCollection}
+     * @memberof Adapters.InMemoryDiasporaAdapter
+     * @public
+     * @instance
+     * @author gerkin
+     * @param {String} tableName Name of the table (usually, model name)
+     * @param {Object} remaps    Associative hash that links entity field names with data source field names
+     * @returns {undefined}
+     */
+
+
 				_createClass(InMemoryDiasporaAdapter, [{
 					key: "configureCollection",
-					value: function configureCollection(name, remap) {
-						_get(InMemoryDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter.prototype), "configureCollection", this).call(this, name, remap);
-						this.ensureCollectionExists(name);
+					value: function configureCollection(tableName, remaps) {
+						_get(InMemoryDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter.prototype), "configureCollection", this).call(this, tableName, remaps);
+						this.ensureCollectionExists(tableName);
 					}
 
 					// -----
@@ -843,7 +926,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var d = new Date().getTime();
 						// Use high-precision timer if available
 						if ('undefined' !== typeof window && window.performance && 'function' === typeof window.performance.now) {
-							d += performance.now();
+							d += window.performance.now();
 						}
 						var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
 							var r = (d + Math.random() * 16) % 16 | 0;
@@ -994,13 +1077,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "updateOne",
 					value: function updateOne(table, queryFind, update) {
+						var _this11 = this;
+
 						var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
-						var storeTable = this.ensureCollectionExists(table);
-						var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
-						var firstMatch = _.first(matches);
-						this.applyUpdateEntity(update, firstMatch);
-						return Promise.resolve(new this.classEntity(firstMatch));
+						return this.findOne(table, queryFind, options).then(function (found) {
+							if (!_.isNil(found)) {
+								var storeTable = _this11.ensureCollectionExists(table);
+								var match = _.find(storeTable.items, {
+									id: found.id
+								});
+								_this11.applyUpdateEntity(update, match);
+								return Promise.resolve(new _this11.classEntity(match, _this11));
+							} else {
+								return Promise.resolve();
+							}
+						});
 					}
 
 					/**
@@ -1021,19 +1113,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "updateMany",
 					value: function updateMany(table, queryFind, update) {
-						var _this11 = this;
+						var _this12 = this;
 
 						var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
-						var storeTable = this.ensureCollectionExists(table);
-						var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
-						var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
-						_.forEach(reducedMatches, function (match) {
-							_this11.applyUpdateEntity(update, match);
+						return this.findMany(table, queryFind, options).then(function (found) {
+							if (!_.isNil(found) && found.length > 0) {
+								var storeTable = _this12.ensureCollectionExists(table);
+								var foundIds = _.map(found, 'id');
+								var matches = _.filter(storeTable.items, function (item) {
+									return -1 !== foundIds.indexOf(item.id);
+								});
+								return Promise.resolve(_.map(matches, function (item) {
+									_this12.applyUpdateEntity(update, item);
+									return new _this12.classEntity(item, _this12);
+								}));
+							} else {
+								return Promise.resolve();
+							}
 						});
-						return Promise.resolve(_.map(reducedMatches, function (entity) {
-							return new _this11.classEntity(entity, _this11);
-						}));
 					}
 
 					// -----
@@ -1056,14 +1154,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "deleteOne",
 					value: function deleteOne(table, queryFind) {
-						var _this12 = this;
+						var _this13 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 						var storeTable = this.ensureCollectionExists(table);
 						return this.findOne(table, queryFind, options).then(function (entityToDelete) {
 							storeTable.items = _.reject(storeTable.items, function (entity) {
-								return entity.id === entityToDelete.idHash[_this12.name];
+								return entity.id === entityToDelete.idHash[_this13.name];
 							});
 							return Promise.resolve();
 						});
@@ -1086,14 +1184,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "deleteMany",
 					value: function deleteMany(table, queryFind) {
-						var _this13 = this;
+						var _this14 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 						var storeTable = this.ensureCollectionExists(table);
 						return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
 							var entitiesIds = _.map(entitiesToDelete, function (entity) {
-								return _.get(entity, "idHash." + _this13.name);
+								return _.get(entity, "idHash." + _this14.name);
 							});
 							storeTable.items = _.reject(storeTable.items, function (entity) {
 								return _.includes(entitiesIds, entity.id);
@@ -1123,6 +1221,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 		}, { "../dataStoreEntities/inMemoryEntity.js": 6, "./baseAdapter.js": 2, "bluebird": "bluebird", "lodash": "lodash" }], 4: [function (require, module, exports) {
 			'use strict';
 
+			/* globals localStorage: false, sessionStorage: false, window: false */
+
 			var _ = require('lodash');
 			var Promise = require('bluebird');
 			var DiasporaAdapter = require('./baseAdapter.js');
@@ -1143,24 +1243,46 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var LocalStorageDiasporaAdapter = function (_DiasporaAdapter2) {
 				_inherits(LocalStorageDiasporaAdapter, _DiasporaAdapter2);
 
+				/**
+     * @description Create a new instance of local storage adapter
+     * @constructs LocalStorageDiasporaAdapter
+     * @memberof Adapters
+     * @public
+     * @author gerkin
+     * @param {Object} config Configuration object
+     * @param {Boolean} [config.session = false] Set to true to use sessionStorage instead of localStorage
+     */
 				function LocalStorageDiasporaAdapter(config) {
 					_classCallCheck(this, LocalStorageDiasporaAdapter);
 
-					var _this14 = _possibleConstructorReturn(this, (LocalStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter)).call(this, LocalStorageEntity));
+					var _this15 = _possibleConstructorReturn(this, (LocalStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter)).call(this, LocalStorageEntity));
 
 					_.defaults(config, {
 						session: false
 					});
-					_this14.state = 'ready';
-					_this14.source = true === config.session ? sessionStorage : localStorage;
-					return _this14;
+					_this15.state = 'ready';
+					_this15.source = true === config.session ? sessionStorage : localStorage;
+					return _this15;
 				}
+
+				/**
+     * @method configureCollection
+     * @description Create the collection index and call {@link Adapters.DiasporaAdapter.configureCollection}
+     * @memberof Adapters.LocalStorageDiasporaAdapter
+     * @public
+     * @instance
+     * @author gerkin
+     * @param {String} tableName Name of the table (usually, model name)
+     * @param {Object} remaps    Associative hash that links entity field names with data source field names
+     * @returns {undefined}
+     */
+
 
 				_createClass(LocalStorageDiasporaAdapter, [{
 					key: "configureCollection",
-					value: function configureCollection(name, remap) {
-						_get(LocalStorageDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter.prototype), "configureCollection", this).call(this, name, remap);
-						this.ensureCollectionExists(name);
+					value: function configureCollection(tableName, remaps) {
+						_get(LocalStorageDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter.prototype), "configureCollection", this).call(this, tableName, remaps);
+						this.ensureCollectionExists(tableName);
 					}
 
 					// -----
@@ -1181,7 +1303,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function generateUUID() {
 						var d = new Date().getTime();
 						if ('undefined' !== typeof window && window.performance && 'function' === typeof window.performance.now) {
-							d += performance.now(); //use high-precision timer if available
+							d += window.performance.now(); //use high-precision timer if available
 						}
 						var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
 							var r = (d + Math.random() * 16) % 16 | 0;
@@ -1199,6 +1321,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @param   {String} table  Name of the table
+      * @returns {String[]} Index of the collection
       */
 
 				}, {
@@ -1294,20 +1417,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "insertMany",
 					value: function insertMany(table, entities) {
-						var _this15 = this;
+						var _this16 = this;
 
 						entities = _.cloneDeep(entities);
 						try {
 							var tableIndex = this.ensureCollectionExists(table);
 							entities = entities.map(function () {
 								var entity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-								var i = arguments[1];
 
-								entity.id = _this15.generateUUID();
-								_this15.setIdHash(entity);
+								entity.id = _this16.generateUUID();
+								_this16.setIdHash(entity);
 								tableIndex.push(entity.id);
-								_this15.source.setItem(_this15.getItemName(table, entity.id), JSON.stringify(entity));
-								return new _this15.classEntity(entity, _this15);
+								_this16.source.setItem(_this16.getItemName(table, entity.id), JSON.stringify(entity));
+								return new _this16.classEntity(entity, _this16);
 							});
 							this.source.setItem(table, JSON.stringify(tableIndex));
 						} catch (error) {
@@ -1318,6 +1440,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					// -----
 					// ### Find
+
+					/**
+      * @method findOneById
+      * @description Find a single local storage entity using its id
+      * @memberof Adapters.LocalStorageDiasporaAdapter
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {String} table Name of the collection to search entity in
+      * @param   {String} id    Id of the entity to search
+      * @returns {DataStoreEntities.LocalStorageEntity|undefined} Found entity, or undefined if not found
+      */
 
 				}, {
 					key: "findOneById",
@@ -1346,7 +1480,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "findOne",
 					value: function findOne(table, queryFind) {
-						var _this16 = this;
+						var _this17 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -1362,8 +1496,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var returnedItem = void 0;
 						var matched = 0;
 						_.each(items, function (itemId) {
-							var item = JSON.parse(_this16.source.getItem(_this16.getItemName(table, itemId)));
-							if (_this16.matchEntity(queryFind, item)) {
+							var item = JSON.parse(_this17.source.getItem(_this17.getItemName(table, itemId)));
+							if (_this17.matchEntity(queryFind, item)) {
 								matched++;
 								// If we matched enough items
 								if (matched > options.skip) {
@@ -1374,13 +1508,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						});
 						return Promise.resolve(!_.isNil(returnedItem) ? new this.classEntity(returnedItem, this) : undefined);
 					}
-
-					/*	findMany( table, queryFind, options = {}) {
-     	this.ensureCollectionExists( table );
-     	const matches = _.filter( storeTable.items, queryFind );
-     	const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-     	return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity(entity, this )));
-     }*/
 
 					// -----
 					// ### Update
@@ -1403,7 +1530,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "updateOne",
 					value: function updateOne(table, queryFind, update, options) {
-						var _this17 = this;
+						var _this18 = this;
 
 						_.defaults(options, {
 							skip: 0
@@ -1412,25 +1539,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isNil(entity)) {
 								return Promise.resolve();
 							}
-							_this17.applyUpdateEntity(update, entity);
+							_this18.applyUpdateEntity(update, entity);
 							try {
-								_this17.source.setItem(_this17.getItemName(table, entity.id), JSON.stringify(entity));
+								_this18.source.setItem(_this18.getItemName(table, entity.id), JSON.stringify(entity));
 								return Promise.resolve(entity);
 							} catch (error) {
 								return Promise.reject(error);
 							}
 						});
 					}
-
-					/* updateMany( table, queryFind, update, options ) {
-     	this.ensureCollectionExists( table );
-     	const matches = _.filter( storeTable.items, queryFind );
-     	const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-     	_.forEach( reducedMatches, match => {
-     		_.assign( match, update );
-     	});
-     	return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity(entity, this )));
-     }*/
 
 					// -----
 					// ### Delete
@@ -1452,16 +1569,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "deleteOne",
 					value: function deleteOne(table, queryFind) {
-						var _this18 = this;
+						var _this19 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 						return this.findOne(table, queryFind, options).then(function (entityToDelete) {
 							try {
-								var tableIndex = _this18.ensureCollectionExists(table);
+								var tableIndex = _this19.ensureCollectionExists(table);
 								_.pull(tableIndex, entityToDelete.id);
-								_this18.source.setItem(table, JSON.stringify(tableIndex));
-								_this18.source.removeItem(_this18.getItemName(table, entityToDelete.id));
+								_this19.source.setItem(table, JSON.stringify(tableIndex));
+								_this19.source.removeItem(_this19.getItemName(table, entityToDelete.id));
 							} catch (error) {
 								return Promise.reject(error);
 							}
@@ -1486,17 +1603,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "deleteMany",
 					value: function deleteMany(table, queryFind) {
-						var _this19 = this;
+						var _this20 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 						try {
 							return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
-								var tableIndex = _this19.ensureCollectionExists(table);
+								var tableIndex = _this20.ensureCollectionExists(table);
 								_.pullAll(tableIndex, _.map(entitiesToDelete, 'id'));
-								_this19.source.setItem(table, JSON.stringify(tableIndex));
+								_this20.source.setItem(table, JSON.stringify(tableIndex));
 								_.forEach(entitiesToDelete, function (entityToDelete) {
-									_this19.source.removeItem(_this19.getItemName(table, entityToDelete.id));
+									_this20.source.removeItem(_this20.getItemName(table, entityToDelete.id));
 								});
 								return Promise.resolve();
 							});
@@ -1507,12 +1624,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}], [{
 					key: "applyOptionsToSet",
 					value: function applyOptionsToSet(set, options) {
-						if (options.hasOwnProperty('limit')) {
-							if (_.isInteger(options.limit)) {
-								set = set.slice(0, options.limit);
-							} else {
-								ModelExtension.log.warn("Trying to apply a non-integer limit \"" + options.limit + "\".");
-							}
+						_.defaults(options, {
+							limit: Infinity,
+							skip: 0
+						});
+						set = set.slice(options.skip);
+						if (set.length > options.limit) {
+							set = set.slice(0, options.limit);
 						}
 						return set;
 					}
@@ -1541,11 +1659,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     */
 
 			var DataStoreEntity = function () {
+				/**
+     * @description Construct a new data source entity with specified content & parent
+     * @constructs DataStoreEntity
+     * @memberof DataStoreEntities
+     * @public
+     * @author gerkin
+     * @param {Object} entity Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
+     * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
+     */
 				function DataStoreEntity(entity, dataSource) {
 					_classCallCheck(this, DataStoreEntity);
 
 					if (_.isNil(entity)) {
 						return undefined;
+					}
+					if (_.isNil(dataSource)) {
+						throw new TypeError("Expect 2nd argument to be the parent of this entity, have \"" + dataSource + "\"");
 					}
 					Object.defineProperties(this, {
 						dataSource: {
@@ -1689,7 +1819,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						if (false !== optIndex) {
 							// Options to canonical
 							args[optIndex] = adapter.normalizeOptions(args[optIndex]);
-							// Query search to cannonical
+							// Remap input objects
 							if (true === args[optIndex].remapInput) {
 								args[0] = adapter.remapFields(table, args[0], false);
 
@@ -1697,14 +1827,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 									args[1] = adapter.remapFields(table, args[1], false);
 								}
 							}
+							// Query search to cannonical
 							args[0] = adapter.normalizeQuery(args[0], args[optIndex]);
 							args[optIndex].remapInput = false;
 						} else if ('insert' === queryType.query) {
+							// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
 							if ('many' === queryType.number) {
+								// If inserting *several* entities, map the array to remap each entity objects...
 								args[0] = _.map(args[0], function (insertion) {
 									return adapter.remapFields(table, insertion, false);
 								});
 							} else {
+								// ... or we are inserting a *single* one. We still need to remap entity.
 								args[0] = adapter.remapFields(table, args[0], false);
 							}
 						}
@@ -1743,11 +1877,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @returns {Error[]} Array of errors
      */
 				check: function check(entity, modelDesc) {
-					var _this22 = this;
+					var _this23 = this;
 
 					// Apply method `checkField` on each field described
 					return _(modelDesc).mapValues(function (fieldDesc, field) {
-						return _this22.checkField.call(_this22, entity[field], fieldDesc, [field]);
+						return _this23.checkField.call(_this23, entity[field], fieldDesc, [field]);
 					}).values().flatten().compact().value();
 				},
 
@@ -1764,7 +1898,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @returns {Error[]} Array of errors
      */
 				checkField: function checkField(value, fieldDesc, keys) {
-					var _this23 = this;
+					var _this24 = this;
 
 					if (!_.isObject(fieldDesc)) {
 						return;
@@ -1845,7 +1979,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 											errors.push(keys.join('.') + " expected to be a " + fieldDesc.type);
 										} else {
 											var deepTest = _.isObject(fieldDesc.attributes) ? _(value).mapValues(function (propVal, propName) {
-												return _this23.checkField(propVal, fieldDesc.attributes[propName], cloneKeysAdd(keys, propName));
+												return _this24.checkField(propVal, fieldDesc.attributes[propName], cloneKeysAdd(keys, propName));
 											}).values().flatten().compact().value() : [];
 											if (deepTest.length !== 0) {
 												errors = errors.concat(deepTest);
@@ -1861,7 +1995,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 											var _deepTest = _.isObject(fieldDesc.of) ? _(value).map(function (propVal, propName) {
 												if (_.isArrayLike(fieldDesc.of)) {
 													var subErrors = _(fieldDesc.of).map(function (desc) {
-														return _this23.checkField(propVal, desc, cloneKeysAdd(keys, propName));
+														return _this24.checkField(propVal, desc, cloneKeysAdd(keys, propName));
 													});
 													if (!_.find(subErrors, function (v) {
 														return 0 === v.length;
@@ -1869,7 +2003,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 														return subErrors;
 													}
 												} else {
-													return _this23.checkField(propVal, fieldDesc.of, cloneKeysAdd(keys, propName));
+													return _this24.checkField(propVal, fieldDesc.of, cloneKeysAdd(keys, propName));
 												}
 											}).flatten().compact().value() : [];
 											if (_deepTest.length !== 0) {
@@ -1921,11 +2055,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @returns {Object} Entity merged with default values
      */
 				default: function _default(entity, modelDesc) {
-					var _this24 = this;
+					var _this25 = this;
 
 					// Apply method `defaultField` on each field described
 					return _.defaults(entity, _.mapValues(modelDesc, function (fieldDesc, field) {
-						return _this24.defaultField(entity[field], fieldDesc);
+						return _this25.defaultField(entity[field], fieldDesc);
 					}));
 				},
 
@@ -2161,7 +2295,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						},
 						persist: {
 							value: function persist(sourceName) {
-								var _this25 = this;
+								var _this26 = this;
 
 								var dataSource = this.model.getDataSource(sourceName);
 								var promise = void 0;
@@ -2177,13 +2311,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 									state = 'sync';
 									entityDefined.dataSources[dataSource.name] = dataStoreEntity;
 									attributes = dataStoreEntity.toObject();
-									return Promise.resolve(_this25);
+									return Promise.resolve(_this26);
 								});
 							}
 						},
 						fetch: {
 							value: function fetch(sourceName) {
-								var _this26 = this;
+								var _this27 = this;
 
 								var dataSource = this.model.getDataSource(sourceName);
 								var promise = void 0;
@@ -2199,13 +2333,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 									state = 'sync';
 									entityDefined.dataSources[dataSource.name] = dataStoreEntity;
 									attributes = dataStoreEntity.toObject();
-									return Promise.resolve(_this26);
+									return Promise.resolve(_this27);
 								});
 							}
 						},
 						destroy: {
 							value: function destroy(sourceName) {
-								var _this27 = this;
+								var _this28 = this;
 
 								var dataSource = this.model.getDataSource(sourceName);
 								var promise = void 0;
@@ -2226,7 +2360,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 									}
 									entityDefined.dataSources[dataSource.name] = undefined;
 									dataStoreEntity = null;
-									return Promise.resolve(_this27);
+									return Promise.resolve(_this28);
 								});
 							}
 						},
@@ -2404,31 +2538,31 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "spawnMulti",
 					value: function spawnMulti(sources) {
-						var _this28 = this;
+						var _this29 = this;
 
 						return _.map(sources, function (source) {
-							return _this28.spawn(source);
+							return _this29.spawn(source);
 						});
 					}
 				}, {
 					key: "insert",
 					value: function insert(source, dataSourceName) {
-						var _this29 = this;
+						var _this30 = this;
 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.insertOne(this.name, source).then(function (entity) {
-							return Promise.resolve(new _this29.entityFactory(entity));
+							return Promise.resolve(new _this30.entityFactory(entity));
 						});
 					}
 				}, {
 					key: "insertMany",
 					value: function insertMany(sources, dataSourceName) {
-						var _this30 = this;
+						var _this31 = this;
 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.insertMany(this.name, sources).then(function (entities) {
 							return Promise.resolve(_.map(entities, function (entity) {
-								return new _this30.entityFactory(entity);
+								return new _this31.entityFactory(entity);
 							}));
 						});
 					}
@@ -2437,7 +2571,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function find() {
 						var queryFind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-						var _this31 = this;
+						var _this32 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
@@ -2455,7 +2589,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isNil(dataSourceEntity)) {
 								return Promise.resolve();
 							}
-							var newEntity = new _this31.entityFactory(dataSourceEntity);
+							var newEntity = new _this32.entityFactory(dataSourceEntity);
 							newEntity.dataSources[dataSource.name] = dataSourceEntity;
 							return Promise.resolve(newEntity);
 						});
@@ -2465,7 +2599,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function findMany() {
 						var queryFind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-						var _this32 = this;
+						var _this33 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
@@ -2481,7 +2615,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.findMany(this.name, queryFind, options).then(function (dataSourceEntities) {
 							var entities = _.map(dataSourceEntities, function (dataSourceEntity) {
-								var newEntity = new _this32.entityFactory(dataSourceEntity);
+								var newEntity = new _this33.entityFactory(dataSourceEntity);
 								newEntity.dataSources[dataSource.name] = dataSourceEntity;
 								return newEntity;
 							});
@@ -2491,7 +2625,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "update",
 					value: function update(queryFind, _update) {
-						var _this33 = this;
+						var _this34 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 						var dataSourceName = arguments[3];
@@ -2505,14 +2639,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isNil(dataSourceEntity)) {
 								return Promise.resolve();
 							}
-							var newEntity = new _this33.entityFactory(dataSourceEntity);
+							var newEntity = new _this34.entityFactory(dataSourceEntity);
 							return Promise.resolve(newEntity);
 						});
 					}
 				}, {
 					key: "updateMany",
 					value: function updateMany(queryFind, update) {
-						var _this34 = this;
+						var _this35 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 						var dataSourceName = arguments[3];
@@ -2524,7 +2658,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.updateMany(this.name, queryFind, update, options).then(function (dataSourceEntities) {
 							var entities = _.map(dataSourceEntities, function (dataSourceEntity) {
-								var newEntity = new _this34.entityFactory(dataSourceEntity);
+								var newEntity = new _this35.entityFactory(dataSourceEntity);
 								return newEntity;
 							});
 							return Promise.resolve(entities);

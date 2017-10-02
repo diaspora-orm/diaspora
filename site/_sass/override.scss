@@ -898,6 +898,9 @@ p, .highlight{
 		color: #8c8c8c;
 		margin-right: 15px;
 	}
+	& > *:last-child {
+		margin-bottom: 0;
+	}
 }
 button, a.btn, nav#header > div > ul > li > a {
 	background: #AF0011;
@@ -1370,6 +1373,14 @@ table td > table{
 	margin-right: -13px;
 	width: auto;
 	margin-bottom: -11px;
+}
+code{
+	background-color: rgba(20,20,20, 0.1);
+	padding: 1px 3px;
+}
+.highlight code {
+	background-color: transparent;
+	padding: 0;
 }
 
 .pilwrap {

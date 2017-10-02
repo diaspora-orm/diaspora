@@ -73,10 +73,27 @@
  * @memberof Adapters
  * @public
  * @author gerkin
- * @param {DataStoreEntity} classEntity Class used to spawn source entities
- */var DiasporaAdapter=function(_SequentialEvent){_inherits(DiasporaAdapter,_SequentialEvent);function DiasporaAdapter(classEntity){_classCallCheck(this,DiasporaAdapter);var _this=_possibleConstructorReturn(this,(DiasporaAdapter.__proto__||Object.getPrototypeOf(DiasporaAdapter)).call(this));_this.remaps={};_this.remapsInverted={};_this.filters={};_this.classEntity=classEntity;_this.on('ready',function(){_this.state='ready';}).on('error',function(err){_this.state='error';_this.error=err;});return _this;}_createClass(DiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps,filters){this.remaps[tableName]=remaps;this.remapsInverted[tableName]=_.invert(remaps);this.filters=filters||{};}// -----
+ */var DiasporaAdapter=function(_SequentialEvent){_inherits(DiasporaAdapter,_SequentialEvent);/**
+	 * @description Create a new instance of adapter. This base class should be used by all other adapters.
+	 * @constructs DiasporaAdapter
+	 * @memberof Adapters
+	 * @public
+	 * @author gerkin
+	 * @param {DataStoreEntities.DataStoreEntity} classEntity Entity spawned by this adapter.
+	 */function DiasporaAdapter(classEntity){_classCallCheck(this,DiasporaAdapter);var _this=_possibleConstructorReturn(this,(DiasporaAdapter.__proto__||Object.getPrototypeOf(DiasporaAdapter)).call(this));_this.remaps={};_this.remapsInverted={};_this.filters={};_this.classEntity=classEntity;_this.on('ready',function(){_this.state='ready';}).on('error',function(err){_this.state='error';_this.error=err;});return _this;}/**
+	 * @method configureCollection
+	 * @description Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities
+	 * @memberof Adapters.DiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param {String} tableName Name of the table (usually, model name)
+	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
+	 * @param {Object} [filters = {}]   Not used yet...
+	 * @returns {undefined}
+	 */_createClass(DiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps){var filters=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};this.remaps[tableName]=remaps;this.remapsInverted[tableName]=_.invert(remaps);this.filters=filters||{};}// -----
 // ### Utils
-},{key:"remapFields",value:function remapFields(tableName,query){var invert=arguments.length>2&&arguments[2]!==undefined?arguments[2]:false;var keysMap=(invert?this.remapsInverted:this.remaps)[tableName];if(_.isNil(keysMap)){return query;}return _.mapKeys(query,function(value,key){if(keysMap.hasOwnProperty(key)){return keysMap[key];}return key;});}/**
+/**
 	 * @method waitReady
 	 * @description Returns a promise resolved once adapter state is ready
 	 * @memberof Adapters.DiasporaAdapter
@@ -85,6 +102,17 @@
 	 * @author gerkin
 	 * @returns {Promise} Promise resolved when adapter is ready, and rejected if an error occured
 	 */},{key:"waitReady",value:function waitReady(){var _this2=this;return new Promise(function(resolve,reject){if('ready'===_this2.state){return resolve(_this2);}else if('error'===_this2.state){return reject(_this2.error);}_this2.on('ready',function(){return resolve(_this2);}).on('error',function(err){return reject(err);});});}/**
+	 * @method remapFields
+	 * @description Cast entity field names to table field name, or the opposite.
+	 * @memberof Adapters.DiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param   {String} tableName Name of the table we are remapping for
+	 * @param   {Object} query Hash representing the raw query to remap
+	 * @param   {Boolean} [invert = false] `false` to cast to `table` field names, `true` to cast to `entity` field name
+	 * @returns {Object} Remapped object.
+	 */},{key:"remapFields",value:function remapFields(tableName,query){var invert=arguments.length>2&&arguments[2]!==undefined?arguments[2]:false;var keysMap=(invert?this.remapsInverted:this.remaps)[tableName];if(_.isNil(keysMap)){return query;}return _.mapKeys(query,function(value,key){if(keysMap.hasOwnProperty(key)){return keysMap[key];}return key;});}/**
 	 * @method remapInput
 	 * @description TODO
 	 * @memberof Adapters.DiasporaAdapter
@@ -92,10 +120,10 @@
 	 * @instance
 	 * @author gerkin
 	 * @see TODO remapping
-	 * @param   {String} table  Name of the table for which we remap
+	 * @param   {String} tableName  Name of the table for which we remap
 	 * @param   {Object} query Hash representing the entity to remap
 	 * @returns {Object} Remapped object
-	 */},{key:"remapInput",value:function remapInput(table,query){var _this3=this;if(_.isNil(query)){return query;}var filtered=_.mapValues(query,function(value,key){if(_this3.filters.input.hasOwnProperty(key)){return _this3.filters.input[key](value);}return value;});var remaped=_.mapKeys(filtered,function(value,key){if(_this3.remaps.hasOwnProperty(key)){return _this3.remaps[key];}return key;});return remaped;}/**
+	 */},{key:"remapInput",value:function remapInput(tableName,query){var _this3=this;if(_.isNil(query)){return query;}var filtered=_.mapValues(query,function(value,key){if(_this3.filters.input.hasOwnProperty(key)){return _this3.filters.input[key](value);}return value;});var remaped=_.mapKeys(filtered,function(value,key){if(_this3.remaps.hasOwnProperty(key)){return _this3.remaps[key];}return key;});return remaped;}/**
 	 * @method remapOutput
 	 * @description TODO
 	 * @memberof Adapters.DiasporaAdapter
@@ -103,10 +131,10 @@
 	 * @instance
 	 * @author gerkin
 	 * @see TODO remapping
-	 * @param   {String} table  Name of the table for which we remap
+	 * @param   {String} tableName  Name of the table for which we remap
 	 * @param   {Object} query Hash representing the entity to remap
 	 * @returns {Object} Remapped object
-	 */},{key:"remapOutput",value:function remapOutput(table,query){var _this4=this;if(_.isNil(query)){return query;}var filtered=_.mapValues(query,function(value,key){if(_this4.filters.output.hasOwnProperty(key)){return _this4.filters.output[key](value);}return value;});var remaped=_.mapKeys(filtered,function(value,key){if(_this4.remapsInverted.hasOwnProperty(key)){return _this4.remapsInverted[key];}return key;});return remaped;}/**
+	 */},{key:"remapOutput",value:function remapOutput(tableName,query){var _this4=this;if(_.isNil(query)){return query;}var filtered=_.mapValues(query,function(value,key){if(_this4.filters.output.hasOwnProperty(key)){return _this4.filters.output[key](value);}return value;});var remaped=_.mapKeys(filtered,function(value,key){if(_this4.remapsInverted.hasOwnProperty(key)){return _this4.remapsInverted[key];}return key;});return remaped;}/**
 	 * Refresh the `idHash` with current adapter's `id` injected
 	 * @param   {Object}   entity          Object containing attributes of the entity
 	 * @param   {String} propName = 'id' Name of the `id` field
@@ -116,7 +144,16 @@
 	 * @param   {QueryLanguage.SelectQuery} query  Query to match against
 	 * @param   {Object} entity Entity to test
 	 * @returns {Boolean}  `true` if query matches, `false` otherwise
-	 */},{key:"matchEntity",value:function matchEntity(query,entity){var matchResult=_.every(_.toPairs(query),function(_ref){var _ref2=_slicedToArray(_ref,2),key=_ref2[0],desc=_ref2[1];if(_.isObject(desc)){var entityVal=entity[key];return _.every(desc,function(val,operation){switch(operation){case'$exists':{return val===!_.isUndefined(entityVal);}case'$equal':{return!_.isUndefined(entityVal)&&entityVal===val;}case'$diff':{return!_.isUndefined(entityVal)&&entityVal!==val;}case'$less':{return!_.isUndefined(entityVal)&&entityVal<val;}case'$lessEqual':{return!_.isUndefined(entityVal)&&entityVal<=val;}case'$greater':{return!_.isUndefined(entityVal)&&entityVal>val;}case'$greaterEqual':{return!_.isUndefined(entityVal)&&entityVal>=val;}}return false;});}return false;});return matchResult;}},{key:"applyUpdateEntity",value:function applyUpdateEntity(update,entity){_.forEach(update,function(val,key){if(_.isUndefined(val)){delete entity[key];}else{entity[key]=val;}});}/**
+	 */},{key:"matchEntity",value:function matchEntity(query,entity){var matchResult=_.every(_.toPairs(query),function(_ref){var _ref2=_slicedToArray(_ref,2),key=_ref2[0],desc=_ref2[1];if(_.isObject(desc)){var entityVal=entity[key];return _.every(desc,function(val,operation){switch(operation){case'$exists':{return val===!_.isUndefined(entityVal);}case'$equal':{return!_.isUndefined(entityVal)&&entityVal===val;}case'$diff':{return!_.isUndefined(entityVal)&&entityVal!==val;}case'$less':{return!_.isUndefined(entityVal)&&entityVal<val;}case'$lessEqual':{return!_.isUndefined(entityVal)&&entityVal<=val;}case'$greater':{return!_.isUndefined(entityVal)&&entityVal>val;}case'$greaterEqual':{return!_.isUndefined(entityVal)&&entityVal>=val;}}return false;});}return false;});return matchResult;}/**
+	 * @method applyUpdateEntity
+	 * @description Merge update query with the entity. This operation allows to delete fields.
+	 * @memberof Adapters.DiasporaAdapter
+	 * @public
+	 * @instance
+	 * @param {Object} update Hash representing modified values. A field with an `undefined` value deletes this field from the entity
+	 * @param {Object} entity Entity to update
+	 * @returns {Object} Entity modified
+	 */},{key:"applyUpdateEntity",value:function applyUpdateEntity(update,entity){_.forEach(update,function(val,key){if(_.isUndefined(val)){delete entity[key];}else{entity[key]=val;}});return entity;}/**
 	 * @method normalizeOptions
 	 * @description Transform options to their canonical form. This function must be applied before calling adapters' methods
 	 * @throws {TypeError} Thrown if an option does not have an acceptable type
@@ -124,7 +161,16 @@
 	 * @throws {Error} Thrown when there isn't more precise description of the error is available (eg. when conflicts occurs) 
 	 * @param   {Object}   [opts={}] Options to transform
 	 * @returns {Object} Transformed options (also called `canonical options`)
-	 */},{key:"normalizeOptions",value:function normalizeOptions(){var opts=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};opts=_.cloneDeep(opts);if(opts.hasOwnProperty('limit')){var limitOpt=opts.limit;if(_.isString(limitOpt)){limitOpt=parseInt(limitOpt);}if(!(_.isInteger(limitOpt)||Infinity===limitOpt)||limitOpt<0){throw new TypeError("Expect \"options.limit\" to be an integer equal to or above 0, have "+limitOpt);}opts.limit=limitOpt;}if(opts.hasOwnProperty('skip')){var skipOpt=opts.skip;if(_.isString(skipOpt)){skipOpt=parseInt(skipOpt);}if(!_.isInteger(skipOpt)||skipOpt<0||!isFinite(skipOpt)){throw new TypeError("Expect \"options.skip\" to be a finite integer equal to or above 0, have "+skipOpt);}opts.skip=skipOpt;}if(opts.hasOwnProperty('page')){if(!opts.hasOwnProperty('limit')){throw new ReferenceError('Usage of "options.page" requires "options.limit" to be defined.');}if(!isFinite(opts.limit)){throw new ReferenceError('Usage of "options.page" requires "options.limit" to not be infinite');}if(opts.hasOwnProperty('skip')){throw new Error('Use either "options.page" or "options.skip"');}var pageOpt=opts.page;if(_.isString(pageOpt)){pageOpt=parseInt(pageOpt);}if(!_.isInteger(pageOpt)||pageOpt<0){throw new TypeError("Expect \"options.page\" to be an integer equal to or above 0, have "+pageOpt);}opts.skip=pageOpt*opts.limit;delete opts.page;}_.defaults(opts,{skip:0,remapInput:true,remapOutput:true});return opts;}},{key:"normalizeQuery",value:function normalizeQuery(originalQuery,options){var canonicalOperations={'~':'$exists','==':'$equal','!=':'$diff','<':'$less','<=':'$lessEqual','>':'$greater','>=':'$greaterEqual'};var normalizedQuery=true===options.remapInput?_(_.cloneDeep(originalQuery)).mapValues(function(attrSearch,attrName){if(!(!_.isNil(attrSearch)&&attrSearch instanceof Object)){if(!_.isNil(attrSearch)){return{$equal:attrSearch};}else{return{$exists:false};}}else{// Replace operations alias by canonical expressions
+	 */},{key:"normalizeOptions",value:function normalizeOptions(){var opts=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};opts=_.cloneDeep(opts);if(opts.hasOwnProperty('limit')){var limitOpt=opts.limit;if(_.isString(limitOpt)){limitOpt=parseInt(limitOpt);}if(!(_.isInteger(limitOpt)||Infinity===limitOpt)||limitOpt<0){throw new TypeError("Expect \"options.limit\" to be an integer equal to or above 0, have "+limitOpt);}opts.limit=limitOpt;}if(opts.hasOwnProperty('skip')){var skipOpt=opts.skip;if(_.isString(skipOpt)){skipOpt=parseInt(skipOpt);}if(!_.isInteger(skipOpt)||skipOpt<0||!isFinite(skipOpt)){throw new TypeError("Expect \"options.skip\" to be a finite integer equal to or above 0, have "+skipOpt);}opts.skip=skipOpt;}if(opts.hasOwnProperty('page')){if(!opts.hasOwnProperty('limit')){throw new ReferenceError('Usage of "options.page" requires "options.limit" to be defined.');}if(!isFinite(opts.limit)){throw new ReferenceError('Usage of "options.page" requires "options.limit" to not be infinite');}if(opts.hasOwnProperty('skip')){throw new Error('Use either "options.page" or "options.skip"');}var pageOpt=opts.page;if(_.isString(pageOpt)){pageOpt=parseInt(pageOpt);}if(!_.isInteger(pageOpt)||pageOpt<0){throw new TypeError("Expect \"options.page\" to be an integer equal to or above 0, have "+pageOpt);}opts.skip=pageOpt*opts.limit;delete opts.page;}_.defaults(opts,{skip:0,remapInput:true,remapOutput:true});return opts;}/**
+	 * @method normalizeQuery
+	 * @description Transform a search query to its canonical form, replacing aliases or shorthands by full query.
+	 * @memberof Adapters.DiasporaAdapter
+	 * @public
+	 * @instance
+	 * @param {QueryLanguage.SelectQueryOrCondition} originalQuery Query to cast to its canonical form
+	 * @param {QueryLanguage.Options} options       Options for this query
+	 * @returns {QueryLanguage.SelectQueryOrCondition} Query in its canonical form
+	 */},{key:"normalizeQuery",value:function normalizeQuery(originalQuery,options){var canonicalOperations={'~':'$exists','==':'$equal','!=':'$diff','<':'$less','<=':'$lessEqual','>':'$greater','>=':'$greaterEqual'};var normalizedQuery=true===options.remapInput?_(_.cloneDeep(originalQuery)).mapValues(function(attrSearch){if(!(!_.isNil(attrSearch)&&attrSearch instanceof Object)){if(!_.isNil(attrSearch)){return{$equal:attrSearch};}else{return{$exists:false};}}else{// Replace operations alias by canonical expressions
 _.forEach(canonicalOperations,function(canon,alias){// If the currently checked alias is in the search hash...
 if(attrSearch.hasOwnProperty(alias)){// ... check for conflict with canonical operation name...
 if(attrSearch.hasOwnProperty(canon)){throw new Error("Search can't have both \""+alias+"\" and \""+canon+"\" keys, as they are synonyms");}else{// ... and replace alias by canonical
@@ -252,7 +298,7 @@ if(_.isNil(found)){return Promise.resolve();// Else, if this is a value and not 
 }// If we found enough items, return them
 if(count===options.limit){return Promise.resolve();}// Increase our counter
 count++;// Do the deletion & loop
-return _this8.deleteOne(table,queryFind,options).then(loopFind);});};return loopFind(true);}}]);return DiasporaAdapter;}(SequentialEvent);module.exports=DiasporaAdapter;},{"bluebird":11,"lodash":13,"sequential-event":15}],3:[function(require,module,exports){'use strict';var _=require('lodash');var Promise=require('bluebird');var DiasporaAdapter=require('./baseAdapter.js');var InMemoryEntity=require('../dataStoreEntities/inMemoryEntity.js');/**
+return _this8.deleteOne(table,queryFind,options).then(loopFind);});};return loopFind(true);}}]);return DiasporaAdapter;}(SequentialEvent);module.exports=DiasporaAdapter;},{"bluebird":11,"lodash":13,"sequential-event":15}],3:[function(require,module,exports){'use strict';/* globals window: false */var _=require('lodash');var Promise=require('bluebird');var DiasporaAdapter=require('./baseAdapter.js');var InMemoryEntity=require('../dataStoreEntities/inMemoryEntity.js');/**
  * @class InMemoryDiasporaAdapter
  * @classdesc This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS
  * @extends Adapters.DiasporaAdapter
@@ -261,7 +307,23 @@ return _this8.deleteOne(table,queryFind,options).then(loopFind);});};return loop
  * @public
  * @author gerkin
  * @param {Object} [config] Options hash. Currently, this adapter does not have any options
- */var InMemoryDiasporaAdapter=function(_DiasporaAdapter){_inherits(InMemoryDiasporaAdapter,_DiasporaAdapter);function InMemoryDiasporaAdapter(config){_classCallCheck(this,InMemoryDiasporaAdapter);var _this9=_possibleConstructorReturn(this,(InMemoryDiasporaAdapter.__proto__||Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this,InMemoryEntity));_this9.state='ready';_this9.store={};return _this9;}_createClass(InMemoryDiasporaAdapter,[{key:"configureCollection",value:function configureCollection(name,remap){_get(InMemoryDiasporaAdapter.prototype.__proto__||Object.getPrototypeOf(InMemoryDiasporaAdapter.prototype),"configureCollection",this).call(this,name,remap);this.ensureCollectionExists(name);}// -----
+ */var InMemoryDiasporaAdapter=function(_DiasporaAdapter){_inherits(InMemoryDiasporaAdapter,_DiasporaAdapter);/**
+	 * @description Create a new instance of in memory adapter
+	 * @constructs InMemoryDiasporaAdapter
+	 * @memberof Adapters
+	 * @public
+	 * @author gerkin
+	 */function InMemoryDiasporaAdapter(){_classCallCheck(this,InMemoryDiasporaAdapter);var _this9=_possibleConstructorReturn(this,(InMemoryDiasporaAdapter.__proto__||Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this,InMemoryEntity));_this9.state='ready';_this9.store={};return _this9;}/**
+	 * @method configureCollection
+	 * @description Create the data store and call {@link Adapters.DiasporaAdapter.configureCollection}
+	 * @memberof Adapters.InMemoryDiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param {String} tableName Name of the table (usually, model name)
+	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
+	 * @returns {undefined}
+	 */_createClass(InMemoryDiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps){_get(InMemoryDiasporaAdapter.prototype.__proto__||Object.getPrototypeOf(InMemoryDiasporaAdapter.prototype),"configureCollection",this).call(this,tableName,remaps);this.ensureCollectionExists(tableName);}// -----
 // ### Utils
 /**
 	 * @method generateUUID
@@ -272,7 +334,7 @@ return _this8.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 	 * @author gerkin
 	 * @returns {String} Generated unique id
 	 */},{key:"generateUUID",value:function generateUUID(){var d=new Date().getTime();// Use high-precision timer if available
-if('undefined'!==typeof window&&window.performance&&'function'===typeof window.performance.now){d+=performance.now();}var uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=(d+Math.random()*16)%16|0;d=Math.floor(d/16);return('x'===c?r:r&0x3|0x8).toString(16);});return uuid;}/**
+if('undefined'!==typeof window&&window.performance&&'function'===typeof window.performance.now){d+=window.performance.now();}var uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=(d+Math.random()*16)%16|0;d=Math.floor(d/16);return('x'===c?r:r&0x3|0x8).toString(16);});return uuid;}/**
 	 * @method ensureCollectionExists
 	 * @description Get or create the store hash
 	 * @memberof Adapters.InMemoryDiasporaAdapter
@@ -345,7 +407,7 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
 	 * @param   {Object} update Object properties to set
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`)
-	 */},{key:"updateOne",value:function updateOne(table,queryFind,update){var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};var storeTable=this.ensureCollectionExists(table);var matches=_.filter(storeTable.items,_.partial(this.matchEntity,queryFind));var firstMatch=_.first(matches);this.applyUpdateEntity(update,firstMatch);return Promise.resolve(new this.classEntity(firstMatch));}/**
+	 */},{key:"updateOne",value:function updateOne(table,queryFind,update){var _this11=this;var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};return this.findOne(table,queryFind,options).then(function(found){if(!_.isNil(found)){var storeTable=_this11.ensureCollectionExists(table);var match=_.find(storeTable.items,{id:found.id});_this11.applyUpdateEntity(update,match);return Promise.resolve(new _this11.classEntity(match,_this11));}else{return Promise.resolve();}});}/**
 	 * @method updateMany
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
 	 * @description Update several entities in the memory.
@@ -358,7 +420,7 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
 	 * @param   {Object} update Object properties to set
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`)
-	 */},{key:"updateMany",value:function updateMany(table,queryFind,update){var _this11=this;var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};var storeTable=this.ensureCollectionExists(table);var matches=_.filter(storeTable.items,_.partial(this.matchEntity,queryFind));var reducedMatches=this.constructor.applyOptionsToSet(matches,options);_.forEach(reducedMatches,function(match){_this11.applyUpdateEntity(update,match);});return Promise.resolve(_.map(reducedMatches,function(entity){return new _this11.classEntity(entity,_this11);}));}// -----
+	 */},{key:"updateMany",value:function updateMany(table,queryFind,update){var _this12=this;var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};return this.findMany(table,queryFind,options).then(function(found){if(!_.isNil(found)&&found.length>0){var storeTable=_this12.ensureCollectionExists(table);var foundIds=_.map(found,'id');var matches=_.filter(storeTable.items,function(item){return-1!==foundIds.indexOf(item.id);});return Promise.resolve(_.map(matches,function(item){_this12.applyUpdateEntity(update,item);return new _this12.classEntity(item,_this12);}));}else{return Promise.resolve();}});}// -----
 // ### Delete
 /**
 	 * @method deleteOne
@@ -372,7 +434,7 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
 	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*)
-	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this12=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findOne(table,queryFind,options).then(function(entityToDelete){storeTable.items=_.reject(storeTable.items,function(entity){return entity.id===entityToDelete.idHash[_this12.name];});return Promise.resolve();});}/**
+	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this13=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findOne(table,queryFind,options).then(function(entityToDelete){storeTable.items=_.reject(storeTable.items,function(entity){return entity.id===entityToDelete.idHash[_this13.name];});return Promise.resolve();});}/**
 	 * @method deleteMany
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
 	 * @description Delete several entities from the memory.
@@ -384,7 +446,7 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
 	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
-	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this13=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var entitiesIds=_.map(entitiesToDelete,function(entity){return _.get(entity,"idHash."+_this13.name);});storeTable.items=_.reject(storeTable.items,function(entity){return _.includes(entitiesIds,entity.id);});return Promise.resolve();});}}],[{key:"applyOptionsToSet",value:function applyOptionsToSet(set,options){_.defaults(options,{limit:Infinity,skip:0});set=set.slice(options.skip);if(set.length>options.limit){set=set.slice(0,options.limit);}return set;}}]);return InMemoryDiasporaAdapter;}(DiasporaAdapter);module.exports=InMemoryDiasporaAdapter;},{"../dataStoreEntities/inMemoryEntity.js":6,"./baseAdapter.js":2,"bluebird":11,"lodash":13}],4:[function(require,module,exports){'use strict';var _=require('lodash');var Promise=require('bluebird');var DiasporaAdapter=require('./baseAdapter.js');var LocalStorageEntity=require('../dataStoreEntities/localStorageEntity.js');/**
+	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this14=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var entitiesIds=_.map(entitiesToDelete,function(entity){return _.get(entity,"idHash."+_this14.name);});storeTable.items=_.reject(storeTable.items,function(entity){return _.includes(entitiesIds,entity.id);});return Promise.resolve();});}}],[{key:"applyOptionsToSet",value:function applyOptionsToSet(set,options){_.defaults(options,{limit:Infinity,skip:0});set=set.slice(options.skip);if(set.length>options.limit){set=set.slice(0,options.limit);}return set;}}]);return InMemoryDiasporaAdapter;}(DiasporaAdapter);module.exports=InMemoryDiasporaAdapter;},{"../dataStoreEntities/inMemoryEntity.js":6,"./baseAdapter.js":2,"bluebird":11,"lodash":13}],4:[function(require,module,exports){'use strict';/* globals localStorage: false, sessionStorage: false, window: false */var _=require('lodash');var Promise=require('bluebird');var DiasporaAdapter=require('./baseAdapter.js');var LocalStorageEntity=require('../dataStoreEntities/localStorageEntity.js');/**
  * @class LocalStorageDiasporaAdapter
  * @classdesc This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser
  * @extends Adapters.DiasporaAdapter
@@ -394,7 +456,25 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
  * @author gerkin
  * @param {Object} [config] Options hash.
  * @param {Boolean} config.session=false If `false`, data source will use local storage. If `true`, it will use session storage.
- */var LocalStorageDiasporaAdapter=function(_DiasporaAdapter2){_inherits(LocalStorageDiasporaAdapter,_DiasporaAdapter2);function LocalStorageDiasporaAdapter(config){_classCallCheck(this,LocalStorageDiasporaAdapter);var _this14=_possibleConstructorReturn(this,(LocalStorageDiasporaAdapter.__proto__||Object.getPrototypeOf(LocalStorageDiasporaAdapter)).call(this,LocalStorageEntity));_.defaults(config,{session:false});_this14.state='ready';_this14.source=true===config.session?sessionStorage:localStorage;return _this14;}_createClass(LocalStorageDiasporaAdapter,[{key:"configureCollection",value:function configureCollection(name,remap){_get(LocalStorageDiasporaAdapter.prototype.__proto__||Object.getPrototypeOf(LocalStorageDiasporaAdapter.prototype),"configureCollection",this).call(this,name,remap);this.ensureCollectionExists(name);}// -----
+ */var LocalStorageDiasporaAdapter=function(_DiasporaAdapter2){_inherits(LocalStorageDiasporaAdapter,_DiasporaAdapter2);/**
+	 * @description Create a new instance of local storage adapter
+	 * @constructs LocalStorageDiasporaAdapter
+	 * @memberof Adapters
+	 * @public
+	 * @author gerkin
+	 * @param {Object} config Configuration object
+	 * @param {Boolean} [config.session = false] Set to true to use sessionStorage instead of localStorage
+	 */function LocalStorageDiasporaAdapter(config){_classCallCheck(this,LocalStorageDiasporaAdapter);var _this15=_possibleConstructorReturn(this,(LocalStorageDiasporaAdapter.__proto__||Object.getPrototypeOf(LocalStorageDiasporaAdapter)).call(this,LocalStorageEntity));_.defaults(config,{session:false});_this15.state='ready';_this15.source=true===config.session?sessionStorage:localStorage;return _this15;}/**
+	 * @method configureCollection
+	 * @description Create the collection index and call {@link Adapters.DiasporaAdapter.configureCollection}
+	 * @memberof Adapters.LocalStorageDiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param {String} tableName Name of the table (usually, model name)
+	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
+	 * @returns {undefined}
+	 */_createClass(LocalStorageDiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps){_get(LocalStorageDiasporaAdapter.prototype.__proto__||Object.getPrototypeOf(LocalStorageDiasporaAdapter.prototype),"configureCollection",this).call(this,tableName,remaps);this.ensureCollectionExists(tableName);}// -----
 // ### Utils
 /**
 	 * @method generateUUID
@@ -404,7 +484,7 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
 	 * @instance
 	 * @author gerkin
 	 * @returns {String} Generated unique id
-	 */},{key:"generateUUID",value:function generateUUID(){var d=new Date().getTime();if('undefined'!==typeof window&&window.performance&&'function'===typeof window.performance.now){d+=performance.now();//use high-precision timer if available
+	 */},{key:"generateUUID",value:function generateUUID(){var d=new Date().getTime();if('undefined'!==typeof window&&window.performance&&'function'===typeof window.performance.now){d+=window.performance.now();//use high-precision timer if available
 }var uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=(d+Math.random()*16)%16|0;d=Math.floor(d/16);return('x'===c?r:r&0x3|0x8).toString(16);});return uuid;}/**
 	 * @method ensureCollectionExists
 	 * @description Create the table key if it does not exist
@@ -413,6 +493,7 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table
+	 * @returns {String[]} Index of the collection
 	 */},{key:"ensureCollectionExists",value:function ensureCollectionExists(table){var index=this.source.getItem(table);if(_.isNil(index)){index=[];this.source.setItem(table,JSON.stringify(index));}else{index=JSON.parse(index);}return index;}/**
 	 * @method applyOptionsToSet
 	 * @description Reduce, offset or sort provided set
@@ -457,9 +538,19 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
 	 * @param   {String} table  Name of the table to insert data in
 	 * @param   {Object[]} entities Array of hashes representing entities to insert
 	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link LocalStorageEntity[Ø]}* `entities`)
-	 */},{key:"insertMany",value:function insertMany(table,entities){var _this15=this;entities=_.cloneDeep(entities);try{var tableIndex=this.ensureCollectionExists(table);entities=entities.map(function(){var entity=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var i=arguments[1];entity.id=_this15.generateUUID();_this15.setIdHash(entity);tableIndex.push(entity.id);_this15.source.setItem(_this15.getItemName(table,entity.id),JSON.stringify(entity));return new _this15.classEntity(entity,_this15);});this.source.setItem(table,JSON.stringify(tableIndex));}catch(error){return Promise.reject(error);}return Promise.resolve(entities);}// -----
+	 */},{key:"insertMany",value:function insertMany(table,entities){var _this16=this;entities=_.cloneDeep(entities);try{var tableIndex=this.ensureCollectionExists(table);entities=entities.map(function(){var entity=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};entity.id=_this16.generateUUID();_this16.setIdHash(entity);tableIndex.push(entity.id);_this16.source.setItem(_this16.getItemName(table,entity.id),JSON.stringify(entity));return new _this16.classEntity(entity,_this16);});this.source.setItem(table,JSON.stringify(tableIndex));}catch(error){return Promise.reject(error);}return Promise.resolve(entities);}// -----
 // ### Find
-},{key:"findOneById",value:function findOneById(table,id){var item=this.source.getItem(this.getItemName(table,id));if(!_.isNil(item)){return Promise.resolve(new this.classEntity(JSON.parse(item),this));}return Promise.resolve();}/**
+/**
+	 * @method findOneById
+	 * @description Find a single local storage entity using its id
+	 * @memberof Adapters.LocalStorageDiasporaAdapter
+	 * @public
+	 * @instance
+	 * @author gerkin
+	 * @param   {String} table Name of the collection to search entity in
+	 * @param   {String} id    Id of the entity to search
+	 * @returns {DataStoreEntities.LocalStorageEntity|undefined} Found entity, or undefined if not found
+	 */},{key:"findOneById",value:function findOneById(table,id){var item=this.source.getItem(this.getItemName(table,id));if(!_.isNil(item)){return Promise.resolve(new this.classEntity(JSON.parse(item),this));}return Promise.resolve();}/**
 	 * @method findOne
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
 	 * @description Retrieve a single entity from the local storage.
@@ -471,13 +562,8 @@ if('undefined'!==typeof window&&window.performance&&'function'===typeof window.p
 	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
-	 */},{key:"findOne",value:function findOne(table,queryFind){var _this16=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};_.defaults(options,{skip:0});if(!_.isObject(queryFind)){return this.findOneById(table,queryFind);}else if(_.isEqual(_.keys(queryFind),['id'])&&_.isEqual(_.keys(queryFind.id),['$equal'])){return this.findOneById(table,queryFind.id.$equal);}var items=this.ensureCollectionExists(table);var returnedItem=void 0;var matched=0;_.each(items,function(itemId){var item=JSON.parse(_this16.source.getItem(_this16.getItemName(table,itemId)));if(_this16.matchEntity(queryFind,item)){matched++;// If we matched enough items
-if(matched>options.skip){returnedItem=item;return false;}}});return Promise.resolve(!_.isNil(returnedItem)?new this.classEntity(returnedItem,this):undefined);}/*	findMany( table, queryFind, options = {}) {
-		this.ensureCollectionExists( table );
-		const matches = _.filter( storeTable.items, queryFind );
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity(entity, this )));
-	}*/// -----
+	 */},{key:"findOne",value:function findOne(table,queryFind){var _this17=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};_.defaults(options,{skip:0});if(!_.isObject(queryFind)){return this.findOneById(table,queryFind);}else if(_.isEqual(_.keys(queryFind),['id'])&&_.isEqual(_.keys(queryFind.id),['$equal'])){return this.findOneById(table,queryFind.id.$equal);}var items=this.ensureCollectionExists(table);var returnedItem=void 0;var matched=0;_.each(items,function(itemId){var item=JSON.parse(_this17.source.getItem(_this17.getItemName(table,itemId)));if(_this17.matchEntity(queryFind,item)){matched++;// If we matched enough items
+if(matched>options.skip){returnedItem=item;return false;}}});return Promise.resolve(!_.isNil(returnedItem)?new this.classEntity(returnedItem,this):undefined);}// -----
 // ### Update
 /**
 	 * @method updateOne
@@ -492,15 +578,7 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 	 * @param   {Object} update Object properties to set
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link LocalStorageEntity}* `entity`)
-	 */},{key:"updateOne",value:function updateOne(table,queryFind,update,options){var _this17=this;_.defaults(options,{skip:0});return this.findOne(table,queryFind,options).then(function(entity){if(_.isNil(entity)){return Promise.resolve();}_this17.applyUpdateEntity(update,entity);try{_this17.source.setItem(_this17.getItemName(table,entity.id),JSON.stringify(entity));return Promise.resolve(entity);}catch(error){return Promise.reject(error);}});}/* updateMany( table, queryFind, update, options ) {
-		this.ensureCollectionExists( table );
-		const matches = _.filter( storeTable.items, queryFind );
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-		_.forEach( reducedMatches, match => {
-			_.assign( match, update );
-		});
-		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity(entity, this )));
-	}*/// -----
+	 */},{key:"updateOne",value:function updateOne(table,queryFind,update,options){var _this18=this;_.defaults(options,{skip:0});return this.findOne(table,queryFind,options).then(function(entity){if(_.isNil(entity)){return Promise.resolve();}_this18.applyUpdateEntity(update,entity);try{_this18.source.setItem(_this18.getItemName(table,entity.id),JSON.stringify(entity));return Promise.resolve(entity);}catch(error){return Promise.reject(error);}});}// -----
 // ### Delete
 /**
 	 * @method deleteOne
@@ -514,7 +592,7 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*)
-	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this18=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};return this.findOne(table,queryFind,options).then(function(entityToDelete){try{var tableIndex=_this18.ensureCollectionExists(table);_.pull(tableIndex,entityToDelete.id);_this18.source.setItem(table,JSON.stringify(tableIndex));_this18.source.removeItem(_this18.getItemName(table,entityToDelete.id));}catch(error){return Promise.reject(error);}return Promise.resolve();});}/**
+	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this19=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};return this.findOne(table,queryFind,options).then(function(entityToDelete){try{var tableIndex=_this19.ensureCollectionExists(table);_.pull(tableIndex,entityToDelete.id);_this19.source.setItem(table,JSON.stringify(tableIndex));_this19.source.removeItem(_this19.getItemName(table,entityToDelete.id));}catch(error){return Promise.reject(error);}return Promise.resolve();});}/**
 	 * @method deleteMany
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
 	 * @description Delete several entities from the local storage.
@@ -526,7 +604,7 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
 	 * @param   {QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
-	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this19=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};try{return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var tableIndex=_this19.ensureCollectionExists(table);_.pullAll(tableIndex,_.map(entitiesToDelete,'id'));_this19.source.setItem(table,JSON.stringify(tableIndex));_.forEach(entitiesToDelete,function(entityToDelete){_this19.source.removeItem(_this19.getItemName(table,entityToDelete.id));});return Promise.resolve();});}catch(error){return Promise.reject(error);}}}],[{key:"applyOptionsToSet",value:function applyOptionsToSet(set,options){if(options.hasOwnProperty('limit')){if(_.isInteger(options.limit)){set=set.slice(0,options.limit);}else{ModelExtension.log.warn("Trying to apply a non-integer limit \""+options.limit+"\".");}}return set;}}]);return LocalStorageDiasporaAdapter;}(DiasporaAdapter);module.exports=LocalStorageDiasporaAdapter;},{"../dataStoreEntities/localStorageEntity.js":7,"./baseAdapter.js":2,"bluebird":11,"lodash":13}],5:[function(require,module,exports){'use strict';var _=require('lodash');/**
+	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this20=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};try{return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var tableIndex=_this20.ensureCollectionExists(table);_.pullAll(tableIndex,_.map(entitiesToDelete,'id'));_this20.source.setItem(table,JSON.stringify(tableIndex));_.forEach(entitiesToDelete,function(entityToDelete){_this20.source.removeItem(_this20.getItemName(table,entityToDelete.id));});return Promise.resolve();});}catch(error){return Promise.reject(error);}}}],[{key:"applyOptionsToSet",value:function applyOptionsToSet(set,options){_.defaults(options,{limit:Infinity,skip:0});set=set.slice(options.skip);if(set.length>options.limit){set=set.slice(0,options.limit);}return set;}}]);return LocalStorageDiasporaAdapter;}(DiasporaAdapter);module.exports=LocalStorageDiasporaAdapter;},{"../dataStoreEntities/localStorageEntity.js":7,"./baseAdapter.js":2,"bluebird":11,"lodash":13}],5:[function(require,module,exports){'use strict';var _=require('lodash');/**
  * @namespace DataStoreEntities
  *//**
  * @class DataStoreEntity
@@ -535,7 +613,15 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
  * @public
  * @author gerkin
  * @param {Object} source Hash containing properties to copy in this entity
- */var DataStoreEntity=function(){function DataStoreEntity(entity,dataSource){_classCallCheck(this,DataStoreEntity);if(_.isNil(entity)){return undefined;}Object.defineProperties(this,{dataSource:{value:dataSource,enumerable:false,configurable:false}});_.assign(this,entity);}_createClass(DataStoreEntity,[{key:"toObject",value:function toObject(){return _.omit(this,['dataSource','id']);}}]);return DataStoreEntity;}();module.exports=DataStoreEntity;},{"lodash":13}],6:[function(require,module,exports){'use strict';var DataStoreEntity=require('./baseEntity.js');/**
+ */var DataStoreEntity=function(){/**
+	 * @description Construct a new data source entity with specified content & parent
+	 * @constructs DataStoreEntity
+	 * @memberof DataStoreEntities
+	 * @public
+	 * @author gerkin
+	 * @param {Object} entity Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
+	 * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
+	 */function DataStoreEntity(entity,dataSource){_classCallCheck(this,DataStoreEntity);if(_.isNil(entity)){return undefined;}if(_.isNil(dataSource)){throw new TypeError("Expect 2nd argument to be the parent of this entity, have \""+dataSource+"\"");}Object.defineProperties(this,{dataSource:{value:dataSource,enumerable:false,configurable:false}});_.assign(this,entity);}_createClass(DataStoreEntity,[{key:"toObject",value:function toObject(){return _.omit(this,['dataSource','id']);}}]);return DataStoreEntity;}();module.exports=DataStoreEntity;},{"lodash":13}],6:[function(require,module,exports){'use strict';var DataStoreEntity=require('./baseEntity.js');/**
  * @class InMemoryEntity
  * @classdesc Entity stored in {@link InMemoryDiasporaAdapter the in-memory adapter}.
  * @extends DataStoreEntity
@@ -569,8 +655,12 @@ var optIndex=false;var upd=false;if(['find','delete'].indexOf(queryType.query)>=
 optIndex=1;}else if('update'===queryType.query){// For update, options are 4th argument (so 3nd item in `args`), and `upd` flag is toggled on.
 optIndex=2;upd=true;}try{//console.log('Before query transformed', args[0]);
 if(false!==optIndex){// Options to canonical
-args[optIndex]=adapter.normalizeOptions(args[optIndex]);// Query search to cannonical
-if(true===args[optIndex].remapInput){args[0]=adapter.remapFields(table,args[0],false);if(true===upd){args[1]=adapter.remapFields(table,args[1],false);}}args[0]=adapter.normalizeQuery(args[0],args[optIndex]);args[optIndex].remapInput=false;}else if('insert'===queryType.query){if('many'===queryType.number){args[0]=_.map(args[0],function(insertion){return adapter.remapFields(table,insertion,false);});}else{args[0]=adapter.remapFields(table,args[0],false);}}//console.log('Query transformed:', args[0]);
+args[optIndex]=adapter.normalizeOptions(args[optIndex]);// Remap input objects
+if(true===args[optIndex].remapInput){args[0]=adapter.remapFields(table,args[0],false);if(true===upd){args[1]=adapter.remapFields(table,args[1],false);}}// Query search to cannonical
+args[0]=adapter.normalizeQuery(args[0],args[optIndex]);args[optIndex].remapInput=false;}else if('insert'===queryType.query){// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
+if('many'===queryType.number){// If inserting *several* entities, map the array to remap each entity objects...
+args[0]=_.map(args[0],function(insertion){return adapter.remapFields(table,insertion,false);});}else{// ... or we are inserting a *single* one. We still need to remap entity.
+args[0]=adapter.remapFields(table,args[0],false);}}//console.log('Query transformed:', args[0]);
 }catch(err){return Promise.reject(err);}// Hook after promise resolution
 var queryPromise=callback.call.apply(callback,[adapter,table].concat(args));return queryPromise.then(function(results){if(_.isArrayLike(results)){results=_.map(results,filterResults);}else if(!_.isNil(results)){results=filterResults(results);}return Promise.resolve(results);});};};/**
  * Diaspora main namespace
@@ -586,8 +676,8 @@ var queryPromise=callback.call.apply(callback,[adapter,table].concat(args));retu
 	 * @param   {Object} entity    Entity to check
 	 * @param   {module:ModelExtension.ModelPrototype} modelDesc Model description
 	 * @returns {Error[]} Array of errors
-	 */check:function check(entity,modelDesc){var _this22=this;// Apply method `checkField` on each field described
-return _(modelDesc).mapValues(function(fieldDesc,field){return _this22.checkField.call(_this22,entity[field],fieldDesc,[field]);}).values().flatten().compact().value();},/**
+	 */check:function check(entity,modelDesc){var _this23=this;// Apply method `checkField` on each field described
+return _(modelDesc).mapValues(function(fieldDesc,field){return _this23.checkField.call(_this23,entity[field],fieldDesc,[field]);}).values().flatten().compact().value();},/**
 	 * @function checkField
 	 * @description Check if the value matches the field description provided, thus verify if it is valid
 	 * @memberof Diaspora
@@ -597,7 +687,7 @@ return _(modelDesc).mapValues(function(fieldDesc,field){return _this22.checkFiel
 	 * @param {module:ModelExtension.FieldDescriptor} fieldDesc Description of the field to check with
 	 * @param {String[]} keys Array of keys from highest ancestor to this property
 	 * @returns {Error[]} Array of errors
-	 */checkField:function checkField(value,fieldDesc,keys){var _this23=this;if(!_.isObject(fieldDesc)){return;}_.defaults(fieldDesc,{required:false});var errors=[];// It the field has a `validate` property, try to use it
+	 */checkField:function checkField(value,fieldDesc,keys){var _this24=this;if(!_.isObject(fieldDesc)){return;}_.defaults(fieldDesc,{required:false});var errors=[];// It the field has a `validate` property, try to use it
 if(fieldDesc.validate){if(!fieldDesc.validate.call(this,value,fieldDesc)){errors.push(keys.join('.')+" custom validation failed");}}// Check the type and the required status
 if(!_.isNil(fieldDesc.type)&&!_.isNil(fieldDesc.model)){errors.push(keys.join('.')+" spec can't have both a type and a model");}else{// Apply the `required` modifier
 var tester=c;if(fieldDesc.required!==true){tester=c.maybe;}if(!_.isNil(fieldDesc.model)){var model=false;if(_.isString(fieldDesc.model)){/*if ( _.has( collections, fieldDesc.model )) {
@@ -605,7 +695,7 @@ var tester=c;if(fieldDesc.required!==true){tester=c.maybe;}if(!_.isNil(fieldDesc
 					} else {*/errors.push(keys.join('.')+" spec \"model\" string does not match with any registered model");//					}
 //				} else if ( c.instance( Backbone.RelationalModel, fieldDesc.model )) {
 //					model = fieldDesc.model;
-}else{errors.push(keys.join('.')+" spec \"model\" must be either a string or a Backbone.RelationalModel instance");}if(model){if(!tester.instance(value,model)){errors.push(keys.join('.')+" expected to be a "+model.modelName);}}}else if(_.isString(fieldDesc.type)){switch(fieldDesc.type){case'string':{if(!tester.string(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}}break;case'integer':{if(!tester.integer(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}}break;case'float':{if(!tester.number(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}}break;case'date':{if(!tester.date(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}}break;case'object':{if(!tester.object(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}else{var deepTest=_.isObject(fieldDesc.attributes)?_(value).mapValues(function(propVal,propName){return _this23.checkField(propVal,fieldDesc.attributes[propName],cloneKeysAdd(keys,propName));}).values().flatten().compact().value():[];if(deepTest.length!==0){errors=errors.concat(deepTest);}}}break;case'array':{if(!tester.array(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}else{var _deepTest=_.isObject(fieldDesc.of)?_(value).map(function(propVal,propName){if(_.isArrayLike(fieldDesc.of)){var subErrors=_(fieldDesc.of).map(function(desc){return _this23.checkField(propVal,desc,cloneKeysAdd(keys,propName));});if(!_.find(subErrors,function(v){return 0===v.length;})){return subErrors;}}else{return _this23.checkField(propVal,fieldDesc.of,cloneKeysAdd(keys,propName));}}).flatten().compact().value():[];if(_deepTest.length!==0){errors=errors.concat(_deepTest);}}}break;case'any':{if(!tester.assigned(value)){errors.push(keys.join('.')+" expected to be assigned with any type");}}break;default:{errors.push(keys.join('.')+" requires to be unhandled type "+fieldDesc.type);}break;}}else{errors.push(keys.join('.')+" spec \"type\" must be a string");}}if(!_.isNil(fieldDesc.enum)){var result=_.some(fieldDesc.enum,function(enumVal){if(c.instance(enumVal,RegExp)){return null!==enumVal.exec(value);}else{return value===enumVal;}});if(false===result){errors.push(keys.join('.')+" expected to have a value");}}return errors;},/**
+}else{errors.push(keys.join('.')+" spec \"model\" must be either a string or a Backbone.RelationalModel instance");}if(model){if(!tester.instance(value,model)){errors.push(keys.join('.')+" expected to be a "+model.modelName);}}}else if(_.isString(fieldDesc.type)){switch(fieldDesc.type){case'string':{if(!tester.string(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}}break;case'integer':{if(!tester.integer(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}}break;case'float':{if(!tester.number(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}}break;case'date':{if(!tester.date(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}}break;case'object':{if(!tester.object(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}else{var deepTest=_.isObject(fieldDesc.attributes)?_(value).mapValues(function(propVal,propName){return _this24.checkField(propVal,fieldDesc.attributes[propName],cloneKeysAdd(keys,propName));}).values().flatten().compact().value():[];if(deepTest.length!==0){errors=errors.concat(deepTest);}}}break;case'array':{if(!tester.array(value)){errors.push(keys.join('.')+" expected to be a "+fieldDesc.type);}else{var _deepTest=_.isObject(fieldDesc.of)?_(value).map(function(propVal,propName){if(_.isArrayLike(fieldDesc.of)){var subErrors=_(fieldDesc.of).map(function(desc){return _this24.checkField(propVal,desc,cloneKeysAdd(keys,propName));});if(!_.find(subErrors,function(v){return 0===v.length;})){return subErrors;}}else{return _this24.checkField(propVal,fieldDesc.of,cloneKeysAdd(keys,propName));}}).flatten().compact().value():[];if(_deepTest.length!==0){errors=errors.concat(_deepTest);}}}break;case'any':{if(!tester.assigned(value)){errors.push(keys.join('.')+" expected to be assigned with any type");}}break;default:{errors.push(keys.join('.')+" requires to be unhandled type "+fieldDesc.type);}break;}}else{errors.push(keys.join('.')+" spec \"type\" must be a string");}}if(!_.isNil(fieldDesc.enum)){var result=_.some(fieldDesc.enum,function(enumVal){if(c.instance(enumVal,RegExp)){return null!==enumVal.exec(value);}else{return value===enumVal;}});if(false===result){errors.push(keys.join('.')+" expected to have a value");}}return errors;},/**
 	 * @function default
 	 * @description Set default values if required
 	 * @memberof Diaspora
@@ -614,8 +704,8 @@ var tester=c;if(fieldDesc.required!==true){tester=c.maybe;}if(!_.isNil(fieldDesc
 	 * @param   {Object} entity    Entity to set defaults in
 	 * @param   {module:ModelExtension.ModelPrototype} modelDesc Model description
 	 * @returns {Object} Entity merged with default values
-	 */default:function _default(entity,modelDesc){var _this24=this;// Apply method `defaultField` on each field described
-return _.defaults(entity,_.mapValues(modelDesc,function(fieldDesc,field){return _this24.defaultField(entity[field],fieldDesc);}));},/**
+	 */default:function _default(entity,modelDesc){var _this25=this;// Apply method `defaultField` on each field described
+return _.defaults(entity,_.mapValues(modelDesc,function(fieldDesc,field){return _this25.defaultField(entity[field],fieldDesc);}));},/**
 	 * @function defaultField
 	 * @description Set the default on a single field according to its description
 	 * @memberof Diaspora
@@ -661,10 +751,10 @@ throw new Error("Source has unknown keys: "+JSON.stringify(sourceDModel)+" in "+
 var attributes=_.cloneDeep(source);// Free the source
 source=null;// Default model attributes with our model desc
 Diaspora.default(attributes,modelAttrs);// Define getters & setters
-var entityDefined=Object.defineProperties(this,_.extend({model:{value:model},dataSources:{value:dataSources},toObject:{value:function toObject(){return _.omit(attributes,entityPrototypeProperties);}},persist:{value:function persist(sourceName){var _this25=this;var dataSource=this.model.getDataSource(sourceName);var promise=void 0;// Depending on state, we are going to perform a different operation
-if('orphan'===state){promise=dataSource.insertOne(this.getTable(sourceName),this.toObject());}else{promise=dataSource.updateOne(this.getTable(sourceName),this.getUidQuery(dataSource),this.toObject());}state='syncing';lastDataSource=dataSource.name;return promise.then(function(dataStoreEntity){state='sync';entityDefined.dataSources[dataSource.name]=dataStoreEntity;attributes=dataStoreEntity.toObject();return Promise.resolve(_this25);});}},fetch:{value:function fetch(sourceName){var _this26=this;var dataSource=this.model.getDataSource(sourceName);var promise=void 0;// Depending on state, we are going to perform a different operation
-if('orphan'===state){promise=Promise.reject('Can\'t fetch an orphan entity');}else{promise=dataSource.findOne(this.getTable(sourceName),this.getUidQuery(dataSource));}state='syncing';lastDataSource=dataSource.name;return promise.then(function(dataStoreEntity){state='sync';entityDefined.dataSources[dataSource.name]=dataStoreEntity;attributes=dataStoreEntity.toObject();return Promise.resolve(_this26);});}},destroy:{value:function destroy(sourceName){var _this27=this;var dataSource=this.model.getDataSource(sourceName);var promise=void 0;if('orphan'===state){promise=Promise.reject(new Error('Can\'t destroy an orphan entity'));}else{promise=dataSource.deleteOne(this.getTable(sourceName),this.getUidQuery(dataSource));}state='syncing';lastDataSource=dataSource.name;return promise.then(function(dataStoreEntity){// If this was our only data source, then go back to orphan state
-if(0===_.without(model.dataSources,dataSource.name).length){state='orphan';}else{state='sync';delete attributes.idHash[dataSource.name];}entityDefined.dataSources[dataSource.name]=undefined;dataStoreEntity=null;return Promise.resolve(_this27);});}},getState:{value:function getState(){return state;}},getLastDataSource:{value:function getLastDataSource(){return lastDataSource;}},getUidQuery:{value:function getUidQuery(dataSource){return{id:attributes.idHash[dataSource.name]};}},getTable:{value:function getTable(sourceName){return name;}}}));var entityProxied=new Proxy(entityDefined,{get:function get(obj,key){if('constructor'===key){return entityDefined[key];}if(entityDefined.hasOwnProperty(key)){return entityDefined[key];}return attributes[key];},set:function set(obj,key,value){if(entityDefined.hasOwnProperty(key)){console.warn("Trying to define read-only key "+key+".");return value;}return attributes[key]=value;},enumerate:function enumerate(obj){return _.keys(attributes);},ownKeys:function ownKeys(obj){return _(attributes).keys().concat(entityPrototypeProperties).value();},has:function has(obj,key){return attributes.hasOwnProperty(key);}});return entityProxied;}var EntityWrapped=Object.defineProperties(Entity,{/**
+var entityDefined=Object.defineProperties(this,_.extend({model:{value:model},dataSources:{value:dataSources},toObject:{value:function toObject(){return _.omit(attributes,entityPrototypeProperties);}},persist:{value:function persist(sourceName){var _this26=this;var dataSource=this.model.getDataSource(sourceName);var promise=void 0;// Depending on state, we are going to perform a different operation
+if('orphan'===state){promise=dataSource.insertOne(this.getTable(sourceName),this.toObject());}else{promise=dataSource.updateOne(this.getTable(sourceName),this.getUidQuery(dataSource),this.toObject());}state='syncing';lastDataSource=dataSource.name;return promise.then(function(dataStoreEntity){state='sync';entityDefined.dataSources[dataSource.name]=dataStoreEntity;attributes=dataStoreEntity.toObject();return Promise.resolve(_this26);});}},fetch:{value:function fetch(sourceName){var _this27=this;var dataSource=this.model.getDataSource(sourceName);var promise=void 0;// Depending on state, we are going to perform a different operation
+if('orphan'===state){promise=Promise.reject('Can\'t fetch an orphan entity');}else{promise=dataSource.findOne(this.getTable(sourceName),this.getUidQuery(dataSource));}state='syncing';lastDataSource=dataSource.name;return promise.then(function(dataStoreEntity){state='sync';entityDefined.dataSources[dataSource.name]=dataStoreEntity;attributes=dataStoreEntity.toObject();return Promise.resolve(_this27);});}},destroy:{value:function destroy(sourceName){var _this28=this;var dataSource=this.model.getDataSource(sourceName);var promise=void 0;if('orphan'===state){promise=Promise.reject(new Error('Can\'t destroy an orphan entity'));}else{promise=dataSource.deleteOne(this.getTable(sourceName),this.getUidQuery(dataSource));}state='syncing';lastDataSource=dataSource.name;return promise.then(function(dataStoreEntity){// If this was our only data source, then go back to orphan state
+if(0===_.without(model.dataSources,dataSource.name).length){state='orphan';}else{state='sync';delete attributes.idHash[dataSource.name];}entityDefined.dataSources[dataSource.name]=undefined;dataStoreEntity=null;return Promise.resolve(_this28);});}},getState:{value:function getState(){return state;}},getLastDataSource:{value:function getLastDataSource(){return lastDataSource;}},getUidQuery:{value:function getUidQuery(dataSource){return{id:attributes.idHash[dataSource.name]};}},getTable:{value:function getTable(sourceName){return name;}}}));var entityProxied=new Proxy(entityDefined,{get:function get(obj,key){if('constructor'===key){return entityDefined[key];}if(entityDefined.hasOwnProperty(key)){return entityDefined[key];}return attributes[key];},set:function set(obj,key,value){if(entityDefined.hasOwnProperty(key)){console.warn("Trying to define read-only key "+key+".");return value;}return attributes[key]=value;},enumerate:function enumerate(obj){return _.keys(attributes);},ownKeys:function ownKeys(obj){return _(attributes).keys().concat(entityPrototypeProperties).value();},has:function has(obj,key){return attributes.hasOwnProperty(key);}});return entityProxied;}var EntityWrapped=Object.defineProperties(Entity,{/**
 		 * @property {String} name Name of the class
 		 * @memberof Entity
 		 * @static
@@ -690,7 +780,7 @@ _.assign(EntityFactory,{entityPrototype:entityPrototype,entityPrototypePropertie
 var sourcesNormalized=_.isArrayLike(modelDesc.sources)?_.zipObject(modelDesc.sources,_.times(modelDesc.sources.length,_.constant({}))):_.mapValues(modelDesc.sources,function(remap,dataSourceName){if(true===remap){return{};}else if(_.isObject(remap)){return remap;}else{throw new TypeError("Datasource \""+dataSourceName+"\" value is invalid: expect `true` or a remap hash, but have "+JSON.stringify(remap));}});// List sources required by this model
 var sourceNames=_.keys(sourcesNormalized);// Get sources. Later, implement scoping so that modules A requiring module B can access dataSources from module B
 var scopeAvailableSources=Diaspora.dataSources[namespace];var modelSources=_.pick(scopeAvailableSources,sourceNames);var missingSources=_.difference(sourceNames,_.keys(modelSources));if(0!==missingSources.length){throw new Error("Missing data sources "+missingSources.map(function(v){return"\""+v+"\"";}).join(', '));}// Now, we are sure that config is valid. We can configure our datasources with model options, and set `this` properties.
-_.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=modelSources[sourceName];sourceConfiguring.configureCollection(name,remap);});this.dataSources=modelSources;this.defaultDataSource=sourceNames[0];this.name=name;this.entityFactory=EntityFactory(name,modelDesc.attributes,this);}_createClass(Model,[{key:"getDataSource",value:function getDataSource(sourceName){if(_.isNil(sourceName)){sourceName=this.defaultDataSource;}else if(!this.dataSources.hasOwnProperty(sourceName)){throw new Error("Unknown data source \""+sourceName+"\" in model \""+this.name+"\", available are "+_.keys(this.dataSources).map(function(v){return"\""+v+"\"";}).join(', '));}return this.dataSources[sourceName];}},{key:"spawn",value:function spawn(source){var newEntity=new this.entityFactory(source);return newEntity;}},{key:"spawnMulti",value:function spawnMulti(sources){var _this28=this;return _.map(sources,function(source){return _this28.spawn(source);});}},{key:"insert",value:function insert(source,dataSourceName){var _this29=this;var dataSource=this.getDataSource(dataSourceName);return dataSource.insertOne(this.name,source).then(function(entity){return Promise.resolve(new _this29.entityFactory(entity));});}},{key:"insertMany",value:function insertMany(sources,dataSourceName){var _this30=this;var dataSource=this.getDataSource(dataSourceName);return dataSource.insertMany(this.name,sources).then(function(entities){return Promise.resolve(_.map(entities,function(entity){return new _this30.entityFactory(entity);}));});}},{key:"find",value:function find(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var _this31=this;var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}else if(_.isString(queryFind)&&!!_.isNil(options)&&!!_.isNil(dataSourceName)){dataSourceName=queryFind;queryFind={};options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.findOne(this.name,queryFind,options).then(function(dataSourceEntity){if(_.isNil(dataSourceEntity)){return Promise.resolve();}var newEntity=new _this31.entityFactory(dataSourceEntity);newEntity.dataSources[dataSource.name]=dataSourceEntity;return Promise.resolve(newEntity);});}},{key:"findMany",value:function findMany(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var _this32=this;var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}else if(_.isString(queryFind)&&!!_.isNil(options)&&!!_.isNil(dataSourceName)){dataSourceName=queryFind;queryFind={};options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.findMany(this.name,queryFind,options).then(function(dataSourceEntities){var entities=_.map(dataSourceEntities,function(dataSourceEntity){var newEntity=new _this32.entityFactory(dataSourceEntity);newEntity.dataSources[dataSource.name]=dataSourceEntity;return newEntity;});return Promise.resolve(entities);});}},{key:"update",value:function update(queryFind,_update){var _this33=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.updateOne(this.name,queryFind,_update,options).then(function(dataSourceEntity){if(_.isNil(dataSourceEntity)){return Promise.resolve();}var newEntity=new _this33.entityFactory(dataSourceEntity);return Promise.resolve(newEntity);});}},{key:"updateMany",value:function updateMany(queryFind,update){var _this34=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.updateMany(this.name,queryFind,update,options).then(function(dataSourceEntities){var entities=_.map(dataSourceEntities,function(dataSourceEntity){var newEntity=new _this34.entityFactory(dataSourceEntity);return newEntity;});return Promise.resolve(entities);});}},{key:"delete",value:function _delete(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.deleteOne(this.name,queryFind,options);}},{key:"deleteMany",value:function deleteMany(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.deleteMany(this.name,queryFind,options);}}]);return Model;}();module.exports=Model;},{"./diaspora":8,"./entityFactory":9,"bluebird":11,"lodash":13}],11:[function(require,module,exports){(function(process,global){/* @preserve
+_.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=modelSources[sourceName];sourceConfiguring.configureCollection(name,remap);});this.dataSources=modelSources;this.defaultDataSource=sourceNames[0];this.name=name;this.entityFactory=EntityFactory(name,modelDesc.attributes,this);}_createClass(Model,[{key:"getDataSource",value:function getDataSource(sourceName){if(_.isNil(sourceName)){sourceName=this.defaultDataSource;}else if(!this.dataSources.hasOwnProperty(sourceName)){throw new Error("Unknown data source \""+sourceName+"\" in model \""+this.name+"\", available are "+_.keys(this.dataSources).map(function(v){return"\""+v+"\"";}).join(', '));}return this.dataSources[sourceName];}},{key:"spawn",value:function spawn(source){var newEntity=new this.entityFactory(source);return newEntity;}},{key:"spawnMulti",value:function spawnMulti(sources){var _this29=this;return _.map(sources,function(source){return _this29.spawn(source);});}},{key:"insert",value:function insert(source,dataSourceName){var _this30=this;var dataSource=this.getDataSource(dataSourceName);return dataSource.insertOne(this.name,source).then(function(entity){return Promise.resolve(new _this30.entityFactory(entity));});}},{key:"insertMany",value:function insertMany(sources,dataSourceName){var _this31=this;var dataSource=this.getDataSource(dataSourceName);return dataSource.insertMany(this.name,sources).then(function(entities){return Promise.resolve(_.map(entities,function(entity){return new _this31.entityFactory(entity);}));});}},{key:"find",value:function find(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var _this32=this;var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}else if(_.isString(queryFind)&&!!_.isNil(options)&&!!_.isNil(dataSourceName)){dataSourceName=queryFind;queryFind={};options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.findOne(this.name,queryFind,options).then(function(dataSourceEntity){if(_.isNil(dataSourceEntity)){return Promise.resolve();}var newEntity=new _this32.entityFactory(dataSourceEntity);newEntity.dataSources[dataSource.name]=dataSourceEntity;return Promise.resolve(newEntity);});}},{key:"findMany",value:function findMany(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var _this33=this;var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}else if(_.isString(queryFind)&&!!_.isNil(options)&&!!_.isNil(dataSourceName)){dataSourceName=queryFind;queryFind={};options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.findMany(this.name,queryFind,options).then(function(dataSourceEntities){var entities=_.map(dataSourceEntities,function(dataSourceEntity){var newEntity=new _this33.entityFactory(dataSourceEntity);newEntity.dataSources[dataSource.name]=dataSourceEntity;return newEntity;});return Promise.resolve(entities);});}},{key:"update",value:function update(queryFind,_update){var _this34=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.updateOne(this.name,queryFind,_update,options).then(function(dataSourceEntity){if(_.isNil(dataSourceEntity)){return Promise.resolve();}var newEntity=new _this34.entityFactory(dataSourceEntity);return Promise.resolve(newEntity);});}},{key:"updateMany",value:function updateMany(queryFind,update){var _this35=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.updateMany(this.name,queryFind,update,options).then(function(dataSourceEntities){var entities=_.map(dataSourceEntities,function(dataSourceEntity){var newEntity=new _this35.entityFactory(dataSourceEntity);return newEntity;});return Promise.resolve(entities);});}},{key:"delete",value:function _delete(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.deleteOne(this.name,queryFind,options);}},{key:"deleteMany",value:function deleteMany(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];if(_.isString(options)&&!!_.isNil(dataSourceName)){dataSourceName=options;options={};}var dataSource=this.getDataSource(dataSourceName);return dataSource.deleteMany(this.name,queryFind,options);}}]);return Model;}();module.exports=Model;},{"./diaspora":8,"./entityFactory":9,"bluebird":11,"lodash":13}],11:[function(require,module,exports){(function(process,global){/* @preserve
  * The MIT License (MIT)
  * 
  * Copyright (c) 2013-2017 Petka Antonov
