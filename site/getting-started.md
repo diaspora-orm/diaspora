@@ -26,16 +26,14 @@ npm install --save diaspora
 {% endhighlight %}
 </div>
 
-{::comment}
 <div class="tab" data-ref="yarn">
 
 #### With Yarn
 
 {% highlight shell %}
-#npm install --save diaspora
+yarn add diaspora
 {% endhighlight %}
 </div>
-{:/comment}
 </div>
 
 Once installed, simply load it using *Node*'s `require`
@@ -63,12 +61,10 @@ This build contains Diaspora and all of its dependencies, packaged in a single (
 </html>
 {% endhighlight %}
 
-> This build export following libraries:
->
->  * `lodash` as `_`
->  * `bluebird` as `Promise`
->  * `check-types` as `c`
->  * `sequential-event` as `SequentialEvent`
+> This build export following libraries through the `Diaspora.dependencies` hash:  
+>  * [lodash](https://lodash.com/)
+>  * [bluebird](http://bluebirdjs.com/docs/getting-started.html)
+>  * [sequential-event](https://www.npmjs.com/package/sequential-event)
 
 #### Isolated
 
@@ -174,9 +170,9 @@ Methods `insert`, `find` and `update` will return Entities, and `insertMany`, `f
 Entities are objects with a status, some data sources related informations, and their own methods.
 
  * Status of an entity can be checked using `getStatus()`.  Currently, there are 3 status implemented:
-   1. `orphan`: 
-   1. `syncing`: 
-   1. `sync`: 
+   1. `orphan`: This entity does not exists in any data source. `getLastDataSource()` should return `null` if entity is spawned, or the data source it was deleted from if destroyed.
+   1. `syncing`: Entity is performing operations to be synced with your data source. At this point, `getLastDataSource()` will return your data source name.
+   1. `sync`: The entity exists in at least one data source.
  * You can check your entity status in each data sources it is aware of by inspecting the `dataSources` property. This hash contains the `DataSourceEntity` for each sources. You can also know which data source was lastly used by using `lastDataSource()`
  * You can use methods to help you working with your Entities. Custom methods can be added by setting the `methods` hash in the model configuration.
  

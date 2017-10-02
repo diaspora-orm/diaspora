@@ -15,7 +15,15 @@
     "url": "git+https://github.com/Nihilivin/Diaspora.git"
   },
   "keywords": [
-    "ORM"
+    "ORM",
+    "db",
+    "collection",
+    "manager",
+    "localstorage",
+    "webstorage",
+    "modelization",
+    "query",
+    "object"
   ],
   "author": "Gerkin",
   "license": "GPL-3.0",
@@ -36,6 +44,7 @@
     "grunt": "^1.0.1",
     "grunt-babel": "^7.0.0",
     "grunt-changed": "^1.1.1",
+    "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^3.1.0",
     "grunt-docco-husky": "git+https://github.com/GerkinDev/grunt-docco-husky.git",

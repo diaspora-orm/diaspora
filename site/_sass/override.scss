@@ -1365,6 +1365,13 @@ body.docpage{
 section{
 	float: none;
 }
+table td > table{
+	margin-left: -13px;
+	margin-right: -13px;
+	width: auto;
+	margin-bottom: -11px;
+}
+
 .pilwrap {
 	float: left;
 	width: 0;
@@ -1372,7 +1379,7 @@ section{
 }
 .loader:after {
 	content: '';
-    display: block;
+	display: block;
 	border: 16px solid #f3f3f3;
 	border-top: 16px solid #D9230F;
 	border-radius: 50%;
@@ -1382,10 +1389,10 @@ section{
 }
 .lazyload{
 	position:relative;
-	
+
 	&.unloaded{
 		height: 140px;
-		
+
 		> *{
 			opacity: 0;
 		}

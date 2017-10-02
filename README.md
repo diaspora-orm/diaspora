@@ -4,9 +4,11 @@
 
 ## Build status
 
-Travis CI status: [![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
+Travis CI status:  
+[![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
 
-SauceLabs status: [![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
+SauceLabs status:  
+[![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
 
 ## GitHub repository
 
@@ -15,15 +17,16 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 > ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:
 >
 > * *Relations*: Not implemented
-> * *Browser version*: Not ready
-> * *[Query language](https://diaspora.ithoughts.io/query-language)*: Only supports equality
+> * *Validation* and *Default field value*: Implemented, but not executed during lifecycle events
+> * *Lifecycle events*: Not implemented
+> * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2 for default adapters
 > * *Registering external adapter*: Soon
 
 ---
 
 ## API Overview
 
-Here is a short API overview. For a detailed API documentation, check... The doc that does not exist yet ^^'
+Here is a short API overview. For a detailed API documentation, check the [Diaspora API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
 
 ### Model methods
 
@@ -83,9 +86,9 @@ Reload entity from specified `source`.
 
 ## Planned or unsure Diaspora behaviors/features
 
-> Manual change of ID
+> Manual change of properties
 
-*Unsure* > Entity may change mode to `desync` ?
+*Unsure* > Entity may change status to `desync` ?
 
 > P2P Adapter
 

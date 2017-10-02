@@ -151,32 +151,14 @@ module.exports = function gruntInit( grunt ) {
 				}],
 			},
 		},
-		/*		markdown: {
-			index: {
-				files: [
-					{
-						src:  'README.md',
-						dest: 'docs/index.html',
-						ext:  '.html',
-					},
-				],
-				options: {
-					templateContext:    {},
-					contextBinder:      false,
-					contextBinderMark:  '@@@',
-					autoTemplate:       true,
-					autoTemplateFormat: 'jst',
-					markdownOptions:    {
-						gfm:       true,
-						highlight: 'manual',
-						codeLines: {
-							before: '<span>',
-							after:  '</span>',
-						},
-					},
-				},
+		clean: {
+			doc_jsdoc: {
+				src: [ 'site/jsdoc' ],
 			},
-		},*/
+			doc_docco: {
+				src: [ 'site/docco' ],
+			},
+		},
 	});
 
 	grunt.loadNpmTasks( 'grunt-jsdoc' );
@@ -187,11 +169,14 @@ module.exports = function gruntInit( grunt ) {
 	grunt.loadNpmTasks( 'grunt-browserify' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 	grunt.loadNpmTasks( 'grunt-contrib-copy' );
+	grunt.loadNpmTasks( 'grunt-contrib-clean' );
 
 	require( 'load-grunt-tasks' )( grunt );
 
 	grunt.registerTask( 'documentate', [
 		'lint',
+		'clean:doc_jsdoc',
+		'clean:doc_docco',
 		'jsdoc',
 		'docco_husky',
 	]);
