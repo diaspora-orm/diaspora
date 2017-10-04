@@ -1,9 +1,9 @@
 'use strict';
 
+/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+
 const Promise = require( 'bluebird' );
 const l = require( 'lodash' );
-
-/* globals l: false, c: false */
 
 function getDataSourceLabel( name, addName = '' ) {
 	return `${ name }Adapter${ addName ? `.${ addName }` : '' }`;

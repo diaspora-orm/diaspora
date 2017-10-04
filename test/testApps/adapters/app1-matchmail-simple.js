@@ -1,3 +1,7 @@
+'use strict';
+
+/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+
 module.exports = ( adapter, data, tableName ) => {
 	it( '❌ Clear old data', () => {
 		return adapter.deleteMany( tableName, {}).then(() => {

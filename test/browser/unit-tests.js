@@ -375,6 +375,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					foo: 'baz'
 				}, SOURCE);
 				var retPromise = entity.fetch();
+				expect(entity.getState()).to.be.eql('syncing');
 				return retPromise.then(function () {
 					expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
 				});
@@ -388,6 +389,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				expect(entity).to.respondTo('destroy');
 				expect(entity).to.be.an.entity(testModel, object, SOURCE);
 				var retPromise = entity.destroy();
+				expect(entity.getState()).to.be.eql('syncing');
 				return retPromise.then(function () {
 					expect(entity.getLastDataSource()).to.be.eql(SOURCE);
 					expect(entity.getState()).to.be.eql('orphan');
@@ -654,7 +656,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			testedEntity = testModel.spawn(object);
 			expect(testedEntity).to.be.an.entity(testModel, object, true);
 			var retPromise = testedEntity.persist();
-			//			expect( testedEntity.getState()).to.be.eql( 'syncing' );
+			expect(testedEntity.getState()).to.be.eql('syncing');
 			expect(testedEntity).to.be.an.entity(testModel, object, null);
 			return retPromise.then(function () {
 				expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
@@ -672,6 +674,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					foo: 'baz'
 				}, SOURCE);
 				var retPromise = entity.fetch();
+				expect(entity.getState()).to.be.eql('syncing');
 				return retPromise.then(function () {
 					expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
 				});
@@ -685,6 +688,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				expect(entity).to.respondTo('destroy');
 				expect(entity).to.be.an.entity(testModel, object, SOURCE);
 				var retPromise = entity.destroy();
+				expect(entity.getState()).to.be.eql('syncing');
 				return retPromise.then(function () {
 					expect(entity.getLastDataSource()).to.be.eql(SOURCE);
 					expect(entity.getState()).to.be.eql('orphan');
@@ -25744,7 +25748,7 @@ glob.l = require('lodash');
 glob.c = require('check-types');
 glob.CheckTypes = c;
 if (typeof window === 'undefined') {
-	var _chai2 = require('chai');
+	glob.chai = require('chai');
 }
 glob.assert = chai.assert;
 glob.expect = chai.expect;
@@ -25916,7 +25920,6 @@ if (process.env.SAUCE_ONLY !== 'true') {
 	(function () {
 		if ('undefined' === typeof window && 'object' === (typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) && typeof exports.nodeName !== 'string') {
 			global.Diaspora = require('../diaspora');
-			global.expect = require('expect.js');
 		}
 	})();
 	global.dataSources = {};
@@ -26232,7 +26235,7 @@ if ('undefined' === typeof window && process.env.NO_SAUCE !== 'true') {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../diaspora":undefined,"./browser/selenium.js":undefined,"./defineGlobals":7,"_process":5,"expect.js":undefined}],9:[function(require,module,exports){
+},{"../diaspora":undefined,"./browser/selenium.js":undefined,"./defineGlobals":7,"_process":5}],9:[function(require,module,exports){
 'use strict';
 
 module.exports = function (adapter, data, tableName) {

@@ -1,5 +1,7 @@
 'use strict';
 
+/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+
 const glob = 'undefined' !== typeof window ? window : global;
 
 if ( 'undefined' === typeof window ) {
@@ -71,8 +73,8 @@ glob.importTest = ( name, modulePath ) => {
 glob.l = require( 'lodash' );
 glob.c = require( 'check-types' );
 glob.CheckTypes = c;
-if(typeof window === 'undefined'){
-	const chai = require( 'chai' );
+if ( 'undefined' === typeof window ) {
+	glob.chai = require( 'chai' );
 }
 glob.assert = chai.assert;
 glob.expect = chai.expect;

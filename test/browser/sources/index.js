@@ -10,7 +10,6 @@ if (process.env.SAUCE_ONLY !== 'true') {
 	(function () {
 		if ('undefined' === typeof window && 'object' === (typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) && typeof exports.nodeName !== 'string') {
 			global.Diaspora = require('../diaspora');
-			global.expect = require('expect.js');
 		}
 	})();
 	global.dataSources = {};

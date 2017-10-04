@@ -71,7 +71,7 @@ glob.l = require('lodash');
 glob.c = require('check-types');
 glob.CheckTypes = c;
 if (typeof window === 'undefined') {
-	var _chai2 = require('chai');
+	glob.chai = require('chai');
 }
 glob.assert = chai.assert;
 glob.expect = chai.expect;

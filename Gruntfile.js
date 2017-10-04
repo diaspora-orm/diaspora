@@ -9,7 +9,7 @@ module.exports = function gruntInit( grunt ) {
 	// Project configuration.
 
 	const baseDocPath = 'site';
-	const testFiles = ['index.js', 'defineGlobals.js', 'models/**/*.js', 'adapters/index.js', 'adapters/inMemory.js', 'adapters/localStorage.js', 'adapters/utils.js', 'testApps/**/*.js'];
+	const testFiles = [ 'index.js', 'defineGlobals.js', 'models/**/*.js', 'adapters/index.js', 'adapters/inMemory.js', 'adapters/localStorage.js', 'adapters/utils.js', 'testApps/**/*.js' ];
 	const doccoPath = `${ baseDocPath }/docco`;
 	const jsdocPath = `${ baseDocPath }/jsdoc`;
 	const jsAssets = /*['lib/adapters/baseAdapter.js'] ||*/ [
@@ -20,6 +20,8 @@ module.exports = function gruntInit( grunt ) {
 	];
 	const jsFilesWTests = jsAssets.concat([
 		'test/**/*.js',
+		'!test/browser/**/*.js',
+		'test/browser/selenium.js',
 	]);
 
 	grunt.initConfig({
@@ -78,7 +80,7 @@ module.exports = function gruntInit( grunt ) {
 						expose: 'SequentialEvent',
 					}],
 				],
-				dest: 'build/standalone/src/diaspora.js',	
+				dest:    'build/standalone/src/diaspora.js',	
 				options: {
 					browserifyOptions: {
 						standalone: 'Diaspora',
@@ -87,7 +89,7 @@ module.exports = function gruntInit( grunt ) {
 			},
 			isolated: {
 				options: {
-					external: [ 'lodash', 'bluebird', 'sequential-event' ],
+					external:          [ 'lodash', 'bluebird', 'sequential-event' ],
 					browserifyOptions: {
 						standalone: 'Diaspora',
 					},
@@ -96,19 +98,19 @@ module.exports = function gruntInit( grunt ) {
 				dest: 'build/isolated/src/diaspora.js',	
 			},
 			test: {
-				src:     testFiles.map(v =>  './test/browser/sources/' + v),
+				src:     testFiles.map( v =>  `./test/browser/sources/${  v }` ),
 				dest:    'test/browser/unit-tests.js',
 				options: {
 					alias: {
-						'./adapters/index.js': './test/browser/sources/adapters/index.js',
-						'./inMemory.js': './test/browser/sources/adapters/inMemory.js',
-						'./localStorage.js': './test/browser/sources/adapters/localStorage.js',
-						'./models/index.js': './test/browser/sources/models/index.js',
-						'./simple.js': './test/browser/sources/models/simple.js',
+						'./adapters/index.js':   './test/browser/sources/adapters/index.js',
+						'./inMemory.js':         './test/browser/sources/adapters/inMemory.js',
+						'./localStorage.js':     './test/browser/sources/adapters/localStorage.js',
+						'./models/index.js':     './test/browser/sources/models/index.js',
+						'./simple.js':           './test/browser/sources/models/simple.js',
 						'./simple-remapping.js': './test/browser/sources/models/simple-remapping.js',
-						'./validations.js': './test/browser/sources/models/validations.js',
+						'./validations.js':      './test/browser/sources/models/validations.js',
 					},
-//					require:  grunt.file.expand(testFiles.filter(v => v !== 'index.js').map(v => './test/browser/sources/' + v)).map(v => path.relative('./test/browser/sources', v)),
+					//					require:  grunt.file.expand(testFiles.filter(v => v !== 'index.js').map(v => './test/browser/sources/' + v)).map(v => path.relative('./test/browser/sources', v)),
 					exclude: [ './browser/selenium.js', './config.js', 'chai', '../diaspora', 'path', 'chalk', 'stack-trace', 'expect.js', 'node-localstorage', 'fs' ],
 				},
 			},
@@ -236,7 +238,7 @@ module.exports = function gruntInit( grunt ) {
 		'refreshScripts',
 		'documentate',
 	]);
-	grunt.registerTask('refreshTests', [
+	grunt.registerTask( 'refreshTests', [
 		'babel:test',
 		'browserify:test',
 	]);

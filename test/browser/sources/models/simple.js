@@ -253,7 +253,7 @@
 			testedEntity = testModel.spawn(object);
 			expect(testedEntity).to.be.an.entity(testModel, object, true);
 			var retPromise = testedEntity.persist();
-			//			expect( testedEntity.getState()).to.be.eql( 'syncing' );
+			expect(testedEntity.getState()).to.be.eql('syncing');
 			expect(testedEntity).to.be.an.entity(testModel, object, null);
 			return retPromise.then(function () {
 				expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
@@ -271,6 +271,7 @@
 					foo: 'baz'
 				}, SOURCE);
 				var retPromise = entity.fetch();
+				expect(entity.getState()).to.be.eql('syncing');
 				return retPromise.then(function () {
 					expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
 				});
@@ -284,6 +285,7 @@
 				expect(entity).to.respondTo('destroy');
 				expect(entity).to.be.an.entity(testModel, object, SOURCE);
 				var retPromise = entity.destroy();
+				expect(entity.getState()).to.be.eql('syncing');
 				return retPromise.then(function () {
 					expect(entity.getLastDataSource()).to.be.eql(SOURCE);
 					expect(entity.getState()).to.be.eql('orphan');

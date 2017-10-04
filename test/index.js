@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals l: false, c: false */
+/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
 
 require( './defineGlobals' );
 
@@ -8,7 +8,6 @@ if ( process.env.SAUCE_ONLY !== 'true' ) {
 	(() => {
 		if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
 			global.Diaspora = require( '../diaspora' );
-			global.expect = require( 'expect.js' );
 		}
 	})();
 	global.dataSources = {};

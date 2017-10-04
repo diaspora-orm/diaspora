@@ -1452,23 +1452,6 @@ const adapters = {
 const dataSources = {};
 const models = {};
 
-/**
- * @function cloneKeysAdd
- * @description Clone keys array and add the provided value
- * @memberof Diaspora
- * @private
- * @inner
- * @author gerkin
- * @param   {String[]}	keys	Array of keys to this point.
- * @param   {String}	newKey	New key value.
- * @returns {String[]} Clone of `keys` with `newKey` added at the end
- */
-function cloneKeysAdd( keys, newKey ) {
-	const newKeys = _.clone( keys );
-	newKeys.push( newKey );
-	return newKeys;
-}
-
 const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 	return ( table, ...args ) => {
 		// Filter our results
@@ -1553,14 +1536,13 @@ const Diaspora = {
 	 * @param   {module:ModelExtension.ModelPrototype} modelDesc Model description
 	 * @returns {Error[]} Array of errors
 	 */
-	check( entity, modelDesc ) {
+	check( entity, modelDesc = {}, keys = []) {
 		// Apply method `checkField` on each field described
-		return _( modelDesc )
-			.mapValues(( fieldDesc, field ) => this.checkField.call( this, entity[field], fieldDesc, [ field ]))
-			.values()
-			.flatten()
-			.compact()
+		const checkResults = _( modelDesc )
+			.mapValues(( fieldDesc, field ) => this.checkField.call( this, entity[field], fieldDesc, _.concat( keys, [ field ])))
+			.omitBy( _.isEmpty )
 			.value();
+		return checkResults;
 	},
 
 	/**
@@ -1572,7 +1554,7 @@ const Diaspora = {
 	 * @param {Any} value   Value to check
 	 * @param {module:ModelExtension.FieldDescriptor} fieldDesc Description of the field to check with
 	 * @param {String[]} keys Array of keys from highest ancestor to this property
-	 * @returns {Error[]} Array of errors
+	 * @returns {Object} Hash describing errors
 	 */
 	checkField( value, fieldDesc, keys ) {
 		if ( !_.isObject( fieldDesc )) {
@@ -1582,123 +1564,109 @@ const Diaspora = {
 			required: false,
 		});
 
-		var errors = [];
+		const error = {};
 
 		// It the field has a `validate` property, try to use it
 		if ( fieldDesc.validate ) {
 			if ( !fieldDesc.validate.call( this, value, fieldDesc )) {
-				errors.push( `${ keys.join( '.' ) } custom validation failed` );
+				error.validate = `${ keys.join( '.' ) } custom validation failed`;
 			}
 		}
 
 		// Check the type and the required status
 		if ( !_.isNil( fieldDesc.type ) && !_.isNil( fieldDesc.model )) {
-			errors.push( `${ keys.join( '.' ) } spec can't have both a type and a model` );
+			error.spec =  `${ keys.join( '.' ) } spec can't have both a type and a model`;
 		} else {
 			// Apply the `required` modifier
-			let tester = c;
-			if ( fieldDesc.required !== true ) {
-				tester = c.maybe;
-			}
-			if ( !_.isNil( fieldDesc.model )) {
-				let model = false;
-				if ( _.isString( fieldDesc.model )) {
-					/*if ( _.has( collections, fieldDesc.model )) {
-						model = collections[fieldDesc.model].model;
-					} else {*/
-					errors.push( `${ keys.join( '.' ) } spec "model" string does not match with any registered model` );
-					//					}
-					//				} else if ( c.instance( Backbone.RelationalModel, fieldDesc.model )) {
-					//					model = fieldDesc.model;
-				} else {
-					errors.push( `${ keys.join( '.' ) } spec "model" must be either a string or a Backbone.RelationalModel instance` );
-				}
-				if ( model ) {
-					if ( !tester.instance( value, model )) {
-						errors.push( `${ keys.join( '.' ) } expected to be a ${ model.modelName }` );
-					}
-				}
-			} else if ( _.isString( fieldDesc.type )) {
-				switch ( fieldDesc.type ) {
-					case 'string': {
-						if ( !tester.string( value )) {
-							errors.push( `${ keys.join( '.' ) } expected to be a ${ fieldDesc.type }` );
-						}
-					} break;
+			if ( true === fieldDesc.required && _.isNil( value )) {
+				error.required = `${ keys.join( '.' ) } is a required property of type "${ fieldDesc.type }"`;
+			} else if ( fieldDesc.required !== true && !_.isNil( value )) {
+				if ( _.isString( fieldDesc.type )) {
+					switch ( fieldDesc.type ) {
+						case 'string': {
+							if ( !_.isString( value )) {
+								error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
+							}
+						} break;
 
-					case 'integer': {
-						if ( !tester.integer( value )) {
-							errors.push( `${ keys.join( '.' ) } expected to be a ${ fieldDesc.type }` );
-						}
-					} break;
+						case 'integer': {
+							if ( !_.isInteger( value )) {
+								error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
+							}
+						} break;
 
-					case 'float': {
-						if ( !tester.number( value )) {
-							errors.push( `${ keys.join( '.' ) } expected to be a ${ fieldDesc.type }` );
-						}
-					} break;
+						case 'float': {
+							if ( !_.isNumber( value )) {
+								error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
+							}
+						} break;
 
-					case 'date': {
-						if ( !tester.date( value )) {
-							errors.push( `${ keys.join( '.' ) } expected to be a ${ fieldDesc.type }` );
-						}
-					} break;
+						case 'date': {
+							if ( !_.isDate( value )) {
+								error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
+							}
+						} break;
 
-					case 'object': {
-						if ( !tester.object( value )) {
-							errors.push( `${ keys.join( '.' ) } expected to be a ${ fieldDesc.type }` );
-						} else {
-							const deepTest = _.isObject(
-								fieldDesc.attributes
-							) ? _( value ).mapValues(
-									( propVal, propName ) => this.checkField(
-										propVal,
-										fieldDesc.attributes[propName],
-										cloneKeysAdd( keys, propName )
+						case 'object': {
+							if ( !_.isObject( value )) {
+								error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
+							} else {
+								const deepTest = _.isObject( 
+									fieldDesc.attributes 
+								) ? _( value ).mapValues( 
+										( propVal, propName ) => this.checkField( 
+											propVal, 
+											fieldDesc.attributes[propName], 
+											_.concat( keys, [ propName ]) 
+										) 
 									)
-								).values().flatten().compact().value() : [];
-							if ( deepTest.length !== 0 ) {
-								errors = errors.concat( deepTest );
+										.omitBy( _.isEmpty )
+										.value() : {};
+								if ( !_.isEmpty( deepTest )) {
+									error.children = deepTest;
+								}
 							}
-						}
-					} break;
+						} break;
 
-					case 'array': {
-						if ( !tester.array( value )) {
-							errors.push( `${ keys.join( '.' ) } expected to be a ${ fieldDesc.type }` );
-						} else {
-							const deepTest = _.isObject(
-								fieldDesc.of
-							) ? _( value ).map(
-									( propVal, propName ) => {
-										if ( _.isArrayLike( fieldDesc.of )) {
-											const subErrors = _( fieldDesc.of ).map( desc => this.checkField( propVal, desc, cloneKeysAdd( keys, propName )));
-											if ( !_.find( subErrors, v => 0 === v.length )) {
-												return subErrors;
-											}
-										} else {
-											return this.checkField( propVal, fieldDesc.of, cloneKeysAdd( keys, propName ));
-										}
-									}
-								).flatten().compact().value() : [];
-							if ( deepTest.length !== 0 ) {
-								errors = errors.concat( deepTest );
+						case 'array': {
+							if ( !_.isArray( value )) {
+								error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
+							} else {
+								const deepTest = _.isObject( 
+									fieldDesc.of 
+								) ? _( value ).map( 
+										( propVal, propName ) => { 
+											if ( _.isArrayLike( fieldDesc.of )) { 
+												const subErrors = _( fieldDesc.of ).map( desc => this.checkField( propVal, desc, _.concat( keys, [ propName ]))); 
+												if ( !_.find( subErrors, v => 0 === v.length )) { 
+													return subErrors; 
+												} 
+											} else { 
+												return this.checkField( propVal, fieldDesc.of, _.concat( keys, [ propName ])); 
+											} 
+										} 
+									)
+										.omitBy( _.isEmpty )
+										.value() : {};
+								if ( !_.isEmpty( deepTest )) {
+									error.children = deepTest;
+								}
 							}
-						}
-					} break;
+						} break;
 
-					case 'any': {
-						if ( !tester.assigned( value )) {
-							errors.push( `${ keys.join( '.' ) } expected to be assigned with any type` );
-						}
-					} break;
+						case 'any': {
+							if ( !_.stubTrue( value )) {
+								error.type =  `${ keys.join( '.' ) } expected to be assigned with any type`;
+							}
+						} break;
 
-					default: {
-						errors.push( `${ keys.join( '.' ) } requires to be unhandled type ${ fieldDesc.type }` );
-					} break;
+						default: {
+							error.type =  `${ keys.join( '.' ) } requires to be unhandled type "${ fieldDesc.type }"`;
+						} break;
+					}
+				} else {
+					error.spec =  `${ keys.join( '.' ) } spec "type" must be a string`;
 				}
-			} else {
-				errors.push( `${ keys.join( '.' ) } spec "type" must be a string` );
 			}
 		}
 		if ( !_.isNil( fieldDesc.enum )) {
@@ -1710,22 +1678,27 @@ const Diaspora = {
 				}
 			});
 			if ( false === result ) {
-				errors.push( `${ keys.join( '.' ) } expected to have a value` );
+				error.enum = `${ keys.join( '.' ) } expected to have one of enumerated values "${ JSON.stringify( fieldDesc.enum ) }"`;
 			}
 		}
-		return errors;
+		if ( !_.isEmpty( error )) {
+			error.value = value;
+			return error;
+		} else {
+			return undefined;
+		}
 	},
 
 	/**
-	 * @function default
-	 * @description Set default values if required
-	 * @memberof Diaspora
-	 * @public
-	 * @author gerkin
-	 * @param   {Object} entity    Entity to set defaults in
-	 * @param   {module:ModelExtension.ModelPrototype} modelDesc Model description
-	 * @returns {Object} Entity merged with default values
-	 */
+* @function default
+* @description Set default values if required
+* @memberof Diaspora
+* @public
+* @author gerkin
+* @param   {Object} entity    Entity to set defaults in
+* @param   {module:ModelExtension.ModelPrototype} modelDesc Model description
+* @returns {Object} Entity merged with default values
+*/
 	default( entity, modelDesc ) {
 		// Apply method `defaultField` on each field described
 		return _.defaults(
@@ -1741,15 +1714,15 @@ const Diaspora = {
 	},
 
 	/**
-	 * @function defaultField
-	 * @description Set the default on a single field according to its description
-	 * @memberof Diaspora
-	 * @public
-	 * @author gerkin
-	 * @param {Any} value   Value to default
-	 * @param {module:ModelExtension.FieldDescriptor} fieldDesc Description of the field to default
-	 * @returns {Any} Defaulted value
-	 */
+* @function defaultField
+* @description Set the default on a single field according to its description
+* @memberof Diaspora
+* @public
+* @author gerkin
+* @param {Any} value   Value to default
+* @param {module:ModelExtension.FieldDescriptor} fieldDesc Description of the field to default
+* @returns {Any} Defaulted value
+*/
 	defaultField( value, fieldDesc ) {
 		let out;
 		if ( !_.isUndefined( value )) {
@@ -1789,16 +1762,16 @@ const Diaspora = {
 	},
 
 	/**
-	 * @method registerDataSource
-	 * @description Stores the data source with provided label
-	 * @memberof Diaspora
-	 * @public
-	 * @author gerkin
-	 * @throws {Error} Error is thrown if parameters are incorrect or the name is already used or `dataSource` is not an adapter.
-	 * @param {String}          moduleName Module declaring this datasource. Modules requiring the provided dataSource will be able to use this dataSource using the `name` provided
-	 * @param {String}          name       Name associated with this datasource
-	 * @param {DiasporaAdapter} dataSource Datasource itself
-	 */
+* @method registerDataSource
+* @description Stores the data source with provided label
+* @memberof Diaspora
+* @public
+* @author gerkin
+* @throws {Error} Error is thrown if parameters are incorrect or the name is already used or `dataSource` is not an adapter.
+* @param {String}          moduleName Module declaring this datasource. Modules requiring the provided dataSource will be able to use this dataSource using the `name` provided
+* @param {String}          name       Name associated with this datasource
+* @param {DiasporaAdapter} dataSource Datasource itself
+*/
 	registerDataSource( moduleName, name, dataSource ) {
 		if ( !_.isString( moduleName ) && moduleName.length > 0 ) {
 			throw new Error( `Module name must be a non empty string, had "${ moduleName }"` );
@@ -1821,16 +1794,16 @@ const Diaspora = {
 	},
 
 	/**
-	 * @method declareModel
-	 * @description Create a new Model with provided description
-	 * @memberof Diaspora
-	 * @public
-	 * @author gerkin
-	 * @throws {Error} Thrown if parameters are incorrect
-	 * @param {String} moduleName       Module declaring this datasource. Modules requiring the provided dataSource will be able to use this dataSource using the `name` provided
-	 * @param {String} name       Name associated with this datasource
-	 * @param {Object} modelDesc Description of the model to define
-	 */
+* @method declareModel
+* @description Create a new Model with provided description
+* @memberof Diaspora
+* @public
+* @author gerkin
+* @throws {Error} Thrown if parameters are incorrect
+* @param {String} moduleName       Module declaring this datasource. Modules requiring the provided dataSource will be able to use this dataSource using the `name` provided
+* @param {String} name       Name associated with this datasource
+* @param {Object} modelDesc Description of the model to define
+*/
 	declareModel( moduleName, name, modelDesc ) {
 		if ( !_.isString( moduleName ) && moduleName.length > 0 ) {
 			throw new Error( `Module name must be a non empty string, had "${ moduleName }"` );
@@ -1871,6 +1844,8 @@ const _ = require( 'lodash' );
 const Promise = require( 'bluebird' );
 const Diaspora = require( './diaspora' );
 const DataStoreEntity = require( './dataStoreEntities/baseEntity' );
+const SequentialEvent = require( 'sequential-event' );
+const ValidationError = require( './validationError' );
 
 const entityPrototype = {
 	model: {
@@ -1927,164 +1902,190 @@ function EntityFactory( name, modelAttrs, model ) {
 	 * @author gerkin
 	 * @param {Object} source Hash with properties to copy on the new object
 	 */
-	function Entity( source = {}) {
-		// Stores the object state
-		let state = 'orphan';
-		let lastDataSource = null;
-		const dataSources = Object.seal( _.mapValues( model.dataSources, () => undefined ));
+	class Entity extends SequentialEvent {
+		constructor( source = {}) {
+			super();
+			// Stores the object state
+			let state = 'orphan';
+			let lastDataSource = null;
+			const dataSources = Object.seal( _.mapValues( model.dataSources, () => undefined ));
 
-		if ( source instanceof DataStoreEntity ) {
-			state = 'sync';
-			lastDataSource = source.dataSource.name;
-			dataSources[lastDataSource] = source;
-			source = _.omit( source.toObject(), [ 'id' ]);
-		}
-		// Check keys provided in source
-		const sourceKeys = _.keys( source );
-		// Check if there is an intersection with reserved, and have differences with model attributes
-		const sourceUReserved = _.intersection( source, entityPrototypeProperties );
-		if ( 0 !== sourceUReserved.length ) {
-			throw new Error( `Source has reserved keys: ${ JSON.stringify( sourceUReserved ) } in ${ JSON.stringify( source ) }` );
-		}
-		const sourceDModel = _.difference( source, modelAttrsKeys );
-		if ( 0 !== sourceDModel.length ) { // Later, add a criteria for schemaless models
-			throw new Error( `Source has unknown keys: ${ JSON.stringify( sourceDModel ) } in ${ JSON.stringify( source ) }` );
-		}
-		// Now we know that the source is valid. First, deeply clone to detach object values from entity
-		let attributes = _.cloneDeep( source );
-		// Free the source
-		source = null;
-		// Default model attributes with our model desc
-		Diaspora.default( attributes, modelAttrs );
-		// Define getters & setters
-		const entityDefined = Object.defineProperties( this, _.extend({
-			model: {
-				value: model, 
-			},
-			dataSources: {
-				value: dataSources, 
-			},
-			toObject: {
-				value: function toObject() {
-					return _.omit( attributes, entityPrototypeProperties ); 
-				}, 
-			},
-			persist: {
-				value: function persist( sourceName ) {
-					const dataSource = this.model.getDataSource( sourceName );
-					let promise;
-					// Depending on state, we are going to perform a different operation
-					if ( 'orphan' === state ) {
-						promise = dataSource.insertOne( this.getTable( sourceName ), this.toObject());
-					} else {
-						promise = dataSource.updateOne( this.getTable( sourceName ), this.getUidQuery( dataSource ), this.toObject());
-					}
-					state = 'syncing';
-					lastDataSource = dataSource.name;
-					return promise.then( dataStoreEntity => {
-						state = 'sync';
-						entityDefined.dataSources[dataSource.name] = dataStoreEntity;
-						attributes = dataStoreEntity.toObject();
-						return Promise.resolve( this );
-					});
-				}, 
-			},
-			fetch: {
-				value: function fetch( sourceName ) {
-					const dataSource = this.model.getDataSource( sourceName );
-					let promise;
-					// Depending on state, we are going to perform a different operation
-					if ( 'orphan' === state ) {
-						promise = Promise.reject( 'Can\'t fetch an orphan entity' );
-					} else {
-						promise = dataSource.findOne( this.getTable( sourceName ), this.getUidQuery( dataSource ));
-					}
-					state = 'syncing';
-					lastDataSource = dataSource.name;
-					return promise.then( dataStoreEntity => {
-						state = 'sync';
-						entityDefined.dataSources[dataSource.name] = dataStoreEntity;
-						attributes = dataStoreEntity.toObject();
-						return Promise.resolve( this );
-					});
-				}, 
-			},
-			destroy: {
-				value: function destroy( sourceName ) {
-					const dataSource = this.model.getDataSource( sourceName );
-					let promise;
-					if ( 'orphan' === state ) {
-						promise = Promise.reject( new Error( 'Can\'t destroy an orphan entity' ));
-					} else {
-						promise = dataSource.deleteOne( this.getTable( sourceName ), this.getUidQuery( dataSource ));
-					}
-					state = 'syncing';
-					lastDataSource = dataSource.name;
-					return promise.then( dataStoreEntity => {
-						// If this was our only data source, then go back to orphan state
-						if ( 0 === _.without( model.dataSources, dataSource.name ).length ) {
-							state = 'orphan';
-						} else {
+			if ( source instanceof DataStoreEntity ) {
+				state = 'sync';
+				lastDataSource = source.dataSource.name;
+				dataSources[lastDataSource] = source;
+				source = _.omit( source.toObject(), [ 'id' ]);
+			}
+			// Check keys provided in source
+			const sourceKeys = _.keys( source );
+			// Check if there is an intersection with reserved, and have differences with model attributes
+			const sourceUReserved = _.intersection( source, entityPrototypeProperties );
+			if ( 0 !== sourceUReserved.length ) {
+				throw new Error( `Source has reserved keys: ${ JSON.stringify( sourceUReserved ) } in ${ JSON.stringify( source ) }` );
+			}
+			const sourceDModel = _.difference( source, modelAttrsKeys );
+			if ( 0 !== sourceDModel.length ) { // Later, add a criteria for schemaless models
+				throw new Error( `Source has unknown keys: ${ JSON.stringify( sourceDModel ) } in ${ JSON.stringify( source ) }` );
+			}
+			// Now we know that the source is valid. First, deeply clone to detach object values from entity
+			let attributes = _.cloneDeep( source );
+			// Free the source
+			source = null;
+			// Default model attributes with our model desc
+			Diaspora.default( attributes, modelAttrs );
+
+			this.on( 'beforeUpdate', () => {
+				const validationErrors = Diaspora.check( attributes, modelAttrs );
+				if ( !_.isEmpty( validationErrors )) {
+					throw new ValidationError( validationErrors, 'Validation failed' );
+				}
+			});
+
+			// Define getters & setters
+			const entityDefined = Object.defineProperties( this, _.extend({
+				model: {
+					value: model, 
+				},
+				dataSources: {
+					value: dataSources, 
+				},
+				toObject: {
+					value: function toObject() {
+						return _.omit( attributes, entityPrototypeProperties ); 
+					}, 
+				},
+				persist: {
+					value: sourceName => {
+						const dataSource = this.model.getDataSource( sourceName );
+						const beforeState = state;
+						state = 'syncing';
+						return this.emit( 'beforeUpdate' ).then(() => {
+							let promise;
+							// Depending on state, we are going to perform a different operation
+							if ( 'orphan' === beforeState ) {
+								promise = dataSource.insertOne( this.getTable( sourceName ), this.toObject());
+							} else {
+								promise = dataSource.updateOne( this.getTable( sourceName ), this.getUidQuery( dataSource ), this.toObject());
+							}
+							lastDataSource = dataSource.name;
+							return promise;
+						}).then( dataStoreEntity => {
 							state = 'sync';
-							delete attributes.idHash[dataSource.name];
-						}
-						entityDefined.dataSources[dataSource.name] = undefined;
-						dataStoreEntity = null;
-						return Promise.resolve( this );
-					});
-				}, 
-			},
-			getState: {
-				value: function getState() {
-					return state; 
-				}, 
-			},
-			getLastDataSource: {
-				value: function getLastDataSource() {
-					return lastDataSource; 
-				}, 
-			},
-			getUidQuery: {
-				value: function getUidQuery( dataSource ) {
-					return {
-						id: attributes.idHash[dataSource.name],
-					};
-				}, 
-			},
-			getTable: {
-				value: function getTable( sourceName ) {
-					return name;
-				}, 
-			},
-		}));
-		const entityProxied = new Proxy( entityDefined, {
-			get: ( obj, key ) => {
-				if ( 'constructor' === key ) {
-					return entityDefined[key];
-				}
-				if ( entityDefined.hasOwnProperty( key )) {
-					return entityDefined[key];
-				}
-				return attributes[key];
-			},
-			set: ( obj, key, value ) => {
-				if ( entityDefined.hasOwnProperty( key )) {
-					console.warn( `Trying to define read-only key ${ key }.` );
-					return value;
-				}
-				return attributes[key] = value;
-			},
-			enumerate: obj => {
-				return _.keys( attributes );
-			},
-			ownKeys: obj => {
-				return _( attributes ).keys().concat( entityPrototypeProperties ).value();
-			},
-			has: ( obj, key ) => {
-				return attributes.hasOwnProperty( key );
-			},
-		});
-		return entityProxied;
+							entityDefined.dataSources[dataSource.name] = dataStoreEntity;
+							attributes = dataStoreEntity.toObject();
+							return Promise.resolve( this );
+						}).then(() => {
+							return this.emit( 'afterUpdate' );
+						}).then(() => Promise.resolve( this ));
+					},
+				},
+				fetch: {
+					value: sourceName => {
+						const dataSource = this.model.getDataSource( sourceName );
+						const beforeState = state;
+						state = 'syncing';
+						return this.emit( 'beforeFind' ).then(() => {
+							let promise;
+							// Depending on state, we are going to perform a different operation
+							if ( 'orphan' === beforeState ) {
+								promise = Promise.reject( 'Can\'t fetch an orphan entity' );
+							} else {
+								promise = dataSource.findOne( this.getTable( sourceName ), this.getUidQuery( dataSource ));
+							}
+							lastDataSource = dataSource.name;
+							return promise;
+						}).then( dataStoreEntity => {
+							state = 'sync';
+							entityDefined.dataSources[dataSource.name] = dataStoreEntity;
+							attributes = dataStoreEntity.toObject();
+							return Promise.resolve( this );
+						}).then(() => {
+							return this.emit( 'afterFind' );
+						}).then(() => Promise.resolve( this ));
+					},
+				},
+				destroy: {
+					value: sourceName => {
+						const dataSource = this.model.getDataSource( sourceName );
+						const beforeState = state;
+						state = 'syncing';
+						return this.emit( 'beforeDelete' ).then(() => {
+							let promise;
+							if ( 'orphan' === beforeState ) {
+								promise = Promise.reject( new Error( 'Can\'t destroy an orphan entity' ));
+							} else {
+								promise = dataSource.deleteOne( this.getTable( sourceName ), this.getUidQuery( dataSource ));
+							}
+							lastDataSource = dataSource.name;
+							return promise;
+						}).then( dataStoreEntity => {
+							// If this was our only data source, then go back to orphan state
+							if ( 0 === _.without( model.dataSources, dataSource.name ).length ) {
+								state = 'orphan';
+							} else {
+								state = 'sync';
+								delete attributes.idHash[dataSource.name];
+							}
+							entityDefined.dataSources[dataSource.name] = undefined;
+							dataStoreEntity = null;
+							return Promise.resolve( this );
+						}).then(() => {
+							return this.emit( 'afterDelete' );
+						}).then(() => Promise.resolve( this ));
+					}, 
+				},
+				getState: {
+					value: function getState() {
+						return state; 
+					}, 
+				},
+				getLastDataSource: {
+					value: function getLastDataSource() {
+						return lastDataSource; 
+					}, 
+				},
+				getUidQuery: {
+					value: function getUidQuery( dataSource ) {
+						return {
+							id: attributes.idHash[dataSource.name],
+						};
+					}, 
+				},
+				getTable: {
+					value: function getTable( sourceName ) {
+						return name;
+					}, 
+				},
+			}));
+			const entityProxied = new Proxy( entityDefined, {
+				get: ( obj, key ) => {
+					if ( 'constructor' === key ) {
+						return entityDefined[key];
+					}
+					if ( entityDefined.hasOwnProperty( key )) {
+						return entityDefined[key];
+					}
+					return attributes[key];
+				},
+				set: ( obj, key, value ) => {
+					if ( entityDefined.hasOwnProperty( key )) {
+						console.warn( `Trying to define read-only key ${ key }.` );
+						return value;
+					}
+					return attributes[key] = value;
+				},
+				enumerate: obj => {
+					return _.keys( attributes );
+				},
+				ownKeys: obj => {
+					return _( attributes ).keys().concat( entityPrototypeProperties ).value();
+				},
+				has: ( obj, key ) => {
+					return attributes.hasOwnProperty( key );
+				},
+			});
+			return entityProxied;
+		}
 	}
 	const EntityWrapped = Object.defineProperties( Entity, {
 		/**
@@ -2123,7 +2124,7 @@ _.assign( EntityFactory, {
 
 module.exports = EntityFactory;
 
-},{"./dataStoreEntities/baseEntity":5,"./diaspora":8,"bluebird":"bluebird","lodash":"lodash"}],10:[function(require,module,exports){
+},{"./dataStoreEntities/baseEntity":5,"./diaspora":8,"./validationError":11,"bluebird":"bluebird","lodash":"lodash","sequential-event":"sequential-event"}],10:[function(require,module,exports){
 'use strict';
 
 const _ = require( 'lodash' );
@@ -2308,5 +2309,31 @@ class Model {
 
 module.exports = Model;
 
-},{"./diaspora":8,"./entityFactory":9,"bluebird":"bluebird","lodash":"lodash"}]},{},[1])(1)
+},{"./diaspora":8,"./entityFactory":9,"bluebird":"bluebird","lodash":"lodash"}],11:[function(require,module,exports){
+'use strict';
+
+const _ = require( 'lodash' );
+
+const stringifyValidationObject = validationErrors => {
+	return _( validationErrors ).mapValues(( error, key ) => {
+		return `${ key } => ${ JSON.stringify( error.value ) }
+* ${ _( error ).omit([ 'value' ]).values().map( _.identity ).value() }`;
+	}).values().join( '\n* ' );
+};
+
+class ValidationError extends Error {
+	constructor( validationErrors, message, ...errorArgs ) {
+		message += `
+${ stringifyValidationObject( validationErrors ) }`;
+		super( message, ...errorArgs );
+		this.validationErrors = validationErrors;
+		if ( Error.captureStackTrace ) {
+			Error.captureStackTrace( this, this.constructor );
+		}
+	}
+}
+
+module.exports = ValidationError;
+
+},{"lodash":"lodash"}]},{},[1])(1)
 });

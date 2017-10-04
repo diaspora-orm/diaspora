@@ -63,9 +63,9 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 
 	it( 'Standalone version should pass tests', () => {
 		return browser.get( getTestPath( 'standalone.html' )).then(() => {
-			return browser.findElements(webdriver.By.xpath('//*[@id="mocha-report"]/*'));
-		}).then(reportChildren => {
-			expect(reportChildren).to.have.lengthOf.above(0);
+			return browser.findElements( webdriver.By.xpath( '//*[@id="mocha-report"]/*' ));
+		}).then( reportChildren => {
+			expect( reportChildren ).to.have.lengthOf.above( 0 );
 			return browser.findElements( webdriver.By.className( 'fail' ));
 		}).then( failed => {
 			expect( failed ).to.have.lengthOf( 0 );
@@ -75,9 +75,9 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 
 	it( 'Composed version should pass tests', () => {
 		return browser.get( getTestPath( 'composed.html' )).then(() => {
-			return browser.findElements(webdriver.By.xpath('//*[@id="mocha-report"]/*'));
-		}).then(reportChildren => {
-			expect(reportChildren).to.have.lengthOf.above(0);
+			return browser.findElements( webdriver.By.xpath( '//*[@id="mocha-report"]/*' ));
+		}).then( reportChildren => {
+			expect( reportChildren ).to.have.lengthOf.above( 0 );
 			return browser.findElements( webdriver.By.className( 'fail' ));
 		}).then( failed => {
 			expect( failed ).to.have.lengthOf( 0 );

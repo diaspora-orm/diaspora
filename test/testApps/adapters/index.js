@@ -1,3 +1,7 @@
+'use strict';
+
+/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+
 const describeApp = ( level, name, slug, adapter ) => {
 	describe( `Level ${ level }: ${ name }`, () => {
 		let data;
