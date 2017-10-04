@@ -30,7 +30,7 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 				.usingServer( `http://${  process.env.SAUCE_USERNAME  }:${  process.env.SAUCE_ACCESS_KEY  }@ondemand.saucelabs.com:80/wd/hub` )
 				.withCapabilities({
 					'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
-					build:               process.env.TRAVIS_BUILD_NUMBER + ' Diaspora',
+					build:               `Diaspora n°${process.env.TRAVIS_BUILD_NUMBER}`,
 					username:            process.env.SAUCE_USERNAME,
 					accessKey:           process.env.SAUCE_ACCESS_KEY,
 					browserName:         process.env.BROWSER_NAME,
@@ -48,7 +48,7 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 			return browser.getSession().then( session => {
 				return saucelabs.updateJob( session.getId(), {
 					passed,
-					name: `Diaspora Browser build on ${ process.env.BROWSER_NAME }`,
+					name: `Diaspora Browser ${browser.currentBuild} build on ${ process.env.BROWSER_NAME }`,
 				});
 			}).catch( e => {
 				console.error( e );
@@ -62,7 +62,8 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 	});
 
 	it( 'Standalone version should pass tests', () => {
-		return browser.get( getTestPath( 'standalone.html' )).then(() => {
+		browser.currentBuild = 'standalone';
+		return browser.get( getTestPath( browser.currentBuild + '.html' )).then(() => {
 			return browser.findElements( webdriver.By.xpath( '//*[@id="mocha-report"]/*' ));
 		}).then( reportChildren => {
 			expect( reportChildren ).to.have.lengthOf.above( 0 );
@@ -74,7 +75,8 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 	});
 
 	it( 'Composed version should pass tests', () => {
-		return browser.get( getTestPath( 'composed.html' )).then(() => {
+		browser.currentBuild = 'composed';
+		return browser.get( getTestPath( browser.currentBuild + '.html' )).then(() => {
 			return browser.findElements( webdriver.By.xpath( '//*[@id="mocha-report"]/*' ));
 		}).then( reportChildren => {
 			expect( reportChildren ).to.have.lengthOf.above( 0 );
