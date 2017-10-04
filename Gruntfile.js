@@ -98,17 +98,17 @@ module.exports = function gruntInit( grunt ) {
 				dest: 'build/isolated/src/diaspora.js',	
 			},
 			test: {
-				src:     testFiles.map( v =>  `./test/browser/sources/${  v }` ),
-				dest:    'test/browser/unit-tests.js',
+				src:     testFiles.map( v =>  `./test/${  v }` ),
+				dest:    'test/browser/unit-tests.es6.js',
 				options: {
 					alias: {
-						'./adapters/index.js':   './test/browser/sources/adapters/index.js',
-						'./inMemory.js':         './test/browser/sources/adapters/inMemory.js',
-						'./localStorage.js':     './test/browser/sources/adapters/localStorage.js',
-						'./models/index.js':     './test/browser/sources/models/index.js',
-						'./simple.js':           './test/browser/sources/models/simple.js',
-						'./simple-remapping.js': './test/browser/sources/models/simple-remapping.js',
-						'./validations.js':      './test/browser/sources/models/validations.js',
+						'./adapters/index.js':   './test/adapters/index.js',
+						'./inMemory.js':         './test/adapters/inMemory.js',
+						'./localStorage.js':     './test/adapters/localStorage.js',
+						'./models/index.js':     './test/models/index.js',
+						'./simple.js':           './test/models/simple.js',
+						'./simple-remapping.js': './test/models/simple-remapping.js',
+						'./validations.js':      './test/models/validations.js',
 					},
 					//					require:  grunt.file.expand(testFiles.filter(v => v !== 'index.js').map(v => './test/browser/sources/' + v)).map(v => path.relative('./test/browser/sources', v)),
 					exclude: [ './browser/selenium.js', './config.js', 'chai', '../diaspora', 'path', 'chalk', 'stack-trace', 'expect.js', 'node-localstorage', 'fs' ],
@@ -140,13 +140,16 @@ module.exports = function gruntInit( grunt ) {
 			},
 			test: {
 				options: {
-					sourceMap: false,
+					sourceMap:  false,
+//					sourceType: 'script',
+					presets:    [
+						[ 'es2015', {modules: false}],
+					],
 				},
 				files: [{
 					expand: true,
-					cwd:    'test',
-					src:    testFiles,
-					dest:   'test/browser/sources',
+					src:    'test/browser/unit-tests.es6.js',
+					dest:   './',
 					ext:    '.js',
 				}],
 			},
@@ -239,7 +242,7 @@ module.exports = function gruntInit( grunt ) {
 		'documentate',
 	]);
 	grunt.registerTask( 'refreshTests', [
-		'babel:test',
 		'browserify:test',
+		'babel:test',
 	]);
 };
