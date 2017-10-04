@@ -6,7 +6,7 @@ expect = chai.expect;
 
 const getTestPath = fileName => {
 	if ( process.env.SAUCE_USERNAME != undefined ) {
-		return `http://localhost:8000/test/browserTests/${ fileName }`;
+		return `http://localhost:8000/test/browser/${ fileName }`;
 	} else {
 		return `file://${ path.resolve( __dirname, fileName ) }`;
 	}
@@ -30,7 +30,7 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 				.usingServer( `http://${  process.env.SAUCE_USERNAME  }:${  process.env.SAUCE_ACCESS_KEY  }@ondemand.saucelabs.com:80/wd/hub` )
 				.withCapabilities({
 					'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
-					build:               process.env.TRAVIS_BUILD_NUMBER,
+					build:               process.env.TRAVIS_BUILD_NUMBER + ' Diaspora',
 					username:            process.env.SAUCE_USERNAME,
 					accessKey:           process.env.SAUCE_ACCESS_KEY,
 					browserName:         process.env.BROWSER_NAME,
