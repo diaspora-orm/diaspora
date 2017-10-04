@@ -18,7 +18,9 @@
 			},
 		});
 		expect( testModel ).to.be.an( 'object' );
-		expect( testModel.constructor.name ).to.be.eql( 'Model' );
+		if ( 'undefined' === typeof window ) {
+			expect( testModel.constructor.name ).to.be.eql( 'Model' );
+		}
 	});
 	it( 'Should be able to create an entity of the defined model.', () => {
 		const entity1 = testModel.spawn();
@@ -143,50 +145,50 @@
 				expect( testModel ).to.respondTo( 'update' );
 				return Promise.resolve()
 					.then(() => checkUpdate({
-						foo: undefined,
-					}, {
-						foo: 'qux',
-					}, false ))
+					foo: undefined,
+				}, {
+					foo: 'qux',
+				}, false ))
 					.then(() => checkUpdate({
-						foo: 'baz',
-					}, {
-						foo: 'qux',
-					}, false ))
+					foo: 'baz',
+				}, {
+					foo: 'qux',
+				}, false ))
 					.then(() => checkUpdate({
-						foo: 'bar',
-					}, {
-						foo: undefined,
-					}, false ));
+					foo: 'bar',
+				}, {
+					foo: undefined,
+				}, false ));
 			});
 			it( 'Update multiple instances', () => {
 				//process.exit()
 				expect( testModel ).to.respondTo( 'updateMany' );
 				return Promise.resolve()
 					.then(() => checkUpdate({
-						foo: undefined,
-					}, {
-						foo: 'bar',
-					}, true ).then( foundEntities => {
-						expect( foundEntities ).to.have.lengthOf( 2 );
-						return Promise.resolve();
-					}))
+					foo: undefined,
+				}, {
+					foo: 'bar',
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 2 );
+					return Promise.resolve();
+				}))
 					.then(() => checkUpdate({
-						foo: 'baz',
-					}, {
-						foo: undefined,
-					}, true ).then( foundEntities => {
-						expect( foundEntities ).to.have.lengthOf( 1 );
-						return Promise.resolve();
-					}))
+					foo: 'baz',
+				}, {
+					foo: undefined,
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 1 );
+					return Promise.resolve();
+				}))
 					.then(() => checkUpdate({
-						foo: 'bat',
-					}, {
-						foo: 'twy',
-					}, true )
+					foo: 'bat',
+				}, {
+					foo: 'twy',
+				}, true )
 						  .then( foundEntities => {
-							expect( foundEntities ).to.have.lengthOf( 0 );
-							return Promise.resolve();
-						}));
+					expect( foundEntities ).to.have.lengthOf( 0 );
+					return Promise.resolve();
+				}));
 			});
 		});
 		describe( '- Delete instances', () => {
@@ -214,11 +216,11 @@
 				expect( testModel ).to.respondTo( 'delete' );
 				return Promise.resolve()
 					.then(() => checkDestroy({
-						foo: undefined,
-					}, false ))
+					foo: undefined,
+				}, false ))
 					.then(() => checkDestroy({
-						foo: 'bar',
-					}, false ));
+					foo: 'bar',
+				}, false ));
 			});
 			it( 'Delete multiple instances', () => {
 				expect( testModel ).to.respondTo( 'deleteMany' );
@@ -243,7 +245,7 @@
 			testedEntity = testModel.spawn( object );
 			expect( testedEntity ).to.be.an.entity( testModel, object, true );
 			const retPromise = testedEntity.persist();
-//			expect( testedEntity.getState()).to.be.eql( 'syncing' );
+			//			expect( testedEntity.getState()).to.be.eql( 'syncing' );
 			expect( testedEntity ).to.be.an.entity( testModel, object, null );
 			return retPromise.then(() => {
 				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
@@ -256,7 +258,7 @@
 			return testModel.find( object ).then( entity => {
 				expect( entity ).to.respondTo( 'fetch' );
 				expect( entity ).to.be.an.entity( testModel, object, SOURCE );
-				entity.foo = 1;
+				entity.foo = 'baz';
 				expect( entity ).to.be.an.entity( testModel, {
 					foo: 'baz',
 				}, SOURCE );

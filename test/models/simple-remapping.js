@@ -39,7 +39,9 @@
 			},
 		});
 		expect( testModel ).to.be.an( 'object' );
-		expect( testModel.constructor.name ).to.be.eql( 'Model' );
+		if ( 'undefined' === typeof window ) {
+			expect( testModel.constructor.name ).to.be.eql( 'Model' );
+		}
 		store = Diaspora.dataSources.test.inMemory.store.remapped;
 	});
 	it( 'Should be able to create an entity of the defined model.', () => {
