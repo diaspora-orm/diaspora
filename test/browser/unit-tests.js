@@ -1,4 +1,700 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./adapters/index.js":[function(require,module,exports){
+'use strict';
+
+var styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
+
+importTest(styleFunction('In Memory'), './inMemory.js');
+importTest(styleFunction('Local Storage'), './localStorage.js');
+
+},{}],"./inMemory.js":[function(require,module,exports){
+'use strict';
+
+(function () {
+	var AdapterTestUtils = require('./utils');
+	var ADAPTER_LABEL = 'in-memory';
+
+	AdapterTestUtils.createDataSource(ADAPTER_LABEL, {});
+	AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'InMemory');
+	AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);
+	AdapterTestUtils.checkApplications(ADAPTER_LABEL);
+	AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'inMemory');
+})();
+
+},{"./utils":6}],"./localStorage.js":[function(require,module,exports){
+(function (global){
+'use strict';
+
+(function () {
+	var ADAPTER_LABEL = 'localstorage';
+	var adapterConfig = getConfig(ADAPTER_LABEL);
+
+	if ('undefined' === typeof window) {
+		if (!adapterConfig.data_dir) {
+			it('LocalStorage adapter unconfigured', function () {
+				this.skip();
+			});
+		}
+
+		var LocalStorage = require('node-localstorage').LocalStorage;
+		var fs = require('fs');
+		var localStorageDir = adapterConfig.data_dir;
+		global.localStorage = new LocalStorage(localStorageDir);
+		localStorage.clear();
+	} else {
+		localStorage.clear();
+		sessionStorage.clear();
+	}
+
+	var AdapterTestUtils = require('./utils');
+
+	AdapterTestUtils.createDataSource(ADAPTER_LABEL, {}, 'localStorage');
+	AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'LocalStorage', 'localStorage');
+	AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL, 'localStorage');
+	AdapterTestUtils.checkApplications(ADAPTER_LABEL, 'localStorage');
+	AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'localStorage', 'localStorage');
+	if ('undefined' !== typeof window) {
+		AdapterTestUtils.createDataSource(ADAPTER_LABEL, {
+			session: true
+		}, 'sessionStorage');
+		AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'SessionStorage', 'sessionStorage');
+		AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL, 'sessionStorage');
+		AdapterTestUtils.checkApplications(ADAPTER_LABEL, 'sessionStorage');
+		AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'sessionStorage', 'sessionStorage');
+	}
+})();
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./utils":6,"fs":undefined,"node-localstorage":undefined}],"./models/index.js":[function(require,module,exports){
+'use strict';
+
+var styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
+
+importTest(styleFunction('Simple model (single source)'), './simple.js');
+importTest(styleFunction('Simple model with remapping (single source)'), './simple-remapping.js');
+importTest(styleFunction('Simple model with validations (single source)'), './validations.js');
+
+},{}],"./simple-remapping.js":[function(require,module,exports){
+'use strict';
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+(function () {
+	var testModel = void 0;
+	var store = void 0;
+	var testedEntity = void 0;
+	var MODEL_NAME = 'remapped';
+	var SOURCE = 'inMemory';
+
+	var checkDataStoreRemap = function checkDataStoreRemap(item, propsObject) {
+		var dataStoreItem = l.find(store.items, {
+			id: item.dataSources.inMemory.id
+		});
+		expect(dataStoreItem).to.not.have.property('foo');
+		if (propsObject) {
+			if (c.assigned(propsObject.foo)) {
+				expect(dataStoreItem).to.be.an('object').that.have.property('bar', propsObject.foo);
+			} else {
+				expect(dataStoreItem).to.satisfy(function (obj) {
+					return !obj.hasOwnProperty('bar') || c.undefined(obj.bar);
+				});
+			}
+		}
+	};
+
+	it('Should create a model', function () {
+		testModel = Diaspora.declareModel('test', MODEL_NAME, {
+			sources: _defineProperty({}, SOURCE, {
+				foo: 'bar'
+			}),
+			schema: false,
+			attributes: {
+				foo: {
+					type: 'string'
+				}
+			}
+		});
+		expect(testModel).to.be.an('object');
+		expect(testModel.constructor.name).to.be.eql('Model');
+		store = Diaspora.dataSources.test.inMemory.store.remapped;
+	});
+	it('Should be able to create an entity of the defined model.', function () {
+		var entity1 = testModel.spawn();
+		expect(entity1).to.be.an.entity(testModel, {}, true);
+		var entity2 = testModel.spawn({
+			foo: 'bar'
+		});
+		expect(entity2).to.be.an.entity(testModel, {
+			foo: 'bar'
+		}, true);
+	});
+	it('Should be able to create multiple entities.', function () {
+		var objects = [{
+			foo: 'bar'
+		}, undefined];
+		var entities = testModel.spawnMulti(objects);
+		expect(entities).to.be.a.set.of.entity(testModel, objects, true).that.have.lengthOf(2);
+	});
+	describe('Should be able to use model methods to find, update, delete & create', function () {
+		describe('- Create instances', function () {
+			it('Create a single instance', function () {
+				expect(testModel).to.respondTo('insert');
+				var object = {
+					foo: 'bar'
+				};
+				return testModel.insert(object).then(function (newEntity) {
+					expect(newEntity).to.be.an.entity(testModel, object, 'inMemory');
+					checkDataStoreRemap(newEntity, object);
+				});
+			});
+			it('Create multiple instances', function () {
+				expect(testModel).to.respondTo('insertMany');
+				var objects = [{
+					foo: 'baz'
+				}, undefined, {
+					foo: undefined
+				}, {
+					foo: 'baz'
+				}];
+				return testModel.insertMany(objects).then(function (newEntities) {
+					expect(newEntities).to.be.a.set.of.entity(testModel, objects, 'inMemory').that.have.lengthOf(4);
+					return Promise.map(newEntities, function (newEntity, index) {
+						var object = objects[index];
+						checkDataStoreRemap(newEntity, object);
+					});
+				});
+			});
+		});
+		describe('- Find instances', function () {
+			function checkFind(query) {
+				var many = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+				return testModel[many ? 'findMany' : 'find'](query).then(function (foundEntities) {
+					if (many) {
+						expect(foundEntities).to.be.a.set.of.entity(testModel, query, SOURCE);
+					} else if (c.assigned(foundEntities)) {
+						expect(foundEntities).to.be.an.entity(testModel, query, SOURCE);
+					}
+					return Promise.resolve(foundEntities);
+				});
+			}
+			it('Find a single instance', function () {
+				expect(testModel).to.respondTo('find');
+				return Promise.mapSeries([{
+					foo: undefined
+				}, {
+					foo: 'baz'
+				}, {
+					foo: 'bar'
+				}], function (item) {
+					return checkFind(item, false);
+				});
+			});
+			it('Find multiple instances', function () {
+				expect(testModel).to.respondTo('findMany');
+				return Promise.mapSeries([{
+					query: {
+						foo: undefined
+					},
+					length: 2
+				}, {
+					query: {
+						foo: 'baz'
+					},
+					length: 2
+				}, {
+					query: {
+						foo: 'bar'
+					},
+					length: 1
+				}], function (item) {
+					return checkFind(item.query, true).then(function (foundEntities) {
+						expect(foundEntities).to.have.lengthOf(item.length);
+					});
+				});
+			});
+			it('Find all instances', function () {
+				return testModel.findMany({}).then(function (foundEntities) {
+					expect(foundEntities).to.have.lengthOf(5);
+				});
+			});
+		});
+		describe('- Update instances', function () {
+			function checkUpdate(query, update) {
+				var many = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+				return testModel[many ? 'updateMany' : 'update'](query, update).then(function (updatedEntities) {
+					if (many) {
+						expect(updatedEntities).to.be.a.set.of.entity(testModel, update, SOURCE);
+						l.forEach(updatedEntities, function (updatedEntity) {
+							checkDataStoreRemap(updatedEntity, update);
+						});
+					} else if (c.assigned(updatedEntities)) {
+						expect(updatedEntities).to.be.an.entity(testModel, update, SOURCE);
+						checkDataStoreRemap(updatedEntities, update);
+					}
+					return Promise.resolve(updatedEntities);
+				});
+			}
+			it('Update a single instance', function () {
+				expect(testModel).to.respondTo('update');
+				return Promise.resolve().then(function () {
+					return checkUpdate({
+						foo: undefined
+					}, {
+						foo: 'qux'
+					}, false);
+				}).then(function () {
+					return checkUpdate({
+						foo: 'baz'
+					}, {
+						foo: 'qux'
+					}, false);
+				}).then(function () {
+					return checkUpdate({
+						foo: 'bar'
+					}, {
+						foo: undefined
+					}, false);
+				});
+			});
+			it('Update multiple instances', function () {
+				expect(testModel).to.respondTo('updateMany');
+				return Promise.resolve().then(function () {
+					return checkUpdate({
+						foo: undefined
+					}, {
+						foo: 'bar'
+					}, true).then(function (foundEntities) {
+						expect(foundEntities).to.have.lengthOf(2);
+						return Promise.resolve();
+					});
+				}).then(function () {
+					return checkUpdate({
+						foo: 'baz'
+					}, {
+						foo: undefined
+					}, true).then(function (foundEntities) {
+						expect(foundEntities).to.have.lengthOf(1);
+						return Promise.resolve();
+					});
+				}).then(function () {
+					return checkUpdate({
+						foo: 'bat'
+					}, {
+						foo: 'twy'
+					}, true).then(function (foundEntities) {
+						expect(foundEntities).to.have.lengthOf(0);
+						return Promise.resolve();
+					});
+				});
+			});
+		});
+		describe('- Delete instances', function () {
+			function checkDestroy(query) {
+				var many = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+				return testModel.findMany(query).then(function (entities) {
+					return Promise.resolve(entities.length);
+				}).then(function (beforeCount) {
+					return testModel[many ? 'deleteMany' : 'delete'](query).then(function () {
+						return Promise.resolve(beforeCount);
+					});
+				}).then(function (beforeCount) {
+					return testModel.findMany(query).then(function (entities) {
+						return Promise.resolve({
+							before: beforeCount,
+							after: entities.length
+						});
+					});
+				}).then(function (result) {
+					if (many || 0 === result.before) {
+						expect(result.after).to.be.equal(0);
+					} else {
+						expect(result.after).to.be.equal(result.before - 1);
+					}
+				});
+			}
+			it('Delete a single instance', function () {
+				expect(testModel).to.respondTo('delete');
+				return Promise.resolve().then(function () {
+					return checkDestroy({
+						foo: undefined
+					}, false);
+				}).then(function () {
+					return checkDestroy({
+						foo: 'bar'
+					}, false);
+				});
+			});
+			it('Delete multiple instances', function () {
+				expect(testModel).to.respondTo('deleteMany');
+				return Promise.resolve().then(function () {
+					return checkDestroy({
+						foo: undefined
+					}, true);
+				}).then(function () {
+					return checkDestroy({
+						foo: 'baz'
+					}, true);
+				}).then(function () {
+					return checkDestroy({
+						foo: 'qux'
+					}, true);
+				});
+			});
+			it('Delete all instances', function () {
+				return testModel.deleteMany({});
+			});
+		});
+	});
+	describe('Should be able to persist, fetch & delete an entity of the defined model.', function () {
+		it('Persist should change the entity', function () {
+			var object = {
+				foo: 'bar'
+			};
+			testedEntity = testModel.spawn(object);
+			expect(testedEntity).to.be.an.entity(testModel, object, true);
+			var retPromise = testedEntity.persist();
+			expect(testedEntity.getState()).to.be.eql('syncing');
+			expect(testedEntity).to.be.an.entity(testModel, object, null);
+			return retPromise.then(function () {
+				expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
+			});
+		});
+		it('Fetch should change the entity', function () {
+			var object = {
+				foo: 'bar'
+			};
+			return testModel.find(object).then(function (entity) {
+				expect(entity).to.respondTo('fetch');
+				expect(entity).to.be.an.entity(testModel, object, SOURCE);
+				entity.foo = 'baz';
+				expect(entity).to.be.an.entity(testModel, {
+					foo: 'baz'
+				}, SOURCE);
+				var retPromise = entity.fetch();
+				return retPromise.then(function () {
+					expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
+				});
+			});
+		});
+		it('Destroy should change the entity', function () {
+			var object = {
+				foo: 'bar'
+			};
+			return testModel.find(object).then(function (entity) {
+				expect(entity).to.respondTo('destroy');
+				expect(entity).to.be.an.entity(testModel, object, SOURCE);
+				var retPromise = entity.destroy();
+				return retPromise.then(function () {
+					expect(entity.getLastDataSource()).to.be.eql(SOURCE);
+					expect(entity.getState()).to.be.eql('orphan');
+					expect(entity).to.be.an.entity(testModel, {}, null);
+				});
+			});
+		});
+	});
+})();
+
+},{}],"./simple.js":[function(require,module,exports){
+'use strict';
+
+(function () {
+	var testModel = void 0;
+	var testedEntity = void 0;
+	var MODEL_NAME = 'testModel';
+	var SOURCE = 'inMemory';
+
+	it('Should create a model', function () {
+		testModel = Diaspora.declareModel('test', MODEL_NAME, {
+			sources: [SOURCE],
+			schema: false,
+			attributes: {
+				foo: {
+					type: 'string'
+				}
+			}
+		});
+		expect(testModel).to.be.an('object');
+		expect(testModel.constructor.name).to.be.eql('Model');
+	});
+	it('Should be able to create an entity of the defined model.', function () {
+		var entity1 = testModel.spawn();
+		expect(entity1).to.be.an.entity(testModel, {}, true);
+		var entity2 = testModel.spawn({
+			foo: 'bar'
+		});
+		expect(entity2).to.be.an.entity(testModel, {
+			foo: 'bar'
+		}, true);
+	});
+	it('Should be able to create multiple entities.', function () {
+		var objects = [{
+			foo: 'bar'
+		}, undefined];
+		var entities = testModel.spawnMulti(objects);
+		expect(entities).to.be.a.set.of.entity(testModel, objects, true).that.have.lengthOf(2);
+	});
+	describe('Should be able to use model methods to find, update, delete & create', function () {
+		describe('- Create instances', function () {
+			it('Create a single instance', function () {
+				expect(testModel).to.respondTo('insert');
+				var object = {
+					foo: 'bar'
+				};
+				return testModel.insert(object).then(function (newEntity) {
+					expect(newEntity).to.be.an.entity(testModel, object, 'inMemory');
+					return Promise.resolve();
+				});
+			});
+			it('Create multiple instances', function () {
+				expect(testModel).to.respondTo('insertMany');
+				var objects = [{
+					foo: 'baz'
+				}, undefined, {
+					foo: undefined
+				}, {
+					foo: 'baz'
+				}];
+				return testModel.insertMany(objects).then(function (newEntities) {
+					expect(newEntities).to.be.a.set.of.entity(testModel, objects, 'inMemory').that.have.lengthOf(4);
+					return Promise.resolve();
+				});
+			});
+		});
+		describe('- Find instances', function () {
+			function checkFind(query) {
+				var many = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+				return testModel[many ? 'findMany' : 'find'](query).then(function (foundEntities) {
+					if (many) {
+						expect(foundEntities).to.be.a.set.of.entity(testModel, query, SOURCE);
+					} else if (c.assigned(foundEntities)) {
+						expect(foundEntities).to.be.an.entity(testModel, query, SOURCE);
+					}
+					return Promise.resolve(foundEntities);
+				});
+			}
+			it('Find a single instance', function () {
+				expect(testModel).to.respondTo('find');
+				return Promise.mapSeries([{
+					foo: undefined
+				}, {
+					foo: 'baz'
+				}, {
+					foo: 'bar'
+				}], function (item) {
+					return checkFind(item, false);
+				});
+			});
+			it('Find multiple instances', function () {
+				expect(testModel).to.respondTo('findMany');
+				return Promise.mapSeries([{
+					query: {
+						foo: undefined
+					},
+					length: 2
+				}, {
+					query: {
+						foo: 'baz'
+					},
+					length: 2
+				}, {
+					query: {
+						foo: 'bar'
+					},
+					length: 1
+				}], function (item) {
+					return checkFind(item.query, true).then(function (foundEntities) {
+						expect(foundEntities).to.have.lengthOf(item.length);
+					});
+				});
+			});
+			it('Find all instances', function () {
+				return testModel.findMany({}).then(function (foundEntities) {
+					expect(foundEntities).to.have.lengthOf(5);
+				});
+			});
+		});
+		describe('- Update instances', function () {
+			function checkUpdate(query, update) {
+				var many = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+				return testModel[many ? 'updateMany' : 'update'](query, update).then(function (updatedEntities) {
+					if (many) {
+						expect(updatedEntities).to.be.a.set.of.entity(testModel, update, SOURCE);
+					} else if (c.assigned(updatedEntities)) {
+						expect(updatedEntities).to.be.an.entity(testModel, update, SOURCE);
+					}
+					return Promise.resolve(updatedEntities);
+				});
+			}
+			it('Update a single instance', function () {
+				expect(testModel).to.respondTo('update');
+				return Promise.resolve().then(function () {
+					return checkUpdate({
+						foo: undefined
+					}, {
+						foo: 'qux'
+					}, false);
+				}).then(function () {
+					return checkUpdate({
+						foo: 'baz'
+					}, {
+						foo: 'qux'
+					}, false);
+				}).then(function () {
+					return checkUpdate({
+						foo: 'bar'
+					}, {
+						foo: undefined
+					}, false);
+				});
+			});
+			it('Update multiple instances', function () {
+				//process.exit()
+				expect(testModel).to.respondTo('updateMany');
+				return Promise.resolve().then(function () {
+					return checkUpdate({
+						foo: undefined
+					}, {
+						foo: 'bar'
+					}, true).then(function (foundEntities) {
+						expect(foundEntities).to.have.lengthOf(2);
+						return Promise.resolve();
+					});
+				}).then(function () {
+					return checkUpdate({
+						foo: 'baz'
+					}, {
+						foo: undefined
+					}, true).then(function (foundEntities) {
+						expect(foundEntities).to.have.lengthOf(1);
+						return Promise.resolve();
+					});
+				}).then(function () {
+					return checkUpdate({
+						foo: 'bat'
+					}, {
+						foo: 'twy'
+					}, true).then(function (foundEntities) {
+						expect(foundEntities).to.have.lengthOf(0);
+						return Promise.resolve();
+					});
+				});
+			});
+		});
+		describe('- Delete instances', function () {
+			function checkDestroy(query) {
+				var many = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+				return testModel.findMany(query).then(function (entities) {
+					return Promise.resolve(entities.length);
+				}).then(function (beforeCount) {
+					return testModel[many ? 'deleteMany' : 'delete'](query).then(function () {
+						return Promise.resolve(beforeCount);
+					});
+				}).then(function (beforeCount) {
+					return testModel.findMany(query).then(function (entities) {
+						return Promise.resolve({
+							before: beforeCount,
+							after: entities.length
+						});
+					});
+				}).then(function (result) {
+					if (many || 0 === result.before) {
+						expect(result.after).to.be.equal(0);
+					} else {
+						expect(result.after).to.be.equal(result.before - 1);
+					}
+				});
+			}
+			it('Delete a single instance', function () {
+				expect(testModel).to.respondTo('delete');
+				return Promise.resolve().then(function () {
+					return checkDestroy({
+						foo: undefined
+					}, false);
+				}).then(function () {
+					return checkDestroy({
+						foo: 'bar'
+					}, false);
+				});
+			});
+			it('Delete multiple instances', function () {
+				expect(testModel).to.respondTo('deleteMany');
+				return Promise.resolve().then(function () {
+					return checkDestroy({
+						foo: undefined
+					}, true);
+				}).then(function () {
+					return checkDestroy({
+						foo: 'baz'
+					}, true);
+				}).then(function () {
+					return checkDestroy({
+						foo: 'qux'
+					}, true);
+				});
+			});
+			it('Delete all instances', function () {
+				return testModel.deleteMany({});
+			});
+		});
+	});
+	describe('Should be able to persist, fetch & delete an entity of the defined model.', function () {
+		it('Persist should change the entity', function () {
+			var object = {
+				foo: 'bar'
+			};
+			testedEntity = testModel.spawn(object);
+			expect(testedEntity).to.be.an.entity(testModel, object, true);
+			var retPromise = testedEntity.persist();
+			//			expect( testedEntity.getState()).to.be.eql( 'syncing' );
+			expect(testedEntity).to.be.an.entity(testModel, object, null);
+			return retPromise.then(function () {
+				expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
+			});
+		});
+		it('Fetch should change the entity', function () {
+			var object = {
+				foo: 'bar'
+			};
+			return testModel.find(object).then(function (entity) {
+				expect(entity).to.respondTo('fetch');
+				expect(entity).to.be.an.entity(testModel, object, SOURCE);
+				entity.foo = 1;
+				expect(entity).to.be.an.entity(testModel, {
+					foo: 'baz'
+				}, SOURCE);
+				var retPromise = entity.fetch();
+				return retPromise.then(function () {
+					expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
+				});
+			});
+		});
+		it('Destroy should change the entity', function () {
+			var object = {
+				foo: 'bar'
+			};
+			return testModel.find(object).then(function (entity) {
+				expect(entity).to.respondTo('destroy');
+				expect(entity).to.be.an.entity(testModel, object, SOURCE);
+				var retPromise = entity.destroy();
+				return retPromise.then(function () {
+					expect(entity.getLastDataSource()).to.be.eql(SOURCE);
+					expect(entity.getState()).to.be.eql('orphan');
+					expect(entity).to.be.an.entity(testModel, {}, null);
+				});
+			});
+		});
+	});
+})();
+
+},{}],"./validations.js":[function(require,module,exports){
+"use strict";
+
+},{}],1:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)
@@ -24101,72 +24797,6 @@ process.umask = function() { return 0; };
 },{}],6:[function(require,module,exports){
 'use strict';
 
-(function () {
-	var AdapterTestUtils = require('./utils');
-	var ADAPTER_LABEL = 'in-memory';
-
-	AdapterTestUtils.createDataSource(ADAPTER_LABEL, {});
-	AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'InMemory');
-	AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);
-	AdapterTestUtils.checkApplications(ADAPTER_LABEL);
-	AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'inMemory');
-})();
-
-},{"./utils":9}],7:[function(require,module,exports){
-'use strict';
-
-var styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
-
-importTest(styleFunction('In Memory'), './inMemory.js');
-importTest(styleFunction('Local Storage'), './localStorage.js');
-
-},{}],8:[function(require,module,exports){
-(function (global){
-'use strict';
-
-(function () {
-	var ADAPTER_LABEL = 'localstorage';
-	var adapterConfig = getConfig(ADAPTER_LABEL);
-
-	if ('undefined' === typeof window) {
-		if (!adapterConfig.data_dir) {
-			it('LocalStorage adapter unconfigured', function () {
-				this.skip();
-			});
-		}
-
-		var LocalStorage = require('node-localstorage').LocalStorage;
-		var fs = require('fs');
-		var localStorageDir = adapterConfig.data_dir;
-		global.localStorage = new LocalStorage(localStorageDir);
-		localStorage.clear();
-	} else {
-		localStorage.clear();
-		sessionStorage.clear();
-	}
-
-	var AdapterTestUtils = require('./utils');
-
-	AdapterTestUtils.createDataSource(ADAPTER_LABEL, {}, 'localStorage');
-	AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'LocalStorage', 'localStorage');
-	AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL, 'localStorage');
-	AdapterTestUtils.checkApplications(ADAPTER_LABEL, 'localStorage');
-	AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'localStorage', 'localStorage');
-	if ('undefined' !== typeof window) {
-		AdapterTestUtils.createDataSource(ADAPTER_LABEL, {
-			session: true
-		}, 'sessionStorage');
-		AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL, 'SessionStorage', 'sessionStorage');
-		AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL, 'sessionStorage');
-		AdapterTestUtils.checkApplications(ADAPTER_LABEL, 'sessionStorage');
-		AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL, 'sessionStorage', 'sessionStorage');
-	}
-})();
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./utils":9,"fs":undefined,"node-localstorage":undefined}],9:[function(require,module,exports){
-'use strict';
-
 var Promise = require('bluebird');
 var l = require('lodash');
 
@@ -25035,7 +25665,7 @@ if ('undefined' !== typeof define) {
 	module.exports = AdapterTestUtils;
 }
 
-},{"../testApps/adapters/index":17,"bluebird":1,"lodash":4}],10:[function(require,module,exports){
+},{"../testApps/adapters/index":10,"bluebird":1,"lodash":4}],7:[function(require,module,exports){
 (function (process,global){
 'use strict';
 
@@ -25066,39 +25696,42 @@ if ('undefined' === typeof window) {
 } else {
 	glob.config = {};
 	glob.getCurrentDir = function () {
-		return absolute(currentPath, './');
+		return '';
+		var scriptPath = '';
+		try {
+			//Throw an error to generate a stack trace
+			throw new Error();
+		} catch (e) {
+			console.log(e, e.stack);
+			//Split the stack trace into each line
+			var stackLines = e.stack.split('\n');
+			console.log(stackLines);
+			var callerIndex = 0;
+			//Now walk though each line until we find a path reference
+			for (var i in stackLines) {
+				if (!stackLines[i].match(/(?:https?|file):\/\//)) {
+					continue;
+				}
+				//We skipped all the lines with out an http so we now have a script reference
+				//This one is the class constructor, the next is the getScriptPath() call
+				//The one after that is the user code requesting the path info (so offset by 2)
+				callerIndex = Number(i) + 2;
+				break;
+			}
+			//Now parse the string for each section we want to return
+			pathParts = stackLines[callerIndex].match(/((?:https?|file):\/\/.+\/)([^\/]+\.js)/);
+			return pathParts[1];
+		}
 	};
 }
-/**
- * @see https://stackoverflow.com/a/14780463/4839162
- * @param   {string}   base     [[Description]]
- * @param   {string}   relative [[Description]]
- * @returns {[[Type]]} [[Description]]
- */
-function absolute(base, relative) {
-	var stack = base.split("/"),
-	    parts = relative.split("/");
-	stack.pop(); // remove current file name (or empty string)
-	// (omit if "base" is the current folder without trailing slash)
-	for (var i = 0; i < parts.length; i++) {
-		if (parts[i] == ".") continue;
-		if (parts[i] == "..") stack.pop();else stack.push(parts[i]);
-	}
-	return stack.join("/");
-}
-
-glob.currentPath = './test/browser/sources/index.js';
 
 glob.getConfig = function (adapterName) {
 	return config && config[adapterName] || {};
 };
 
 glob.importTest = function (name, modulePath) {
-	var fullPath = 'undefined' === typeof window ? path.resolve(getCurrentDir(), modulePath) : absolute(currentPath, modulePath);
-	console.log({ fullPath: fullPath, getCurrentDir: getCurrentDir() });
+	var fullPath = 'undefined' === typeof window ? path.resolve(getCurrentDir(), modulePath) : modulePath;
 	describe(name, function () {
-		currentPath = fullPath;
-		console.log(currentPath);
 		require(fullPath);
 	});
 };
@@ -25265,7 +25898,7 @@ chai.use(function (_chai, utils) {
 });
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./config.js":undefined,"_process":5,"bluebird":1,"chai":undefined,"chalk":undefined,"check-types":2,"lodash":4,"path":undefined,"sequential-event":18,"stack-trace":undefined}],11:[function(require,module,exports){
+},{"./config.js":undefined,"_process":5,"bluebird":1,"chai":undefined,"chalk":undefined,"check-types":2,"lodash":4,"path":undefined,"sequential-event":11,"stack-trace":undefined}],8:[function(require,module,exports){
 (function (process,global){
 'use strict';
 
@@ -25595,637 +26228,7 @@ if ('undefined' === typeof window && process.env.NO_SAUCE !== 'true') {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../diaspora":undefined,"./browser/selenium.js":undefined,"./defineGlobals":10,"_process":5,"expect.js":undefined}],12:[function(require,module,exports){
-'use strict';
-
-var styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
-
-importTest(styleFunction('Simple model (single source)'), './simple.js');
-importTest(styleFunction('Simple model with remapping (single source)'), './simple-remapping.js');
-importTest(styleFunction('Simple model with validations (single source)'), './validations.js');
-
-},{}],13:[function(require,module,exports){
-'use strict';
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-(function () {
-	var testModel = void 0;
-	var store = void 0;
-	var testedEntity = void 0;
-	var MODEL_NAME = 'remapped';
-	var SOURCE = 'inMemory';
-
-	var checkDataStoreRemap = function checkDataStoreRemap(item, propsObject) {
-		var dataStoreItem = l.find(store.items, {
-			id: item.dataSources.inMemory.id
-		});
-		expect(dataStoreItem).to.not.have.property('foo');
-		if (propsObject) {
-			if (c.assigned(propsObject.foo)) {
-				expect(dataStoreItem).to.be.an('object').that.have.property('bar', propsObject.foo);
-			} else {
-				expect(dataStoreItem).to.satisfy(function (obj) {
-					return !obj.hasOwnProperty('bar') || c.undefined(obj.bar);
-				});
-			}
-		}
-	};
-
-	it('Should create a model', function () {
-		testModel = Diaspora.declareModel('test', MODEL_NAME, {
-			sources: _defineProperty({}, SOURCE, {
-				foo: 'bar'
-			}),
-			schema: false,
-			attributes: {
-				foo: {
-					type: 'string'
-				}
-			}
-		});
-		expect(testModel).to.be.an('object');
-		expect(testModel.constructor.name).to.be.eql('Model');
-		store = Diaspora.dataSources.test.inMemory.store.remapped;
-	});
-	it('Should be able to create an entity of the defined model.', function () {
-		var entity1 = testModel.spawn();
-		expect(entity1).to.be.an.entity(testModel, {}, true);
-		var entity2 = testModel.spawn({
-			foo: 'bar'
-		});
-		expect(entity2).to.be.an.entity(testModel, {
-			foo: 'bar'
-		}, true);
-	});
-	it('Should be able to create multiple entities.', function () {
-		var objects = [{
-			foo: 'bar'
-		}, undefined];
-		var entities = testModel.spawnMulti(objects);
-		expect(entities).to.be.a.set.of.entity(testModel, objects, true).that.have.lengthOf(2);
-	});
-	describe('Should be able to use model methods to find, update, delete & create', function () {
-		describe('- Create instances', function () {
-			it('Create a single instance', function () {
-				expect(testModel).to.respondTo('insert');
-				var object = {
-					foo: 'bar'
-				};
-				return testModel.insert(object).then(function (newEntity) {
-					expect(newEntity).to.be.an.entity(testModel, object, 'inMemory');
-					checkDataStoreRemap(newEntity, object);
-				});
-			});
-			it('Create multiple instances', function () {
-				expect(testModel).to.respondTo('insertMany');
-				var objects = [{
-					foo: 'baz'
-				}, undefined, {
-					foo: undefined
-				}, {
-					foo: 'baz'
-				}];
-				return testModel.insertMany(objects).then(function (newEntities) {
-					expect(newEntities).to.be.a.set.of.entity(testModel, objects, 'inMemory').that.have.lengthOf(4);
-					return Promise.map(newEntities, function (newEntity, index) {
-						var object = objects[index];
-						checkDataStoreRemap(newEntity, object);
-					});
-				});
-			});
-		});
-		describe('- Find instances', function () {
-			function checkFind(query) {
-				var many = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-				return testModel[many ? 'findMany' : 'find'](query).then(function (foundEntities) {
-					if (many) {
-						expect(foundEntities).to.be.a.set.of.entity(testModel, query, SOURCE);
-					} else if (c.assigned(foundEntities)) {
-						expect(foundEntities).to.be.an.entity(testModel, query, SOURCE);
-					}
-					return Promise.resolve(foundEntities);
-				});
-			}
-			it('Find a single instance', function () {
-				expect(testModel).to.respondTo('find');
-				return Promise.mapSeries([{
-					foo: undefined
-				}, {
-					foo: 'baz'
-				}, {
-					foo: 'bar'
-				}], function (item) {
-					return checkFind(item, false);
-				});
-			});
-			it('Find multiple instances', function () {
-				expect(testModel).to.respondTo('findMany');
-				return Promise.mapSeries([{
-					query: {
-						foo: undefined
-					},
-					length: 2
-				}, {
-					query: {
-						foo: 'baz'
-					},
-					length: 2
-				}, {
-					query: {
-						foo: 'bar'
-					},
-					length: 1
-				}], function (item) {
-					return checkFind(item.query, true).then(function (foundEntities) {
-						expect(foundEntities).to.have.lengthOf(item.length);
-					});
-				});
-			});
-			it('Find all instances', function () {
-				return testModel.findMany({}).then(function (foundEntities) {
-					expect(foundEntities).to.have.lengthOf(5);
-				});
-			});
-		});
-		describe('- Update instances', function () {
-			function checkUpdate(query, update) {
-				var many = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-				return testModel[many ? 'updateMany' : 'update'](query, update).then(function (updatedEntities) {
-					if (many) {
-						expect(updatedEntities).to.be.a.set.of.entity(testModel, update, SOURCE);
-						l.forEach(updatedEntities, function (updatedEntity) {
-							checkDataStoreRemap(updatedEntity, update);
-						});
-					} else if (c.assigned(updatedEntities)) {
-						expect(updatedEntities).to.be.an.entity(testModel, update, SOURCE);
-						checkDataStoreRemap(updatedEntities, update);
-					}
-					return Promise.resolve(updatedEntities);
-				});
-			}
-			it('Update a single instance', function () {
-				expect(testModel).to.respondTo('update');
-				return Promise.resolve().then(function () {
-					return checkUpdate({
-						foo: undefined
-					}, {
-						foo: 'qux'
-					}, false);
-				}).then(function () {
-					return checkUpdate({
-						foo: 'baz'
-					}, {
-						foo: 'qux'
-					}, false);
-				}).then(function () {
-					return checkUpdate({
-						foo: 'bar'
-					}, {
-						foo: undefined
-					}, false);
-				});
-			});
-			it('Update multiple instances', function () {
-				expect(testModel).to.respondTo('updateMany');
-				return Promise.resolve().then(function () {
-					return checkUpdate({
-						foo: undefined
-					}, {
-						foo: 'bar'
-					}, true).then(function (foundEntities) {
-						expect(foundEntities).to.have.lengthOf(2);
-						return Promise.resolve();
-					});
-				}).then(function () {
-					return checkUpdate({
-						foo: 'baz'
-					}, {
-						foo: undefined
-					}, true).then(function (foundEntities) {
-						expect(foundEntities).to.have.lengthOf(1);
-						return Promise.resolve();
-					});
-				}).then(function () {
-					return checkUpdate({
-						foo: 'bat'
-					}, {
-						foo: 'twy'
-					}, true).then(function (foundEntities) {
-						expect(foundEntities).to.have.lengthOf(0);
-						return Promise.resolve();
-					});
-				});
-			});
-		});
-		describe('- Delete instances', function () {
-			function checkDestroy(query) {
-				var many = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-				return testModel.findMany(query).then(function (entities) {
-					return Promise.resolve(entities.length);
-				}).then(function (beforeCount) {
-					return testModel[many ? 'deleteMany' : 'delete'](query).then(function () {
-						return Promise.resolve(beforeCount);
-					});
-				}).then(function (beforeCount) {
-					return testModel.findMany(query).then(function (entities) {
-						return Promise.resolve({
-							before: beforeCount,
-							after: entities.length
-						});
-					});
-				}).then(function (result) {
-					if (many || 0 === result.before) {
-						expect(result.after).to.be.equal(0);
-					} else {
-						expect(result.after).to.be.equal(result.before - 1);
-					}
-				});
-			}
-			it('Delete a single instance', function () {
-				expect(testModel).to.respondTo('delete');
-				return Promise.resolve().then(function () {
-					return checkDestroy({
-						foo: undefined
-					}, false);
-				}).then(function () {
-					return checkDestroy({
-						foo: 'bar'
-					}, false);
-				});
-			});
-			it('Delete multiple instances', function () {
-				expect(testModel).to.respondTo('deleteMany');
-				return Promise.resolve().then(function () {
-					return checkDestroy({
-						foo: undefined
-					}, true);
-				}).then(function () {
-					return checkDestroy({
-						foo: 'baz'
-					}, true);
-				}).then(function () {
-					return checkDestroy({
-						foo: 'qux'
-					}, true);
-				});
-			});
-			it('Delete all instances', function () {
-				return testModel.deleteMany({});
-			});
-		});
-	});
-	describe('Should be able to persist, fetch & delete an entity of the defined model.', function () {
-		it('Persist should change the entity', function () {
-			var object = {
-				foo: 'bar'
-			};
-			testedEntity = testModel.spawn(object);
-			expect(testedEntity).to.be.an.entity(testModel, object, true);
-			var retPromise = testedEntity.persist();
-			expect(testedEntity.getState()).to.be.eql('syncing');
-			expect(testedEntity).to.be.an.entity(testModel, object, null);
-			return retPromise.then(function () {
-				expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
-			});
-		});
-		it('Fetch should change the entity', function () {
-			var object = {
-				foo: 'bar'
-			};
-			return testModel.find(object).then(function (entity) {
-				expect(entity).to.respondTo('fetch');
-				expect(entity).to.be.an.entity(testModel, object, SOURCE);
-				entity.foo = 'baz';
-				expect(entity).to.be.an.entity(testModel, {
-					foo: 'baz'
-				}, SOURCE);
-				var retPromise = entity.fetch();
-				return retPromise.then(function () {
-					expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
-				});
-			});
-		});
-		it('Destroy should change the entity', function () {
-			var object = {
-				foo: 'bar'
-			};
-			return testModel.find(object).then(function (entity) {
-				expect(entity).to.respondTo('destroy');
-				expect(entity).to.be.an.entity(testModel, object, SOURCE);
-				var retPromise = entity.destroy();
-				return retPromise.then(function () {
-					expect(entity.getLastDataSource()).to.be.eql(SOURCE);
-					expect(entity.getState()).to.be.eql('orphan');
-					expect(entity).to.be.an.entity(testModel, {}, null);
-				});
-			});
-		});
-	});
-})();
-
-},{}],14:[function(require,module,exports){
-'use strict';
-
-(function () {
-	var testModel = void 0;
-	var testedEntity = void 0;
-	var MODEL_NAME = 'testModel';
-	var SOURCE = 'inMemory';
-
-	it('Should create a model', function () {
-		testModel = Diaspora.declareModel('test', MODEL_NAME, {
-			sources: [SOURCE],
-			schema: false,
-			attributes: {
-				foo: {
-					type: 'string'
-				}
-			}
-		});
-		expect(testModel).to.be.an('object');
-		expect(testModel.constructor.name).to.be.eql('Model');
-	});
-	it('Should be able to create an entity of the defined model.', function () {
-		var entity1 = testModel.spawn();
-		expect(entity1).to.be.an.entity(testModel, {}, true);
-		var entity2 = testModel.spawn({
-			foo: 'bar'
-		});
-		expect(entity2).to.be.an.entity(testModel, {
-			foo: 'bar'
-		}, true);
-	});
-	it('Should be able to create multiple entities.', function () {
-		var objects = [{
-			foo: 'bar'
-		}, undefined];
-		var entities = testModel.spawnMulti(objects);
-		expect(entities).to.be.a.set.of.entity(testModel, objects, true).that.have.lengthOf(2);
-	});
-	describe('Should be able to use model methods to find, update, delete & create', function () {
-		describe('- Create instances', function () {
-			it('Create a single instance', function () {
-				expect(testModel).to.respondTo('insert');
-				var object = {
-					foo: 'bar'
-				};
-				return testModel.insert(object).then(function (newEntity) {
-					expect(newEntity).to.be.an.entity(testModel, object, 'inMemory');
-					return Promise.resolve();
-				});
-			});
-			it('Create multiple instances', function () {
-				expect(testModel).to.respondTo('insertMany');
-				var objects = [{
-					foo: 'baz'
-				}, undefined, {
-					foo: undefined
-				}, {
-					foo: 'baz'
-				}];
-				return testModel.insertMany(objects).then(function (newEntities) {
-					expect(newEntities).to.be.a.set.of.entity(testModel, objects, 'inMemory').that.have.lengthOf(4);
-					return Promise.resolve();
-				});
-			});
-		});
-		describe('- Find instances', function () {
-			function checkFind(query) {
-				var many = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-				return testModel[many ? 'findMany' : 'find'](query).then(function (foundEntities) {
-					if (many) {
-						expect(foundEntities).to.be.a.set.of.entity(testModel, query, SOURCE);
-					} else if (c.assigned(foundEntities)) {
-						expect(foundEntities).to.be.an.entity(testModel, query, SOURCE);
-					}
-					return Promise.resolve(foundEntities);
-				});
-			}
-			it('Find a single instance', function () {
-				expect(testModel).to.respondTo('find');
-				return Promise.mapSeries([{
-					foo: undefined
-				}, {
-					foo: 'baz'
-				}, {
-					foo: 'bar'
-				}], function (item) {
-					return checkFind(item, false);
-				});
-			});
-			it('Find multiple instances', function () {
-				expect(testModel).to.respondTo('findMany');
-				return Promise.mapSeries([{
-					query: {
-						foo: undefined
-					},
-					length: 2
-				}, {
-					query: {
-						foo: 'baz'
-					},
-					length: 2
-				}, {
-					query: {
-						foo: 'bar'
-					},
-					length: 1
-				}], function (item) {
-					return checkFind(item.query, true).then(function (foundEntities) {
-						expect(foundEntities).to.have.lengthOf(item.length);
-					});
-				});
-			});
-			it('Find all instances', function () {
-				return testModel.findMany({}).then(function (foundEntities) {
-					expect(foundEntities).to.have.lengthOf(5);
-				});
-			});
-		});
-		describe('- Update instances', function () {
-			function checkUpdate(query, update) {
-				var many = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-				return testModel[many ? 'updateMany' : 'update'](query, update).then(function (updatedEntities) {
-					if (many) {
-						expect(updatedEntities).to.be.a.set.of.entity(testModel, update, SOURCE);
-					} else if (c.assigned(updatedEntities)) {
-						expect(updatedEntities).to.be.an.entity(testModel, update, SOURCE);
-					}
-					return Promise.resolve(updatedEntities);
-				});
-			}
-			it('Update a single instance', function () {
-				expect(testModel).to.respondTo('update');
-				return Promise.resolve().then(function () {
-					return checkUpdate({
-						foo: undefined
-					}, {
-						foo: 'qux'
-					}, false);
-				}).then(function () {
-					return checkUpdate({
-						foo: 'baz'
-					}, {
-						foo: 'qux'
-					}, false);
-				}).then(function () {
-					return checkUpdate({
-						foo: 'bar'
-					}, {
-						foo: undefined
-					}, false);
-				});
-			});
-			it('Update multiple instances', function () {
-				//process.exit()
-				expect(testModel).to.respondTo('updateMany');
-				return Promise.resolve().then(function () {
-					return checkUpdate({
-						foo: undefined
-					}, {
-						foo: 'bar'
-					}, true).then(function (foundEntities) {
-						expect(foundEntities).to.have.lengthOf(2);
-						return Promise.resolve();
-					});
-				}).then(function () {
-					return checkUpdate({
-						foo: 'baz'
-					}, {
-						foo: undefined
-					}, true).then(function (foundEntities) {
-						expect(foundEntities).to.have.lengthOf(1);
-						return Promise.resolve();
-					});
-				}).then(function () {
-					return checkUpdate({
-						foo: 'bat'
-					}, {
-						foo: 'twy'
-					}, true).then(function (foundEntities) {
-						expect(foundEntities).to.have.lengthOf(0);
-						return Promise.resolve();
-					});
-				});
-			});
-		});
-		describe('- Delete instances', function () {
-			function checkDestroy(query) {
-				var many = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-				return testModel.findMany(query).then(function (entities) {
-					return Promise.resolve(entities.length);
-				}).then(function (beforeCount) {
-					return testModel[many ? 'deleteMany' : 'delete'](query).then(function () {
-						return Promise.resolve(beforeCount);
-					});
-				}).then(function (beforeCount) {
-					return testModel.findMany(query).then(function (entities) {
-						return Promise.resolve({
-							before: beforeCount,
-							after: entities.length
-						});
-					});
-				}).then(function (result) {
-					if (many || 0 === result.before) {
-						expect(result.after).to.be.equal(0);
-					} else {
-						expect(result.after).to.be.equal(result.before - 1);
-					}
-				});
-			}
-			it('Delete a single instance', function () {
-				expect(testModel).to.respondTo('delete');
-				return Promise.resolve().then(function () {
-					return checkDestroy({
-						foo: undefined
-					}, false);
-				}).then(function () {
-					return checkDestroy({
-						foo: 'bar'
-					}, false);
-				});
-			});
-			it('Delete multiple instances', function () {
-				expect(testModel).to.respondTo('deleteMany');
-				return Promise.resolve().then(function () {
-					return checkDestroy({
-						foo: undefined
-					}, true);
-				}).then(function () {
-					return checkDestroy({
-						foo: 'baz'
-					}, true);
-				}).then(function () {
-					return checkDestroy({
-						foo: 'qux'
-					}, true);
-				});
-			});
-			it('Delete all instances', function () {
-				return testModel.deleteMany({});
-			});
-		});
-	});
-	describe('Should be able to persist, fetch & delete an entity of the defined model.', function () {
-		it('Persist should change the entity', function () {
-			var object = {
-				foo: 'bar'
-			};
-			testedEntity = testModel.spawn(object);
-			expect(testedEntity).to.be.an.entity(testModel, object, true);
-			var retPromise = testedEntity.persist();
-			//			expect( testedEntity.getState()).to.be.eql( 'syncing' );
-			expect(testedEntity).to.be.an.entity(testModel, object, null);
-			return retPromise.then(function () {
-				expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
-			});
-		});
-		it('Fetch should change the entity', function () {
-			var object = {
-				foo: 'bar'
-			};
-			return testModel.find(object).then(function (entity) {
-				expect(entity).to.respondTo('fetch');
-				expect(entity).to.be.an.entity(testModel, object, SOURCE);
-				entity.foo = 1;
-				expect(entity).to.be.an.entity(testModel, {
-					foo: 'baz'
-				}, SOURCE);
-				var retPromise = entity.fetch();
-				return retPromise.then(function () {
-					expect(testedEntity).to.be.an.entity(testModel, object, SOURCE);
-				});
-			});
-		});
-		it('Destroy should change the entity', function () {
-			var object = {
-				foo: 'bar'
-			};
-			return testModel.find(object).then(function (entity) {
-				expect(entity).to.respondTo('destroy');
-				expect(entity).to.be.an.entity(testModel, object, SOURCE);
-				var retPromise = entity.destroy();
-				return retPromise.then(function () {
-					expect(entity.getLastDataSource()).to.be.eql(SOURCE);
-					expect(entity.getState()).to.be.eql('orphan');
-					expect(entity).to.be.an.entity(testModel, {}, null);
-				});
-			});
-		});
-	});
-})();
-
-},{}],15:[function(require,module,exports){
-"use strict";
-
-},{}],16:[function(require,module,exports){
+},{"../diaspora":undefined,"./browser/selenium.js":undefined,"./defineGlobals":7,"_process":5,"expect.js":undefined}],9:[function(require,module,exports){
 'use strict';
 
 module.exports = function (adapter, data, tableName) {
@@ -26407,7 +26410,7 @@ module.exports = function (adapter, data, tableName) {
 	});
 };
 
-},{}],17:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 var describeApp = function describeApp(level, name, slug, adapter) {
@@ -26432,10 +26435,10 @@ module.exports = function (adapter) {
 
 // Symbols: ✨ 🔎 🔃 ❌
 
-},{}],18:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = require('./lib/sequential-event.js');
 
-},{"./lib/sequential-event.js":19}],19:[function(require,module,exports){
+},{"./lib/sequential-event.js":12}],12:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -26597,4 +26600,4 @@ class SequentialEvent extends EventEmitter {
 module.exports = SequentialEvent;
 
 }).call(this,require('_process'))
-},{"_process":5,"events":3}]},{},[11,10,12,13,14,15,7,6,8,9,16,17]);
+},{"_process":5,"events":3}]},{},[8,7,"./models/index.js","./simple-remapping.js","./simple.js","./validations.js","./adapters/index.js","./inMemory.js","./localStorage.js",6,9,10]);

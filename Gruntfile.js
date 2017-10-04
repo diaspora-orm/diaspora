@@ -100,13 +100,13 @@ module.exports = function gruntInit( grunt ) {
 				dest:    'test/browser/unit-tests.js',
 				options: {
 					alias: {
-/*						'./adapters/index.js': './test/browser/sources/adapters/index.js',
+						'./adapters/index.js': './test/browser/sources/adapters/index.js',
 						'./inMemory.js': './test/browser/sources/adapters/inMemory.js',
 						'./localStorage.js': './test/browser/sources/adapters/localStorage.js',
 						'./models/index.js': './test/browser/sources/models/index.js',
 						'./simple.js': './test/browser/sources/models/simple.js',
 						'./simple-remapping.js': './test/browser/sources/models/simple-remapping.js',
-						'./validations.js': './test/browser/sources/models/validations.js',*/
+						'./validations.js': './test/browser/sources/models/validations.js',
 					},
 //					require:  grunt.file.expand(testFiles.filter(v => v !== 'index.js').map(v => './test/browser/sources/' + v)).map(v => path.relative('./test/browser/sources', v)),
 					exclude: [ './browser/selenium.js', './config.js', 'chai', '../diaspora', 'path', 'chalk', 'stack-trace', 'expect.js', 'node-localstorage', 'fs' ],

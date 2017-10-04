@@ -28,43 +28,42 @@ if ( 'undefined' === typeof window ) {
 } else {
 	glob.config = {};
 	glob.getCurrentDir = () => {
-		return absolute(currentPath, './');
+		return '';
+		var scriptPath = '';
+		try {
+			//Throw an error to generate a stack trace
+			throw new Error();
+		} catch ( e ) {
+			console.log( e, e.stack );
+			//Split the stack trace into each line
+			var stackLines = e.stack.split( '\n' );
+			console.log( stackLines );
+			var callerIndex = 0;
+			//Now walk though each line until we find a path reference
+			for ( var i in stackLines ) {
+				if ( !stackLines[i].match( /(?:https?|file):\/\// )) {
+					continue; 
+				}
+				//We skipped all the lines with out an http so we now have a script reference
+				//This one is the class constructor, the next is the getScriptPath() call
+				//The one after that is the user code requesting the path info (so offset by 2)
+				callerIndex = Number( i ) + 2;
+				break;
+			}
+			//Now parse the string for each section we want to return
+			pathParts = stackLines[callerIndex].match( /((?:https?|file):\/\/.+\/)([^\/]+\.js)/ );
+			return pathParts[1];
+		}
 	};
 }
-/**
- * @see https://stackoverflow.com/a/14780463/4839162
- * @param   {string}   base     [[Description]]
- * @param   {string}   relative [[Description]]
- * @returns {[[Type]]} [[Description]]
- */
-function absolute(base, relative) {
-	var stack = base.split("/"),
-		parts = relative.split("/");
-	stack.pop(); // remove current file name (or empty string)
-	// (omit if "base" is the current folder without trailing slash)
-	for (var i=0; i<parts.length; i++) {
-		if (parts[i] == ".")
-			continue;
-		if (parts[i] == "..")
-			stack.pop();
-		else
-			stack.push(parts[i]);
-	}
-	return stack.join("/");
-}
-
-glob.currentPath = './test/browser/sources/index.js';
 
 glob.getConfig = adapterName => {
 	return ( config && config[adapterName]) || {};
 };
 
 glob.importTest = ( name, modulePath ) => {
-	const fullPath = 'undefined' === typeof window ? path.resolve( getCurrentDir(), modulePath ) : absolute(currentPath, modulePath);
-	console.log({fullPath, getCurrentDir: getCurrentDir()})
+	const fullPath = 'undefined' === typeof window ? path.resolve( getCurrentDir(), modulePath ) : modulePath;
 	describe( name, () => {
-		currentPath = fullPath;
-		console.log(currentPath);
 		require( fullPath );
 	});
 };
