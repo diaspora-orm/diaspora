@@ -11,7 +11,7 @@ baseurl: ""
 plugins:
   - jekyll-toc
 #  - jekyll-minifier
-destination: ../../documentation
+destination: ../../diaspora-gh-pages
 lsi: true
 incremental: false
 markdown: kramdown

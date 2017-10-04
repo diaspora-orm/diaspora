@@ -1,17 +1,21 @@
+'use strict';
+
+const glob = 'undefined' !== typeof window ? window : global;
+
 if ( 'undefined' === typeof window ) {
-	path = require( 'path' );
-	projectPath = path.resolve( '../' );
-	chalk = require( 'chalk' );
+	glob.path = require( 'path' );
+	glob.projectPath = path.resolve( '../' );
+	glob.chalk = require( 'chalk' );
 
 	const stackTrace = require( 'stack-trace' );
-	getCurrentDir = () => {
+	glob.getCurrentDir = () => {
 		const stackItem = stackTrace.get()[2];
 		return path.dirname( stackItem.getFileName());
 	};
 
-	chalk = require( 'chalk' );
+	glob.chalk = require( 'chalk' );
 	try {
-		config = require( './config.js' );
+		glob.config = require( './config.js' );
 	} catch ( err ) {
 		if ( 'MODULE_NOT_FOUND' === err.code ) {
 			console.error( 'Missing required file "config.js", please copy "config-sample.js" and edit it.' );
@@ -22,57 +26,61 @@ if ( 'undefined' === typeof window ) {
 	}
 
 } else {
-	getCurrentDir = () => {
-		return '';
-		var scriptPath = '';
-		try {
-			//Throw an error to generate a stack trace
-			throw new Error();
-		} catch ( e ) {
-			console.log( e, e.stack );
-			//Split the stack trace into each line
-			var stackLines = e.stack.split( '\n' );
-			console.log( stackLines );
-			var callerIndex = 0;
-			//Now walk though each line until we find a path reference
-			for ( var i in stackLines ) {
-				if ( !stackLines[i].match( /(?:https?|file):\/\// )) {
-					continue; 
-				}
-				//We skipped all the lines with out an http so we now have a script reference
-				//This one is the class constructor, the next is the getScriptPath() call
-				//The one after that is the user code requesting the path info (so offset by 2)
-				callerIndex = Number( i ) + 2;
-				break;
-			}
-			//Now parse the string for each section we want to return
-			pathParts = stackLines[callerIndex].match( /((?:https?|file):\/\/.+\/)([^\/]+\.js)/ );
-			return pathParts[1];
-		}
+	glob.config = {};
+	glob.getCurrentDir = () => {
+		return absolute(currentPath, './');
 	};
 }
+/**
+ * @see https://stackoverflow.com/a/14780463/4839162
+ * @param   {string}   base     [[Description]]
+ * @param   {string}   relative [[Description]]
+ * @returns {[[Type]]} [[Description]]
+ */
+function absolute(base, relative) {
+	var stack = base.split("/"),
+		parts = relative.split("/");
+	stack.pop(); // remove current file name (or empty string)
+	// (omit if "base" is the current folder without trailing slash)
+	for (var i=0; i<parts.length; i++) {
+		if (parts[i] == ".")
+			continue;
+		if (parts[i] == "..")
+			stack.pop();
+		else
+			stack.push(parts[i]);
+	}
+	return stack.join("/");
+}
 
-getConfig = adapterName => {
+glob.currentPath = './test/browser/sources/index.js';
+
+glob.getConfig = adapterName => {
 	return ( config && config[adapterName]) || {};
 };
 
-importTest = ( name, modulePath ) => {
-	const fullPath = 'undefined' === typeof window ? path.resolve( getCurrentDir(), modulePath ) : modulePath;
+glob.importTest = ( name, modulePath ) => {
+	const fullPath = 'undefined' === typeof window ? path.resolve( getCurrentDir(), modulePath ) : absolute(currentPath, modulePath);
+	console.log({fullPath, getCurrentDir: getCurrentDir()})
 	describe( name, () => {
+		currentPath = fullPath;
+		console.log(currentPath);
 		require( fullPath );
 	});
 };
 
-l = require( 'lodash' );
-c = require( 'check-types' );
-CheckTypes = c;
-const chai = require( 'chai' );
-assert = chai.assert;
-expect = chai.expect;
-SequentialEvent = require( 'sequential-event' );
-Promise = require( 'bluebird' );
+glob.l = require( 'lodash' );
+glob.c = require( 'check-types' );
+glob.CheckTypes = c;
+if(typeof window === 'undefined'){
+	const chai = require( 'chai' );
+}
+glob.assert = chai.assert;
+glob.expect = chai.expect;
+glob.SequentialEvent = require( 'sequential-event' );
+glob.Promise = require( 'bluebird' );
 
-style = {
+glob.style = {
 	white: 'undefined' === typeof window ? chalk.underline.white : v => v,
 	bold:  'undefined' === typeof window ? chalk.bold : v => v,
 };

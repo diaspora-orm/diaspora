@@ -1,2 +1,6 @@
-importTest( chalk.bold.red( 'In Memory' ), './inMemory.js' );
-//importTest(chalk.bold.red('Local Storage'), './localStorage.js');
+'use strict';
+
+const styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
+
+importTest( styleFunction( 'In Memory' ), './inMemory.js' );
+importTest( styleFunction('Local Storage'), './localStorage.js');

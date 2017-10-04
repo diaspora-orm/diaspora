@@ -5,7 +5,12 @@
 require( './defineGlobals' );
 
 if ( process.env.SAUCE_ONLY !== 'true' ) {
-	global.Diaspora = require( '../diaspora' );
+	(() => {
+		if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
+			global.Diaspora = require( '../diaspora' );
+			global.expect = require( 'expect.js' );
+		}
+	})();
 	global.dataSources = {};
 	describe( '"check" feature', () => {
 		it( 'Basic tests with types', () => {
@@ -323,10 +328,11 @@ if ( process.env.SAUCE_ONLY !== 'true' ) {
 		});
 	});
 
-	importTest( chalk.bold.underline.blue( 'Adapters' ), './adapters/index.js' );
-	importTest( chalk.bold.underline.blue( 'Models' ), './models/index.js' );
+	const styleFunction = 'undefined' === typeof window ? chalk.bold.underline.blue : l.identity;
+	importTest( styleFunction( 'Adapters' ), './adapters/index.js' );
+	importTest( styleFunction( 'Models' ), './models/index.js' );
 }
 
-if ( process.env.NO_SAUCE !== 'true' ) {
-	require( './browserTests/seleniumTest.js' );
+if ( 'undefined' === typeof window && process.env.NO_SAUCE !== 'true' ) {
+	require( './browser/selenium.js' );
 }

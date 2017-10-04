@@ -31,6 +31,7 @@
 					foo: 'bar',
 				},
 			},
+			schema: false,
 			attributes: {
 				foo: {
 					type: 'string',
