@@ -74,8 +74,8 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 		});
 	});
 
-	it( 'Composed version should pass tests', () => {
-		browser.currentBuild = 'composed';
+	it( 'Isolated version should pass tests', () => {
+		browser.currentBuild = 'isolated';
 		return browser.get( getTestPath( `${ browser.currentBuild  }.html` )).then(() => {
 			return browser.findElements( webdriver.By.xpath( '//*[@id="mocha-report"]/*' ));
 		}).then( reportChildren => {

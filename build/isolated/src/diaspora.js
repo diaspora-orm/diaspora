@@ -5,13 +5,12 @@ const Diaspora = require( './lib/diaspora' );
 
 module.exports = Diaspora;
 
-},{"./lib/diaspora":8}],2:[function(require,module,exports){
+},{"./lib/diaspora":9}],2:[function(require,module,exports){
 'use strict';
 
-const SequentialEvent = require( 'sequential-event' );
-const _ = require( 'lodash' );
-const Promise = require( 'bluebird' );
-
+const {
+	_, Promise, SequentialEvent,
+} = require( 'diaspora/dependencies' );
 
 /**
  * @namespace ConstrainedTypes
@@ -686,15 +685,15 @@ class DiasporaAdapter extends SequentialEvent {
 
 module.exports = DiasporaAdapter;
 
-},{"bluebird":"bluebird","lodash":"lodash","sequential-event":"sequential-event"}],3:[function(require,module,exports){
+},{"diaspora/dependencies":8}],3:[function(require,module,exports){
 'use strict';
 
-/* globals window: false */
+const {
+	_, Promise,
+} = require( 'diaspora/dependencies' );
 
-const _ = require( 'lodash' );
-const Promise = require( 'bluebird' );
-const DiasporaAdapter = require( './baseAdapter.js' );
-const InMemoryEntity = require( '../dataStoreEntities/inMemoryEntity.js' );
+const DiasporaAdapter = require( 'diaspora/adapters/baseAdapter.js' );
+const InMemoryEntity = require( 'diaspora/dataStoreEntities/inMemoryEntity.js' );
 
 /**
  * @class InMemoryDiasporaAdapter
@@ -985,15 +984,15 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 module.exports = InMemoryDiasporaAdapter;
 
-},{"../dataStoreEntities/inMemoryEntity.js":6,"./baseAdapter.js":2,"bluebird":"bluebird","lodash":"lodash"}],4:[function(require,module,exports){
+},{"diaspora/adapters/baseAdapter.js":2,"diaspora/dataStoreEntities/inMemoryEntity.js":6,"diaspora/dependencies":8}],4:[function(require,module,exports){
+(function (global){
 'use strict';
 
-/* globals localStorage: false, sessionStorage: false, window: false */
-
-const _ = require( 'lodash' );
-const Promise = require( 'bluebird' );
-const DiasporaAdapter = require( './baseAdapter.js' );
-const LocalStorageEntity = require( '../dataStoreEntities/localStorageEntity.js' );
+const {
+	_, Promise,
+} = require( 'diaspora/dependencies' );
+const DiasporaAdapter = require( 'diaspora/adapters/baseAdapter.js' );
+const LocalStorageEntity = require( 'diaspora/dataStoreEntities/localStorageEntity.js' );
 
 /**
  * @class LocalStorageDiasporaAdapter
@@ -1022,7 +1021,7 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 			session: false,
 		});
 		this.state = 'ready';
-		this.source = ( true === config.session ? sessionStorage : localStorage );
+		this.source = ( true === config.session ? global.sessionStorage : global.localStorage );
 	}
 
 	/**
@@ -1055,8 +1054,8 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 */
 	generateUUID() {
 		let d = new Date().getTime();
-		if ( 'undefined' !== typeof window && window.performance && 'function' === typeof window.performance.now ) {
-			d += window.performance.now(); //use high-precision timer if available
+		if ( global.performance && 'function' === typeof global.performance.now ) {
+			d += global.performance.now(); //use high-precision timer if available
 		}
 		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
 			const r = ( d + Math.random() * 16 ) % 16 | 0;
@@ -1343,10 +1342,13 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 
 module.exports = LocalStorageDiasporaAdapter;
 
-},{"../dataStoreEntities/localStorageEntity.js":7,"./baseAdapter.js":2,"bluebird":"bluebird","lodash":"lodash"}],5:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"diaspora/adapters/baseAdapter.js":2,"diaspora/dataStoreEntities/localStorageEntity.js":7,"diaspora/dependencies":8}],5:[function(require,module,exports){
 'use strict';
 
-const _ = require( 'lodash' );
+const {
+	_,
+} = require( 'diaspora/dependencies' );
 
 /**
  * @namespace DataStoreEntities
@@ -1393,10 +1395,10 @@ class DataStoreEntity {
 
 module.exports = DataStoreEntity;
 
-},{"lodash":"lodash"}],6:[function(require,module,exports){
+},{"diaspora/dependencies":8}],6:[function(require,module,exports){
 'use strict';
 
-const DataStoreEntity = require( './baseEntity.js' );
+const DataStoreEntity = require( 'diaspora/dataStoreEntities/baseEntity.js' );
 
 /**
  * @class InMemoryEntity
@@ -1415,10 +1417,10 @@ class InMemoryEntity extends DataStoreEntity {
 
 module.exports = InMemoryEntity;
 
-},{"./baseEntity.js":5}],7:[function(require,module,exports){
+},{"diaspora/dataStoreEntities/baseEntity.js":5}],7:[function(require,module,exports){
 'use strict';
 
-const DataStoreEntity = require( './baseEntity.js' );
+const DataStoreEntity = require( 'diaspora/dataStoreEntities/baseEntity.js' );
 
 /**
  * @class LocalStorageEntity
@@ -1437,17 +1439,32 @@ class LocalStorageEntity extends DataStoreEntity {
 
 module.exports = LocalStorageEntity;
 
-},{"./baseEntity.js":5}],8:[function(require,module,exports){
+},{"diaspora/dataStoreEntities/baseEntity.js":5}],8:[function(require,module,exports){
+(function (global){
+module.exports = {
+	_: (() => { 
+		return global._ || require( 'lodash' );
+	})(),
+	SequentialEvent: (() => { 
+		return global.SequentialEvent || require( 'sequential-event' );
+	})(),
+	Promise: (() => { 
+		return global.Promise && global.Promise.version ? global.Promise : require( 'bluebird' );
+	})(),
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"bluebird":undefined,"lodash":undefined,"sequential-event":undefined}],9:[function(require,module,exports){
 'use strict';
 
-const _ = require( 'lodash' );
-const Promise = require( 'bluebird' );
-const SequentialEvent = require( 'sequential-event' );
-const DiasporaAdapter = require( './adapters/baseAdapter.js' );
+const {
+	_, Promise, SequentialEvent,
+} = require( 'diaspora/dependencies' );
+const DiasporaAdapter = require( 'diaspora/adapters/baseAdapter.js' );
 
 const adapters = {
-	'in-memory':    require( './adapters/inMemoryAdapter' ),
-	'localstorage': require( './adapters/localStorageAdapter' ),
+	'in-memory':    require( 'diaspora/adapters/inMemoryAdapter' ),
+	'localstorage': require( 'diaspora/adapters/localStorageAdapter' ),
 };
 const dataSources = {};
 const models = {};
@@ -1672,7 +1689,7 @@ const Diaspora = {
 		if ( !_.isNil( fieldDesc.enum )) {
 			const result = _.some( fieldDesc.enum, enumVal => {
 				if ( c.instance( enumVal, RegExp )) {
-					return null !== enumVal.exec( value );
+					return null !== value.match( enumVal );
 				} else {
 					return value === enumVal;
 				}
@@ -1837,15 +1854,15 @@ module.exports = Diaspora;
 // Load Model class after, so that Model requires Diaspora once it is declared
 const Model = require( './model' );
 
-},{"./adapters/baseAdapter.js":2,"./adapters/inMemoryAdapter":3,"./adapters/localStorageAdapter":4,"./model":10,"bluebird":"bluebird","lodash":"lodash","sequential-event":"sequential-event"}],9:[function(require,module,exports){
+},{"./model":11,"diaspora/adapters/baseAdapter.js":2,"diaspora/adapters/inMemoryAdapter":3,"diaspora/adapters/localStorageAdapter":4,"diaspora/dependencies":8}],10:[function(require,module,exports){
 'use strict';
 
-const _ = require( 'lodash' );
-const Promise = require( 'bluebird' );
+const {
+	_, Promise, SequentialEvent,
+} = require( 'diaspora/dependencies' );
 const Diaspora = require( './diaspora' );
-const DataStoreEntity = require( './dataStoreEntities/baseEntity' );
-const SequentialEvent = require( 'sequential-event' );
-const ValidationError = require( './validationError' );
+const DataStoreEntity = require( 'diaspora/dataStoreEntities/baseEntity' );
+const ValidationError = require( 'diaspora/validationError' );
 
 const entityPrototype = {
 	model: {
@@ -2124,13 +2141,14 @@ _.assign( EntityFactory, {
 
 module.exports = EntityFactory;
 
-},{"./dataStoreEntities/baseEntity":5,"./diaspora":8,"./validationError":11,"bluebird":"bluebird","lodash":"lodash","sequential-event":"sequential-event"}],10:[function(require,module,exports){
+},{"./diaspora":9,"diaspora/dataStoreEntities/baseEntity":5,"diaspora/dependencies":8,"diaspora/validationError":12}],11:[function(require,module,exports){
 'use strict';
 
-const _ = require( 'lodash' );
-const Promise = require( 'bluebird' );
-const EntityFactory = require( './entityFactory' );
-const Diaspora = require( './diaspora' );
+const {
+	_, Promise,
+} = require( 'diaspora/dependencies' );
+const EntityFactory = require( 'diaspora/entityFactory' );
+const Diaspora = require( 'diaspora/diaspora' );
 
 const {
 	entityPrototypeProperties,
@@ -2309,10 +2327,12 @@ class Model {
 
 module.exports = Model;
 
-},{"./diaspora":8,"./entityFactory":9,"bluebird":"bluebird","lodash":"lodash"}],11:[function(require,module,exports){
+},{"diaspora/dependencies":8,"diaspora/diaspora":9,"diaspora/entityFactory":10}],12:[function(require,module,exports){
 'use strict';
 
-const _ = require( 'lodash' );
+const {
+	_,
+} = require( 'diaspora/dependencies' );
 
 const stringifyValidationObject = validationErrors => {
 	return _( validationErrors ).mapValues(( error, key ) => {
@@ -2335,5 +2355,5 @@ ${ stringifyValidationObject( validationErrors ) }`;
 
 module.exports = ValidationError;
 
-},{"lodash":"lodash"}]},{},[1])(1)
+},{"diaspora/dependencies":8}]},{},[1])(1)
 });

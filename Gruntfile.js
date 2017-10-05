@@ -64,35 +64,46 @@ module.exports = function gruntInit( grunt ) {
 			},
 		},
 		browserify: {
+			deps: {
+				options: {
+					shim: {
+						lodash: {
+							path:    'node_modules/lodash/lodash.min.js',
+							exports: '_',
+						},
+						'sequential-event': {
+							path:    'node_modules/sequential-event/dist/sequential-event.min.js',
+							exports: 'SequentialEvent',
+						},
+						bluebird: {
+							path:    'node_modules/bluebird/js/browser/bluebird.min.js',
+							exports: 'Promise',
+						},
+					},
+				},
+				src:  [ 'node_modules/lodash/lodash.min.js', 'node_modules/sequential-event/dist/sequential-event.min.js', 'node_modules/bluebird/js/browser/bluebird.min.js' ],
+				dest: 'build/dependencies/src/dependencies.js',
+			},
 			standalone: {
-				src:     [ 'diaspora.js' ],
-				require: [
-					[ 'lodash', {
-						entry:  true,
-						expose: '_',
-					}],
-					[ 'bluebird', {
-						entry:  true,
-						expose: 'Promise',
-					}],
-					[ 'sequential-event', {
-						entry:  true,
-						expose: 'SequentialEvent',
-					}],
-				],
+				src:     [ 'diaspora.js', 'build/dependencies/dist/dependencies.min.js' ],
 				dest:    'build/standalone/src/diaspora.js',	
 				options: {
 					browserifyOptions: {
 						standalone: 'Diaspora',
+						external:   [ 'lodash', 'bluebird', 'sequential-event' ],
 					},
 				},
 			},
 			isolated: {
 				options: {
-					external:          [ 'lodash', 'bluebird', 'sequential-event' ],
 					browserifyOptions: {
 						standalone: 'Diaspora',
 					},
+					exclude: [
+						'lodash',
+						'bluebird',
+						'sequential-event',
+					],
 				},
 				src:  [ 'diaspora.js' ],
 				dest: 'build/isolated/src/diaspora.js',	
@@ -120,6 +131,18 @@ module.exports = function gruntInit( grunt ) {
 				sourceMap: true,
 				presets:   [ 'es2015' ],
 			},
+			deps: {
+				options: {
+					sourceMap: false,
+				},
+				files: [{
+					expand: true,
+					cwd:    'build/dependencies/src',
+					src:    [ 'dependencies.js' ],
+					dest:   'build/dependencies/dist',
+					ext:    '.js',
+				}],
+			},
 			standalone: {
 				files: [{
 					expand: true,
@@ -140,10 +163,12 @@ module.exports = function gruntInit( grunt ) {
 			},
 			test: {
 				options: {
-					sourceMap:  false,
-//					sourceType: 'script',
-					presets:    [
-						[ 'es2015', {modules: false}],
+					sourceMap: false,
+					//					sourceType: 'script',
+					presets:   [
+						[ 'es2015', {
+							modules: false,
+						}],
 					],
 				},
 				files: [{
@@ -161,6 +186,18 @@ module.exports = function gruntInit( grunt ) {
 				output:    {
 					comments: 'some',
 				},
+			},
+			deps: {
+				options: {
+					banner:    false,
+					sourceMap: false,
+				},
+				files: [{
+					expand: true,
+					src:    [ 'build/dependencies/dist/dependencies.js' ],
+					dest:	  '.',
+					rename: ( dst, src ) => path.resolve( dst, src.replace( /\.js$/, '.min.js' )),
+				}],
 			},
 			standalone: {
 				files: [{
@@ -223,7 +260,13 @@ module.exports = function gruntInit( grunt ) {
 		'buildStandalone',
 		'buildIsolated',
 	]);
+	grunt.registerTask( 'buildDependencies', [
+		'browserify:deps',
+		'babel:deps',
+		'uglify:deps',
+	]);
 	grunt.registerTask( 'buildStandalone', [
+		//		'changed:buildDependencies',
 		'browserify:standalone',
 		'babel:standalone',
 		'uglify:standalone',

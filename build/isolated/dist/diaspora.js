@@ -51,12 +51,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var Diaspora = require('./lib/diaspora');
 
 			module.exports = Diaspora;
-		}, { "./lib/diaspora": 8 }], 2: [function (require, module, exports) {
+		}, { "./lib/diaspora": 9 }], 2: [function (require, module, exports) {
 			'use strict';
 
-			var SequentialEvent = require('sequential-event');
-			var _ = require('lodash');
-			var Promise = require('bluebird');
+			var _require = require('diaspora/dependencies'),
+			    _ = _require._,
+			    Promise = _require.Promise,
+			    SequentialEvent = _require.SequentialEvent;
 
 			/**
     * @namespace ConstrainedTypes
@@ -156,6 +157,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * @public
     * @author gerkin
     */
+
 
 			var DiasporaAdapter = function (_SequentialEvent) {
 				_inherits(DiasporaAdapter, _SequentialEvent);
@@ -846,15 +848,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(SequentialEvent);
 
 			module.exports = DiasporaAdapter;
-		}, { "bluebird": "bluebird", "lodash": "lodash", "sequential-event": "sequential-event" }], 3: [function (require, module, exports) {
+		}, { "diaspora/dependencies": 8 }], 3: [function (require, module, exports) {
 			'use strict';
 
-			/* globals window: false */
+			var _require2 = require('diaspora/dependencies'),
+			    _ = _require2._,
+			    Promise = _require2.Promise;
 
-			var _ = require('lodash');
-			var Promise = require('bluebird');
-			var DiasporaAdapter = require('./baseAdapter.js');
-			var InMemoryEntity = require('../dataStoreEntities/inMemoryEntity.js');
+			var DiasporaAdapter = require('diaspora/adapters/baseAdapter.js');
+			var InMemoryEntity = require('diaspora/dataStoreEntities/inMemoryEntity.js');
 
 			/**
     * @class InMemoryDiasporaAdapter
@@ -1218,432 +1220,435 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DiasporaAdapter);
 
 			module.exports = InMemoryDiasporaAdapter;
-		}, { "../dataStoreEntities/inMemoryEntity.js": 6, "./baseAdapter.js": 2, "bluebird": "bluebird", "lodash": "lodash" }], 4: [function (require, module, exports) {
-			'use strict';
+		}, { "diaspora/adapters/baseAdapter.js": 2, "diaspora/dataStoreEntities/inMemoryEntity.js": 6, "diaspora/dependencies": 8 }], 4: [function (require, module, exports) {
+			(function (global) {
+				'use strict';
 
-			/* globals localStorage: false, sessionStorage: false, window: false */
+				var _require3 = require('diaspora/dependencies'),
+				    _ = _require3._,
+				    Promise = _require3.Promise;
 
-			var _ = require('lodash');
-			var Promise = require('bluebird');
-			var DiasporaAdapter = require('./baseAdapter.js');
-			var LocalStorageEntity = require('../dataStoreEntities/localStorageEntity.js');
-
-			/**
-    * @class LocalStorageDiasporaAdapter
-    * @classdesc This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser
-    * @extends Adapters.DiasporaAdapter
-    * @description Create a new LocalStorage data store
-    * @memberof Adapters
-    * @public
-    * @author gerkin
-    * @param {Object} [config] Options hash.
-    * @param {Boolean} config.session=false If `false`, data source will use local storage. If `true`, it will use session storage.
-    */
-
-			var LocalStorageDiasporaAdapter = function (_DiasporaAdapter2) {
-				_inherits(LocalStorageDiasporaAdapter, _DiasporaAdapter2);
+				var DiasporaAdapter = require('diaspora/adapters/baseAdapter.js');
+				var LocalStorageEntity = require('diaspora/dataStoreEntities/localStorageEntity.js');
 
 				/**
-     * @description Create a new instance of local storage adapter
-     * @constructs LocalStorageDiasporaAdapter
+     * @class LocalStorageDiasporaAdapter
+     * @classdesc This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser
+     * @extends Adapters.DiasporaAdapter
+     * @description Create a new LocalStorage data store
      * @memberof Adapters
      * @public
      * @author gerkin
-     * @param {Object} config Configuration object
-     * @param {Boolean} [config.session = false] Set to true to use sessionStorage instead of localStorage
-     */
-				function LocalStorageDiasporaAdapter(config) {
-					_classCallCheck(this, LocalStorageDiasporaAdapter);
-
-					var _this15 = _possibleConstructorReturn(this, (LocalStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter)).call(this, LocalStorageEntity));
-
-					_.defaults(config, {
-						session: false
-					});
-					_this15.state = 'ready';
-					_this15.source = true === config.session ? sessionStorage : localStorage;
-					return _this15;
-				}
-
-				/**
-     * @method configureCollection
-     * @description Create the collection index and call {@link Adapters.DiasporaAdapter.configureCollection}
-     * @memberof Adapters.LocalStorageDiasporaAdapter
-     * @public
-     * @instance
-     * @author gerkin
-     * @param {String} tableName Name of the table (usually, model name)
-     * @param {Object} remaps    Associative hash that links entity field names with data source field names
-     * @returns {undefined}
+     * @param {Object} [config] Options hash.
+     * @param {Boolean} config.session=false If `false`, data source will use local storage. If `true`, it will use session storage.
      */
 
-
-				_createClass(LocalStorageDiasporaAdapter, [{
-					key: "configureCollection",
-					value: function configureCollection(tableName, remaps) {
-						_get(LocalStorageDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter.prototype), "configureCollection", this).call(this, tableName, remaps);
-						this.ensureCollectionExists(tableName);
-					}
-
-					// -----
-					// ### Utils
+				var LocalStorageDiasporaAdapter = function (_DiasporaAdapter2) {
+					_inherits(LocalStorageDiasporaAdapter, _DiasporaAdapter2);
 
 					/**
-      * @method generateUUID
-      * @description Create a new unique id for this store's entity
-      * @memberof Adapters.LocalStorageDiasporaAdapter
+      * @description Create a new instance of local storage adapter
+      * @constructs LocalStorageDiasporaAdapter
+      * @memberof Adapters
       * @public
-      * @instance
       * @author gerkin
-      * @returns {String} Generated unique id
+      * @param {Object} config Configuration object
+      * @param {Boolean} [config.session = false] Set to true to use sessionStorage instead of localStorage
       */
+					function LocalStorageDiasporaAdapter(config) {
+						_classCallCheck(this, LocalStorageDiasporaAdapter);
 
-				}, {
-					key: "generateUUID",
-					value: function generateUUID() {
-						var d = new Date().getTime();
-						if ('undefined' !== typeof window && window.performance && 'function' === typeof window.performance.now) {
-							d += window.performance.now(); //use high-precision timer if available
-						}
-						var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-							var r = (d + Math.random() * 16) % 16 | 0;
-							d = Math.floor(d / 16);
-							return ('x' === c ? r : r & 0x3 | 0x8).toString(16);
+						var _this15 = _possibleConstructorReturn(this, (LocalStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter)).call(this, LocalStorageEntity));
+
+						_.defaults(config, {
+							session: false
 						});
-						return uuid;
+						_this15.state = 'ready';
+						_this15.source = true === config.session ? global.sessionStorage : global.localStorage;
+						return _this15;
 					}
 
 					/**
-      * @method ensureCollectionExists
-      * @description Create the table key if it does not exist
+      * @method configureCollection
+      * @description Create the collection index and call {@link Adapters.DiasporaAdapter.configureCollection}
       * @memberof Adapters.LocalStorageDiasporaAdapter
       * @public
       * @instance
       * @author gerkin
-      * @param   {String} table  Name of the table
-      * @returns {String[]} Index of the collection
+      * @param {String} tableName Name of the table (usually, model name)
+      * @param {Object} remaps    Associative hash that links entity field names with data source field names
+      * @returns {undefined}
       */
 
-				}, {
-					key: "ensureCollectionExists",
-					value: function ensureCollectionExists(table) {
-						var index = this.source.getItem(table);
-						if (_.isNil(index)) {
-							index = [];
-							this.source.setItem(table, JSON.stringify(index));
-						} else {
-							index = JSON.parse(index);
+
+					_createClass(LocalStorageDiasporaAdapter, [{
+						key: "configureCollection",
+						value: function configureCollection(tableName, remaps) {
+							_get(LocalStorageDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(LocalStorageDiasporaAdapter.prototype), "configureCollection", this).call(this, tableName, remaps);
+							this.ensureCollectionExists(tableName);
 						}
-						return index;
-					}
 
-					/**
-      * @method applyOptionsToSet
-      * @description Reduce, offset or sort provided set
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {Object[]} set  Objects retrieved from memory store
-      * @param   {Object} options Options to apply to the set
-      * @returns {Object[]} Set with options applied
-      */
+						// -----
+						// ### Utils
 
-				}, {
-					key: "getItemName",
+						/**
+       * @method generateUUID
+       * @description Create a new unique id for this store's entity
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @returns {String} Generated unique id
+       */
 
-
-					/**
-      * @method getItemName
-      * @description Deduce the item name from table name and item ID
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to construct name for
-      * @param   {String} id Id of the item to find
-      * @returns {String} Name of the item
-      */
-					value: function getItemName(table, id) {
-						return table + ".id=" + id;
-					}
-
-					// -----
-					// ### Insert
-
-					/**
-      * @method insertOne
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
-      * @description Insert a single entity in the local storage.
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to insert data in
-      * @param   {Object} entity Hash representing the entity to insert
-      * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link LocalStorageEntity}* `entity`)
-      */
-
-				}, {
-					key: "insertOne",
-					value: function insertOne(table, entity) {
-						entity = _.cloneDeep(entity || {});
-						entity.id = this.generateUUID();
-						this.setIdHash(entity);
-						try {
-							var tableIndex = this.ensureCollectionExists(table);
-							tableIndex.push(entity.id);
-							this.source.setItem(table, JSON.stringify(tableIndex));
-							this.source.setItem(this.getItemName(table, entity.id), JSON.stringify(entity));
-						} catch (error) {
-							return Promise.reject(error);
-						}
-						return Promise.resolve(new this.classEntity(entity, this));
-					}
-
-					/**
-      * @method insertMany
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
-      * @description Insert several entities in the local storage.
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to insert data in
-      * @param   {Object[]} entities Array of hashes representing entities to insert
-      * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link LocalStorageEntity[Ø]}* `entities`)
-      */
-
-				}, {
-					key: "insertMany",
-					value: function insertMany(table, entities) {
-						var _this16 = this;
-
-						entities = _.cloneDeep(entities);
-						try {
-							var tableIndex = this.ensureCollectionExists(table);
-							entities = entities.map(function () {
-								var entity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-								entity.id = _this16.generateUUID();
-								_this16.setIdHash(entity);
-								tableIndex.push(entity.id);
-								_this16.source.setItem(_this16.getItemName(table, entity.id), JSON.stringify(entity));
-								return new _this16.classEntity(entity, _this16);
+					}, {
+						key: "generateUUID",
+						value: function generateUUID() {
+							var d = new Date().getTime();
+							if (global.performance && 'function' === typeof global.performance.now) {
+								d += global.performance.now(); //use high-precision timer if available
+							}
+							var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+								var r = (d + Math.random() * 16) % 16 | 0;
+								d = Math.floor(d / 16);
+								return ('x' === c ? r : r & 0x3 | 0x8).toString(16);
 							});
-							this.source.setItem(table, JSON.stringify(tableIndex));
-						} catch (error) {
-							return Promise.reject(error);
+							return uuid;
 						}
-						return Promise.resolve(entities);
-					}
 
-					// -----
-					// ### Find
+						/**
+       * @method ensureCollectionExists
+       * @description Create the table key if it does not exist
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table
+       * @returns {String[]} Index of the collection
+       */
 
-					/**
-      * @method findOneById
-      * @description Find a single local storage entity using its id
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table Name of the collection to search entity in
-      * @param   {String} id    Id of the entity to search
-      * @returns {DataStoreEntities.LocalStorageEntity|undefined} Found entity, or undefined if not found
-      */
-
-				}, {
-					key: "findOneById",
-					value: function findOneById(table, id) {
-						var item = this.source.getItem(this.getItemName(table, id));
-						if (!_.isNil(item)) {
-							return Promise.resolve(new this.classEntity(JSON.parse(item), this));
-						}
-						return Promise.resolve();
-					}
-
-					/**
-      * @method findOne
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
-      * @description Retrieve a single entity from the local storage.
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the model to retrieve data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
-      */
-
-				}, {
-					key: "findOne",
-					value: function findOne(table, queryFind) {
-						var _this17 = this;
-
-						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-						_.defaults(options, {
-							skip: 0
-						});
-						if (!_.isObject(queryFind)) {
-							return this.findOneById(table, queryFind);
-						} else if (_.isEqual(_.keys(queryFind), ['id']) && _.isEqual(_.keys(queryFind.id), ['$equal'])) {
-							return this.findOneById(table, queryFind.id.$equal);
-						}
-						var items = this.ensureCollectionExists(table);
-						var returnedItem = void 0;
-						var matched = 0;
-						_.each(items, function (itemId) {
-							var item = JSON.parse(_this17.source.getItem(_this17.getItemName(table, itemId)));
-							if (_this17.matchEntity(queryFind, item)) {
-								matched++;
-								// If we matched enough items
-								if (matched > options.skip) {
-									returnedItem = item;
-									return false;
-								}
+					}, {
+						key: "ensureCollectionExists",
+						value: function ensureCollectionExists(table) {
+							var index = this.source.getItem(table);
+							if (_.isNil(index)) {
+								index = [];
+								this.source.setItem(table, JSON.stringify(index));
+							} else {
+								index = JSON.parse(index);
 							}
-						});
-						return Promise.resolve(!_.isNil(returnedItem) ? new this.classEntity(returnedItem, this) : undefined);
-					}
+							return index;
+						}
 
-					// -----
-					// ### Update
+						/**
+       * @method applyOptionsToSet
+       * @description Reduce, offset or sort provided set
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {Object[]} set  Objects retrieved from memory store
+       * @param   {Object} options Options to apply to the set
+       * @returns {Object[]} Set with options applied
+       */
 
-					/**
-      * @method updateOne
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
-      * @description Update a single entity in the memory.
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to update data in
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-      * @param   {Object} update Object properties to set
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once update is done. Called with (*{@link LocalStorageEntity}* `entity`)
-      */
+					}, {
+						key: "getItemName",
 
-				}, {
-					key: "updateOne",
-					value: function updateOne(table, queryFind, update, options) {
-						var _this18 = this;
 
-						_.defaults(options, {
-							skip: 0
-						});
-						return this.findOne(table, queryFind, options).then(function (entity) {
-							if (_.isNil(entity)) {
-								return Promise.resolve();
-							}
-							_this18.applyUpdateEntity(update, entity);
+						/**
+       * @method getItemName
+       * @description Deduce the item name from table name and item ID
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to construct name for
+       * @param   {String} id Id of the item to find
+       * @returns {String} Name of the item
+       */
+						value: function getItemName(table, id) {
+							return table + ".id=" + id;
+						}
+
+						// -----
+						// ### Insert
+
+						/**
+       * @method insertOne
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
+       * @description Insert a single entity in the local storage.
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to insert data in
+       * @param   {Object} entity Hash representing the entity to insert
+       * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link LocalStorageEntity}* `entity`)
+       */
+
+					}, {
+						key: "insertOne",
+						value: function insertOne(table, entity) {
+							entity = _.cloneDeep(entity || {});
+							entity.id = this.generateUUID();
+							this.setIdHash(entity);
 							try {
-								_this18.source.setItem(_this18.getItemName(table, entity.id), JSON.stringify(entity));
-								return Promise.resolve(entity);
+								var tableIndex = this.ensureCollectionExists(table);
+								tableIndex.push(entity.id);
+								this.source.setItem(table, JSON.stringify(tableIndex));
+								this.source.setItem(this.getItemName(table, entity.id), JSON.stringify(entity));
 							} catch (error) {
 								return Promise.reject(error);
 							}
-						});
-					}
+							return Promise.resolve(new this.classEntity(entity, this));
+						}
 
-					// -----
-					// ### Delete
+						/**
+       * @method insertMany
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
+       * @description Insert several entities in the local storage.
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to insert data in
+       * @param   {Object[]} entities Array of hashes representing entities to insert
+       * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link LocalStorageEntity[Ø]}* `entities`)
+       */
 
-					/**
-      * @method deleteOne
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
-      * @description Delete a single entity from the local storage.
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to delete data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*)
-      */
+					}, {
+						key: "insertMany",
+						value: function insertMany(table, entities) {
+							var _this16 = this;
 
-				}, {
-					key: "deleteOne",
-					value: function deleteOne(table, queryFind) {
-						var _this19 = this;
-
-						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-						return this.findOne(table, queryFind, options).then(function (entityToDelete) {
+							entities = _.cloneDeep(entities);
 							try {
-								var tableIndex = _this19.ensureCollectionExists(table);
-								_.pull(tableIndex, entityToDelete.id);
-								_this19.source.setItem(table, JSON.stringify(tableIndex));
-								_this19.source.removeItem(_this19.getItemName(table, entityToDelete.id));
+								var tableIndex = this.ensureCollectionExists(table);
+								entities = entities.map(function () {
+									var entity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+									entity.id = _this16.generateUUID();
+									_this16.setIdHash(entity);
+									tableIndex.push(entity.id);
+									_this16.source.setItem(_this16.getItemName(table, entity.id), JSON.stringify(entity));
+									return new _this16.classEntity(entity, _this16);
+								});
+								this.source.setItem(table, JSON.stringify(tableIndex));
 							} catch (error) {
 								return Promise.reject(error);
+							}
+							return Promise.resolve(entities);
+						}
+
+						// -----
+						// ### Find
+
+						/**
+       * @method findOneById
+       * @description Find a single local storage entity using its id
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table Name of the collection to search entity in
+       * @param   {String} id    Id of the entity to search
+       * @returns {DataStoreEntities.LocalStorageEntity|undefined} Found entity, or undefined if not found
+       */
+
+					}, {
+						key: "findOneById",
+						value: function findOneById(table, id) {
+							var item = this.source.getItem(this.getItemName(table, id));
+							if (!_.isNil(item)) {
+								return Promise.resolve(new this.classEntity(JSON.parse(item), this));
 							}
 							return Promise.resolve();
-						});
-					}
+						}
 
-					/**
-      * @method deleteMany
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
-      * @description Delete several entities from the local storage.
-      * @memberof Adapters.LocalStorageDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to delete data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
-      */
+						/**
+       * @method findOne
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
+       * @description Retrieve a single entity from the local storage.
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the model to retrieve data from
+       * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
+       */
 
-				}, {
-					key: "deleteMany",
-					value: function deleteMany(table, queryFind) {
-						var _this20 = this;
+					}, {
+						key: "findOne",
+						value: function findOne(table, queryFind) {
+							var _this17 = this;
 
-						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-						try {
-							return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
-								var tableIndex = _this20.ensureCollectionExists(table);
-								_.pullAll(tableIndex, _.map(entitiesToDelete, 'id'));
-								_this20.source.setItem(table, JSON.stringify(tableIndex));
-								_.forEach(entitiesToDelete, function (entityToDelete) {
-									_this20.source.removeItem(_this20.getItemName(table, entityToDelete.id));
-								});
+							_.defaults(options, {
+								skip: 0
+							});
+							if (!_.isObject(queryFind)) {
+								return this.findOneById(table, queryFind);
+							} else if (_.isEqual(_.keys(queryFind), ['id']) && _.isEqual(_.keys(queryFind.id), ['$equal'])) {
+								return this.findOneById(table, queryFind.id.$equal);
+							}
+							var items = this.ensureCollectionExists(table);
+							var returnedItem = void 0;
+							var matched = 0;
+							_.each(items, function (itemId) {
+								var item = JSON.parse(_this17.source.getItem(_this17.getItemName(table, itemId)));
+								if (_this17.matchEntity(queryFind, item)) {
+									matched++;
+									// If we matched enough items
+									if (matched > options.skip) {
+										returnedItem = item;
+										return false;
+									}
+								}
+							});
+							return Promise.resolve(!_.isNil(returnedItem) ? new this.classEntity(returnedItem, this) : undefined);
+						}
+
+						// -----
+						// ### Update
+
+						/**
+       * @method updateOne
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
+       * @description Update a single entity in the memory.
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to update data in
+       * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+       * @param   {Object} update Object properties to set
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once update is done. Called with (*{@link LocalStorageEntity}* `entity`)
+       */
+
+					}, {
+						key: "updateOne",
+						value: function updateOne(table, queryFind, update, options) {
+							var _this18 = this;
+
+							_.defaults(options, {
+								skip: 0
+							});
+							return this.findOne(table, queryFind, options).then(function (entity) {
+								if (_.isNil(entity)) {
+									return Promise.resolve();
+								}
+								_this18.applyUpdateEntity(update, entity);
+								try {
+									_this18.source.setItem(_this18.getItemName(table, entity.id), JSON.stringify(entity));
+									return Promise.resolve(entity);
+								} catch (error) {
+									return Promise.reject(error);
+								}
+							});
+						}
+
+						// -----
+						// ### Delete
+
+						/**
+       * @method deleteOne
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
+       * @description Delete a single entity from the local storage.
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to delete data from
+       * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*)
+       */
+
+					}, {
+						key: "deleteOne",
+						value: function deleteOne(table, queryFind) {
+							var _this19 = this;
+
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							return this.findOne(table, queryFind, options).then(function (entityToDelete) {
+								try {
+									var tableIndex = _this19.ensureCollectionExists(table);
+									_.pull(tableIndex, entityToDelete.id);
+									_this19.source.setItem(table, JSON.stringify(tableIndex));
+									_this19.source.removeItem(_this19.getItemName(table, entityToDelete.id));
+								} catch (error) {
+									return Promise.reject(error);
+								}
 								return Promise.resolve();
 							});
-						} catch (error) {
-							return Promise.reject(error);
 						}
-					}
-				}], [{
-					key: "applyOptionsToSet",
-					value: function applyOptionsToSet(set, options) {
-						_.defaults(options, {
-							limit: Infinity,
-							skip: 0
-						});
-						set = set.slice(options.skip);
-						if (set.length > options.limit) {
-							set = set.slice(0, options.limit);
+
+						/**
+       * @method deleteMany
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
+       * @description Delete several entities from the local storage.
+       * @memberof Adapters.LocalStorageDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to delete data from
+       * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
+       */
+
+					}, {
+						key: "deleteMany",
+						value: function deleteMany(table, queryFind) {
+							var _this20 = this;
+
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							try {
+								return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
+									var tableIndex = _this20.ensureCollectionExists(table);
+									_.pullAll(tableIndex, _.map(entitiesToDelete, 'id'));
+									_this20.source.setItem(table, JSON.stringify(tableIndex));
+									_.forEach(entitiesToDelete, function (entityToDelete) {
+										_this20.source.removeItem(_this20.getItemName(table, entityToDelete.id));
+									});
+									return Promise.resolve();
+								});
+							} catch (error) {
+								return Promise.reject(error);
+							}
 						}
-						return set;
-					}
-				}]);
+					}], [{
+						key: "applyOptionsToSet",
+						value: function applyOptionsToSet(set, options) {
+							_.defaults(options, {
+								limit: Infinity,
+								skip: 0
+							});
+							set = set.slice(options.skip);
+							if (set.length > options.limit) {
+								set = set.slice(0, options.limit);
+							}
+							return set;
+						}
+					}]);
 
-				return LocalStorageDiasporaAdapter;
-			}(DiasporaAdapter);
+					return LocalStorageDiasporaAdapter;
+				}(DiasporaAdapter);
 
-			module.exports = LocalStorageDiasporaAdapter;
-		}, { "../dataStoreEntities/localStorageEntity.js": 7, "./baseAdapter.js": 2, "bluebird": "bluebird", "lodash": "lodash" }], 5: [function (require, module, exports) {
+				module.exports = LocalStorageDiasporaAdapter;
+			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+		}, { "diaspora/adapters/baseAdapter.js": 2, "diaspora/dataStoreEntities/localStorageEntity.js": 7, "diaspora/dependencies": 8 }], 5: [function (require, module, exports) {
 			'use strict';
 
-			var _ = require('lodash');
+			var _require4 = require('diaspora/dependencies'),
+			    _ = _require4._;
 
 			/**
     * @namespace DataStoreEntities
@@ -1657,6 +1662,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * @author gerkin
     * @param {Object} source Hash containing properties to copy in this entity
     */
+
 
 			var DataStoreEntity = function () {
 				/**
@@ -1698,10 +1704,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = DataStoreEntity;
-		}, { "lodash": "lodash" }], 6: [function (require, module, exports) {
+		}, { "diaspora/dependencies": 8 }], 6: [function (require, module, exports) {
 			'use strict';
 
-			var DataStoreEntity = require('./baseEntity.js');
+			var DataStoreEntity = require('diaspora/dataStoreEntities/baseEntity.js');
 
 			/**
     * @class InMemoryEntity
@@ -1726,10 +1732,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DataStoreEntity);
 
 			module.exports = InMemoryEntity;
-		}, { "./baseEntity.js": 5 }], 7: [function (require, module, exports) {
+		}, { "diaspora/dataStoreEntities/baseEntity.js": 5 }], 7: [function (require, module, exports) {
 			'use strict';
 
-			var DataStoreEntity = require('./baseEntity.js');
+			var DataStoreEntity = require('diaspora/dataStoreEntities/baseEntity.js');
 
 			/**
     * @class LocalStorageEntity
@@ -1754,17 +1760,33 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DataStoreEntity);
 
 			module.exports = LocalStorageEntity;
-		}, { "./baseEntity.js": 5 }], 8: [function (require, module, exports) {
+		}, { "diaspora/dataStoreEntities/baseEntity.js": 5 }], 8: [function (require, module, exports) {
+			(function (global) {
+				module.exports = {
+					_: function () {
+						return global._ || require('lodash');
+					}(),
+					SequentialEvent: function () {
+						return global.SequentialEvent || require('sequential-event');
+					}(),
+					Promise: function () {
+						return global.Promise && global.Promise.version ? global.Promise : require('bluebird');
+					}()
+				};
+			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+		}, { "bluebird": undefined, "lodash": undefined, "sequential-event": undefined }], 9: [function (require, module, exports) {
 			'use strict';
 
-			var _ = require('lodash');
-			var Promise = require('bluebird');
-			var SequentialEvent = require('sequential-event');
-			var DiasporaAdapter = require('./adapters/baseAdapter.js');
+			var _require5 = require('diaspora/dependencies'),
+			    _ = _require5._,
+			    Promise = _require5.Promise,
+			    SequentialEvent = _require5.SequentialEvent;
+
+			var DiasporaAdapter = require('diaspora/adapters/baseAdapter.js');
 
 			var adapters = {
-				'in-memory': require('./adapters/inMemoryAdapter'),
-				'localstorage': require('./adapters/localStorageAdapter')
+				'in-memory': require('diaspora/adapters/inMemoryAdapter'),
+				'localstorage': require('diaspora/adapters/localStorageAdapter')
 			};
 			var dataSources = {};
 			var models = {};
@@ -2000,7 +2022,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					if (!_.isNil(fieldDesc.enum)) {
 						var result = _.some(fieldDesc.enum, function (enumVal) {
 							if (c.instance(enumVal, RegExp)) {
-								return null !== enumVal.exec(value);
+								return null !== value.match(enumVal);
 							} else {
 								return value === enumVal;
 							}
@@ -2157,15 +2179,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			// Load Model class after, so that Model requires Diaspora once it is declared
 			var Model = require('./model');
-		}, { "./adapters/baseAdapter.js": 2, "./adapters/inMemoryAdapter": 3, "./adapters/localStorageAdapter": 4, "./model": 10, "bluebird": "bluebird", "lodash": "lodash", "sequential-event": "sequential-event" }], 9: [function (require, module, exports) {
+		}, { "./model": 11, "diaspora/adapters/baseAdapter.js": 2, "diaspora/adapters/inMemoryAdapter": 3, "diaspora/adapters/localStorageAdapter": 4, "diaspora/dependencies": 8 }], 10: [function (require, module, exports) {
 			'use strict';
 
-			var _ = require('lodash');
-			var Promise = require('bluebird');
+			var _require6 = require('diaspora/dependencies'),
+			    _ = _require6._,
+			    Promise = _require6.Promise,
+			    SequentialEvent = _require6.SequentialEvent;
+
 			var Diaspora = require('./diaspora');
-			var DataStoreEntity = require('./dataStoreEntities/baseEntity');
-			var SequentialEvent = require('sequential-event');
-			var ValidationError = require('./validationError');
+			var DataStoreEntity = require('diaspora/dataStoreEntities/baseEntity');
+			var ValidationError = require('diaspora/validationError');
 
 			var entityPrototype = {
 				model: {
@@ -2465,13 +2489,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			});
 
 			module.exports = EntityFactory;
-		}, { "./dataStoreEntities/baseEntity": 5, "./diaspora": 8, "./validationError": 11, "bluebird": "bluebird", "lodash": "lodash", "sequential-event": "sequential-event" }], 10: [function (require, module, exports) {
+		}, { "./diaspora": 9, "diaspora/dataStoreEntities/baseEntity": 5, "diaspora/dependencies": 8, "diaspora/validationError": 12 }], 11: [function (require, module, exports) {
 			'use strict';
 
-			var _ = require('lodash');
-			var Promise = require('bluebird');
-			var EntityFactory = require('./entityFactory');
-			var Diaspora = require('./diaspora');
+			var _require7 = require('diaspora/dependencies'),
+			    _ = _require7._,
+			    Promise = _require7.Promise;
+
+			var EntityFactory = require('diaspora/entityFactory');
+			var Diaspora = require('diaspora/diaspora');
 
 			var entityPrototypeProperties = EntityFactory.entityPrototypeProperties;
 
@@ -2711,10 +2737,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = Model;
-		}, { "./diaspora": 8, "./entityFactory": 9, "bluebird": "bluebird", "lodash": "lodash" }], 11: [function (require, module, exports) {
+		}, { "diaspora/dependencies": 8, "diaspora/diaspora": 9, "diaspora/entityFactory": 10 }], 12: [function (require, module, exports) {
 			'use strict';
 
-			var _ = require('lodash');
+			var _require8 = require('diaspora/dependencies'),
+			    _ = _require8._;
 
 			var stringifyValidationObject = function stringifyValidationObject(validationErrors) {
 				return _(validationErrors).mapValues(function (error, key) {
@@ -2749,6 +2776,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(Error);
 
 			module.exports = ValidationError;
-		}, { "lodash": "lodash" }] }, {}, [1])(1);
+		}, { "diaspora/dependencies": 8 }] }, {}, [1])(1);
 });
 //# sourceMappingURL=diaspora.js.map
