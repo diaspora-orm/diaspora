@@ -4,6 +4,7 @@
 	"description": "Multi-Layer ORM for Javascript Client+Server",
 	"main": "diaspora.js",
 	"directories": {
+		"doc": "doc", 
 		"lib": "lib",
 		"test": "test"
 	},

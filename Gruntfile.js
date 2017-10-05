@@ -8,7 +8,7 @@ const path = require( 'path' );
 module.exports = function gruntInit( grunt ) {
 	// Project configuration.
 
-	const baseDocPath = 'site';
+	const baseDocPath = 'doc';
 	const testFiles = [ 'index.js', 'defineGlobals.js', 'models/**/*.js', 'adapters/index.js', 'adapters/inMemory.js', 'adapters/localStorage.js', 'adapters/utils.js', 'testApps/**/*.js' ];
 	const doccoPath = `${ baseDocPath }/docco`;
 	const jsdocPath = `${ baseDocPath }/jsdoc`;
