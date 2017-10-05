@@ -686,6 +686,7 @@ class DiasporaAdapter extends SequentialEvent {
 module.exports = DiasporaAdapter;
 
 },{"diaspora/dependencies":8}],3:[function(require,module,exports){
+(function (global){
 'use strict';
 
 const {
@@ -750,8 +751,8 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	generateUUID() {
 		let d = new Date().getTime();
 		// Use high-precision timer if available
-		if ( 'undefined' !== typeof window && window.performance && 'function' === typeof window.performance.now ) {
-			d += window.performance.now();
+		if ( global.performance && 'function' === typeof global.performance.now ) {
+			d += global.performance.now();
 		}
 		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
 			const r = ( d + Math.random() * 16 ) % 16 | 0;
@@ -984,6 +985,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 module.exports = InMemoryDiasporaAdapter;
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"diaspora/adapters/baseAdapter.js":2,"diaspora/dataStoreEntities/inMemoryEntity.js":6,"diaspora/dependencies":8}],4:[function(require,module,exports){
 (function (global){
 'use strict';
@@ -1688,11 +1690,7 @@ const Diaspora = {
 		}
 		if ( !_.isNil( fieldDesc.enum )) {
 			const result = _.some( fieldDesc.enum, enumVal => {
-				console.log({
-					enumVal,
-					value,
-				});
-				if ( c.instance( enumVal, RegExp )) {
+				if ( enumVal instanceof RegExp ) {
 					return null !== value.match( enumVal );
 				} else {
 					return value === enumVal;

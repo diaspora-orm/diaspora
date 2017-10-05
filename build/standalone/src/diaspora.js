@@ -1716,11 +1716,7 @@ const Diaspora = {
 		}
 		if ( !_.isNil( fieldDesc.enum )) {
 			const result = _.some( fieldDesc.enum, enumVal => {
-				console.log({
-					enumVal,
-					value,
-				});
-				if ( c.instance( enumVal, RegExp )) {
+				if ( enumVal instanceof RegExp ) {
 					return null !== value.match( enumVal );
 				} else {
 					return value === enumVal;

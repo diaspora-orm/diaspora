@@ -849,377 +849,379 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			module.exports = DiasporaAdapter;
 		}, { "diaspora/dependencies": 8 }], 3: [function (require, module, exports) {
-			'use strict';
+			(function (global) {
+				'use strict';
 
-			var _require2 = require('diaspora/dependencies'),
-			    _ = _require2._,
-			    Promise = _require2.Promise;
+				var _require2 = require('diaspora/dependencies'),
+				    _ = _require2._,
+				    Promise = _require2.Promise;
 
-			var DiasporaAdapter = require('diaspora/adapters/baseAdapter.js');
-			var InMemoryEntity = require('diaspora/dataStoreEntities/inMemoryEntity.js');
-
-			/**
-    * @class InMemoryDiasporaAdapter
-    * @classdesc This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS
-    * @extends Adapters.DiasporaAdapter
-    * @description Create a new In Memory data store
-    * @memberof Adapters
-    * @public
-    * @author gerkin
-    * @param {Object} [config] Options hash. Currently, this adapter does not have any options
-    */
-
-			var InMemoryDiasporaAdapter = function (_DiasporaAdapter) {
-				_inherits(InMemoryDiasporaAdapter, _DiasporaAdapter);
+				var DiasporaAdapter = require('diaspora/adapters/baseAdapter.js');
+				var InMemoryEntity = require('diaspora/dataStoreEntities/inMemoryEntity.js');
 
 				/**
-     * @description Create a new instance of in memory adapter
-     * @constructs InMemoryDiasporaAdapter
+     * @class InMemoryDiasporaAdapter
+     * @classdesc This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS
+     * @extends Adapters.DiasporaAdapter
+     * @description Create a new In Memory data store
      * @memberof Adapters
      * @public
      * @author gerkin
-     */
-				function InMemoryDiasporaAdapter() {
-					_classCallCheck(this, InMemoryDiasporaAdapter);
-
-					var _this9 = _possibleConstructorReturn(this, (InMemoryDiasporaAdapter.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this, InMemoryEntity));
-
-					_this9.state = 'ready';
-					_this9.store = {};
-					return _this9;
-				}
-
-				/**
-     * @method configureCollection
-     * @description Create the data store and call {@link Adapters.DiasporaAdapter.configureCollection}
-     * @memberof Adapters.InMemoryDiasporaAdapter
-     * @public
-     * @instance
-     * @author gerkin
-     * @param {String} tableName Name of the table (usually, model name)
-     * @param {Object} remaps    Associative hash that links entity field names with data source field names
-     * @returns {undefined}
+     * @param {Object} [config] Options hash. Currently, this adapter does not have any options
      */
 
-
-				_createClass(InMemoryDiasporaAdapter, [{
-					key: "configureCollection",
-					value: function configureCollection(tableName, remaps) {
-						_get(InMemoryDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter.prototype), "configureCollection", this).call(this, tableName, remaps);
-						this.ensureCollectionExists(tableName);
-					}
-
-					// -----
-					// ### Utils
+				var InMemoryDiasporaAdapter = function (_DiasporaAdapter) {
+					_inherits(InMemoryDiasporaAdapter, _DiasporaAdapter);
 
 					/**
-      * @method generateUUID
-      * @description Create a new unique id for this store's entity
+      * @description Create a new instance of in memory adapter
+      * @constructs InMemoryDiasporaAdapter
+      * @memberof Adapters
+      * @public
+      * @author gerkin
+      */
+					function InMemoryDiasporaAdapter() {
+						_classCallCheck(this, InMemoryDiasporaAdapter);
+
+						var _this9 = _possibleConstructorReturn(this, (InMemoryDiasporaAdapter.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this, InMemoryEntity));
+
+						_this9.state = 'ready';
+						_this9.store = {};
+						return _this9;
+					}
+
+					/**
+      * @method configureCollection
+      * @description Create the data store and call {@link Adapters.DiasporaAdapter.configureCollection}
       * @memberof Adapters.InMemoryDiasporaAdapter
       * @public
       * @instance
       * @author gerkin
-      * @returns {String} Generated unique id
+      * @param {String} tableName Name of the table (usually, model name)
+      * @param {Object} remaps    Associative hash that links entity field names with data source field names
+      * @returns {undefined}
       */
 
-				}, {
-					key: "generateUUID",
-					value: function generateUUID() {
-						var d = new Date().getTime();
-						// Use high-precision timer if available
-						if ('undefined' !== typeof window && window.performance && 'function' === typeof window.performance.now) {
-							d += window.performance.now();
+
+					_createClass(InMemoryDiasporaAdapter, [{
+						key: "configureCollection",
+						value: function configureCollection(tableName, remaps) {
+							_get(InMemoryDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter.prototype), "configureCollection", this).call(this, tableName, remaps);
+							this.ensureCollectionExists(tableName);
 						}
-						var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-							var r = (d + Math.random() * 16) % 16 | 0;
-							d = Math.floor(d / 16);
-							return ('x' === c ? r : r & 0x3 | 0x8).toString(16);
-						});
-						return uuid;
-					}
 
-					/**
-      * @method ensureCollectionExists
-      * @description Get or create the store hash
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table
-      * @returns {DataStoreTable} In memory table to use
-      */
+						// -----
+						// ### Utils
 
-				}, {
-					key: "ensureCollectionExists",
-					value: function ensureCollectionExists(table) {
-						if (this.store.hasOwnProperty(table)) {
-							return this.store[table];
-						} else {
-							return this.store[table] = {
-								items: []
-							};
-						}
-					}
+						/**
+       * @method generateUUID
+       * @description Create a new unique id for this store's entity
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @returns {String} Generated unique id
+       */
 
-					/**
-      * @method applyOptionsToSet
-      * @description Reduce, offset or sort provided set
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {Object[]} set  Objects retrieved from memory store
-      * @param   {Object} options Options to apply to the set
-      * @returns {Object[]} Set with options applied
-      */
-
-				}, {
-					key: "insertOne",
-
-
-					// -----
-					// ### Insert
-
-					/**
-      * @method insertOne
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.
-      * @description Insert a single entity in the memory store.
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to insert data in
-      * @param   {Object} entity Hash representing the entity to insert
-      * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link InMemoryEntity}* `entity`)
-      */
-					value: function insertOne(table, entity) {
-						entity = _.cloneDeep(entity);
-						var storeTable = this.ensureCollectionExists(table);
-						entity.id = this.generateUUID();
-						this.setIdHash(entity);
-						storeTable.items.push(entity);
-						return Promise.resolve(new this.classEntity(entity, this));
-					}
-
-					// -----
-					// ### Find
-
-					/**
-      * @method findOne
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for in-memory interactions.
-      * @description Retrieve a single entity from the memory.
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to retrieve data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
-      */
-
-				}, {
-					key: "findOne",
-					value: function findOne(table, queryFind) {
-						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-						var storeTable = this.ensureCollectionExists(table);
-						var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
-						var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
-						return Promise.resolve(reducedMatches.length > 0 ? new this.classEntity(_.first(reducedMatches), this) : undefined);
-					}
-
-					/**
-      * @method findMany
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.
-      * @description Retrieve several entities from the memory.
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to retrieve data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`)
-      */
-
-				}, {
-					key: "findMany",
-					value: function findMany(table, queryFind) {
-						var _this10 = this;
-
-						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-						var storeTable = this.ensureCollectionExists(table);
-						var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
-						var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
-						return Promise.resolve(_.map(reducedMatches, function (entity) {
-							return new _this10.classEntity(entity, _this10);
-						}));
-					}
-
-					// -----
-					// ### Update
-
-					/**
-      * @method updateOne
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.
-      * @description Update a single entity in the memory.
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to update data in
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-      * @param   {Object} update Object properties to set
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`)
-      */
-
-				}, {
-					key: "updateOne",
-					value: function updateOne(table, queryFind, update) {
-						var _this11 = this;
-
-						var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-
-						return this.findOne(table, queryFind, options).then(function (found) {
-							if (!_.isNil(found)) {
-								var storeTable = _this11.ensureCollectionExists(table);
-								var match = _.find(storeTable.items, {
-									id: found.id
-								});
-								_this11.applyUpdateEntity(update, match);
-								return Promise.resolve(new _this11.classEntity(match, _this11));
-							} else {
-								return Promise.resolve();
+					}, {
+						key: "generateUUID",
+						value: function generateUUID() {
+							var d = new Date().getTime();
+							// Use high-precision timer if available
+							if (global.performance && 'function' === typeof global.performance.now) {
+								d += global.performance.now();
 							}
-						});
-					}
-
-					/**
-      * @method updateMany
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
-      * @description Update several entities in the memory.
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to update data in
-      * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-      * @param   {Object} update Object properties to set
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`)
-      */
-
-				}, {
-					key: "updateMany",
-					value: function updateMany(table, queryFind, update) {
-						var _this12 = this;
-
-						var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-
-						return this.findMany(table, queryFind, options).then(function (found) {
-							if (!_.isNil(found) && found.length > 0) {
-								var storeTable = _this12.ensureCollectionExists(table);
-								var foundIds = _.map(found, 'id');
-								var matches = _.filter(storeTable.items, function (item) {
-									return -1 !== foundIds.indexOf(item.id);
-								});
-								return Promise.resolve(_.map(matches, function (item) {
-									_this12.applyUpdateEntity(update, item);
-									return new _this12.classEntity(item, _this12);
-								}));
-							} else {
-								return Promise.resolve();
-							}
-						});
-					}
-
-					// -----
-					// ### Delete
-
-					/**
-      * @method deleteOne
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.
-      * @description Delete a single entity from the memory.
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to delete data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once item is found. Called with (*undefined*)
-      */
-
-				}, {
-					key: "deleteOne",
-					value: function deleteOne(table, queryFind) {
-						var _this13 = this;
-
-						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-						var storeTable = this.ensureCollectionExists(table);
-						return this.findOne(table, queryFind, options).then(function (entityToDelete) {
-							storeTable.items = _.reject(storeTable.items, function (entity) {
-								return entity.id === entityToDelete.idHash[_this13.name];
+							var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+								var r = (d + Math.random() * 16) % 16 | 0;
+								d = Math.floor(d / 16);
+								return ('x' === c ? r : r & 0x3 | 0x8).toString(16);
 							});
-							return Promise.resolve();
-						});
-					}
-
-					/**
-      * @method deleteMany
-      * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
-      * @description Delete several entities from the memory.
-      * @memberof Adapters.InMemoryDiasporaAdapter
-      * @public
-      * @instance
-      * @author gerkin
-      * @param   {String} table  Name of the table to delete data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-      * @param   {QueryOptions} [options={}] Hash of options.
-      * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
-      */
-
-				}, {
-					key: "deleteMany",
-					value: function deleteMany(table, queryFind) {
-						var _this14 = this;
-
-						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-						var storeTable = this.ensureCollectionExists(table);
-						return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
-							var entitiesIds = _.map(entitiesToDelete, function (entity) {
-								return _.get(entity, "idHash." + _this14.name);
-							});
-							storeTable.items = _.reject(storeTable.items, function (entity) {
-								return _.includes(entitiesIds, entity.id);
-							});
-							return Promise.resolve();
-						});
-					}
-				}], [{
-					key: "applyOptionsToSet",
-					value: function applyOptionsToSet(set, options) {
-						_.defaults(options, {
-							limit: Infinity,
-							skip: 0
-						});
-						set = set.slice(options.skip);
-						if (set.length > options.limit) {
-							set = set.slice(0, options.limit);
+							return uuid;
 						}
-						return set;
-					}
-				}]);
 
-				return InMemoryDiasporaAdapter;
-			}(DiasporaAdapter);
+						/**
+       * @method ensureCollectionExists
+       * @description Get or create the store hash
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table
+       * @returns {DataStoreTable} In memory table to use
+       */
 
-			module.exports = InMemoryDiasporaAdapter;
+					}, {
+						key: "ensureCollectionExists",
+						value: function ensureCollectionExists(table) {
+							if (this.store.hasOwnProperty(table)) {
+								return this.store[table];
+							} else {
+								return this.store[table] = {
+									items: []
+								};
+							}
+						}
+
+						/**
+       * @method applyOptionsToSet
+       * @description Reduce, offset or sort provided set
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {Object[]} set  Objects retrieved from memory store
+       * @param   {Object} options Options to apply to the set
+       * @returns {Object[]} Set with options applied
+       */
+
+					}, {
+						key: "insertOne",
+
+
+						// -----
+						// ### Insert
+
+						/**
+       * @method insertOne
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.
+       * @description Insert a single entity in the memory store.
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to insert data in
+       * @param   {Object} entity Hash representing the entity to insert
+       * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link InMemoryEntity}* `entity`)
+       */
+						value: function insertOne(table, entity) {
+							entity = _.cloneDeep(entity);
+							var storeTable = this.ensureCollectionExists(table);
+							entity.id = this.generateUUID();
+							this.setIdHash(entity);
+							storeTable.items.push(entity);
+							return Promise.resolve(new this.classEntity(entity, this));
+						}
+
+						// -----
+						// ### Find
+
+						/**
+       * @method findOne
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for in-memory interactions.
+       * @description Retrieve a single entity from the memory.
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to retrieve data from
+       * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
+       */
+
+					}, {
+						key: "findOne",
+						value: function findOne(table, queryFind) {
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							var storeTable = this.ensureCollectionExists(table);
+							var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
+							var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
+							return Promise.resolve(reducedMatches.length > 0 ? new this.classEntity(_.first(reducedMatches), this) : undefined);
+						}
+
+						/**
+       * @method findMany
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.
+       * @description Retrieve several entities from the memory.
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to retrieve data from
+       * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`)
+       */
+
+					}, {
+						key: "findMany",
+						value: function findMany(table, queryFind) {
+							var _this10 = this;
+
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							var storeTable = this.ensureCollectionExists(table);
+							var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
+							var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
+							return Promise.resolve(_.map(reducedMatches, function (entity) {
+								return new _this10.classEntity(entity, _this10);
+							}));
+						}
+
+						// -----
+						// ### Update
+
+						/**
+       * @method updateOne
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.
+       * @description Update a single entity in the memory.
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to update data in
+       * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+       * @param   {Object} update Object properties to set
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`)
+       */
+
+					}, {
+						key: "updateOne",
+						value: function updateOne(table, queryFind, update) {
+							var _this11 = this;
+
+							var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+							return this.findOne(table, queryFind, options).then(function (found) {
+								if (!_.isNil(found)) {
+									var storeTable = _this11.ensureCollectionExists(table);
+									var match = _.find(storeTable.items, {
+										id: found.id
+									});
+									_this11.applyUpdateEntity(update, match);
+									return Promise.resolve(new _this11.classEntity(match, _this11));
+								} else {
+									return Promise.resolve();
+								}
+							});
+						}
+
+						/**
+       * @method updateMany
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
+       * @description Update several entities in the memory.
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to update data in
+       * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
+       * @param   {Object} update Object properties to set
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`)
+       */
+
+					}, {
+						key: "updateMany",
+						value: function updateMany(table, queryFind, update) {
+							var _this12 = this;
+
+							var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+							return this.findMany(table, queryFind, options).then(function (found) {
+								if (!_.isNil(found) && found.length > 0) {
+									var storeTable = _this12.ensureCollectionExists(table);
+									var foundIds = _.map(found, 'id');
+									var matches = _.filter(storeTable.items, function (item) {
+										return -1 !== foundIds.indexOf(item.id);
+									});
+									return Promise.resolve(_.map(matches, function (item) {
+										_this12.applyUpdateEntity(update, item);
+										return new _this12.classEntity(item, _this12);
+									}));
+								} else {
+									return Promise.resolve();
+								}
+							});
+						}
+
+						// -----
+						// ### Delete
+
+						/**
+       * @method deleteOne
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.
+       * @description Delete a single entity from the memory.
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to delete data from
+       * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once item is found. Called with (*undefined*)
+       */
+
+					}, {
+						key: "deleteOne",
+						value: function deleteOne(table, queryFind) {
+							var _this13 = this;
+
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							var storeTable = this.ensureCollectionExists(table);
+							return this.findOne(table, queryFind, options).then(function (entityToDelete) {
+								storeTable.items = _.reject(storeTable.items, function (entity) {
+									return entity.id === entityToDelete.idHash[_this13.name];
+								});
+								return Promise.resolve();
+							});
+						}
+
+						/**
+       * @method deleteMany
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
+       * @description Delete several entities from the memory.
+       * @memberof Adapters.InMemoryDiasporaAdapter
+       * @public
+       * @instance
+       * @author gerkin
+       * @param   {String} table  Name of the table to delete data from
+       * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
+       * @param   {QueryOptions} [options={}] Hash of options.
+       * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
+       */
+
+					}, {
+						key: "deleteMany",
+						value: function deleteMany(table, queryFind) {
+							var _this14 = this;
+
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							var storeTable = this.ensureCollectionExists(table);
+							return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
+								var entitiesIds = _.map(entitiesToDelete, function (entity) {
+									return _.get(entity, "idHash." + _this14.name);
+								});
+								storeTable.items = _.reject(storeTable.items, function (entity) {
+									return _.includes(entitiesIds, entity.id);
+								});
+								return Promise.resolve();
+							});
+						}
+					}], [{
+						key: "applyOptionsToSet",
+						value: function applyOptionsToSet(set, options) {
+							_.defaults(options, {
+								limit: Infinity,
+								skip: 0
+							});
+							set = set.slice(options.skip);
+							if (set.length > options.limit) {
+								set = set.slice(0, options.limit);
+							}
+							return set;
+						}
+					}]);
+
+					return InMemoryDiasporaAdapter;
+				}(DiasporaAdapter);
+
+				module.exports = InMemoryDiasporaAdapter;
+			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
 		}, { "diaspora/adapters/baseAdapter.js": 2, "diaspora/dataStoreEntities/inMemoryEntity.js": 6, "diaspora/dependencies": 8 }], 4: [function (require, module, exports) {
 			(function (global) {
 				'use strict';
@@ -2021,11 +2023,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 					if (!_.isNil(fieldDesc.enum)) {
 						var result = _.some(fieldDesc.enum, function (enumVal) {
-							console.log({
-								enumVal: enumVal,
-								value: value
-							});
-							if (c.instance(enumVal, RegExp)) {
+							if (enumVal instanceof RegExp) {
 								return null !== value.match(enumVal);
 							} else {
 								return value === enumVal;

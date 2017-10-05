@@ -1,8 +1,12 @@
+'use strict';
+
+/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+
 const webdriver = require( 'selenium-webdriver' );
 const path = require( 'path' );
 const chai = require( 'chai' );
-assert = chai.assert;
-expect = chai.expect;
+global.assert = chai.assert;
+global.expect = chai.expect;
 
 const getTestPath = fileName => {
 	if ( process.env.SAUCE_USERNAME != undefined ) {
