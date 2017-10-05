@@ -86,7 +86,7 @@ module.exports = function gruntInit( grunt ) {
 			},
 			standalone: {
 				src:     [ 'diaspora.js', 'build/dependencies/dist/dependencies.min.js' ],
-				dest:    'build/standalone/src/diaspora.js',	
+				dest:    'build/standalone/src/diaspora.js',
 				options: {
 					browserifyOptions: {
 						standalone: 'Diaspora',
@@ -106,7 +106,7 @@ module.exports = function gruntInit( grunt ) {
 					],
 				},
 				src:  [ 'diaspora.js' ],
-				dest: 'build/isolated/src/diaspora.js',	
+				dest: 'build/isolated/src/diaspora.js',
 			},
 			test: {
 				src:     testFiles.map( v =>  `./test/${  v }` ),

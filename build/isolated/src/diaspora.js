@@ -1688,6 +1688,10 @@ const Diaspora = {
 		}
 		if ( !_.isNil( fieldDesc.enum )) {
 			const result = _.some( fieldDesc.enum, enumVal => {
+				console.log({
+					enumVal,
+					value,
+				});
 				if ( c.instance( enumVal, RegExp )) {
 					return null !== value.match( enumVal );
 				} else {

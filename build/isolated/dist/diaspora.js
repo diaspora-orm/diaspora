@@ -2021,6 +2021,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 					if (!_.isNil(fieldDesc.enum)) {
 						var result = _.some(fieldDesc.enum, function (enumVal) {
+							console.log({
+								enumVal: enumVal,
+								value: value
+							});
 							if (c.instance(enumVal, RegExp)) {
 								return null !== value.match(enumVal);
 							} else {
