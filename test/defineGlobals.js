@@ -76,6 +76,8 @@ glob.CheckTypes = c;
 if ( 'undefined' === typeof window ) {
 	glob.chai = require( 'chai' );
 }
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
 glob.assert = chai.assert;
 glob.expect = chai.expect;
 glob.SequentialEvent = require( 'sequential-event' );

@@ -129,10 +129,16 @@ module.exports = function gruntInit( grunt ) {
 		babel: {
 			options: {
 				sourceMap: true,
-				presets:   [ 'es2015' ],
+				presets:   [ 'env', {
+					modules: false,
+					targets: {
+						browsers: '>= 1%',
+					},
+					include: [ 'babel-plugin-proxy' ],
+				} ],
 			},
 			deps: {
-				options: {
+				options: {
 					sourceMap: false,
 				},
 				files: [{
@@ -162,14 +168,8 @@ module.exports = function gruntInit( grunt ) {
 				}],
 			},
 			test: {
-				options: {
+				options: {
 					sourceMap: false,
-					//					sourceType: 'script',
-					presets:   [
-						[ 'es2015', {
-							modules: false,
-						}],
-					],
 				},
 				files: [{
 					expand: true,

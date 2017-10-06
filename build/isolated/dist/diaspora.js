@@ -54,7 +54,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 		}, { "./lib/diaspora": 9 }], 2: [function (require, module, exports) {
 			'use strict';
 
-			var _require = require('diaspora/dependencies'),
+			var _require = require('lib/dependencies'),
 			    _ = _require._,
 			    Promise = _require.Promise,
 			    SequentialEvent = _require.SequentialEvent;
@@ -848,16 +848,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(SequentialEvent);
 
 			module.exports = DiasporaAdapter;
-		}, { "diaspora/dependencies": 8 }], 3: [function (require, module, exports) {
+		}, { "lib/dependencies": 8 }], 3: [function (require, module, exports) {
 			(function (global) {
 				'use strict';
 
-				var _require2 = require('diaspora/dependencies'),
+				var _require2 = require('lib/dependencies'),
 				    _ = _require2._,
 				    Promise = _require2.Promise;
 
-				var DiasporaAdapter = require('diaspora/adapters/baseAdapter.js');
-				var InMemoryEntity = require('diaspora/dataStoreEntities/inMemoryEntity.js');
+				var DiasporaAdapter = require('lib/adapters/baseAdapter.js');
+				var InMemoryEntity = require('lib/dataStoreEntities/inMemoryEntity.js');
 
 				/**
      * @class InMemoryDiasporaAdapter
@@ -1222,16 +1222,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				module.exports = InMemoryDiasporaAdapter;
 			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
-		}, { "diaspora/adapters/baseAdapter.js": 2, "diaspora/dataStoreEntities/inMemoryEntity.js": 6, "diaspora/dependencies": 8 }], 4: [function (require, module, exports) {
+		}, { "lib/adapters/baseAdapter.js": 2, "lib/dataStoreEntities/inMemoryEntity.js": 6, "lib/dependencies": 8 }], 4: [function (require, module, exports) {
 			(function (global) {
 				'use strict';
 
-				var _require3 = require('diaspora/dependencies'),
+				var _require3 = require('lib/dependencies'),
 				    _ = _require3._,
 				    Promise = _require3.Promise;
 
-				var DiasporaAdapter = require('diaspora/adapters/baseAdapter.js');
-				var LocalStorageEntity = require('diaspora/dataStoreEntities/localStorageEntity.js');
+				var DiasporaAdapter = require('lib/adapters/baseAdapter.js');
+				var LocalStorageEntity = require('lib/dataStoreEntities/localStorageEntity.js');
 
 				/**
      * @class LocalStorageDiasporaAdapter
@@ -1646,10 +1646,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				module.exports = LocalStorageDiasporaAdapter;
 			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
-		}, { "diaspora/adapters/baseAdapter.js": 2, "diaspora/dataStoreEntities/localStorageEntity.js": 7, "diaspora/dependencies": 8 }], 5: [function (require, module, exports) {
+		}, { "lib/adapters/baseAdapter.js": 2, "lib/dataStoreEntities/localStorageEntity.js": 7, "lib/dependencies": 8 }], 5: [function (require, module, exports) {
 			'use strict';
 
-			var _require4 = require('diaspora/dependencies'),
+			var _require4 = require('lib/dependencies'),
 			    _ = _require4._;
 
 			/**
@@ -1706,10 +1706,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = DataStoreEntity;
-		}, { "diaspora/dependencies": 8 }], 6: [function (require, module, exports) {
+		}, { "lib/dependencies": 8 }], 6: [function (require, module, exports) {
 			'use strict';
 
-			var DataStoreEntity = require('diaspora/dataStoreEntities/baseEntity.js');
+			var DataStoreEntity = require('lib/dataStoreEntities/baseEntity.js');
 
 			/**
     * @class InMemoryEntity
@@ -1734,10 +1734,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DataStoreEntity);
 
 			module.exports = InMemoryEntity;
-		}, { "diaspora/dataStoreEntities/baseEntity.js": 5 }], 7: [function (require, module, exports) {
+		}, { "lib/dataStoreEntities/baseEntity.js": 5 }], 7: [function (require, module, exports) {
 			'use strict';
 
-			var DataStoreEntity = require('diaspora/dataStoreEntities/baseEntity.js');
+			var DataStoreEntity = require('lib/dataStoreEntities/baseEntity.js');
 
 			/**
     * @class LocalStorageEntity
@@ -1762,7 +1762,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DataStoreEntity);
 
 			module.exports = LocalStorageEntity;
-		}, { "diaspora/dataStoreEntities/baseEntity.js": 5 }], 8: [function (require, module, exports) {
+		}, { "lib/dataStoreEntities/baseEntity.js": 5 }], 8: [function (require, module, exports) {
 			(function (global) {
 				module.exports = {
 					_: function () {
@@ -1779,16 +1779,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 		}, { "bluebird": undefined, "lodash": undefined, "sequential-event": undefined }], 9: [function (require, module, exports) {
 			'use strict';
 
-			var _require5 = require('diaspora/dependencies'),
+			var _require5 = require('lib/dependencies'),
 			    _ = _require5._,
 			    Promise = _require5.Promise,
 			    SequentialEvent = _require5.SequentialEvent;
 
-			var DiasporaAdapter = require('diaspora/adapters/baseAdapter.js');
+			var DiasporaAdapter = require('lib/adapters/baseAdapter.js');
 
 			var adapters = {
-				'in-memory': require('diaspora/adapters/inMemoryAdapter'),
-				'localstorage': require('diaspora/adapters/localStorageAdapter')
+				'in-memory': require('lib/adapters/inMemoryAdapter'),
+				'localstorage': require('lib/adapters/localStorageAdapter')
 			};
 			var dataSources = {};
 			var models = {};
@@ -2181,17 +2181,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			// Load Model class after, so that Model requires Diaspora once it is declared
 			var Model = require('./model');
-		}, { "./model": 11, "diaspora/adapters/baseAdapter.js": 2, "diaspora/adapters/inMemoryAdapter": 3, "diaspora/adapters/localStorageAdapter": 4, "diaspora/dependencies": 8 }], 10: [function (require, module, exports) {
+		}, { "./model": 11, "lib/adapters/baseAdapter.js": 2, "lib/adapters/inMemoryAdapter": 3, "lib/adapters/localStorageAdapter": 4, "lib/dependencies": 8 }], 10: [function (require, module, exports) {
 			'use strict';
 
-			var _require6 = require('diaspora/dependencies'),
+			var _require6 = require('lib/dependencies'),
 			    _ = _require6._,
 			    Promise = _require6.Promise,
 			    SequentialEvent = _require6.SequentialEvent;
 
 			var Diaspora = require('./diaspora');
-			var DataStoreEntity = require('diaspora/dataStoreEntities/baseEntity');
-			var ValidationError = require('diaspora/validationError');
+			var DataStoreEntity = require('lib/dataStoreEntities/baseEntity');
+			var ValidationError = require('lib/validationError');
 
 			var entityPrototype = {
 				model: {
@@ -2491,15 +2491,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			});
 
 			module.exports = EntityFactory;
-		}, { "./diaspora": 9, "diaspora/dataStoreEntities/baseEntity": 5, "diaspora/dependencies": 8, "diaspora/validationError": 12 }], 11: [function (require, module, exports) {
+		}, { "./diaspora": 9, "lib/dataStoreEntities/baseEntity": 5, "lib/dependencies": 8, "lib/validationError": 12 }], 11: [function (require, module, exports) {
 			'use strict';
 
-			var _require7 = require('diaspora/dependencies'),
+			var _require7 = require('lib/dependencies'),
 			    _ = _require7._,
 			    Promise = _require7.Promise;
 
-			var EntityFactory = require('diaspora/entityFactory');
-			var Diaspora = require('diaspora/diaspora');
+			var EntityFactory = require('lib/entityFactory');
+			var Diaspora = require('lib/diaspora');
 
 			var entityPrototypeProperties = EntityFactory.entityPrototypeProperties;
 
@@ -2739,10 +2739,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = Model;
-		}, { "diaspora/dependencies": 8, "diaspora/diaspora": 9, "diaspora/entityFactory": 10 }], 12: [function (require, module, exports) {
+		}, { "lib/dependencies": 8, "lib/diaspora": 9, "lib/entityFactory": 10 }], 12: [function (require, module, exports) {
 			'use strict';
 
-			var _require8 = require('diaspora/dependencies'),
+			var _require8 = require('lib/dependencies'),
 			    _ = _require8._;
 
 			var stringifyValidationObject = function stringifyValidationObject(validationErrors) {
@@ -2778,6 +2778,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(Error);
 
 			module.exports = ValidationError;
-		}, { "diaspora/dependencies": 8 }] }, {}, [1])(1);
+		}, { "lib/dependencies": 8 }] }, {}, [1])(1);
 });
 //# sourceMappingURL=diaspora.js.map
