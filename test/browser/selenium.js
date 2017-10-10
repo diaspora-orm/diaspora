@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals l: false, it: false, describe: false, require: false, expect: false, beforeEach: false, afterEach: false */
 
 const webdriver = require( 'selenium-webdriver' );
 const path = require( 'path' );
@@ -9,7 +9,7 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 
 const getTestPath = fileName => {
-	if ( process.env.SAUCE_USERNAME != undefined ) {
+	if ( !l.isNil( process.env.SAUCE_USERNAME )) {
 		return `http://localhost:8000/test/browser/${ fileName }`;
 	} else {
 		return `file://${ path.resolve( __dirname, fileName ) }`;
@@ -17,7 +17,7 @@ const getTestPath = fileName => {
 };
 const SauceLabs = require( 'saucelabs' );
 
-describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome' })`, function() {
+describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome' })`, function seleniumSuite() {
 	this.timeout( 20000 );
 	let browser;
 	let passed;
@@ -27,9 +27,8 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 	});
 
 	beforeEach(() => {
-		let ret;
 		passed = false;
-		if ( process.env.SAUCE_USERNAME != undefined ) {
+		if ( !l.isNil( process.env.SAUCE_USERNAME )) {
 			browser = new webdriver.Builder()
 				.usingServer( `http://${  process.env.SAUCE_USERNAME  }:${  process.env.SAUCE_ACCESS_KEY  }@ondemand.saucelabs.com:80/wd/hub` )
 				.withCapabilities({
@@ -48,7 +47,7 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome
 	});
 
 	afterEach(() => {
-		if ( process.env.SAUCE_USERNAME != undefined ) {
+		if ( !l.isNil( process.env.SAUCE_USERNAME )) {
 			return browser.getSession().then( session => {
 				return saucelabs.updateJob( session.getId(), {
 					passed,

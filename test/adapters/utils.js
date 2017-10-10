@@ -1,13 +1,13 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals it: false, describe: false, require: false, expect: false, Diaspora: false, dataSources: false, define: false, getStyle: false */
 
 const Promise = require( 'bluebird' );
 const l = require( 'lodash' );
 
-function getDataSourceLabel( name, addName = '' ) {
+const getDataSourceLabel = ( name, addName = '' ) => {
 	return `${ name }Adapter${ addName ? `.${ addName }` : '' }`;
-}
+};
 
 const TABLE = 'test';
 
@@ -19,7 +19,7 @@ var AdapterTestUtils = {
 		return dataSource;
 	},
 	checkSpawnedAdapter: ( adapterLabel, baseName, addName = '' ) => {
-		it( style.white( `Create ${ adapterLabel } adapter` ), done => {
+		it( getStyle( 'taskCategory', `Create ${ adapterLabel } adapter` ), done => {
 			const dataSourceLabel = getDataSourceLabel( adapterLabel, addName );
 			dataSources[dataSourceLabel].waitReady().then( adapter => {
 				adapter.baseName = baseName;
@@ -45,7 +45,7 @@ var AdapterTestUtils = {
 			}
 		};
 
-		describe( `${ style.white( 'Check filtering options' )  } with ${  adapterLabel }`, () => {
+		describe( `${ getStyle( 'taskCategory', 'Check filtering options' )  } with ${  adapterLabel }`, () => {
 			it( 'Check "normalizeOptions"', () => {
 				const no = adapter.normalizeOptions;
 				expect( no()).to.deep.include({
@@ -99,7 +99,7 @@ var AdapterTestUtils = {
 				it( 'Empty query', () => {
 					expect( nq({})).to.deep.eql({});
 				});
-				it( `${ style.bold( '~' ) } ($exists)`, () => {
+				it( `${ getStyle( 'bold',  '~' ) } ($exists)`, () => {
 					expect( nq({
 						foo: undefined,
 					})).to.deep.eql({
@@ -150,7 +150,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '==' ) } ($equal)`, () => {
+				it( `${ getStyle( 'bold',  '==' ) } ($equal)`, () => {
 					expect( nq({
 						foo: 'bar',
 					})).to.deep.eql({
@@ -183,7 +183,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '!=' ) } ($diff)`, () => {
+				it( `${ getStyle( 'bold',  '!=' ) } ($diff)`, () => {
 					expect( nq({
 						foo: {
 							$diff: 'bar', 
@@ -209,7 +209,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '<' ) } ($less)`, () => {
+				it( `${ getStyle( 'bold',  '<' ) } ($less)`, () => {
 					expect( nq({
 						foo: {
 							$less: 1, 
@@ -245,7 +245,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '<=' ) } ($lessEqual)`, () => {
+				it( `${ getStyle( 'bold',  '<=' ) } ($lessEqual)`, () => {
 					expect( nq({
 						foo: {
 							$lessEqual: 1, 
@@ -281,7 +281,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '>' ) } ($greater)`, () => {
+				it( `${ getStyle( 'bold',  '>' ) } ($greater)`, () => {
 					expect( nq({
 						foo: {
 							$greater: 1, 
@@ -317,7 +317,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '>=' ) } ($greaterEqual)`, () => {
+				it( `${ getStyle( 'bold',  '>=' ) } ($greaterEqual)`, () => {
 					expect( nq({
 						foo: {
 							$greaterEqual: 1, 
@@ -361,7 +361,7 @@ var AdapterTestUtils = {
 						foo: 'bar',
 					})).to.be.true;
 				});
-				it( `${ style.bold( '~' ) } ($exists)`, () => {
+				it( `${ getStyle( 'bold',  '~' ) } ($exists)`, () => {
 					expect( me({
 						foo: {
 							$exists: true,
@@ -391,7 +391,7 @@ var AdapterTestUtils = {
 						foo: undefined,
 					})).to.be.true;
 				});
-				it( `${ style.bold( '==' ) } ($equal)`, () => {
+				it( `${ getStyle( 'bold',  '==' ) } ($equal)`, () => {
 					expect( me({
 						foo: {
 							$equal: 'bar',
@@ -414,7 +414,7 @@ var AdapterTestUtils = {
 						foo: 'baz',
 					})).to.be.false;
 				});
-				it( `${ style.bold( '!=' ) } ($diff)`, () => {
+				it( `${ getStyle( 'bold',  '!=' ) } ($diff)`, () => {
 					expect( me({
 						foo: {
 							$diff: 'bar',
@@ -444,7 +444,7 @@ var AdapterTestUtils = {
 						bar: 'qux',
 					})).to.be.false;
 				});
-				it( `${ style.bold( '<' ) } ($less)`, () => {
+				it( `${ getStyle( 'bold',  '<' ) } ($less)`, () => {
 					expect( me({
 						foo: {
 							$less: 2,
@@ -474,7 +474,7 @@ var AdapterTestUtils = {
 						foo: 3,
 					})).to.be.false;
 				});
-				it( `${ style.bold( '<=' ) } ($lessEqual)`, () => {
+				it( `${ getStyle( 'bold',  '<=' ) } ($lessEqual)`, () => {
 					expect( me({
 						foo: {
 							$lessEqual: 2,
@@ -504,7 +504,7 @@ var AdapterTestUtils = {
 						foo: 3,
 					})).to.be.false;
 				});
-				it( `${ style.bold( '>' ) } ($greater)`, () => {
+				it( `${ getStyle( 'bold',  '>' ) } ($greater)`, () => {
 					expect( me({
 						foo: {
 							$greater: 2,
@@ -534,7 +534,7 @@ var AdapterTestUtils = {
 						foo: 3,
 					})).to.be.true;
 				});
-				it( `${ style.bold( '>=' ) } ($greaterEqual)`, () => {
+				it( `${ getStyle( 'bold',  '>=' ) } ($greaterEqual)`, () => {
 					expect( me({
 						foo: {
 							$greaterEqual: 2,
@@ -566,7 +566,7 @@ var AdapterTestUtils = {
 				});
 			});
 		});
-		describe( style.white( 'Test adapter methods' ), () => {
+		describe( getStyle( 'taskCategory', 'Test adapter methods' ), () => {
 			let findManyOk = false;
 			let findAllOk = false;
 			describe( '✨ Insert methods', () => {
@@ -721,7 +721,7 @@ var AdapterTestUtils = {
 						expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, objects ).that.have.lengthOf( objects.length );
 					});
 				});
-				it( `${ style.bold( '~' ) } ($exists) operator`, () => {
+				it( `${ getStyle( 'bold',  '~' ) } ($exists) operator`, () => {
 					return Promise.all([
 						adapter.findOne( TABLE, {
 							foo: {
@@ -743,7 +743,7 @@ var AdapterTestUtils = {
 						}),
 					]);
 				});
-				it( `${ style.bold( '==' ) } ($equal) operator`, () => {
+				it( `${ getStyle( 'bold',  '==' ) } ($equal) operator`, () => {
 					return adapter.findOne( TABLE, {
 						foo: {
 							'==': 1, 
@@ -754,7 +754,7 @@ var AdapterTestUtils = {
 						});
 					});
 				});
-				it( `${ style.bold( '!=' ) } ($diff) operator`, () => {
+				it( `${ getStyle( 'bold',  '!=' ) } ($diff) operator`, () => {
 					return Promise.all([
 						adapter.findOne( TABLE, {
 							bar: {
@@ -783,7 +783,7 @@ var AdapterTestUtils = {
 						}),
 					]);
 				});
-				it( `${ style.bold( '<' ) } ($less) operator`, () => {
+				it( `${ getStyle( 'bold',  '<' ) } ($less) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
 							'<': 2, 
@@ -794,7 +794,7 @@ var AdapterTestUtils = {
 						}]).that.have.lengthOf( 1 );
 					});
 				});
-				it( `${ style.bold( '<=' ) } ($lessEqual) operator`, () => {
+				it( `${ getStyle( 'bold',  '<=' ) } ($lessEqual) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
 							'<=': 2, 
@@ -807,7 +807,7 @@ var AdapterTestUtils = {
 						}]).that.have.lengthOf( 2 );
 					});
 				});
-				it( `${ style.bold( '>' ) } ($greater) operator`, () => {
+				it( `${ getStyle( 'bold',  '>' ) } ($greater) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
 							'>': 2, 
@@ -818,7 +818,7 @@ var AdapterTestUtils = {
 						}]).that.have.lengthOf( 1 );
 					});
 				});
-				it( `${ style.bold( '>=' ) } ($greaterEqual) operator`, () => {
+				it( `${ getStyle( 'bold',  '>=' ) } ($greaterEqual) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
 							'>=': 2, 
@@ -842,11 +842,10 @@ var AdapterTestUtils = {
 		require( '../testApps/adapters/index' )( adapter );
 	},
 	checkRegisterAdapter: ( adapterLabel, dataSourceName, addName = '' ) => {
-		it( style.white( `Register named ${ adapterLabel } dataSource` ), () => {
-			const namespace = TABLE;
-			Diaspora.registerDataSource( namespace, dataSourceName, dataSources[getDataSourceLabel( adapterLabel, addName )]);
+		it( getStyle( 'taskCategory', `Register named ${ adapterLabel } dataSource` ), () => {
+			Diaspora.registerDataSource( dataSourceName, dataSources[getDataSourceLabel( adapterLabel, addName )]);
 			//console.log(Diaspora.dataSources);
-			expect( Diaspora.dataSources[namespace][dataSourceName]).to.eql( dataSources[getDataSourceLabel( adapterLabel, addName )]);
+			expect( Diaspora.dataSources[dataSourceName]).to.eql( dataSources[getDataSourceLabel( adapterLabel, addName )]);
 		});
 	},
 };

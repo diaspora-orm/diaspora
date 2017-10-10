@@ -1,10 +1,8 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals importTest: false, getStyle: false */
 
-const styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
-
-importTest( styleFunction( 'In Memory' ), './inMemory.js' );
-if('undefined' !== typeof window){
-	importTest( styleFunction( 'Local Storage' ), './localStorage.js' );
+importTest( getStyle( 'adapter', 'In Memory' ), `${ __dirname  }/inMemory.js` );
+if ( 'undefined' !== typeof window ) {
+	importTest( getStyle( 'adapter', 'Browser Storage' ), `${ __dirname  }/browserStorage.js` );
 }

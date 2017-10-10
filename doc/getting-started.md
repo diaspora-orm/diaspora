@@ -62,9 +62,9 @@ This build contains Diaspora and all of its dependencies, packaged in a single (
 {% endhighlight %}
 
 > This build export following libraries through the `Diaspora.dependencies` hash:  
->  * [lodash](https://lodash.com/)
->  * [bluebird](http://bluebirdjs.com/docs/getting-started.html)
->  * [sequential-event](https://www.npmjs.com/package/sequential-event)
+  * [lodash](https://lodash.com/)
+  * [bluebird](http://bluebirdjs.com/docs/getting-started.html)
+  * [sequential-event](https://www.npmjs.com/package/sequential-event)
 
 #### Isolated
 
@@ -92,14 +92,8 @@ This version, much lighter, requires that you load each dependencies before load
 ### Create a data source
 
 {% highlight javascript %}
-const NAMESPACE = 'myApp';
-const inMemoryDataSource = Diaspora.createDataSource( 'in-memory', {} );
-Diaspora.registerDataSource( NAMESPACE, 'myDataSource', inMemoryDataSource );
+Diaspora.registerNamedDataSource( 'myDataSource', 'in-memory', {} );
 {% endhighlight %}
-
-<div class="note info">
-Note the constant `NAMESPACE`. Use case & infos about namespacing is detailed on [this page](#).
-</div>
 
 ### Working with models
 
@@ -178,11 +172,19 @@ Entities are objects with a status, some data sources related informations, and 
  
 #### Create, retrieve & manage entities
 
-You can get Entities from model methods. Query methods (`insert`, `insertMany`, `find`, `findMany`, `update` and `updateMany`) will return an entity in a *sync* status. You can also create *orphan* entities with `spawn`.
+##### Entities
 
-Entities can be saved to a specific data source with **[persist](#)**([*String* `sourceName`]) ► *Promise*  
-You can reload your entity from a specific data source by using **[fetch](#)**([*String* `sourceName`]) ► *Promise*  
-Lastly, you can decide to remove your entity from your data source with **[destroy](#)**([*String* `sourceName`]) ► *Promise*  
+You can get Entities from model methods. Query methods `insert`, `find` and `update` will return an [entity](jsdoc/Entity.html) in a *sync* status. You can also create *orphan* entities with `spawn`.
+
+Entities can be saved to a specific data source with **[persist](jsdoc/Entity.html#persist)**([*String* `sourceName`]) ► *Promise*  
+You can reload your entity from a specific data source by using **[fetch](jsdoc/Entity.html#fetch)**([*String* `sourceName`]) ► *Promise*  
+Lastly, you can decide to remove your entity from your data source with **[destroy](jsdoc/Entity.html#destroy)**([*String* `sourceName`]) ► *Promise*
+
+##### Sets
+
+Query methods `insertMany`, `findMany` and `updateMany` return [sets](jsdoc/Set.html). Sets are a convinient way to manage several entities at the same time. You can also spawn a set using `spawnMulti`.
+
+Sets have the same methods than Entities, plus `update`. This method allow you to set provided attributes of all entities from this set.
 
 #### Validation methods
 

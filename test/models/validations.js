@@ -1,15 +1,15 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals it: false, require: false, expect: false, Diaspora: false */
 
 let testModel;
 const MODEL_NAME = 'validatedModel';
 const SOURCE = 'inMemory';
-const ValidationError = require('lib/validationError');
+const ValidationError = Diaspora.components.ValidationError;
 
 
 it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
 		attributes: {
@@ -17,14 +17,14 @@ it( 'Should create a model', () => {
 				type: 'string',
 			},
 			prop2: {
-				type: 'integer',
-				enum: [1, 2, 3, 4, 'foo'],
-				required: true
+				type:     'integer',
+				enum:     [ 1, 2, 3, 4, 'foo' ],
+				required: true,
 			},
 			prop3: {
-				type: 'float',
+				type:    'float',
 				default: 0.1,
-			}
+			},
 		},
 	});
 	expect( testModel ).to.be.an( 'object' );
@@ -33,28 +33,46 @@ it( 'Should create a model', () => {
 	}
 });
 it( 'Should reject persistance of badly configured entities.', () => {
-	const fail1 = testModel.spawn({prop1: 1, prop2: 2}).persist();
-	const fail2 = testModel.spawn({prop2: 0}).persist();
-	const fail3 = testModel.spawn({prop2: 'foo'}).persist();
+	const fail1 = testModel.spawn({
+		prop1: 1,
+		prop2: 2,
+	}).persist();
+	const fail2 = testModel.spawn({
+		prop2: 0,
+	}).persist();
+	const fail3 = testModel.spawn({
+		prop2: 'foo',
+	}).persist();
 	const fail4 = testModel.spawn({}).persist();
 	return Promise.all([
-		expect(fail1).to.be.rejectedWith(ValidationError),
-		expect(fail1).to.be.rejectedWith(/(\W|^)prop1\W.*\Wstring(\W|$)/m),
-		expect(fail2).to.be.rejectedWith(ValidationError),
-		expect(fail2).to.be.rejectedWith(/(\W|^)prop2\W.*\Wenumerat(ed|ion)(\W|$)/m),
-		expect(fail3).to.be.rejectedWith(ValidationError),
-		expect(fail3).to.be.rejectedWith(/(\W|^)prop2\W.*\Winteger(\W|$)/m),
-		expect(fail4).to.be.rejectedWith(ValidationError),
-		expect(fail4).to.be.rejectedWith(/(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m),
+		expect( fail1 ).to.be.rejectedWith( ValidationError ),
+		expect( fail1 ).to.be.rejectedWith( /(\W|^)prop1\W.*\Wstring(\W|$)/m ),
+		expect( fail2 ).to.be.rejectedWith( ValidationError ),
+		expect( fail2 ).to.be.rejectedWith( /(\W|^)prop2\W.*\Wenumerat(ed|ion)(\W|$)/m ),
+		expect( fail3 ).to.be.rejectedWith( ValidationError ),
+		expect( fail3 ).to.be.rejectedWith( /(\W|^)prop2\W.*\Winteger(\W|$)/m ),
+		expect( fail4 ).to.be.rejectedWith(),
+		expect( fail4 ).to.be.rejectedWith( /(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m ),
 	]);
 });
-it('Should define default values on valid items', () => {
+it( 'Should define default values on valid items', () => {
 	return Promise.all([
-		testModel.spawn({prop2: 2}).persist().then(entity => {
-			expect(entity).to.be.an.entity(testModel, {prop2: 2, prop3: 0.1}, 'inMemory');
+		testModel.spawn({
+			prop2: 2,
+		}).persist().then( entity => {
+			expect( entity ).to.be.an.entity( testModel, {
+				prop2: 2,
+				prop3: 0.1,
+			}, 'inMemory' );
 		}),
-		testModel.spawn({prop2: 3, prop3: 12}).persist().then(entity => {
-			expect(entity).to.be.an.entity(testModel, {prop2: 3, prop3: 12}, 'inMemory');
+		testModel.spawn({
+			prop2: 3,
+			prop3: 12,
+		}).persist().then( entity => {
+			expect( entity ).to.be.an.entity( testModel, {
+				prop2: 3,
+				prop3: 12,
+			}, 'inMemory' );
 		}),
 	]);
 });
@@ -271,7 +289,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
 		const retPromise = testedEntity.persist();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
+		expect( testedEntity.state).to.be.eql( 'syncing' );
 		expect( testedEntity ).to.be.an.entity( testModel, object, null );
 		return retPromise.then(() => {
 			expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
@@ -289,7 +307,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 				foo: 'baz',
 			}, SOURCE );
 			const retPromise = entity.fetch();
-			expect( entity.getState()).to.be.eql( 'syncing' );
+			expect( entity.state).to.be.eql( 'syncing' );
 			return retPromise.then(() => {
 				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
 			});
@@ -303,10 +321,10 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 			expect( entity ).to.respondTo( 'destroy' );
 			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
 			const retPromise = entity.destroy();
-			expect( entity.getState()).to.be.eql( 'syncing' );
+			expect( entity.state).to.be.eql( 'syncing' );
 			return retPromise.then(() => {
-				expect( entity.getLastDataSource()).to.be.eql( SOURCE );
-				expect( entity.getState()).to.be.eql( 'orphan' );
+				expect( entity.lastDataSource).to.be.eql( SOURCE );
+				expect( entity.state).to.be.eql( 'orphan' );
 				expect( entity ).to.be.an.entity( testModel, {}, null );
 			});
 		});

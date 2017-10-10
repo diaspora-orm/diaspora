@@ -1,6 +1,6 @@
 ---
 layout: docpage
-title: "Class: DataStoreEntity"
+title: "Class: ValidationError"
 toc: false
 ---
 
@@ -16,18 +16,16 @@ toc: false
 			<div id="main">
 				
 
-	<h1 class="page-title">Class: DataStoreEntity</h1>
+	<h1 class="page-title">Class: ValidationError</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="DataStoreEntities.html">DataStoreEntities</a>.</span>
-        
-        DataStoreEntity
+        ValidationError
         </h2>
         
-            <div class="class-description"><p>DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself</p></div>
+            <div class="class-description"><p>This class represents an error related to validation</p></div>
         
     
 </header>
@@ -39,7 +37,7 @@ toc: false
         
 <hr>
 <dt>
-    <h4 class="name" id="DataStoreEntity"><span class="type-signature"></span>new DataStoreEntity(entity, dataSource)</h4>
+    <h4 class="name" id="ValidationError"><span class="type-signature"></span>new ValidationError(validationErrors, message)</h4>
     
     
 </dt>
@@ -47,7 +45,7 @@ toc: false
 
     
     <div class="description">
-        <p>Construct a new data source entity with specified content &amp; parent</p>
+        <p>Construct a new validation error</p>
     </div>
     
 
@@ -82,7 +80,7 @@ toc: false
 
         <tr>
             
-                <td class="name"><code>entity</code></td>
+                <td class="name"><code>validationErrors</code></td>
             
 
             <td class="type">
@@ -99,20 +97,20 @@ toc: false
 
             
 
-            <td class="description last"><p>Object containing attributes to inject in this entity. The only <strong>reserved key</strong> is `dataSource``</p></td>
+            <td class="description last"><p>Object describing validation errors, usually returned by <a href="Diaspora.html#.check">Diaspora.check</a></p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>dataSource</code></td>
+                <td class="name"><code>message</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="Adapters.DiasporaAdapter.html">Adapters.DiasporaAdapter</a></span>
+<span class="param-type">String</span>
 
 
 
@@ -123,7 +121,31 @@ toc: false
 
             
 
-            <td class="description last"><p>Adapter that spawn this entity</p></td>
+            <td class="description last"><p>Message of this error</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>errorArgs...</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Arguments to transfer to parent Error</p></td>
         </tr>
 
     
@@ -174,111 +196,15 @@ toc: false
 	
 
 	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id=".toObject"><span class="type-signature">&lt;static> </span>toObject()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Returns a plain object corresponding to this entity attributes</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
 		<ul>
-			<li>gerkin</li>
+			<li><a href="Diaspora.html#.check">Diaspora.check</a></li>
 			</ul>
 	</dd>
 	
 
 	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
 </dl>
 
 
@@ -293,35 +219,36 @@ toc: false
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Plain object representing this entity</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Object</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
 
-        </dl>
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>Error</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     

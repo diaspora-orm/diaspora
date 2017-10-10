@@ -1,9 +1,8 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals getStyle: false, importTest: false */
 
-const styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
-
-importTest( styleFunction( 'Simple model (single source)' ), './simple.js' );
-importTest( styleFunction( 'Simple model with remapping (single source)' ), './simple-remapping.js' );
-importTest( styleFunction( 'Simple model with validations (single source)' ), './validations.js' );
+importTest( getStyle( 'model', 'Test entities & sets' ), `${ __dirname  }/components.js` );
+importTest( getStyle( 'model', 'Simple model (single source)' ), `${ __dirname  }/simple.js` );
+importTest( getStyle( 'model', 'Simple model with remapping (single source)' ), `${ __dirname  }/simple-remapping.js` );
+importTest( getStyle( 'model', 'Simple model with validations (single source)' ), `${ __dirname  }/validations.js` );

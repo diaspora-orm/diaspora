@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
 	mongo: {
 		database: 'diaspora_test',

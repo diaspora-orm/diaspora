@@ -54,7 +54,7 @@ module.exports = function gruntInit( grunt ) {
 			readme:       'README-docco.md',
 		},
 		jsdoc: {
-			src:     jsAssets,
+			src:     /*['lib/adapters/baseAdapter.js'],*/jsAssets,
 			options: {
 				private:     true,
 				destination: jsdocPath,
@@ -113,15 +113,15 @@ module.exports = function gruntInit( grunt ) {
 				dest:    'test/browser/unit-tests.es6.js',
 				options: {
 					alias: {
-						'./adapters/index.js':   './test/adapters/index.js',
-						'./inMemory.js':         './test/adapters/inMemory.js',
-						'./localStorage.js':     './test/adapters/localStorage.js',
-						'./models/index.js':     './test/models/index.js',
-						'./simple.js':           './test/models/simple.js',
-						'./simple-remapping.js': './test/models/simple-remapping.js',
-						'./validations.js':      './test/models/validations.js',
+						'/test/adapters/index.js':          './test/adapters/index.js',
+						'/test/adapters/inMemory.js':       './test/adapters/inMemory.js',
+						'/test/adapters/localStorage.js':   './test/adapters/localStorage.js',
+						'/test/models/index.js':            './test/models/index.js',
+						'/test/models/simple.js':           './test/models/simple.js',
+						'/test/models/simple-remapping.js': './test/models/simple-remapping.js',
+						'/test/models/validations.js':      './test/models/validations.js',
+						'/test/models/components.js':       './test/models/components.js',
 					},
-					//					require:  grunt.file.expand(testFiles.filter(v => v !== 'index.js').map(v => './test/browser/sources/' + v)).map(v => path.relative('./test/browser/sources', v)),
 					exclude: [ './browser/selenium.js', './config.js', 'chai', '../diaspora', 'path', 'chalk', 'stack-trace', 'expect.js', 'node-localstorage', 'fs' ],
 				},
 			},
@@ -129,13 +129,13 @@ module.exports = function gruntInit( grunt ) {
 		babel: {
 			options: {
 				sourceMap: true,
-				presets:   [ 'env', {
+				presets:   [[ 'env', {
 					modules: false,
 					targets: {
 						browsers: '>= 1%',
 					},
-					include: [ 'babel-plugin-proxy' ],
-				} ],
+				}]],
+				//				plugins: [ 'babel-plugin-proxy' ],
 			},
 			deps: {
 				options: {
@@ -228,10 +228,10 @@ module.exports = function gruntInit( grunt ) {
 		},
 		clean: {
 			doc_jsdoc: {
-				src: [ 'site/jsdoc' ],
+				src: [ `${ baseDocPath }/jsdoc` ],
 			},
 			doc_docco: {
-				src: [ 'site/docco' ],
+				src: [ `${ baseDocPath }/docco` ],
 			},
 		},
 	});

@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals describe: false, require: false, chalk: false */
 
 const describeApp = ( level, name, slug, adapter ) => {
 	describe( `Level ${ level }: ${ name }`, () => {
@@ -8,9 +8,10 @@ const describeApp = ( level, name, slug, adapter ) => {
 		try {
 			data = require( `./${ slug }.json` );
 		} catch ( err ) {
+			console.error( err );
 		}
 		try {
-			require( `./${ slug }` )( adapter, data, 'app1-matchmail' );
+			require( `./${ slug }` )( adapter, data, slug );
 		} catch ( err ) {
 			console.log( 'Could not prepare app:', err );
 		}

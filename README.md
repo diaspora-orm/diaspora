@@ -16,15 +16,41 @@ SauceLabs status:
 
 Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](https://diaspora.ithoughts.io/), the [Quick Code Review](https://diaspora.ithoughts.io/docco/index.html) or the [API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
 
-> ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:
->
-> * *Relations*: Not implemented
-> * *Validation* and *Default field value*: Implemented, but not executed during lifecycle events
-> * *Lifecycle events*: Not implemented
-> * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2 for default adapters
-> * *Registering external adapter*: Soon
+> ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:  
+ * *Relations*: Not implemented
+ * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2 for default adapters
+ * *Registering external adapter*: Soon
 
 ---
+
+## Available adapters
+
+<table>
+	<thead>
+		<tr>
+			<th>Adapter</th>
+			<th>Repository</th>
+			<th>Maintainer</th>
+			<th>Other infos</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><img width="100" src="https://github.com/GerkinDev/Diaspora/raw/master/media/inMemory.png"/></td>
+			<td colspan="2">Built-in</td>
+			<td>QL v2</td>
+		</tr>
+		<tr>
+			<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage"><img width="100" src="https://github.com/GerkinDev/Diaspora/raw/master/media/browserStorage.png"/></a></td>
+			<td colspan="2">Built-in (browser build only)</td>
+			<td>QL v2</td>
+		</tr>
+	</tbody>
+</table>
+
+## Compatibility
+
+Diaspora requires TODO
 
 ## API Overview
 
@@ -38,7 +64,7 @@ Here is a short API overview. For a detailed API documentation, check the [Diasp
 
 Create an entity, defining its properties with provided `props`. The returned entity should be persisted later.
 
-#### spawnMany([*object[]* `props`]) => *Entity[]*
+#### spawnMany([*object[]* `props`]) => *Set*
 
 See `spawn`.
 
@@ -46,7 +72,7 @@ See `spawn`.
 
 Create an entity, defining its properties with provided `props`, and persist it immediately.
 
-#### insertMany([*object[]* `props`]) => *Promise(Entity[])*
+#### insertMany([*object[]* `props`]) => *Promise(Set)*
 
 See `insertMany`.
 
@@ -54,7 +80,7 @@ See `insertMany`.
 
 Retrieve an entity matching `query`. If `query` isn't an object, it is considered as an ID.
 
-#### findMany(*object || Any* `query`, [*object* `options`], [*string* `source`]) => *Promise(Entity[])*
+#### findMany(*object || Any* `query`, [*object* `options`], [*string* `source`]) => *Promise(Set)*
 
 See `find`
 
@@ -70,7 +96,7 @@ See `delete`
 
 Update a single entity matching `query`with attributes in `newAttrs`. If `query` isn't an object, it is considered as an ID. `options` can contain `allowEmptyQuery`.
 
-#### updateMany(*object || Any* `query`, *object* `newAttrs`, [*object* `options`], [*string* `source`]) => *Promise(Entity[])*
+#### updateMany(*object || Any* `query`, *object* `newAttrs`, [*object* `options`], [*string* `source`]) => *Promise(Set)*
 
 See `update`
 

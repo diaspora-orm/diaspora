@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function(){
 			if (prefix.length === 0) {
 				return callback(null, matches);
 			}
-			console.log(arguments);
 			if(prefix.toLowerCase().match(/pho/))
 				matches.push({name: 'PhoneBook', value: 'PhoneBook', score: 1, meta: "Collection"});
 			return callback(null, matches);
@@ -124,8 +123,10 @@ document.addEventListener('DOMContentLoaded', function(){
 			promises.push(retval.then(function(output){
 				if('undefined' === typeof output || output === null){
 					output = [];
-				} else if(!(output instanceof Array)){
+				} else if(!output.hasOwnProperty('entities')){
 					output = [output];
+				} else {
+					output = output.value();
 				}
 				return setAllData(output);
 			}));
@@ -145,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	function reset(){
 		PhoneBook.deleteMany({}).then(() => {
 			return PhoneBook.insertMany(data);
-		}).then(setAllData);
+		}).then(inserted => Promise.resolve(inserted.value())).then(setAllData);
 	}
 	function setAllData(data){
 		datatable.clear();

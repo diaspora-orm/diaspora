@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false, importTest: false */
 
 require( './defineGlobals' );
 
@@ -328,10 +328,10 @@ if ( process.env.SAUCE_ONLY !== 'true' ) {
 	});
 
 	const styleFunction = 'undefined' === typeof window ? chalk.bold.underline.blue : l.identity;
-	importTest( styleFunction( 'Adapters' ), './adapters/index.js' );
-	importTest( styleFunction( 'Models' ), './models/index.js' );
+	importTest( styleFunction( 'Adapters' ), `${ __dirname  }/adapters/index.js` );
+	importTest( styleFunction( 'Models' ), `${ __dirname  }/models/index.js` );
 }
 
 if ( 'undefined' === typeof window && process.env.NO_SAUCE !== 'true' ) {
-	require( './browser/selenium.js' );
+	require( `${ __dirname  }/browser/selenium.js` );
 }

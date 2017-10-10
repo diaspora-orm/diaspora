@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals c: false, it: false, describe: false, require: false, expect: false, Diaspora: false */
 
 let testModel;
 let testedEntity;
@@ -9,7 +9,7 @@ const SOURCE = 'inMemory';
 
 
 it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
 		attributes: {
@@ -76,7 +76,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		});
 	});
 	describe( '- Find instances', () => {
-		function checkFind( query, many = true ) {
+		const checkFind = ( query, many = true ) => {
 			return testModel[many ? 'findMany' : 'find']( query ).then( foundEntities => {
 				if ( many ) {
 					expect( foundEntities ).to.be.a.set.of.entity( testModel, query, SOURCE );
@@ -85,7 +85,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				}
 				return Promise.resolve( foundEntities );
 			});
-		}
+		};
 		it( 'Find a single instance', () => {
 			expect( testModel ).to.respondTo( 'find' );
 			return Promise.mapSeries([
@@ -132,7 +132,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		});
 	});
 	describe( '- Update instances', () => {
-		function checkUpdate( query, update, many = true ) {
+		const checkUpdate = ( query, update, many = true ) => {
 			return testModel[many ? 'updateMany' : 'update']( query, update ).then( updatedEntities => {
 				if ( many ) {
 					expect( updatedEntities ).to.be.a.set.of.entity( testModel, update, SOURCE );
@@ -141,7 +141,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				}
 				return Promise.resolve( updatedEntities );
 			});
-		}
+		};
 		it( 'Update a single instance', () => {
 			expect( testModel ).to.respondTo( 'update' );
 			return Promise.resolve()
@@ -185,15 +185,14 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 					foo: 'bat',
 				}, {
 					foo: 'twy',
-				}, true )
-					  .then( foundEntities => {
-						expect( foundEntities ).to.have.lengthOf( 0 );
-						return Promise.resolve();
-					}));
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 0 );
+					return Promise.resolve();
+				}));
 		});
 	});
 	describe( '- Delete instances', () => {
-		function checkDestroy( query, many = true ) {
+		const checkDestroy = ( query, many = true ) => {
 			return testModel.findMany( query ).then( entities => {
 				return Promise.resolve( entities.length );
 			}).then( beforeCount => {
@@ -212,7 +211,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 					expect( result.after ).to.be.equal( result.before - 1 );
 				}
 			});
-		}
+		};
 		it( 'Delete a single instance', () => {
 			expect( testModel ).to.respondTo( 'delete' );
 			return Promise.resolve()
@@ -246,7 +245,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
 		const retPromise = testedEntity.persist();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
+		expect( testedEntity.state ).to.be.eql( 'syncing' );
 		expect( testedEntity ).to.be.an.entity( testModel, object, null );
 		return retPromise.then(() => {
 			expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
@@ -264,7 +263,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 				foo: 'baz',
 			}, SOURCE );
 			const retPromise = entity.fetch();
-			expect( entity.getState()).to.be.eql( 'syncing' );
+			expect( entity.state ).to.be.eql( 'syncing' );
 			return retPromise.then(() => {
 				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
 			});
@@ -278,10 +277,10 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 			expect( entity ).to.respondTo( 'destroy' );
 			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
 			const retPromise = entity.destroy();
-			expect( entity.getState()).to.be.eql( 'syncing' );
+			expect( entity.state ).to.be.eql( 'syncing' );
 			return retPromise.then(() => {
-				expect( entity.getLastDataSource()).to.be.eql( SOURCE );
-				expect( entity.getState()).to.be.eql( 'orphan' );
+				expect( entity.lastDataSource ).to.be.eql( SOURCE );
+				expect( entity.state ).to.be.eql( 'orphan' );
 				expect( entity ).to.be.an.entity( testModel, {}, null );
 			});
 		});

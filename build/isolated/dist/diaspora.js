@@ -1,5 +1,3 @@
-"use strict";
-
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -151,10 +149,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     */
 
 			/**
-    * @class DiasporaAdapter
+    * @constructor DiasporaAdapter
     * @classdesc DiasporaAdapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
     * @memberof Adapters
-    * @public
     * @author gerkin
     */
 
@@ -164,7 +161,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				/**
      * @description Create a new instance of adapter. This base class should be used by all other adapters.
-     * @constructs DiasporaAdapter
      * @memberof Adapters
      * @public
      * @author gerkin
@@ -187,6 +183,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					});
 					return _this;
 				}
+
+				/**
+     * @event Adapters.DiasporaAdapter#ready
+     * @description Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
+     * @type {undefined}
+     * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
+     */
+
+				/**
+     * @event Adapters.DiasporaAdapter#error
+     * @description Fired if the adapter failed to initialize or changed to `error` state. Called with the triggering `error`
+     * @type {Error}
+     * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
+     */
 
 				/**
      * @method configureCollection
@@ -347,7 +357,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 
 					/**
-      * Refresh the `idHash` with current adapter's `id` injected
+      * @method setIdHash
+      * @description Refresh the `idHash` with current adapter's `id` injected
+      * @memberof Adapters.DiasporaAdapter
+      * @public
+      * @instance
+      * @author gerkin
       * @param   {Object}   entity          Object containing attributes of the entity
       * @param   {String} propName = 'id' Name of the `id` field
       * @returns {Object} Modified entity (for chaining)
@@ -363,7 +378,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 
 					/**
-      * Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function
+      * @method matchEntity
+      * @description Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function
+      * @memberof Adapters.DiasporaAdapter
+      * @public
+      * @instance
+      * @author gerkin
       * @param   {QueryLanguage.SelectQuery} query  Query to match against
       * @param   {Object} entity Entity to test
       * @returns {Boolean}  `true` if query matches, `false` otherwise
@@ -451,6 +471,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * @method normalizeOptions
       * @description Transform options to their canonical form. This function must be applied before calling adapters' methods
+      * @memberof Adapters.DiasporaAdapter
+      * @public
+      * @instance
       * @throws {TypeError} Thrown if an option does not have an acceptable type
       * @throws {ReferenceError} Thrown if a required option is not present
       * @throws {Error} Thrown when there isn't more precise description of the error is available (eg. when conflicts occurs) 
@@ -632,8 +655,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @param   {String} table  Name of the table to retrieve data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-      * @param   {QueryOptions} [options={}] Hash of options.
+      * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing the entity to find
+      * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
       * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`)
       */
 
@@ -657,8 +680,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @param   {String} table  Name of the table to retrieve data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-      * @param   {QueryOptions} [options={}] Hash of options.
+      * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing entities to find
+      * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
       * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`)
       */
 
@@ -708,9 +731,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @param   {String} table  Name of the table to retrieve data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+      * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing the entity to find
       * @param   {Object} update Object properties to set
-      * @param   {QueryOptions} [options={}] Hash of options.
+      * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
       * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`)
       */
 
@@ -734,9 +757,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @param   {String} table  Name of the table to retrieve data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
+      * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing entities to find
       * @param   {Object} update Object properties to set
-      * @param   {QueryOptions} [options={}] Hash of options.
+      * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
       * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`)
       */
 
@@ -784,8 +807,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @param   {String} table  Name of the table to delete data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entities to find
-      * @param   {QueryOptions} [options={}] Hash of options.
+      * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing the entities to find
+      * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
       * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`)
       */
 
@@ -807,8 +830,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @instance
       * @author gerkin
       * @param   {String} table  Name of the table to delete data from
-      * @param   {SelectQueryOrCondition} queryFind Hash representing the entities to find
-      * @param   {QueryOptions} [options={}] Hash of options.
+      * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing the entities to find
+      * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
       * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`)
       */
 
@@ -863,11 +886,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @class InMemoryDiasporaAdapter
      * @classdesc This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS
      * @extends Adapters.DiasporaAdapter
-     * @description Create a new In Memory data store
      * @memberof Adapters
-     * @public
-     * @author gerkin
-     * @param {Object} [config] Options hash. Currently, this adapter does not have any options
      */
 
 				var InMemoryDiasporaAdapter = function (_DiasporaAdapter) {
@@ -875,7 +894,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * @description Create a new instance of in memory adapter
-      * @constructs InMemoryDiasporaAdapter
       * @memberof Adapters
       * @public
       * @author gerkin
@@ -1237,12 +1255,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @class LocalStorageDiasporaAdapter
      * @classdesc This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser
      * @extends Adapters.DiasporaAdapter
-     * @description Create a new LocalStorage data store
      * @memberof Adapters
-     * @public
-     * @author gerkin
-     * @param {Object} [config] Options hash.
-     * @param {Boolean} config.session=false If `false`, data source will use local storage. If `true`, it will use session storage.
      */
 
 				var LocalStorageDiasporaAdapter = function (_DiasporaAdapter2) {
@@ -1250,7 +1263,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * @description Create a new instance of local storage adapter
-      * @constructs LocalStorageDiasporaAdapter
       * @memberof Adapters
       * @public
       * @author gerkin
@@ -1656,24 +1668,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * @namespace DataStoreEntities
     */
 
-			/**
-    * @class DataStoreEntity
-    * @classdesc DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself
-    * @memberof DataStoreEntities
-    * @public
-    * @author gerkin
-    * @param {Object} source Hash containing properties to copy in this entity
-    */
-
-
 			var DataStoreEntity = function () {
 				/**
-     * @description Construct a new data source entity with specified content & parent
-     * @constructs DataStoreEntity
+     * @class DataStoreEntity
+     * @classdesc DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself
      * @memberof DataStoreEntities
+     * @description Construct a new data source entity with specified content & parent
      * @public
      * @author gerkin
-     * @param {Object} entity Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
+     * @param {Object}                   entity     Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
      * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
      */
 				function DataStoreEntity(entity, dataSource) {
@@ -1695,6 +1698,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					_.assign(this, entity);
 				}
 
+				/**
+     * @method toObject
+     * @description Returns a plain object corresponding to this entity attributes
+     * @memberof DataStoreEntities.DataStoreEntity
+     * @public
+     * @author gerkin
+     * @returns {Object} Plain object representing this entity
+     */
+
+
 				_createClass(DataStoreEntity, [{
 					key: "toObject",
 					value: function toObject() {
@@ -1711,19 +1724,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			var DataStoreEntity = require('lib/dataStoreEntities/baseEntity.js');
 
-			/**
-    * @class InMemoryEntity
-    * @classdesc Entity stored in {@link InMemoryDiasporaAdapter the in-memory adapter}.
-    * @extends DataStoreEntity
-    * @memberof DataStoreEntities
-    * @public
-    * @author gerkin
-    * @param {Object} source Hash containing properties to copy in this entity
-    */
-
 			var InMemoryEntity = function (_DataStoreEntity) {
 				_inherits(InMemoryEntity, _DataStoreEntity);
 
+				/**
+     * @class InMemoryEntity
+     * @classdesc Entity stored in {@link InMemoryDiasporaAdapter the in-memory adapter}.
+     * @extends DataStoreEntity
+     * @description Construct a in memory entity with specified content & parent
+     * @memberof DataStoreEntities
+     * @public
+     * @author gerkin
+     * @param {Object} entity Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
+     * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
+     */
 				function InMemoryEntity(entity, dataSource) {
 					_classCallCheck(this, InMemoryEntity);
 
@@ -1739,19 +1753,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			var DataStoreEntity = require('lib/dataStoreEntities/baseEntity.js');
 
-			/**
-    * @class LocalStorageEntity
-    * @classdesc Entity stored in {@link LocalStorageDiasporaAdapter the local storage adapter}.
-    * @extends DataStoreEntity
-    * @memberof DataStoreEntities
-    * @public
-    * @author gerkin
-    * @param {Object} source Hash containing properties to copy in this entity
-    */
-
 			var LocalStorageEntity = function (_DataStoreEntity2) {
 				_inherits(LocalStorageEntity, _DataStoreEntity2);
 
+				/**
+     * @class LocalStorageEntity
+     * @classdesc Entity stored in {@link LocalStorageDiasporaAdapter the local storage adapter}.
+     * @extends DataStoreEntity
+     * @description Construct a local storage entity with specified content & parent
+     * @memberof DataStoreEntities
+     * @public
+     * @author gerkin
+     * @param {Object} entity Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
+     * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
+     */
 				function LocalStorageEntity(entity, dataSource) {
 					_classCallCheck(this, LocalStorageEntity);
 
@@ -1764,6 +1779,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			module.exports = LocalStorageEntity;
 		}, { "lib/dataStoreEntities/baseEntity.js": 5 }], 8: [function (require, module, exports) {
 			(function (global) {
+				'use strict';
+
 				module.exports = {
 					_: function () {
 						return global._ || require('lodash');
@@ -1887,11 +1904,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					var _this23 = this;
 
 					var modelDesc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-					var keys = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
 					// Apply method `checkField` on each field described
 					var checkResults = _(modelDesc).mapValues(function (fieldDesc, field) {
-						return _this23.checkField.call(_this23, entity[field], fieldDesc, _.concat(keys, [field]));
+						return _this23.checkField.call(_this23, entity[field], fieldDesc, _.concat([], [field]));
 					}).omitBy(_.isEmpty).value();
 					return checkResults;
 				},
@@ -1930,97 +1946,97 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					// Check the type and the required status
 					if (!_.isNil(fieldDesc.type) && !_.isNil(fieldDesc.model)) {
 						error.spec = keys.join('.') + " spec can't have both a type and a model";
-					} else {
 						// Apply the `required` modifier
-						if (true === fieldDesc.required && _.isNil(value)) {
-							error.required = keys.join('.') + " is a required property of type \"" + fieldDesc.type + "\"";
-						} else if (fieldDesc.required !== true && !_.isNil(value)) {
-							if (_.isString(fieldDesc.type)) {
-								switch (fieldDesc.type) {
-									case 'string':
-										{
-											if (!_.isString(value)) {
-												error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
-											}
-										}break;
+					} else if (true === fieldDesc.required && _.isNil(value)) {
+						error.required = keys.join('.') + " is a required property of type \"" + fieldDesc.type + "\"";
+					} else if (!_.isNil(value)) {
+						if (_.isString(fieldDesc.type)) {
+							switch (fieldDesc.type) {
+								case 'string':
+									{
+										if (!_.isString(value)) {
+											error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
+										}
+									}break;
 
-									case 'integer':
-										{
-											if (!_.isInteger(value)) {
-												error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
-											}
-										}break;
+								case 'integer':
+									{
+										if (!_.isInteger(value)) {
+											error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
+										}
+									}break;
 
-									case 'float':
-										{
-											if (!_.isNumber(value)) {
-												error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
-											}
-										}break;
+								case 'float':
+									{
+										if (!_.isNumber(value)) {
+											error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
+										}
+									}break;
 
-									case 'date':
-										{
-											if (!_.isDate(value)) {
-												error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
-											}
-										}break;
+								case 'date':
+									{
+										if (!_.isDate(value)) {
+											error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
+										}
+									}break;
 
-									case 'object':
-										{
-											if (!_.isObject(value)) {
-												error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
-											} else {
-												var deepTest = _.isObject(fieldDesc.attributes) ? _(value).mapValues(function (propVal, propName) {
-													return _this24.checkField(propVal, fieldDesc.attributes[propName], _.concat(keys, [propName]));
-												}).omitBy(_.isEmpty).value() : {};
-												if (!_.isEmpty(deepTest)) {
-													error.children = deepTest;
-												}
+								case 'object':
+									{
+										if (!_.isObject(value)) {
+											error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
+										} else {
+											var deepTest = _.isObject(fieldDesc.attributes) ? _(value).mapValues(function (propVal, propName) {
+												return _this24.checkField(propVal, fieldDesc.attributes[propName], _.concat(keys, [propName]));
+											}).omitBy(_.isEmpty).value() : {};
+											if (!_.isEmpty(deepTest)) {
+												error.children = deepTest;
 											}
-										}break;
+										}
+									}break;
 
-									case 'array':
-										{
-											if (!_.isArray(value)) {
-												error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
-											} else {
-												var _deepTest = _.isObject(fieldDesc.of) ? _(value).map(function (propVal, propName) {
-													if (_.isArrayLike(fieldDesc.of)) {
-														var subErrors = _(fieldDesc.of).map(function (desc) {
-															return _this24.checkField(propVal, desc, _.concat(keys, [propName]));
-														});
-														if (!_.find(subErrors, function (v) {
-															return 0 === v.length;
-														})) {
-															return subErrors;
-														}
-													} else {
-														return _this24.checkField(propVal, fieldDesc.of, _.concat(keys, [propName]));
+								case 'array':
+									{
+										if (!_.isArray(value)) {
+											error.type = keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"";
+										} else {
+											var _deepTest = _.isObject(fieldDesc.of) ? _(value).map(function (propVal, propName) {
+												if (_.isArrayLike(fieldDesc.of)) {
+													var subErrors = _(fieldDesc.of).map(function (desc) {
+														return _this24.checkField(propVal, desc, _.concat(keys, [propName]));
+													});
+													if (!_.find(subErrors, function (v) {
+														return 0 === v.length;
+													})) {
+														return subErrors;
 													}
-												}).omitBy(_.isEmpty).value() : {};
-												if (!_.isEmpty(_deepTest)) {
-													error.children = _deepTest;
+												} else {
+													return _this24.checkField(propVal, fieldDesc.of, _.concat(keys, [propName]));
 												}
+											}).omitBy(_.isEmpty).value() : {};
+											if (!_.isEmpty(_deepTest)) {
+												error.children = _deepTest;
 											}
-										}break;
+										}
+									}break;
 
-									case 'any':
-										{
-											if (!_.stubTrue(value)) {
-												error.type = keys.join('.') + " expected to be assigned with any type";
-											}
-										}break;
+								case 'any':
+									{
+										if (!_.stubTrue(value)) {
+											error.type = keys.join('.') + " expected to be assigned with any type";
+										}
+									}break;
 
-									default:
-										{
-											error.type = keys.join('.') + " requires to be unhandled type \"" + fieldDesc.type + "\"";
-										}break;
-								}
-							} else {
-								error.spec = keys.join('.') + " spec \"type\" must be a string";
+								default:
+									{
+										error.type = keys.join('.') + " requires to be unhandled type \"" + fieldDesc.type + "\"";
+									}break;
 							}
+						} else {
+							error.spec = keys.join('.') + " spec \"type\" must be a string";
 						}
 					}
+
+					// Check enum values
 					if (!_.isNil(fieldDesc.enum)) {
 						var result = _.some(fieldDesc.enum, function (enumVal) {
 							if (enumVal instanceof RegExp) {
@@ -2094,8 +2110,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						get: function get(target, key) {
 							// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
 							if (_.isString(key)) {
-								var method = void 0;
-								if (method = key.match(/^(find|update|insert|delete)(Many|One)$/)) {
+								var method = key.match(/^(find|update|insert|delete)(Many|One)$/);
+								if (null !== method) {
 									method[2] = method[2].toLowerCase();
 									method = _.mapKeys(method.slice(0, 3), function (val, key) {
 										return ['full', 'query', 'number'][key];
@@ -2120,6 +2136,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * @param {String}          moduleName Module declaring this datasource. Modules requiring the provided dataSource will be able to use this dataSource using the `name` provided
     * @param {String}          name       Name associated with this datasource
     * @param {DiasporaAdapter} dataSource Datasource itself
+    * @returns {undefined}
     */
 				registerDataSource: function registerDataSource(moduleName, name, dataSource) {
 					if (!_.isString(moduleName) && moduleName.length > 0) {
@@ -2149,6 +2166,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * @param {String} moduleName       Module declaring this datasource. Modules requiring the provided dataSource will be able to use this dataSource using the `name` provided
     * @param {String} name       Name associated with this datasource
     * @param {Object} modelDesc Description of the model to define
+    * @returns {Model} Model created
     */
 				declareModel: function declareModel(moduleName, name, modelDesc) {
 					if (!_.isString(moduleName) && moduleName.length > 0) {
@@ -2192,66 +2210,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var Diaspora = require('./diaspora');
 			var DataStoreEntity = require('lib/dataStoreEntities/baseEntity');
 			var ValidationError = require('lib/validationError');
-
-			var entityPrototype = {
-				model: {
-					writable: false,
-					enumerable: true
-				},
-				dataSources: {
-					writable: false,
-					enumerable: true
-				},
-				toObject: {
-					writable: false,
-					enumerable: true
-				},
-				persist: {
-					writable: false,
-					enumerable: true
-				},
-				fetch: {
-					writable: false,
-					enumerable: true
-				},
-				destroy: {
-					writable: false,
-					enumerable: true
-				},
-				getState: {
-					writable: false,
-					enumerable: true
-				},
-				getLastDataSource: {
-					writable: false,
-					enumerable: true
-				},
-				getUidQuery: {
-					writable: false,
-					enumerable: true
-				},
-				getTable: {
-					writable: false,
-					enumerable: true
-				}
-			};
-			var entityPrototypeProperties = _.keys(entityPrototype);
+			var Utils = require('lib/utils');
 
 			function EntityFactory(name, modelAttrs, model) {
 				var modelAttrsKeys = _.keys(modelAttrs);
 
 				/**
-     * @class Entity
      * @classdesc An entity is a document in the population of all your datas of the same type
-     * @description Create a new entity
      * @public
      * @author gerkin
-     * @param {Object} source Hash with properties to copy on the new object
      */
 
 				var Entity = function (_SequentialEvent2) {
 					_inherits(Entity, _SequentialEvent2);
 
+					/**
+      * @constructs Entity
+      * @description Create a new entity
+      * @public
+      * @author gerkin
+      * @param {Object} [source = {}] Hash with properties to copy on the new object
+      */
 					function Entity() {
 						var _ret;
 
@@ -2268,6 +2247,245 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							return undefined;
 						}));
 
+						var entityPrototype = {
+							/**
+        * @property {Object} dataSources Hash that links each data source with its name
+        * @memberof Entity
+        * @instance
+        * @public
+        * @author gerkin
+        */
+							dataSources: {
+								value: dataSources
+							},
+							/**
+        * @method toObject
+        * @description Returns a copy of this entity attributes
+        * @memberof Entity
+        * @public
+        * @instance
+        * @author gerkin
+        * @returns {Object} Attributes of this entity
+        */
+							toObject: function toObject() {
+								return _.omit(attributes, entityPrototypeProperties);
+							},
+							/**
+        * @method persist
+        * @description Save this entity in specified data source
+        * @memberof Entity
+        * @public
+        * @instance
+        * @author gerkin
+        * @param {String} sourceName Name of the data source to persist entity in
+        * @param {Object} [options] Hash of options for this query
+        * @param {Boolean} [options.skipEvents=false] If true, won't trigger events `beforeUpdate` and `afterUpdate`
+        * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`
+        */
+							persist: function persist(sourceName) {
+								var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+								_.defaults(options, {
+									skipEvents: false
+								});
+								var dataSource = _this26.constructor.model.getDataSource(sourceName);
+								var beforeState = state;
+								state = 'syncing';
+								var promise = void 0;
+								if (options.skipEvents) {
+									promise = Promise.resolve();
+								} else {
+									promise = _this26.emit('beforeUpdate');
+								}
+								return promise.then(function () {
+									var promise = void 0;
+									// Depending on state, we are going to perform a different operation
+									if ('orphan' === beforeState) {
+										promise = dataSource.insertOne(_this26.table(sourceName), _this26.toObject());
+									} else {
+										promise = dataSource.updateOne(_this26.table(sourceName), _this26.uidQuery(dataSource), _this26.toObject());
+									}
+									lastDataSource = dataSource.name;
+									return promise;
+								}).then(function (dataStoreEntity) {
+									state = 'sync';
+									entityDefined.dataSources[dataSource.name] = dataStoreEntity;
+									attributes = dataStoreEntity.toObject();
+									if (options.skipEvents) {
+										return Promise.resolve(entityProxied);
+									} else {
+										return _this26.emit('afterUpdate').then(function () {
+											return Promise.resolve(entityProxied);
+										});
+									}
+								});
+							},
+							/**
+        * @method fetch
+        * @description Reload this entity from specified data source
+        * @memberof Entity
+        * @public
+        * @instance
+        * @author gerkin
+        * @param {String} sourceName Name of the data source to fetch entity from
+        * @param {Object} [options] Hash of options for this query
+        * @param {Boolean} [options.skipEvents=false] If true, won't trigger events `beforeUpdate` and `afterUpdate`
+        * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`
+        */
+							fetch: function fetch(sourceName) {
+								var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+								_.defaults(options, {
+									skipEvents: false
+								});
+								var dataSource = _this26.constructor.model.getDataSource(sourceName);
+								var beforeState = state;
+								state = 'syncing';
+								var promise = void 0;
+								if (options.skipEvents) {
+									promise = Promise.resolve();
+								} else {
+									promise = _this26.emit('beforeFind');
+								}
+								return promise.then(function () {
+									var promise = void 0;
+									// Depending on state, we are going to perform a different operation
+									if ('orphan' === beforeState) {
+										promise = Promise.reject('Can\'t fetch an orphan entity');
+									} else {
+										promise = dataSource.findOne(_this26.table(sourceName), _this26.uidQuery(dataSource));
+									}
+									lastDataSource = dataSource.name;
+									return promise;
+								}).then(function (dataStoreEntity) {
+									state = 'sync';
+									entityDefined.dataSources[dataSource.name] = dataStoreEntity;
+									attributes = dataStoreEntity.toObject();
+									if (options.skipEvents) {
+										return Promise.resolve(entityProxied);
+									} else {
+										return _this26.emit('afterFind').then(function () {
+											return Promise.resolve(entityProxied);
+										});
+									}
+								});
+							},
+							/**
+        * @method destroy
+        * @description Delete this entity from the specified data source
+        * @memberof Entity
+        * @public
+        * @instance
+        * @author gerkin
+        * @param {String} sourceName Name of the data source to delete entity from
+        * @param {Object} [options] Hash of options for this query
+        * @param {Boolean} [options.skipEvents=false] If true, won't trigger events `beforeUpdate` and `afterUpdate`
+        * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`
+        */
+							destroy: function destroy(sourceName) {
+								var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+								_.defaults(options, {
+									skipEvents: false
+								});
+								var dataSource = _this26.constructor.model.getDataSource(sourceName);
+								var beforeState = state;
+								state = 'syncing';
+								var promise = void 0;
+								if (options.skipEvents) {
+									promise = Promise.resolve();
+								} else {
+									promise = _this26.emit('beforeDelete');
+								}
+								return promise.then(function () {
+									var promise = void 0;
+									if ('orphan' === beforeState) {
+										promise = Promise.reject(new Error('Can\'t destroy an orphan entity'));
+									} else {
+										promise = dataSource.deleteOne(_this26.table(sourceName), _this26.uidQuery(dataSource));
+									}
+									lastDataSource = dataSource.name;
+									return promise;
+								}).then(function (dataStoreEntity) {
+									// If this was our only data source, then go back to orphan state
+									if (0 === _.without(model.dataSources, dataSource.name).length) {
+										state = 'orphan';
+									} else {
+										state = 'sync';
+										delete attributes.idHash[dataSource.name];
+									}
+									entityDefined.dataSources[dataSource.name] = undefined;
+									dataStoreEntity = null;
+									if (options.skipEvents) {
+										return Promise.resolve(entityProxied);
+									} else {
+										return _this26.emit('afterDelete').then(function () {
+											return Promise.resolve(entityProxied);
+										});
+									}
+								});
+							},
+							/**
+        * @method getState
+        * @description Return entity's current state.
+        * @memberof Entity
+        * @public
+        * @instance
+        * @author gerkin
+        * @returns {Entity.State} State of this entity
+        */
+							state: {
+								get: function get() {
+									return state;
+								}
+							},
+							/**
+        * @method getLastDataSource
+        * @description Return entity's last data source
+        * @memberof Entity
+        * @public
+        * @instance
+        * @author gerkin
+        * @returns {String} Name of the last data source used
+        */
+							lastDataSource: {
+								get: function get() {
+									return lastDataSource;
+								}
+							},
+							/**
+        * @method getUidQuery
+        * @description Generate the query to get this unique entity in the desired data source
+        * @memberof Entity
+        * @public
+        * @instance
+        * @author gerkin
+        * @param {Adapters.DiasporaAdapter} dataSource 
+        * @returns {Object} Query to find this entity
+        */
+							uidQuery: function uidQuery(dataSource) {
+								return {
+									id: attributes.idHash[dataSource.name]
+								};
+							},
+
+							/**
+        * @method getTable
+        * @description Return the table of this entity in the specified data source
+        * @memberof Entity
+        * @public
+        * @instance
+        * @author gerkin
+        * @param {String} sourceName Name of the data source to persist entity in
+        * @returns {String} Name of the table
+        */
+							table: function table(sourceName) {
+								return name;
+							}
+						};
+						var entityPrototypeProperties = _.keys(entityPrototype);
+
+						// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 						if (source instanceof DataStoreEntity) {
 							state = 'sync';
 							lastDataSource = source.dataSource.name;
@@ -2301,139 +2519,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						});
 
 						// Define getters & setters
-						var entityDefined = Object.defineProperties(_this26, _.extend({
-							model: {
-								value: model
-							},
-							dataSources: {
-								value: dataSources
-							},
-							toObject: {
-								value: function toObject() {
-									return _.omit(attributes, entityPrototypeProperties);
-								}
-							},
-							persist: {
-								value: function value(sourceName) {
-									var dataSource = _this26.model.getDataSource(sourceName);
-									var beforeState = state;
-									state = 'syncing';
-									return _this26.emit('beforeUpdate').then(function () {
-										var promise = void 0;
-										// Depending on state, we are going to perform a different operation
-										if ('orphan' === beforeState) {
-											promise = dataSource.insertOne(_this26.getTable(sourceName), _this26.toObject());
-										} else {
-											promise = dataSource.updateOne(_this26.getTable(sourceName), _this26.getUidQuery(dataSource), _this26.toObject());
-										}
-										lastDataSource = dataSource.name;
-										return promise;
-									}).then(function (dataStoreEntity) {
-										state = 'sync';
-										entityDefined.dataSources[dataSource.name] = dataStoreEntity;
-										attributes = dataStoreEntity.toObject();
-										return Promise.resolve(_this26);
-									}).then(function () {
-										return _this26.emit('afterUpdate');
-									}).then(function () {
-										return Promise.resolve(_this26);
-									});
-								}
-							},
-							fetch: {
-								value: function value(sourceName) {
-									var dataSource = _this26.model.getDataSource(sourceName);
-									var beforeState = state;
-									state = 'syncing';
-									return _this26.emit('beforeFind').then(function () {
-										var promise = void 0;
-										// Depending on state, we are going to perform a different operation
-										if ('orphan' === beforeState) {
-											promise = Promise.reject('Can\'t fetch an orphan entity');
-										} else {
-											promise = dataSource.findOne(_this26.getTable(sourceName), _this26.getUidQuery(dataSource));
-										}
-										lastDataSource = dataSource.name;
-										return promise;
-									}).then(function (dataStoreEntity) {
-										state = 'sync';
-										entityDefined.dataSources[dataSource.name] = dataStoreEntity;
-										attributes = dataStoreEntity.toObject();
-										return Promise.resolve(_this26);
-									}).then(function () {
-										return _this26.emit('afterFind');
-									}).then(function () {
-										return Promise.resolve(_this26);
-									});
-								}
-							},
-							destroy: {
-								value: function value(sourceName) {
-									var dataSource = _this26.model.getDataSource(sourceName);
-									var beforeState = state;
-									state = 'syncing';
-									return _this26.emit('beforeDelete').then(function () {
-										var promise = void 0;
-										if ('orphan' === beforeState) {
-											promise = Promise.reject(new Error('Can\'t destroy an orphan entity'));
-										} else {
-											promise = dataSource.deleteOne(_this26.getTable(sourceName), _this26.getUidQuery(dataSource));
-										}
-										lastDataSource = dataSource.name;
-										return promise;
-									}).then(function (dataStoreEntity) {
-										// If this was our only data source, then go back to orphan state
-										if (0 === _.without(model.dataSources, dataSource.name).length) {
-											state = 'orphan';
-										} else {
-											state = 'sync';
-											delete attributes.idHash[dataSource.name];
-										}
-										entityDefined.dataSources[dataSource.name] = undefined;
-										dataStoreEntity = null;
-										return Promise.resolve(_this26);
-									}).then(function () {
-										return _this26.emit('afterDelete');
-									}).then(function () {
-										return Promise.resolve(_this26);
-									});
-								}
-							},
-							getState: {
-								value: function getState() {
-									return state;
-								}
-							},
-							getLastDataSource: {
-								value: function getLastDataSource() {
-									return lastDataSource;
-								}
-							},
-							getUidQuery: {
-								value: function getUidQuery(dataSource) {
-									return {
-										id: attributes.idHash[dataSource.name]
-									};
-								}
-							},
-							getTable: {
-								value: function getTable(sourceName) {
-									return name;
-								}
-							}
-						}));
+						var entityDefined = Utils.defineEnumerableProperties(_this26, entityPrototype);
 						var entityProxied = new Proxy(entityDefined, {
 							get: function get(obj, key) {
 								if ('constructor' === key) {
 									return entityDefined[key];
 								}
-								if (entityDefined.hasOwnProperty(key)) {
+								if (key in entityDefined) {
 									return entityDefined[key];
 								}
 								return attributes[key];
 							},
 							set: function set(obj, key, value) {
-								if (entityDefined.hasOwnProperty(key)) {
+								if (key in entityDefined && !_get(Entity.prototype.__proto__ || Object.getPrototypeOf(Entity.prototype), "hasOwnProperty", _this26).call(_this26, key)) {
 									console.warn("Trying to define read-only key " + key + ".");
 									return value;
 								}
@@ -2449,6 +2547,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								return attributes.hasOwnProperty(key);
 							}
 						});
+
 						return _ret = entityProxied, _possibleConstructorReturn(_this26, _ret);
 					}
 
@@ -2482,16 +2581,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 				});
 				return EntityWrapped;
+
+				entityGenericConstructor = Entity;
 			}
 
-			// Add prototype infos to the function, so users can know which props are used.
-			_.assign(EntityFactory, {
-				entityPrototype: entityPrototype,
-				entityPrototypeProperties: entityPrototypeProperties
-			});
-
 			module.exports = EntityFactory;
-		}, { "./diaspora": 9, "lib/dataStoreEntities/baseEntity": 5, "lib/dependencies": 8, "lib/validationError": 12 }], 11: [function (require, module, exports) {
+		}, { "./diaspora": 9, "lib/dataStoreEntities/baseEntity": 5, "lib/dependencies": 8, "lib/utils": 13, "lib/validationError": 14 }], 11: [function (require, module, exports) {
 			'use strict';
 
 			var _require7 = require('lib/dependencies'),
@@ -2500,21 +2595,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			var EntityFactory = require('lib/entityFactory');
 			var Diaspora = require('lib/diaspora');
+			var Set = require('lib/set');
 
 			var entityPrototypeProperties = EntityFactory.entityPrototypeProperties;
 
 			/**
-    * @class Model
     * @classdesc The model class is used to interact with the population of all data of the same type.
-    * @description Construct a new model.
-    * @public
-    * @author gerkin
-    * @param {String} namespace Namespace of the model. This may be used for scope or inheriting mechanisms
-    * @param {String} namespace Name of the model
-    * @param {ModelDescription} modelDesc Hash representing the configuration of the model
     */
 
 			var Model = function () {
+				/**
+     * @description Create a new Model that is allowed to interact with all entities of data sources tables selected
+     * @public
+     * @author gerkin
+     * @param {String}           namespace Namespace of the model. This may be used for scope or inheriting mechanisms
+     * @param {String}           name      Name of the model
+     * @param {ModelDescription} modelDesc Hash representing the configuration of the model
+     */
 				function Model(namespace, name, modelDesc) {
 					_classCallCheck(this, Model);
 
@@ -2558,6 +2655,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					this.entityFactory = EntityFactory(name, modelDesc.attributes, this);
 				}
 
+				/**
+     * @method getDataSource
+     * @description Create a new Model that is allowed to interact with all entities of data sources tables selected
+     * @memberof Model
+     * @public
+     * @instance
+     * @author gerkin
+     * @throws {Error} Thrown if requested source name does not exists
+     * @param   {String} [sourceName=Model.defaultDataSource] Name of the source to get. It corresponds to one of the sources you set in Model#modelDesc.sources
+     * @returns {Adapters.DiasporaAdapter} Source adapter with requested name
+     */
+
+
 				_createClass(Model, [{
 					key: "getDataSource",
 					value: function getDataSource(sourceName) {
@@ -2570,21 +2680,58 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						}
 						return this.dataSources[sourceName];
 					}
+
+					/**
+      * @method spawn
+      * @description Create a new *orphan* {@link Entity entity}
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {Object} source Object to copy attributes from
+      * @returns {Entity} New *orphan* entity
+      */
+
 				}, {
 					key: "spawn",
 					value: function spawn(source) {
 						var newEntity = new this.entityFactory(source);
 						return newEntity;
 					}
+
+					/**
+      * @method spawnMulti
+      * @description Create multiple new *orphan* {@link Entity entities}
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {Object[]} sources Array of objects to copy attributes from
+      * @returns {Set} Set with new *orphan* entities
+      */
+
 				}, {
 					key: "spawnMulti",
 					value: function spawnMulti(sources) {
 						var _this27 = this;
 
-						return _.map(sources, function (source) {
+						return new Set(this, _.map(sources, function (source) {
 							return _this27.spawn(source);
-						});
+						}));
 					}
+
+					/**
+      * @method insert
+      * @description Insert a raw source object in the data store
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {Object} source Object to copy attributes from
+      * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to insert in
+      * @returns {Promise} Promise resolved with new *sync* {@link Entity entity}
+      */
+
 				}, {
 					key: "insert",
 					value: function insert(source, dataSourceName) {
@@ -2595,6 +2742,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							return Promise.resolve(new _this28.entityFactory(entity));
 						});
 					}
+
+					/**
+      * @method insertMany
+      * @description Insert multiple raw source objects in the data store
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {Object[]} sources Array of object to copy attributes from
+      * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to insert in
+      * @returns {Promise} Promise resolved with a {@link Set collection} containing new *sync* entities
+      */
+
 				}, {
 					key: "insertMany",
 					value: function insertMany(sources, dataSourceName) {
@@ -2602,11 +2762,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.insertMany(this.name, sources).then(function (entities) {
-							return Promise.resolve(_.map(entities, function (entity) {
+							var newEntities = _.map(entities, function (entity) {
 								return new _this29.entityFactory(entity);
-							}));
+							});
+							var collection = new Set(_this29, newEntities);
+							return Promise.resolve(collection);
 						});
 					}
+
+					/**
+      * @method find
+      * @description Retrieve a single entity from specified data source that matches provided `queryFind` and `options`
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entity
+      * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
+      * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entity from
+      * @returns {Promise} Promise resolved with the found {@link Entity entity} in *sync* state
+      */
+
 				}, {
 					key: "find",
 					value: function find() {
@@ -2635,6 +2811,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							return Promise.resolve(newEntity);
 						});
 					}
+
+					/**
+      * @method findMany
+      * @description Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entities
+      * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
+      * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entities from
+      * @returns {Promise} Promise resolved with a {@link Set collection} of found entities in *sync* state
+      */
+
 				}, {
 					key: "findMany",
 					value: function findMany() {
@@ -2654,15 +2844,29 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							options = {};
 						}
 						var dataSource = this.getDataSource(dataSourceName);
-						return dataSource.findMany(this.name, queryFind, options).then(function (dataSourceEntities) {
-							var entities = _.map(dataSourceEntities, function (dataSourceEntity) {
-								var newEntity = new _this31.entityFactory(dataSourceEntity);
-								newEntity.dataSources[dataSource.name] = dataSourceEntity;
-								return newEntity;
+						return dataSource.findMany(this.name, queryFind, options).then(function (entities) {
+							var newEntities = _.map(entities, function (entity) {
+								return new _this31.entityFactory(entity);
 							});
-							return Promise.resolve(entities);
+							var collection = new Set(_this31, newEntities);
+							return Promise.resolve(collection);
 						});
 					}
+
+					/**
+      * @method update
+      * @description Update a single entity from specified data source that matches provided `queryFind` and `options`
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {QueryLanguage#SelectQueryOrCondition} queryFind      Query to get desired entity
+      * @param   {Object} update Attributes to update on matched set
+      * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
+      * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entity from
+      * @returns {Promise} Promise resolved with the updated {@link Entity entity} in *sync* state
+      */
+
 				}, {
 					key: "update",
 					value: function update(queryFind, _update) {
@@ -2684,6 +2888,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							return Promise.resolve(newEntity);
 						});
 					}
+
+					/**
+      * @method updateMany
+      * @description Update multiple entities from specified data source that matches provided `queryFind` and `options`
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entities
+      * @param   {Object} update Attributes to update on matched set
+      * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
+      * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entities from
+      * @returns {Promise} Promise resolved with the {@link Set collection} of found entities in *sync* state
+      */
+
 				}, {
 					key: "updateMany",
 					value: function updateMany(queryFind, update) {
@@ -2697,14 +2916,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							options = {};
 						}
 						var dataSource = this.getDataSource(dataSourceName);
-						return dataSource.updateMany(this.name, queryFind, update, options).then(function (dataSourceEntities) {
-							var entities = _.map(dataSourceEntities, function (dataSourceEntity) {
-								var newEntity = new _this33.entityFactory(dataSourceEntity);
-								return newEntity;
+						return dataSource.updateMany(this.name, queryFind, update, options).then(function (entities) {
+							var newEntities = _.map(entities, function (entity) {
+								return new _this33.entityFactory(entity);
 							});
-							return Promise.resolve(entities);
+							var collection = new Set(_this33, newEntities);
+							return Promise.resolve(collection);
 						});
 					}
+
+					/**
+      * @method delete
+      * @description Delete a single entity from specified data source that matches provided `queryFind` and `options`
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entity
+      * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
+      * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entity from
+      * @returns {Promise} Promise resolved with `undefined`
+      */
+
 				}, {
 					key: "delete",
 					value: function _delete() {
@@ -2719,6 +2952,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.deleteOne(this.name, queryFind, options);
 					}
+
+					/**
+      * @method deleteMany
+      * @description Delete multiple entities from specified data source that matches provided `queryFind` and `options`
+      * @memberof Model
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entities
+      * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
+      * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entities from
+      * @returns {Promise} Promise resolved with `undefined`
+      */
+
 				}, {
 					key: "deleteMany",
 					value: function deleteMany() {
@@ -2739,11 +2986,249 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = Model;
-		}, { "lib/dependencies": 8, "lib/diaspora": 9, "lib/entityFactory": 10 }], 12: [function (require, module, exports) {
+		}, { "lib/dependencies": 8, "lib/diaspora": 9, "lib/entityFactory": 10, "lib/set": 12 }], 12: [function (require, module, exports) {
 			'use strict';
 
 			var _require8 = require('lib/dependencies'),
-			    _ = _require8._;
+			    _ = _require8._,
+			    Promise = _require8.Promise,
+			    SequentialEvent = _require8.SequentialEvent;
+
+			var DataStoreEntity = require('lib/dataStoreEntities/baseEntity');
+			var Utils = require('lib/utils');
+
+			/**
+    * @class Set
+    * @classdesc Collections are used to manage multiple entities at the same time
+    */
+
+			var Set = function () {
+				/**
+     * @lends Set
+     * @constructs
+     * @description Create a new set, managing provided `entities` that must be generated from provided `model`
+     * @member {Model} model Model that generated those `entities`
+     * @member {Lodash} entities Entities member of this collection
+     * @param {Model} model       Model describing entities managed by this set
+     * @param {Entity|Entity[]} entities Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
+     */
+				function Set(model) {
+					for (var _len2 = arguments.length, entities = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+						entities[_key2 - 1] = arguments[_key2];
+					}
+
+					_classCallCheck(this, Set);
+
+					// Flatten arguments
+					entities = _(entities).flatten();
+					// Check if each entity is from the expected model
+					Set.checkEntitiesFromModel(entities.value(), model);
+
+					var defined = Utils.defineEnumerableProperties(this, {
+						entities: entities,
+						model: model,
+						length: {
+							get: function get() {
+								return this.entities.size();
+							}
+						}
+					});
+
+					return new Proxy(defined, {
+						get: function get(target, prop) {
+							if (prop in target) {
+								return target[prop];
+							} else if (prop in target.entities) {
+								return target.entities[prop];
+							} else if ('string' === typeof prop && prop.match(/^-?\d+$/) && target.entities.nth(parseInt(prop))) {
+								return target.entities.nth(parseInt(prop));
+							}
+						},
+						set: function set(target, prop, val) {
+							if ('model' === prop) {
+								return new Error('Can\'t assign to read-only property "model".');
+							} else if ('entities' === prop) {
+								Set.checkEntitiesFromModel(val, target.model);
+								target.entities = _(val);
+							}
+						}
+					});
+				}
+
+				_createClass(Set, [{
+					key: "persist",
+
+
+					/**
+      * @method persist
+      * @description Persist all entities of this collection
+      * @memberof Set
+      * @public
+      * @instance
+      * @author gerkin
+      * @param {String} sourceName Data source name to persist in
+      * @returns {Promise} Promise resolved once all items are persisted
+      * @see {@link Entity#persist}
+      */
+					value: function persist(sourceName) {
+						var _this34 = this;
+
+						return Promise.all(this.entities.map(function (entity) {
+							return entity.emit('beforeUpdate');
+						})).then(function () {
+							return Promise.all(_this34.entities.map(function (entity) {
+								return entity.persist(sourceName, {
+									skipEvents: true
+								});
+							}));
+						}).then(function () {
+							return Promise.all(_this34.entities.map(function (entity) {
+								return entity.emit('afterUpdate');
+							}));
+						}).then(function () {
+							return _this34;
+						});
+					}
+
+					/**
+      * @method fetch
+      * @description Reload all entities of this collection
+      * @memberof Set
+      * @public
+      * @instance
+      * @author gerkin
+      * @param {String} sourceName Data source name to reload entities from
+      * @returns {Promise} Promise resolved once all items are reloaded
+      * @see {@link Entity#fetch}
+      */
+
+				}, {
+					key: "fetch",
+					value: function fetch(sourceName) {
+						var _this35 = this;
+
+						return Promise.all(this.entities.map(function (entity) {
+							return entity.emit('beforeFind');
+						})).then(function () {
+							return Promise.all(_this35.entities.map(function (entity) {
+								return entity.fetch(sourceName, {
+									skipEvents: true
+								});
+							}));
+						}).then(function () {
+							return Promise.all(_this35.entities.map(function (entity) {
+								return entity.emit('afterFind');
+							}));
+						}).then(function () {
+							return _this35;
+						});
+					}
+
+					/**
+      * @method destroy
+      * @description Destroy all entities from this collection
+      * @memberof Set
+      * @public
+      * @instance
+      * @author gerkin
+      * @param {String} sourceName Name of the data source to delete entities from
+      * @returns {Promise} Promise resolved once all items are destroyed
+      * @see {@link Entity#destroy}
+      */
+
+				}, {
+					key: "destroy",
+					value: function destroy(sourceName) {
+						var _this36 = this;
+
+						return Promise.all(this.entities.map(function (entity) {
+							return entity.emit('beforeDelete');
+						})).then(function () {
+							return Promise.all(_this36.entities.map(function (entity) {
+								return entity.destroy(sourceName, {
+									skipEvents: true
+								});
+							}));
+						}).then(function () {
+							return Promise.all(_this36.entities.map(function (entity) {
+								return entity.emit('afterDelete');
+							}));
+						}).then(function () {
+							return _this36;
+						});
+					}
+
+					/**
+      * @method update
+      * @description Update all entities in the set with given object
+      * @memberof Set
+      * @public
+      * @instance
+      * @author gerkin
+      * @param   {Object} newData Attributes to change in each entity of the collection
+      * @returns {Collection} `this`
+      */
+
+				}, {
+					key: "update",
+					value: function update(newData) {
+						this.entities.forEach(function (entity) {
+							_.forEach(newData, function (val, key) {
+								if (_.isUndefined(val)) {
+									delete entity[key];
+								} else {
+									entity[key] = val;
+								}
+							});
+						});
+						return this;
+					}
+				}], [{
+					key: "checkEntitiesFromModel",
+					value: function checkEntitiesFromModel(entities, model) {
+						entities.forEach(function (entity, index) {
+							if (entity.constructor.model !== model) {
+								throw new TypeError("Provided entity n\xB0" + index + " " + entity + " is not from model " + model + " (" + model.modelName + ")");
+							}
+						});
+					}
+				}]);
+
+				return Set;
+			}();
+
+			module.exports = Set;
+		}, { "lib/dataStoreEntities/baseEntity": 5, "lib/dependencies": 8, "lib/utils": 13 }], 13: [function (require, module, exports) {
+			'use strict';
+
+			var _require9 = require('lib/dependencies'),
+			    _ = _require9._;
+
+			module.exports = {
+				defineEnumerableProperties: function defineEnumerableProperties(subject, handlers) {
+					var remappedHandlers = _.mapValues(handlers, function (handler) {
+						if (_.isNil(handler) || 'object' !== (typeof handler === "undefined" ? "undefined" : _typeof(handler)) || Object.getPrototypeOf(handler) !== Object.prototype) {
+							handler = {
+								value: handler
+							};
+						}
+						var defaults = {
+							enumerable: true
+						};
+						if (!handler.hasOwnProperty('get')) {
+							defaults.writable = false;
+						}
+						_.defaults(handler, defaults);
+						return handler;
+					});
+					return Object.defineProperties(subject, remappedHandlers);
+				}
+			};
+		}, { "lib/dependencies": 8 }], 14: [function (require, module, exports) {
+			'use strict';
+
+			var _require10 = require('lib/dependencies'),
+			    _ = _require10._;
 
 			var stringifyValidationObject = function stringifyValidationObject(validationErrors) {
 				return _(validationErrors).mapValues(function (error, key) {
@@ -2754,6 +3239,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var ValidationError = function (_Error) {
 				_inherits(ValidationError, _Error);
 
+				/**
+     * @class ValidationError
+     * @classdesc This class represents an error related to validation
+     * @extends Error
+     * @description Construct a new validation error
+     * @public
+     * @author gerkin
+     * @see Diaspora.check
+     * @param {Object} validationErrors Object describing validation errors, usually returned by {@link Diaspora.check}
+     * @param {String} message          Message of this error
+     * @param {*} errorArgs...        Arguments to transfer to parent Error
+     */
 				function ValidationError(validationErrors, message) {
 					var _ref3;
 
@@ -2761,17 +3258,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					message += "\n" + stringifyValidationObject(validationErrors);
 
-					for (var _len2 = arguments.length, errorArgs = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-						errorArgs[_key2 - 2] = arguments[_key2];
+					for (var _len3 = arguments.length, errorArgs = Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
+						errorArgs[_key3 - 2] = arguments[_key3];
 					}
 
-					var _this34 = _possibleConstructorReturn(this, (_ref3 = ValidationError.__proto__ || Object.getPrototypeOf(ValidationError)).call.apply(_ref3, [this, message].concat(errorArgs)));
+					var _this37 = _possibleConstructorReturn(this, (_ref3 = ValidationError.__proto__ || Object.getPrototypeOf(ValidationError)).call.apply(_ref3, [this, message].concat(errorArgs)));
 
-					_this34.validationErrors = validationErrors;
+					_this37.validationErrors = validationErrors;
 					if (Error.captureStackTrace) {
-						Error.captureStackTrace(_this34, _this34.constructor);
+						Error.captureStackTrace(_this37, _this37.constructor);
 					}
-					return _this34;
+					return _this37;
 				}
 
 				return ValidationError;

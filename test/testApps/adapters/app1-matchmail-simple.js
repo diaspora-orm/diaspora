@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals l: false, c: false, it: false, require: false, expect: false, chalk: false */
 
 module.exports = ( adapter, data, tableName ) => {
 	it( '❌ Clear old data', () => {
@@ -134,7 +134,7 @@ module.exports = ( adapter, data, tableName ) => {
 					expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, {
 						email: undefined,
 					}).that.have.lengthOf.below( pageSize + 1, `Sets should be at most ${ pageSize } items length` );
-					if ( 0 == entities.length ) {
+					if ( 0 === entities.length ) {
 						return resolve();
 					}
 					page++;

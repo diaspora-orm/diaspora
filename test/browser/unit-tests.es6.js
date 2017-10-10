@@ -1,702 +1,61 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./adapters/index.js":[function(require,module,exports){
-'use strict';
-
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
-
-const styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
-
-importTest( styleFunction( 'In Memory' ), './inMemory.js' );
-importTest( styleFunction( 'Local Storage' ), './localStorage.js' );
-
-},{}],"./inMemory.js":[function(require,module,exports){
-'use strict';
-
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
-
-(() => {
-	const AdapterTestUtils = require( './utils' );
-	const ADAPTER_LABEL = 'in-memory';
-
-	AdapterTestUtils.createDataSource( ADAPTER_LABEL, {});
-	AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'InMemory' );
-	AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
-	AdapterTestUtils.checkApplications( ADAPTER_LABEL );
-	AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'inMemory' );
-})();
-
-},{"./utils":6}],"./localStorage.js":[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
-
-(() => {
-	const ADAPTER_LABEL = 'localstorage';
-	const adapterConfig = getConfig( ADAPTER_LABEL );
-
-	if ( 'undefined' === typeof window ) {
-		if ( !adapterConfig.data_dir ) {
-			it( 'LocalStorage adapter unconfigured', function() {
-				this.skip();
-			});
-		}
-
-		const LocalStorage = require( 'node-localstorage' ).LocalStorage;
-		const fs = require( 'fs' );
-		const localStorageDir = adapterConfig.data_dir;
-		global.localStorage = new LocalStorage( localStorageDir );
-		localStorage.clear();
-	} else {
-		localStorage.clear();
-		sessionStorage.clear();
-	}
-
-	var AdapterTestUtils = require( './utils' );
-
-	AdapterTestUtils.createDataSource( ADAPTER_LABEL, {}, 'localStorage' );
-	AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'LocalStorage', 'localStorage' );
-	AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL, 'localStorage' );
-	AdapterTestUtils.checkApplications( ADAPTER_LABEL, 'localStorage' );
-	AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'localStorage', 'localStorage' );
-	if ( 'undefined' !== typeof window ) {
-		AdapterTestUtils.createDataSource( ADAPTER_LABEL, {
-			session: true,
-		}, 'sessionStorage' );
-		AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'SessionStorage', 'sessionStorage' );
-		AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL, 'sessionStorage' );
-		AdapterTestUtils.checkApplications( ADAPTER_LABEL, 'sessionStorage' );
-		AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'sessionStorage', 'sessionStorage' );
-	}
-})();
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./utils":6,"fs":undefined,"node-localstorage":undefined}],"./models/index.js":[function(require,module,exports){
-'use strict';
-
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
-
-const styleFunction = 'undefined' === typeof window ? chalk.bold.red : l.identity;
-
-importTest( styleFunction( 'Simple model (single source)' ), './simple.js' );
-importTest( styleFunction( 'Simple model with remapping (single source)' ), './simple-remapping.js' );
-importTest( styleFunction( 'Simple model with validations (single source)' ), './validations.js' );
-
-},{}],"./simple-remapping.js":[function(require,module,exports){
-'use strict';
-
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
-
-let testModel;
-let store;
-let testedEntity;
-const MODEL_NAME = 'remapped';
-const SOURCE = 'inMemory';
-
-
-const checkDataStoreRemap = ( item, propsObject ) => {
-	const dataStoreItem = l.find( store.items, {
-		id: item.dataSources.inMemory.id,
-	});
-	expect( dataStoreItem ).to.not.have.property( 'foo' );
-	if ( propsObject ) {
-		if ( c.assigned( propsObject.foo )) {
-			expect( dataStoreItem ).to.be.an( 'object' ).that.have.property( 'bar', propsObject.foo );
-		} else {
-			expect( dataStoreItem ).to.satisfy( obj => {
-				return !obj.hasOwnProperty( 'bar' ) || c.undefined( obj.bar );
-			});
-		}
-	}
+module.exports = {
+	_: (() => { 
+		return global._ || require( 'lodash' );
+	})(),
+	SequentialEvent: (() => { 
+		return global.SequentialEvent || require( 'sequential-event' );
+	})(),
+	Promise: (() => { 
+		return global.Promise && global.Promise.version ? global.Promise : require( 'bluebird' );
+	})(),
 };
 
-it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
-		sources: {
-			[ SOURCE ]: {
-				foo: 'bar',
-			},
-		},
-		schema:     false,
-		attributes: {
-			foo: {
-				type: 'string',
-			},
-		},
-	});
-	expect( testModel ).to.be.an( 'object' );
-	if ( 'undefined' === typeof window ) {
-		expect( testModel.constructor.name ).to.be.eql( 'Model' );
-	}
-	store = Diaspora.dataSources.test.inMemory.store.remapped;
-});
-it( 'Should be able to create an entity of the defined model.', () => {
-	const entity1 = testModel.spawn();
-	expect( entity1 ).to.be.an.entity( testModel, {}, true );
-	const entity2 = testModel.spawn({
-		foo: 'bar',
-	});
-	expect( entity2 ).to.be.an.entity( testModel, {
-		foo: 'bar',
-	}, true );
-});
-it( 'Should be able to create multiple entities.', () => {
-	const objects = [
-		{
-			foo: 'bar', 
-		},
-		undefined,
-	];
-	const entities = testModel.spawnMulti( objects );
-	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
-});
-describe( 'Should be able to use model methods to find, update, delete & create', () => {
-	describe( '- Create instances', () => {
-		it( 'Create a single instance', () => {
-			expect( testModel ).to.respondTo( 'insert' );
-			const object = {
-				foo: 'bar', 
-			};
-			return testModel.insert( object ).then( newEntity => {
-				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
-				checkDataStoreRemap( newEntity, object );
-			});
-		});
-		it( 'Create multiple instances', () => {
-			expect( testModel ).to.respondTo( 'insertMany' );
-			const objects = [
-				{
-					foo: 'baz', 
-				},
-				undefined,
-				{
-					foo: undefined, 
-				},
-				{
-					foo: 'baz', 
-				},
-			];
-			return testModel.insertMany( objects ).then( newEntities => {
-				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
-				return Promise.map( newEntities, ( newEntity, index ) => {
-					const object = objects[index];
-					checkDataStoreRemap( newEntity, object );
-				});
-			});
-		});
-	});
-	describe( '- Find instances', () => {
-		function checkFind( query, many = true ) {
-			return testModel[many ? 'findMany' : 'find']( query ).then( foundEntities => {
-				if ( many ) {
-					expect( foundEntities ).to.be.a.set.of.entity( testModel, query, SOURCE );
-				} else if ( c.assigned( foundEntities )) {
-					expect( foundEntities ).to.be.an.entity( testModel, query, SOURCE );
-				}
-				return Promise.resolve( foundEntities );
-			});
-		}
-		it( 'Find a single instance', () => {
-			expect( testModel ).to.respondTo( 'find' );
-			return Promise.mapSeries([
-				{
-					foo: undefined, 
-				},
-				{
-					foo: 'baz', 
-				},
-				{
-					foo: 'bar', 
-				},
-			], item => checkFind( item, false ));
-		});
-		it( 'Find multiple instances', () => {
-			expect( testModel ).to.respondTo( 'findMany' );
-			return Promise.mapSeries([
-				{
-					query: {
-						foo: undefined, 
-					},
-					length: 2,
-				},
-				{
-					query: {
-						foo: 'baz', 
-					},
-					length: 2,
-				},
-				{
-					query: {
-						foo: 'bar', 
-					},
-					length: 1,
-				},
-			], item => checkFind( item.query, true ).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( item.length );
-			}));
-		});
-		it( 'Find all instances', () => {
-			return testModel.findMany({}).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( 5 );
-			});
-		});
-	});
-	describe( '- Update instances', () => {
-		function checkUpdate( query, update, many = true ) {
-			return testModel[many ? 'updateMany' : 'update']( query, update ).then( updatedEntities => {
-				if ( many ) {
-					expect( updatedEntities ).to.be.a.set.of.entity( testModel, update, SOURCE );
-					l.forEach( updatedEntities, updatedEntity => {
-						checkDataStoreRemap( updatedEntity, update );
-					});
-				} else if ( c.assigned( updatedEntities )) {
-					expect( updatedEntities ).to.be.an.entity( testModel, update, SOURCE );
-					checkDataStoreRemap( updatedEntities, update );
-				}
-				return Promise.resolve( updatedEntities );
-			});
-		}
-		it( 'Update a single instance', () => {
-			expect( testModel ).to.respondTo( 'update' );
-			return Promise.resolve()
-				.then(() => checkUpdate({
-					foo: undefined,
-				}, {
-					foo: 'qux',
-				}, false ))
-				.then(() => checkUpdate({
-					foo: 'baz',
-				}, {
-					foo: 'qux',
-				}, false ))
-				.then(() => checkUpdate({
-					foo: 'bar',
-				}, {
-					foo: undefined,
-				}, false ));
-		});
-		it( 'Update multiple instances', () => {
-			expect( testModel ).to.respondTo( 'updateMany' );
-			return Promise.resolve()
-				.then(() => checkUpdate({
-					foo: undefined,
-				}, {
-					foo: 'bar',
-				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 2 );
-					return Promise.resolve();
-				}))
-				.then(() => checkUpdate({
-					foo: 'baz',
-				}, {
-					foo: undefined,
-				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 1 );
-					return Promise.resolve();
-				}))
-				.then(() => checkUpdate({
-					foo: 'bat',
-				}, {
-					foo: 'twy',
-				}, true )
-					  .then( foundEntities => {
-						expect( foundEntities ).to.have.lengthOf( 0 );
-						return Promise.resolve();
-					}));
-		});
-	});
-	describe( '- Delete instances', () => {
-		function checkDestroy( query, many = true ) {
-			return testModel.findMany( query ).then( entities => {
-				return Promise.resolve( entities.length );
-			}).then( beforeCount => {
-				return testModel[many ? 'deleteMany' : 'delete']( query ).then(() => Promise.resolve( beforeCount ));
-			}).then( beforeCount => {
-				return testModel.findMany( query ).then( entities => {
-					return Promise.resolve({
-						before: beforeCount,
-						after:  entities.length,
-					});
-				});
-			}).then( result => {
-				if ( many || 0 === result.before ) {
-					expect( result.after ).to.be.equal( 0 );
-				} else {
-					expect( result.after ).to.be.equal( result.before - 1 );
-				}
-			});
-		}
-		it( 'Delete a single instance', () => {
-			expect( testModel ).to.respondTo( 'delete' );
-			return Promise.resolve()
-				.then(() => checkDestroy({
-					foo: undefined,
-				}, false ))
-				.then(() => checkDestroy({
-					foo: 'bar',
-				}, false ));
-		});
-		it( 'Delete multiple instances', () => {
-			expect( testModel ).to.respondTo( 'deleteMany' );
-			return Promise.resolve().then(() => checkDestroy({
-				foo: undefined,
-			}, true )).then(() => checkDestroy({
-				foo: 'baz',
-			}, true )).then(() => checkDestroy({
-				foo: 'qux',
-			}, true ));
-		});
-		it( 'Delete all instances', () => {
-			return testModel.deleteMany({});
-		});
-	});
-});
-describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
-	it( 'Persist should change the entity', () => {
-		const object = {
-			foo: 'bar', 
-		};
-		testedEntity = testModel.spawn( object );
-		expect( testedEntity ).to.be.an.entity( testModel, object, true );
-		const retPromise = testedEntity.persist();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity ).to.be.an.entity( testModel, object, null );
-		return retPromise.then(() => {
-			expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
-		});
-	});
-	it( 'Fetch should change the entity', () => {
-		const object = {
-			foo: 'bar',
-		};
-		return testModel.find( object ).then( entity => {
-			expect( entity ).to.respondTo( 'fetch' );
-			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
-			entity.foo = 'baz';
-			expect( entity ).to.be.an.entity( testModel, {
-				foo: 'baz',
-			}, SOURCE );
-			const retPromise = entity.fetch();
-			expect( entity.getState()).to.be.eql( 'syncing' );
-			return retPromise.then(() => {
-				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
-			});
-		});
-	});
-	it( 'Destroy should change the entity', () => {
-		const object = {
-			foo: 'bar',
-		};
-		return testModel.find( object ).then( entity => {
-			expect( entity ).to.respondTo( 'destroy' );
-			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
-			const retPromise = entity.destroy();
-			expect( entity.getState()).to.be.eql( 'syncing' );
-			return retPromise.then(() => {
-				expect( entity.getLastDataSource()).to.be.eql( SOURCE );
-				expect( entity.getState()).to.be.eql( 'orphan' );
-				expect( entity ).to.be.an.entity( testModel, {}, null );
-			});
-		});
-	});
-});
-
-},{}],"./simple.js":[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"bluebird":3,"lodash":8,"sequential-event":15}],2:[function(require,module,exports){
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+const {
+	_,
+} = require( 'lib/dependencies' );
 
-let testModel;
-let testedEntity;
-const MODEL_NAME = 'testModel';
-const SOURCE = 'inMemory';
+const stringifyValidationObject = validationErrors => {
+	return _( validationErrors ).mapValues(( error, key ) => {
+		return `${ key } => ${ JSON.stringify( error.value ) }
+* ${ _( error ).omit([ 'value' ]).values().map( _.identity ).value() }`;
+	}).values().join( '\n* ' );
+};
 
-
-it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
-		sources:    [ SOURCE ],
-		schema:     false,
-		attributes: {
-			foo: {
-				type: 'string',
-			},
-		},
-	});
-	expect( testModel ).to.be.an( 'object' );
-	if ( 'undefined' === typeof window ) {
-		expect( testModel.constructor.name ).to.be.eql( 'Model' );
+class ValidationError extends Error {
+	/**
+	 * @class ValidationError
+	 * @classdesc This class represents an error related to validation
+	 * @extends Error
+	 * @description Construct a new validation error
+	 * @public
+	 * @author gerkin
+	 * @see Diaspora.check
+	 * @param {Object} validationErrors Object describing validation errors, usually returned by {@link Diaspora.check}
+	 * @param {String} message          Message of this error
+	 * @param {*} errorArgs...        Arguments to transfer to parent Error
+	 */
+	constructor( validationErrors, message, ...errorArgs ) {
+		message += `
+${ stringifyValidationObject( validationErrors ) }`;
+		super( message, ...errorArgs );
+		this.validationErrors = validationErrors;
+		if ( Error.captureStackTrace ) {
+			Error.captureStackTrace( this, this.constructor );
+		}
 	}
-});
-it( 'Should be able to create an entity of the defined model.', () => {
-	const entity1 = testModel.spawn();
-	expect( entity1 ).to.be.an.entity( testModel, {}, true );
-	const entity2 = testModel.spawn({
-		foo: 'bar',
-	});
-	expect( entity2 ).to.be.an.entity( testModel, {
-		foo: 'bar',
-	}, true );
-});
-it( 'Should be able to create multiple entities.', () => {
-	const objects = [
-		{
-			foo: 'bar', 
-		},
-		undefined,
-	];
-	const entities = testModel.spawnMulti( objects );
-	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
-});
-describe( 'Should be able to use model methods to find, update, delete & create', () => {
-	describe( '- Create instances', () => {
-		it( 'Create a single instance', () => {
-			expect( testModel ).to.respondTo( 'insert' );
-			const object = {
-				foo: 'bar', 
-			};
-			return testModel.insert( object ).then( newEntity => {
-				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
-				return Promise.resolve();
-			});
-		});
-		it( 'Create multiple instances', () => {
-			expect( testModel ).to.respondTo( 'insertMany' );
-			const objects = [
-				{
-					foo: 'baz', 
-				},
-				undefined,
-				{
-					foo: undefined, 
-				},
-				{
-					foo: 'baz', 
-				},
-			];
-			return testModel.insertMany( objects ).then( newEntities => {
-				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
-				return Promise.resolve();
-			});
-		});
-	});
-	describe( '- Find instances', () => {
-		function checkFind( query, many = true ) {
-			return testModel[many ? 'findMany' : 'find']( query ).then( foundEntities => {
-				if ( many ) {
-					expect( foundEntities ).to.be.a.set.of.entity( testModel, query, SOURCE );
-				} else if ( c.assigned( foundEntities )) {
-					expect( foundEntities ).to.be.an.entity( testModel, query, SOURCE );
-				}
-				return Promise.resolve( foundEntities );
-			});
-		}
-		it( 'Find a single instance', () => {
-			expect( testModel ).to.respondTo( 'find' );
-			return Promise.mapSeries([
-				{
-					foo: undefined, 
-				},
-				{
-					foo: 'baz', 
-				},
-				{
-					foo: 'bar', 
-				},
-			], item => checkFind( item, false ));
-		});
-		it( 'Find multiple instances', () => {
-			expect( testModel ).to.respondTo( 'findMany' );
-			return Promise.mapSeries([
-				{
-					query: {
-						foo: undefined, 
-					},
-					length: 2,
-				},
-				{
-					query: {
-						foo: 'baz', 
-					},
-					length: 2,
-				},
-				{
-					query: {
-						foo: 'bar', 
-					},
-					length: 1,
-				},
-			], item => checkFind( item.query, true ).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( item.length );
-			}));
-		});
-		it( 'Find all instances', () => {
-			return testModel.findMany({}).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( 5 );
-			});
-		});
-	});
-	describe( '- Update instances', () => {
-		function checkUpdate( query, update, many = true ) {
-			return testModel[many ? 'updateMany' : 'update']( query, update ).then( updatedEntities => {
-				if ( many ) {
-					expect( updatedEntities ).to.be.a.set.of.entity( testModel, update, SOURCE );
-				} else if ( c.assigned( updatedEntities )) {
-					expect( updatedEntities ).to.be.an.entity( testModel, update, SOURCE );
-				}
-				return Promise.resolve( updatedEntities );
-			});
-		}
-		it( 'Update a single instance', () => {
-			expect( testModel ).to.respondTo( 'update' );
-			return Promise.resolve()
-				.then(() => checkUpdate({
-					foo: undefined,
-				}, {
-					foo: 'qux',
-				}, false ))
-				.then(() => checkUpdate({
-					foo: 'baz',
-				}, {
-					foo: 'qux',
-				}, false ))
-				.then(() => checkUpdate({
-					foo: 'bar',
-				}, {
-					foo: undefined,
-				}, false ));
-		});
-		it( 'Update multiple instances', () => {
-			//process.exit()
-			expect( testModel ).to.respondTo( 'updateMany' );
-			return Promise.resolve()
-				.then(() => checkUpdate({
-					foo: undefined,
-				}, {
-					foo: 'bar',
-				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 2 );
-					return Promise.resolve();
-				}))
-				.then(() => checkUpdate({
-					foo: 'baz',
-				}, {
-					foo: undefined,
-				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 1 );
-					return Promise.resolve();
-				}))
-				.then(() => checkUpdate({
-					foo: 'bat',
-				}, {
-					foo: 'twy',
-				}, true )
-					  .then( foundEntities => {
-						expect( foundEntities ).to.have.lengthOf( 0 );
-						return Promise.resolve();
-					}));
-		});
-	});
-	describe( '- Delete instances', () => {
-		function checkDestroy( query, many = true ) {
-			return testModel.findMany( query ).then( entities => {
-				return Promise.resolve( entities.length );
-			}).then( beforeCount => {
-				return testModel[many ? 'deleteMany' : 'delete']( query ).then(() => Promise.resolve( beforeCount ));
-			}).then( beforeCount => {
-				return testModel.findMany( query ).then( entities => {
-					return Promise.resolve({
-						before: beforeCount,
-						after:  entities.length,
-					});
-				});
-			}).then( result => {
-				if ( many || 0 === result.before ) {
-					expect( result.after ).to.be.equal( 0 );
-				} else {
-					expect( result.after ).to.be.equal( result.before - 1 );
-				}
-			});
-		}
-		it( 'Delete a single instance', () => {
-			expect( testModel ).to.respondTo( 'delete' );
-			return Promise.resolve()
-				.then(() => checkDestroy({
-					foo: undefined,
-				}, false ))
-				.then(() => checkDestroy({
-					foo: 'bar',
-				}, false ));
-		});
-		it( 'Delete multiple instances', () => {
-			expect( testModel ).to.respondTo( 'deleteMany' );
-			return Promise.resolve().then(() => checkDestroy({
-				foo: undefined,
-			}, true )).then(() => checkDestroy({
-				foo: 'baz',
-			}, true )).then(() => checkDestroy({
-				foo: 'qux',
-			}, true ));
-		});
-		it( 'Delete all instances', () => {
-			return testModel.deleteMany({});
-		});
-	});
-});
-describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
-	it( 'Persist should change the entity', () => {
-		const object = {
-			foo: 'bar', 
-		};
-		testedEntity = testModel.spawn( object );
-		expect( testedEntity ).to.be.an.entity( testModel, object, true );
-		const retPromise = testedEntity.persist();
-		expect( testedEntity.getState()).to.be.eql( 'syncing' );
-		expect( testedEntity ).to.be.an.entity( testModel, object, null );
-		return retPromise.then(() => {
-			expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
-		});
-	});
-	it( 'Fetch should change the entity', () => {
-		const object = {
-			foo: 'bar',
-		};
-		return testModel.find( object ).then( entity => {
-			expect( entity ).to.respondTo( 'fetch' );
-			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
-			entity.foo = 'baz';
-			expect( entity ).to.be.an.entity( testModel, {
-				foo: 'baz',
-			}, SOURCE );
-			const retPromise = entity.fetch();
-			expect( entity.getState()).to.be.eql( 'syncing' );
-			return retPromise.then(() => {
-				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
-			});
-		});
-	});
-	it( 'Destroy should change the entity', () => {
-		const object = {
-			foo: 'bar',
-		};
-		return testModel.find( object ).then( entity => {
-			expect( entity ).to.respondTo( 'destroy' );
-			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
-			const retPromise = entity.destroy();
-			expect( entity.getState()).to.be.eql( 'syncing' );
-			return retPromise.then(() => {
-				expect( entity.getLastDataSource()).to.be.eql( SOURCE );
-				expect( entity.getState()).to.be.eql( 'orphan' );
-				expect( entity ).to.be.an.entity( testModel, {}, null );
-			});
-		});
-	});
-});
+}
 
-},{}],"./validations.js":[function(require,module,exports){
-'use strict';
+module.exports = ValidationError;
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
-
-},{}],1:[function(require,module,exports){
+},{"lib/dependencies":1}],3:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)
@@ -6318,7 +5677,544 @@ module.exports = ret;
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":5}],2:[function(require,module,exports){
+},{"_process":9}],4:[function(require,module,exports){
+"use strict";
+/* eslint-disable no-invalid-this */
+let checkError = require("check-error");
+
+module.exports = (chai, utils) => {
+    const Assertion = chai.Assertion;
+    const assert = chai.assert;
+    const proxify = utils.proxify;
+
+    // If we are using a version of Chai that has checkError on it,
+    // we want to use that version to be consistent. Otherwise, we use
+    // what was passed to the factory.
+    if (utils.checkError) {
+        checkError = utils.checkError;
+    }
+
+    function isLegacyJQueryPromise(thenable) {
+        // jQuery promises are Promises/A+-compatible since 3.0.0. jQuery 3.0.0 is also the first version
+        // to define the catch method.
+        return typeof thenable.catch !== "function" &&
+               typeof thenable.always === "function" &&
+               typeof thenable.done === "function" &&
+               typeof thenable.fail === "function" &&
+               typeof thenable.pipe === "function" &&
+               typeof thenable.progress === "function" &&
+               typeof thenable.state === "function";
+    }
+
+    function assertIsAboutPromise(assertion) {
+        if (typeof assertion._obj.then !== "function") {
+            throw new TypeError(utils.inspect(assertion._obj) + " is not a thenable.");
+        }
+        if (isLegacyJQueryPromise(assertion._obj)) {
+            throw new TypeError("Chai as Promised is incompatible with thenables of jQuery<3.0.0, sorry! Please " +
+                                "upgrade jQuery or use another Promises/A+ compatible library (see " +
+                                "http://promisesaplus.com/).");
+        }
+    }
+
+    function proxifyIfSupported(assertion) {
+        return proxify === undefined ? assertion : proxify(assertion);
+    }
+
+    function method(name, asserter) {
+        utils.addMethod(Assertion.prototype, name, function () {
+            assertIsAboutPromise(this);
+            return asserter.apply(this, arguments);
+        });
+    }
+
+    function property(name, asserter) {
+        utils.addProperty(Assertion.prototype, name, function () {
+            assertIsAboutPromise(this);
+            return proxifyIfSupported(asserter.apply(this, arguments));
+        });
+    }
+
+    function doNotify(promise, done) {
+        promise.then(() => done(), done);
+    }
+
+    // These are for clarity and to bypass Chai refusing to allow `undefined` as actual when used with `assert`.
+    function assertIfNegated(assertion, message, extra) {
+        assertion.assert(true, null, message, extra.expected, extra.actual);
+    }
+
+    function assertIfNotNegated(assertion, message, extra) {
+        assertion.assert(false, message, null, extra.expected, extra.actual);
+    }
+
+    function getBasePromise(assertion) {
+        // We need to chain subsequent asserters on top of ones in the chain already (consider
+        // `eventually.have.property("foo").that.equals("bar")`), only running them after the existing ones pass.
+        // So the first base-promise is `assertion._obj`, but after that we use the assertions themselves, i.e.
+        // previously derived promises, to chain off of.
+        return typeof assertion.then === "function" ? assertion : assertion._obj;
+    }
+
+    function getReasonName(reason) {
+        return reason instanceof Error ? reason.toString() : checkError.getConstructorName(reason);
+    }
+
+    // Grab these first, before we modify `Assertion.prototype`.
+
+    const propertyNames = Object.getOwnPropertyNames(Assertion.prototype);
+
+    const propertyDescs = {};
+    for (const name of propertyNames) {
+        propertyDescs[name] = Object.getOwnPropertyDescriptor(Assertion.prototype, name);
+    }
+
+    property("fulfilled", function () {
+        const derivedPromise = getBasePromise(this).then(
+            value => {
+                assertIfNegated(this,
+                                "expected promise not to be fulfilled but it was fulfilled with #{act}",
+                                { actual: value });
+                return value;
+            },
+            reason => {
+                assertIfNotNegated(this,
+                                   "expected promise to be fulfilled but it was rejected with #{act}",
+                                   { actual: getReasonName(reason) });
+                return reason;
+            }
+        );
+
+        module.exports.transferPromiseness(this, derivedPromise);
+        return this;
+    });
+
+    property("rejected", function () {
+        const derivedPromise = getBasePromise(this).then(
+            value => {
+                assertIfNotNegated(this,
+                                   "expected promise to be rejected but it was fulfilled with #{act}",
+                                   { actual: value });
+                return value;
+            },
+            reason => {
+                assertIfNegated(this,
+                                "expected promise not to be rejected but it was rejected with #{act}",
+                                { actual: getReasonName(reason) });
+
+                // Return the reason, transforming this into a fulfillment, to allow further assertions, e.g.
+                // `promise.should.be.rejected.and.eventually.equal("reason")`.
+                return reason;
+            }
+        );
+
+        module.exports.transferPromiseness(this, derivedPromise);
+        return this;
+    });
+
+    method("rejectedWith", function (errorLike, errMsgMatcher, message) {
+        let errorLikeName = null;
+        const negate = utils.flag(this, "negate") || false;
+
+        // rejectedWith with that is called without arguments is
+        // the same as a plain ".rejected" use.
+        if (errorLike === undefined && errMsgMatcher === undefined &&
+            message === undefined) {
+            /* eslint-disable no-unused-expressions */
+            return this.rejected;
+            /* eslint-enable no-unused-expressions */
+        }
+
+        if (message !== undefined) {
+            utils.flag(this, "message", message);
+        }
+
+        if (errorLike instanceof RegExp || typeof errorLike === "string") {
+            errMsgMatcher = errorLike;
+            errorLike = null;
+        } else if (errorLike && errorLike instanceof Error) {
+            errorLikeName = errorLike.toString();
+        } else if (typeof errorLike === "function") {
+            errorLikeName = checkError.getConstructorName(errorLike);
+        } else {
+            errorLike = null;
+        }
+        const everyArgIsDefined = Boolean(errorLike && errMsgMatcher);
+
+        let matcherRelation = "including";
+        if (errMsgMatcher instanceof RegExp) {
+            matcherRelation = "matching";
+        }
+
+        const derivedPromise = getBasePromise(this).then(
+            value => {
+                let assertionMessage = null;
+                let expected = null;
+
+                if (errorLike) {
+                    assertionMessage = "expected promise to be rejected with #{exp} but it was fulfilled with #{act}";
+                    expected = errorLikeName;
+                } else if (errMsgMatcher) {
+                    assertionMessage = `expected promise to be rejected with an error ${matcherRelation} #{exp} but ` +
+                                       `it was fulfilled with #{act}`;
+                    expected = errMsgMatcher;
+                }
+
+                assertIfNotNegated(this, assertionMessage, { expected, actual: value });
+                return value;
+            },
+            reason => {
+                const errorLikeCompatible = errorLike && (errorLike instanceof Error ?
+                                                        checkError.compatibleInstance(reason, errorLike) :
+                                                        checkError.compatibleConstructor(reason, errorLike));
+
+                const errMsgMatcherCompatible = errMsgMatcher && checkError.compatibleMessage(reason, errMsgMatcher);
+
+                const reasonName = getReasonName(reason);
+
+                if (negate && everyArgIsDefined) {
+                    if (errorLikeCompatible && errMsgMatcherCompatible) {
+                        this.assert(true,
+                                    null,
+                                    "expected promise not to be rejected with #{exp} but it was rejected " +
+                                    "with #{act}",
+                                    errorLikeName,
+                                    reasonName);
+                    }
+                } else {
+                    if (errorLike) {
+                        this.assert(errorLikeCompatible,
+                                    "expected promise to be rejected with #{exp} but it was rejected with #{act}",
+                                    "expected promise not to be rejected with #{exp} but it was rejected " +
+                                    "with #{act}",
+                                    errorLikeName,
+                                    reasonName);
+                    }
+
+                    if (errMsgMatcher) {
+                        this.assert(errMsgMatcherCompatible,
+                                    `expected promise to be rejected with an error ${matcherRelation} #{exp} but got ` +
+                                    `#{act}`,
+                                    `expected promise not to be rejected with an error ${matcherRelation} #{exp}`,
+                                    errMsgMatcher,
+                                    checkError.getMessage(reason));
+                    }
+                }
+
+                return reason;
+            }
+        );
+
+        module.exports.transferPromiseness(this, derivedPromise);
+        return this;
+    });
+
+    property("eventually", function () {
+        utils.flag(this, "eventually", true);
+        return this;
+    });
+
+    method("notify", function (done) {
+        doNotify(getBasePromise(this), done);
+        return this;
+    });
+
+    method("become", function (value, message) {
+        return this.eventually.deep.equal(value, message);
+    });
+
+    // ### `eventually`
+
+    // We need to be careful not to trigger any getters, thus `Object.getOwnPropertyDescriptor` usage.
+    const methodNames = propertyNames.filter(name => {
+        return name !== "assert" && typeof propertyDescs[name].value === "function";
+    });
+
+    methodNames.forEach(methodName => {
+        Assertion.overwriteMethod(methodName, originalMethod => function () {
+            return doAsserterAsyncAndAddThen(originalMethod, this, arguments);
+        });
+    });
+
+    const getterNames = propertyNames.filter(name => {
+        return name !== "_obj" && typeof propertyDescs[name].get === "function";
+    });
+
+    getterNames.forEach(getterName => {
+        // Chainable methods are things like `an`, which can work both for `.should.be.an.instanceOf` and as
+        // `should.be.an("object")`. We need to handle those specially.
+        const isChainableMethod = Assertion.prototype.__methods.hasOwnProperty(getterName);
+
+        if (isChainableMethod) {
+            Assertion.overwriteChainableMethod(
+                getterName,
+                originalMethod => function () {
+                    return doAsserterAsyncAndAddThen(originalMethod, this, arguments);
+                },
+                originalGetter => function () {
+                    return doAsserterAsyncAndAddThen(originalGetter, this);
+                }
+            );
+        } else {
+            Assertion.overwriteProperty(getterName, originalGetter => function () {
+                return proxifyIfSupported(doAsserterAsyncAndAddThen(originalGetter, this));
+            });
+        }
+    });
+
+    function doAsserterAsyncAndAddThen(asserter, assertion, args) {
+        // Since we're intercepting all methods/properties, we need to just pass through if they don't want
+        // `eventually`, or if we've already fulfilled the promise (see below).
+        if (!utils.flag(assertion, "eventually")) {
+            asserter.apply(assertion, args);
+            return assertion;
+        }
+
+        const derivedPromise = getBasePromise(assertion).then(value => {
+            // Set up the environment for the asserter to actually run: `_obj` should be the fulfillment value, and
+            // now that we have the value, we're no longer in "eventually" mode, so we won't run any of this code,
+            // just the base Chai code that we get to via the short-circuit above.
+            assertion._obj = value;
+            utils.flag(assertion, "eventually", false);
+
+            return args ? module.exports.transformAsserterArgs(args) : args;
+        }).then(newArgs => {
+            asserter.apply(assertion, newArgs);
+
+            // Because asserters, for example `property`, can change the value of `_obj` (i.e. change the "object"
+            // flag), we need to communicate this value change to subsequent chained asserters. Since we build a
+            // promise chain paralleling the asserter chain, we can use it to communicate such changes.
+            return assertion._obj;
+        });
+
+        module.exports.transferPromiseness(assertion, derivedPromise);
+        return assertion;
+    }
+
+    // ### Now use the `Assertion` framework to build an `assert` interface.
+    const originalAssertMethods = Object.getOwnPropertyNames(assert).filter(propName => {
+        return typeof assert[propName] === "function";
+    });
+
+    assert.isFulfilled = (promise, message) => (new Assertion(promise, message)).to.be.fulfilled;
+
+    assert.isRejected = (promise, errorLike, errMsgMatcher, message) => {
+        const assertion = new Assertion(promise, message);
+        return assertion.to.be.rejectedWith(errorLike, errMsgMatcher, message);
+    };
+
+    assert.becomes = (promise, value, message) => assert.eventually.deepEqual(promise, value, message);
+
+    assert.doesNotBecome = (promise, value, message) => assert.eventually.notDeepEqual(promise, value, message);
+
+    assert.eventually = {};
+    originalAssertMethods.forEach(assertMethodName => {
+        assert.eventually[assertMethodName] = function (promise) {
+            const otherArgs = Array.prototype.slice.call(arguments, 1);
+
+            let customRejectionHandler;
+            const message = arguments[assert[assertMethodName].length - 1];
+            if (typeof message === "string") {
+                customRejectionHandler = reason => {
+                    throw new chai.AssertionError(`${message}\n\nOriginal reason: ${utils.inspect(reason)}`);
+                };
+            }
+
+            const returnedPromise = promise.then(
+                fulfillmentValue => assert[assertMethodName].apply(assert, [fulfillmentValue].concat(otherArgs)),
+                customRejectionHandler
+            );
+
+            returnedPromise.notify = done => {
+                doNotify(returnedPromise, done);
+            };
+
+            return returnedPromise;
+        };
+    });
+};
+
+module.exports.transferPromiseness = (assertion, promise) => {
+    assertion.then = promise.then.bind(promise);
+};
+
+module.exports.transformAsserterArgs = values => values;
+
+},{"check-error":5}],5:[function(require,module,exports){
+'use strict';
+
+/* !
+ * Chai - checkError utility
+ * Copyright(c) 2012-2016 Jake Luer <jake@alogicalparadox.com>
+ * MIT Licensed
+ */
+
+/**
+ * ### .checkError
+ *
+ * Checks that an error conforms to a given set of criteria and/or retrieves information about it.
+ *
+ * @api public
+ */
+
+/**
+ * ### .compatibleInstance(thrown, errorLike)
+ *
+ * Checks if two instances are compatible (strict equal).
+ * Returns false if errorLike is not an instance of Error, because instances
+ * can only be compatible if they're both error instances.
+ *
+ * @name compatibleInstance
+ * @param {Error} thrown error
+ * @param {Error|ErrorConstructor} errorLike object to compare against
+ * @namespace Utils
+ * @api public
+ */
+
+function compatibleInstance(thrown, errorLike) {
+  return errorLike instanceof Error && thrown === errorLike;
+}
+
+/**
+ * ### .compatibleConstructor(thrown, errorLike)
+ *
+ * Checks if two constructors are compatible.
+ * This function can receive either an error constructor or
+ * an error instance as the `errorLike` argument.
+ * Constructors are compatible if they're the same or if one is
+ * an instance of another.
+ *
+ * @name compatibleConstructor
+ * @param {Error} thrown error
+ * @param {Error|ErrorConstructor} errorLike object to compare against
+ * @namespace Utils
+ * @api public
+ */
+
+function compatibleConstructor(thrown, errorLike) {
+  if (errorLike instanceof Error) {
+    // If `errorLike` is an instance of any error we compare their constructors
+    return thrown.constructor === errorLike.constructor || thrown instanceof errorLike.constructor;
+  } else if (errorLike.prototype instanceof Error || errorLike === Error) {
+    // If `errorLike` is a constructor that inherits from Error, we compare `thrown` to `errorLike` directly
+    return thrown.constructor === errorLike || thrown instanceof errorLike;
+  }
+
+  return false;
+}
+
+/**
+ * ### .compatibleMessage(thrown, errMatcher)
+ *
+ * Checks if an error's message is compatible with a matcher (String or RegExp).
+ * If the message contains the String or passes the RegExp test,
+ * it is considered compatible.
+ *
+ * @name compatibleMessage
+ * @param {Error} thrown error
+ * @param {String|RegExp} errMatcher to look for into the message
+ * @namespace Utils
+ * @api public
+ */
+
+function compatibleMessage(thrown, errMatcher) {
+  var comparisonString = typeof thrown === 'string' ? thrown : thrown.message;
+  if (errMatcher instanceof RegExp) {
+    return errMatcher.test(comparisonString);
+  } else if (typeof errMatcher === 'string') {
+    return comparisonString.indexOf(errMatcher) !== -1; // eslint-disable-line no-magic-numbers
+  }
+
+  return false;
+}
+
+/**
+ * ### .getFunctionName(constructorFn)
+ *
+ * Returns the name of a function.
+ * This also includes a polyfill function if `constructorFn.name` is not defined.
+ *
+ * @name getFunctionName
+ * @param {Function} constructorFn
+ * @namespace Utils
+ * @api private
+ */
+
+var functionNameMatch = /\s*function(?:\s|\s*\/\*[^(?:*\/)]+\*\/\s*)*([^\(\/]+)/;
+function getFunctionName(constructorFn) {
+  var name = '';
+  if (typeof constructorFn.name === 'undefined') {
+    // Here we run a polyfill if constructorFn.name is not defined
+    var match = String(constructorFn).match(functionNameMatch);
+    if (match) {
+      name = match[1];
+    }
+  } else {
+    name = constructorFn.name;
+  }
+
+  return name;
+}
+
+/**
+ * ### .getConstructorName(errorLike)
+ *
+ * Gets the constructor name for an Error instance or constructor itself.
+ *
+ * @name getConstructorName
+ * @param {Error|ErrorConstructor} errorLike
+ * @namespace Utils
+ * @api public
+ */
+
+function getConstructorName(errorLike) {
+  var constructorName = errorLike;
+  if (errorLike instanceof Error) {
+    constructorName = getFunctionName(errorLike.constructor);
+  } else if (typeof errorLike === 'function') {
+    // If `err` is not an instance of Error it is an error constructor itself or another function.
+    // If we've got a common function we get its name, otherwise we may need to create a new instance
+    // of the error just in case it's a poorly-constructed error. Please see chaijs/chai/issues/45 to know more.
+    constructorName = getFunctionName(errorLike).trim() ||
+        getFunctionName(new errorLike()); // eslint-disable-line new-cap
+  }
+
+  return constructorName;
+}
+
+/**
+ * ### .getMessage(errorLike)
+ *
+ * Gets the error message from an error.
+ * If `err` is a String itself, we return it.
+ * If the error has no message, we return an empty string.
+ *
+ * @name getMessage
+ * @param {Error|String} errorLike
+ * @namespace Utils
+ * @api public
+ */
+
+function getMessage(errorLike) {
+  var msg = '';
+  if (errorLike && errorLike.message) {
+    msg = errorLike.message;
+  } else if (typeof errorLike === 'string') {
+    msg = errorLike;
+  }
+
+  return msg;
+}
+
+module.exports = {
+  compatibleInstance: compatibleInstance,
+  compatibleConstructor: compatibleConstructor,
+  compatibleMessage: compatibleMessage,
+  getMessage: getMessage,
+  getConstructorName: getConstructorName,
+};
+
+},{}],6:[function(require,module,exports){
 /*globals define, module, Symbol */
 /*jshint -W056 */
 
@@ -7218,7 +7114,7 @@ module.exports = ret;
   }
 }(this));
 
-},{}],3:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7522,7 +7418,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],4:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -24610,7 +24506,7 @@ function isUndefined(arg) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -24796,17 +24692,17 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],6:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals it: false, describe: false, require: false, expect: false, Diaspora: false, dataSources: false, define: false, getStyle: false */
 
 const Promise = require( 'bluebird' );
 const l = require( 'lodash' );
 
-function getDataSourceLabel( name, addName = '' ) {
+const getDataSourceLabel = ( name, addName = '' ) => {
 	return `${ name }Adapter${ addName ? `.${ addName }` : '' }`;
-}
+};
 
 const TABLE = 'test';
 
@@ -24818,7 +24714,7 @@ var AdapterTestUtils = {
 		return dataSource;
 	},
 	checkSpawnedAdapter: ( adapterLabel, baseName, addName = '' ) => {
-		it( style.white( `Create ${ adapterLabel } adapter` ), done => {
+		it( getStyle( 'taskCategory', `Create ${ adapterLabel } adapter` ), done => {
 			const dataSourceLabel = getDataSourceLabel( adapterLabel, addName );
 			dataSources[dataSourceLabel].waitReady().then( adapter => {
 				adapter.baseName = baseName;
@@ -24844,7 +24740,7 @@ var AdapterTestUtils = {
 			}
 		};
 
-		describe( `${ style.white( 'Check filtering options' )  } with ${  adapterLabel }`, () => {
+		describe( `${ getStyle( 'taskCategory', 'Check filtering options' )  } with ${  adapterLabel }`, () => {
 			it( 'Check "normalizeOptions"', () => {
 				const no = adapter.normalizeOptions;
 				expect( no()).to.deep.include({
@@ -24898,7 +24794,7 @@ var AdapterTestUtils = {
 				it( 'Empty query', () => {
 					expect( nq({})).to.deep.eql({});
 				});
-				it( `${ style.bold( '~' ) } ($exists)`, () => {
+				it( `${ getStyle( 'bold',  '~' ) } ($exists)`, () => {
 					expect( nq({
 						foo: undefined,
 					})).to.deep.eql({
@@ -24949,7 +24845,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '==' ) } ($equal)`, () => {
+				it( `${ getStyle( 'bold',  '==' ) } ($equal)`, () => {
 					expect( nq({
 						foo: 'bar',
 					})).to.deep.eql({
@@ -24982,7 +24878,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '!=' ) } ($diff)`, () => {
+				it( `${ getStyle( 'bold',  '!=' ) } ($diff)`, () => {
 					expect( nq({
 						foo: {
 							$diff: 'bar', 
@@ -25008,7 +24904,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '<' ) } ($less)`, () => {
+				it( `${ getStyle( 'bold',  '<' ) } ($less)`, () => {
 					expect( nq({
 						foo: {
 							$less: 1, 
@@ -25044,7 +24940,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '<=' ) } ($lessEqual)`, () => {
+				it( `${ getStyle( 'bold',  '<=' ) } ($lessEqual)`, () => {
 					expect( nq({
 						foo: {
 							$lessEqual: 1, 
@@ -25080,7 +24976,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '>' ) } ($greater)`, () => {
+				it( `${ getStyle( 'bold',  '>' ) } ($greater)`, () => {
 					expect( nq({
 						foo: {
 							$greater: 1, 
@@ -25116,7 +25012,7 @@ var AdapterTestUtils = {
 						}, 
 					})).to.throw();
 				});
-				it( `${ style.bold( '>=' ) } ($greaterEqual)`, () => {
+				it( `${ getStyle( 'bold',  '>=' ) } ($greaterEqual)`, () => {
 					expect( nq({
 						foo: {
 							$greaterEqual: 1, 
@@ -25160,7 +25056,7 @@ var AdapterTestUtils = {
 						foo: 'bar',
 					})).to.be.true;
 				});
-				it( `${ style.bold( '~' ) } ($exists)`, () => {
+				it( `${ getStyle( 'bold',  '~' ) } ($exists)`, () => {
 					expect( me({
 						foo: {
 							$exists: true,
@@ -25190,7 +25086,7 @@ var AdapterTestUtils = {
 						foo: undefined,
 					})).to.be.true;
 				});
-				it( `${ style.bold( '==' ) } ($equal)`, () => {
+				it( `${ getStyle( 'bold',  '==' ) } ($equal)`, () => {
 					expect( me({
 						foo: {
 							$equal: 'bar',
@@ -25213,7 +25109,7 @@ var AdapterTestUtils = {
 						foo: 'baz',
 					})).to.be.false;
 				});
-				it( `${ style.bold( '!=' ) } ($diff)`, () => {
+				it( `${ getStyle( 'bold',  '!=' ) } ($diff)`, () => {
 					expect( me({
 						foo: {
 							$diff: 'bar',
@@ -25243,7 +25139,7 @@ var AdapterTestUtils = {
 						bar: 'qux',
 					})).to.be.false;
 				});
-				it( `${ style.bold( '<' ) } ($less)`, () => {
+				it( `${ getStyle( 'bold',  '<' ) } ($less)`, () => {
 					expect( me({
 						foo: {
 							$less: 2,
@@ -25273,7 +25169,7 @@ var AdapterTestUtils = {
 						foo: 3,
 					})).to.be.false;
 				});
-				it( `${ style.bold( '<=' ) } ($lessEqual)`, () => {
+				it( `${ getStyle( 'bold',  '<=' ) } ($lessEqual)`, () => {
 					expect( me({
 						foo: {
 							$lessEqual: 2,
@@ -25303,7 +25199,7 @@ var AdapterTestUtils = {
 						foo: 3,
 					})).to.be.false;
 				});
-				it( `${ style.bold( '>' ) } ($greater)`, () => {
+				it( `${ getStyle( 'bold',  '>' ) } ($greater)`, () => {
 					expect( me({
 						foo: {
 							$greater: 2,
@@ -25333,7 +25229,7 @@ var AdapterTestUtils = {
 						foo: 3,
 					})).to.be.true;
 				});
-				it( `${ style.bold( '>=' ) } ($greaterEqual)`, () => {
+				it( `${ getStyle( 'bold',  '>=' ) } ($greaterEqual)`, () => {
 					expect( me({
 						foo: {
 							$greaterEqual: 2,
@@ -25365,7 +25261,7 @@ var AdapterTestUtils = {
 				});
 			});
 		});
-		describe( style.white( 'Test adapter methods' ), () => {
+		describe( getStyle( 'taskCategory', 'Test adapter methods' ), () => {
 			let findManyOk = false;
 			let findAllOk = false;
 			describe( '✨ Insert methods', () => {
@@ -25520,7 +25416,7 @@ var AdapterTestUtils = {
 						expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, objects ).that.have.lengthOf( objects.length );
 					});
 				});
-				it( `${ style.bold( '~' ) } ($exists) operator`, () => {
+				it( `${ getStyle( 'bold',  '~' ) } ($exists) operator`, () => {
 					return Promise.all([
 						adapter.findOne( TABLE, {
 							foo: {
@@ -25542,7 +25438,7 @@ var AdapterTestUtils = {
 						}),
 					]);
 				});
-				it( `${ style.bold( '==' ) } ($equal) operator`, () => {
+				it( `${ getStyle( 'bold',  '==' ) } ($equal) operator`, () => {
 					return adapter.findOne( TABLE, {
 						foo: {
 							'==': 1, 
@@ -25553,7 +25449,7 @@ var AdapterTestUtils = {
 						});
 					});
 				});
-				it( `${ style.bold( '!=' ) } ($diff) operator`, () => {
+				it( `${ getStyle( 'bold',  '!=' ) } ($diff) operator`, () => {
 					return Promise.all([
 						adapter.findOne( TABLE, {
 							bar: {
@@ -25582,7 +25478,7 @@ var AdapterTestUtils = {
 						}),
 					]);
 				});
-				it( `${ style.bold( '<' ) } ($less) operator`, () => {
+				it( `${ getStyle( 'bold',  '<' ) } ($less) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
 							'<': 2, 
@@ -25593,7 +25489,7 @@ var AdapterTestUtils = {
 						}]).that.have.lengthOf( 1 );
 					});
 				});
-				it( `${ style.bold( '<=' ) } ($lessEqual) operator`, () => {
+				it( `${ getStyle( 'bold',  '<=' ) } ($lessEqual) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
 							'<=': 2, 
@@ -25606,7 +25502,7 @@ var AdapterTestUtils = {
 						}]).that.have.lengthOf( 2 );
 					});
 				});
-				it( `${ style.bold( '>' ) } ($greater) operator`, () => {
+				it( `${ getStyle( 'bold',  '>' ) } ($greater) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
 							'>': 2, 
@@ -25617,7 +25513,7 @@ var AdapterTestUtils = {
 						}]).that.have.lengthOf( 1 );
 					});
 				});
-				it( `${ style.bold( '>=' ) } ($greaterEqual) operator`, () => {
+				it( `${ getStyle( 'bold',  '>=' ) } ($greaterEqual) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
 							'>=': 2, 
@@ -25641,7 +25537,7 @@ var AdapterTestUtils = {
 		require( '../testApps/adapters/index' )( adapter );
 	},
 	checkRegisterAdapter: ( adapterLabel, dataSourceName, addName = '' ) => {
-		it( style.white( `Register named ${ adapterLabel } dataSource` ), () => {
+		it( getStyle( 'taskCategory', `Register named ${ adapterLabel } dataSource` ), () => {
 			const namespace = TABLE;
 			Diaspora.registerDataSource( namespace, dataSourceName, dataSources[getDataSourceLabel( adapterLabel, addName )]);
 			//console.log(Diaspora.dataSources);
@@ -25656,28 +25552,31 @@ if ( 'undefined' !== typeof define ) {
 	module.exports = AdapterTestUtils;
 }
 
-},{"../testApps/adapters/index":10,"bluebird":1,"lodash":4}],7:[function(require,module,exports){
+},{"../testApps/adapters/index":14,"bluebird":3,"lodash":8}],11:[function(require,module,exports){
 (function (process,global){
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals l: false, c: false, describe: false, require: false, expect: false, chalk: false, chai: false, path: false */
 
-const glob = 'undefined' !== typeof window ? window : global;
+let config = {};
+let getCurrentDir;
+
+let styles = {};
 
 if ( 'undefined' === typeof window ) {
-	glob.path = require( 'path' );
-	glob.projectPath = path.resolve( '../' );
-	glob.chalk = require( 'chalk' );
+	global.path = require( 'path' );
+	global.projectPath = path.resolve( '../' );
+	global.chalk = require( 'chalk' );
 
 	const stackTrace = require( 'stack-trace' );
-	glob.getCurrentDir = () => {
+	getCurrentDir = () => {
 		const stackItem = stackTrace.get()[2];
 		return path.dirname( stackItem.getFileName());
 	};
 
-	glob.chalk = require( 'chalk' );
+	global.chalk = require( 'chalk' );
 	try {
-		glob.config = require( './config.js' );
+		config = require( './config.js' );
 	} catch ( err ) {
 		if ( 'MODULE_NOT_FOUND' === err.code ) {
 			console.error( 'Missing required file "config.js", please copy "config-sample.js" and edit it.' );
@@ -25687,75 +25586,60 @@ if ( 'undefined' === typeof window ) {
 		process.exit();
 	}
 
+	styles = {
+		category:     chalk.bold.underline.blue,
+		taskCategory: chalk.underline.white,
+		bold:         chalk.bold,
+		adapter:      chalk.bold.red,
+		model:        chalk.bold.red,
+	};
 } else {
-	glob.config = {};
-	glob.getCurrentDir = () => {
+	config = {};
+	getCurrentDir = () => {
 		return '';
-		var scriptPath = '';
-		try {
-			//Throw an error to generate a stack trace
-			throw new Error();
-		} catch ( e ) {
-			console.log( e, e.stack );
-			//Split the stack trace into each line
-			var stackLines = e.stack.split( '\n' );
-			console.log( stackLines );
-			var callerIndex = 0;
-			//Now walk though each line until we find a path reference
-			for ( var i in stackLines ) {
-				if ( !stackLines[i].match( /(?:https?|file):\/\// )) {
-					continue; 
-				}
-				//We skipped all the lines with out an http so we now have a script reference
-				//This one is the class constructor, the next is the getScriptPath() call
-				//The one after that is the user code requesting the path info (so offset by 2)
-				callerIndex = Number( i ) + 2;
-				break;
-			}
-			//Now parse the string for each section we want to return
-			pathParts = stackLines[callerIndex].match( /((?:https?|file):\/\/.+\/)([^\/]+\.js)/ );
-			return pathParts[1];
-		}
 	};
 }
 
-glob.getConfig = adapterName => {
+global.getStyle = ( styleName, text ) => {
+	const styleFct = styles[styleName];
+	if ( l.isFunction( styleFct )) {
+		return styleFct( text );
+	}
+	return text;
+};
+
+global.getConfig = adapterName => {
 	return ( config && config[adapterName]) || {};
 };
 
-glob.importTest = ( name, modulePath ) => {
-	const fullPath = 'undefined' === typeof window ? path.resolve( getCurrentDir(), modulePath ) : modulePath;
+global.importTest = ( name, modulePath ) => {
 	describe( name, () => {
-		require( fullPath );
+		require( modulePath );
 	});
 };
 
-glob.l = require( 'lodash' );
-glob.c = require( 'check-types' );
-glob.CheckTypes = c;
+global.l = require( 'lodash' );
+global.c = require( 'check-types' );
+global.CheckTypes = c;
 if ( 'undefined' === typeof window ) {
-	glob.chai = require( 'chai' );
+	global.chai = require( 'chai' );
 }
-glob.assert = chai.assert;
-glob.expect = chai.expect;
-glob.SequentialEvent = require( 'sequential-event' );
-glob.Promise = require( 'bluebird' );
+const chaiAsPromised = require( 'chai-as-promised' );
+chai.use( chaiAsPromised );
+global.assert = chai.assert;
+global.expect = chai.expect;
+global.SequentialEvent = require( 'sequential-event' );
+global.Promise = require( 'bluebird' );
 
-glob.style = {
-	white: 'undefined' === typeof window ? chalk.underline.white : v => v,
-	bold:  'undefined' === typeof window ? chalk.bold : v => v,
-};
-
-chai.use( function( _chai, utils ) {
-	utils.addProperty( chai.Assertion.prototype, 'set', function() {
-		var obj = utils.flag( this, 'object' );
-		const assert = this.assert(
-			c.array( this._obj ),
+chai.use( function chaiUse( _chai, utils ) {
+	utils.addProperty( chai.Assertion.prototype, 'set', function chaiSet() {
+		this.assert(
+			c.array( this._obj ) || this._obj.hasOwnProperty('entities'),
 			'expected #{this} to be a collection',
 			'expected #{this} to not be a collection' );
 		utils.flag( this, 'collection', true );
 	});
-	utils.addProperty( chai.Assertion.prototype, 'of', function() {});
+	utils.addProperty( chai.Assertion.prototype, 'of', () => {});
 	utils.addChainableMethod( chai.Assertion.prototype, 'boolean', function checkBool() {
 		const elem = this._obj;
 		const collection = utils.flag( this, 'collection' );
@@ -25822,63 +25706,56 @@ chai.use( function( _chai, utils ) {
 		const collection = utils.flag( this, 'collection' );
 		utils.flag( this, 'entityType', 'entity' );
 		const check = ( entity, props = {}) => {
-			try {
-				expect( entity.model ).to.equal( model );
-				var dataSource = 'string' === typeof orphan ? orphan : false;
-				orphan = dataSource ? false : orphan;
-				switch ( orphan ) {
-					case true: {
-						expect( entity.getState(), 'Entity should be orphan' ).to.equal( 'orphan' );
-					} break;
+			expect( entity.constructor.model ).to.equal( model );
+			var dataSource = 'string' === typeof orphan ? orphan : false;
+			orphan = dataSource ? false : orphan;
+			switch ( orphan ) {
+				case true: {
+					expect( entity.state, 'Entity should be orphan' ).to.equal( 'orphan' );
+				} break;
 
-					case false: {
-						expect( entity.getState(), 'Entity should not be orphan' ).to.not.equal( 'orphan' );
-					} break;
-
-					case null: {
-					} break;
-				}
-				if ( orphan ) {
-					expect( entity.getLastDataSource(), 'Orphans should not have a last data source' ).to.be.eql( null );
-					expect( entity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
-					expect( entity, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
-				} else if ( null !== orphan ) {
-					if ( dataSource ) {
-						expect( entity.getLastDataSource()).to.be.eql( dataSource );
-					} else {
-						expect( entity.getLastDataSource(), 'Non orphans should have a last data source' ).to.be.not.eql( null );
-					}
-					const lds = entity.getLastDataSource();
-					expect( entity.dataSources[lds], 'id should be a defined value on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'id' );
-					expect( entity.dataSources[lds], 'idHash should be a hash on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-					expect( entity, 'id should not be copied in model\'s value' ).to.be.an( 'object' ).that.have.not.property( 'id' );
-					expect( entity, 'idHash should be a hash on non-orphan model' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-				}
-				expect( entity ).to.respondTo( 'persist' );
-				expect( entity ).to.respondTo( 'toObject' );
-				const toObj = entity.toObject();
-				l.forEach( props, ( val, key ) => {
-					if ( c.undefined( val )) {
-						expect( toObj ).to.satisfy( obj => {
-							return c.undefined( obj[key]) || !obj.hasOwnProperty( key );
-						});
-					} else {
-						expect( toObj ).to.have.property( key, val );
-					}
-				});
-			} catch ( e ) {
-				return e;
+				case false: {
+					expect( entity.state, 'Entity should not be orphan' ).to.not.equal( 'orphan' );
+				} break;
 			}
+			if ( orphan ) {
+				expect( entity.lastDataSource, 'Orphans should not have a last data source' ).to.be.eql( null );
+				expect( entity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
+				expect( entity, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
+			} else if ( null !== orphan ) {
+				if ( dataSource ) {
+					expect( entity.lastDataSource ).to.be.eql( dataSource );
+				} else {
+					expect( entity.lastDataSource, 'Non orphans should have a last data source' ).to.be.not.eql( null );
+				}
+				const lds = entity.lastDataSource;
+				expect( entity.dataSources[lds], 'id should be a defined value on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'id' );
+				expect( entity.dataSources[lds], 'idHash should be a hash on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+				expect( entity, 'id should not be copied in model\'s value' ).to.be.an( 'object' ).that.have.not.property( 'id' );
+				expect( entity, 'idHash should be a hash on non-orphan model' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+			}
+			expect( entity ).to.respondTo( 'persist' );
+			expect( entity ).to.respondTo( 'toObject' );
+			const toObj = entity.toObject();
+			l.forEach( props, ( val, key ) => {
+				if ( c.undefined( val )) {
+					expect( toObj ).to.satisfy( obj => {
+						return c.undefined( obj[key]) || !obj.hasOwnProperty( key );
+					});
+				} else {
+					expect( toObj ).to.have.property( key, val );
+				}
+			});
 		};
 		let errorOut;
 		if ( collection ) {
 			if ( c.array( properties ) && properties.length === data.length ) {
-				l.forEach( data, ( entity, index ) => {
+				data.forEach(( entity, index ) => {
 					errorOut = check( entity, properties[index]);
 					return !errorOut;
 				});
 			} else {
-				l.forEach( data, entity => {
+				data.forEach( entity => {
 					errorOut = check( entity, properties );
 					return !errorOut;
 				});
@@ -25895,11 +25772,11 @@ chai.use( function( _chai, utils ) {
 });
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./config.js":undefined,"_process":5,"bluebird":1,"chai":undefined,"chalk":undefined,"check-types":2,"lodash":4,"path":undefined,"sequential-event":11,"stack-trace":undefined}],8:[function(require,module,exports){
-(function (process,global){
+},{"./config.js":undefined,"_process":9,"bluebird":3,"chai":undefined,"chai-as-promised":4,"chalk":undefined,"check-types":6,"lodash":8,"path":undefined,"sequential-event":15,"stack-trace":undefined}],12:[function(require,module,exports){
+(function (process,global,__dirname){
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false, importTest: false */
 
 require( './defineGlobals' );
 
@@ -26227,19 +26104,19 @@ if ( process.env.SAUCE_ONLY !== 'true' ) {
 	});
 
 	const styleFunction = 'undefined' === typeof window ? chalk.bold.underline.blue : l.identity;
-	importTest( styleFunction( 'Adapters' ), './adapters/index.js' );
-	importTest( styleFunction( 'Models' ), './models/index.js' );
+	importTest( styleFunction( 'Adapters' ), `${ __dirname  }/adapters/index.js` );
+	importTest( styleFunction( 'Models' ), `${ __dirname  }/models/index.js` );
 }
 
 if ( 'undefined' === typeof window && process.env.NO_SAUCE !== 'true' ) {
-	require( './browser/selenium.js' );
+	require( `${ __dirname  }/browser/selenium.js` );
 }
 
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../diaspora":undefined,"./browser/selenium.js":undefined,"./defineGlobals":7,"_process":5}],9:[function(require,module,exports){
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},"/test")
+},{"../diaspora":undefined,"./defineGlobals":11,"_process":9}],13:[function(require,module,exports){
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals l: false, c: false, it: false, require: false, expect: false, chalk: false */
 
 module.exports = ( adapter, data, tableName ) => {
 	it( '❌ Clear old data', () => {
@@ -26373,7 +26250,7 @@ module.exports = ( adapter, data, tableName ) => {
 					expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, {
 						email: undefined,
 					}).that.have.lengthOf.below( pageSize + 1, `Sets should be at most ${ pageSize } items length` );
-					if ( 0 == entities.length ) {
+					if ( 0 === entities.length ) {
 						return resolve();
 					}
 					page++;
@@ -26420,10 +26297,10 @@ module.exports = ( adapter, data, tableName ) => {
 	});
 };
 
-},{}],10:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals describe: false, require: false, chalk: false */
 
 const describeApp = ( level, name, slug, adapter ) => {
 	describe( `Level ${ level }: ${ name }`, () => {
@@ -26431,9 +26308,10 @@ const describeApp = ( level, name, slug, adapter ) => {
 		try {
 			data = require( `./${ slug }.json` );
 		} catch ( err ) {
+			console.error( err );
 		}
 		try {
-			require( `./${ slug }` )( adapter, data, 'app1-matchmail' );
+			require( `./${ slug }` )( adapter, data, slug );
 		} catch ( err ) {
 			console.log( 'Could not prepare app:', err );
 		}
@@ -26448,10 +26326,10 @@ module.exports = adapter => {
 
 // Symbols: ✨ 🔎 🔃 ❌
 
-},{}],11:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = require('./lib/sequential-event.js');
 
-},{"./lib/sequential-event.js":12}],12:[function(require,module,exports){
+},{"./lib/sequential-event.js":16}],16:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -26613,4 +26491,1224 @@ class SequentialEvent extends EventEmitter {
 module.exports = SequentialEvent;
 
 }).call(this,require('_process'))
-},{"_process":5,"events":3}]},{},[8,7,"./models/index.js","./simple-remapping.js","./simple.js","./validations.js","./adapters/index.js","./inMemory.js","./localStorage.js",6,9,10]);
+},{"_process":9,"events":7}],"/test/adapters/inMemory.js":[function(require,module,exports){
+'use strict';
+
+const AdapterTestUtils = require( './utils' );
+const ADAPTER_LABEL = 'in-memory';
+
+AdapterTestUtils.createDataSource( ADAPTER_LABEL, {});
+AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'InMemory' );
+AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
+AdapterTestUtils.checkApplications( ADAPTER_LABEL );
+AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'inMemory' );
+
+},{"./utils":10}],"/test/adapters/index.js":[function(require,module,exports){
+(function (__dirname){
+'use strict';
+
+/* globals importTest: false, getStyle: false */
+
+importTest( getStyle( 'adapter', 'In Memory' ), `${ __dirname  }/inMemory.js` );
+if ( 'undefined' !== typeof window ) {
+	importTest( getStyle( 'adapter', 'Local Storage' ), `${ __dirname  }/localStorage.js` );
+}
+
+}).call(this,"/test/adapters")
+},{}],"/test/adapters/localStorage.js":[function(require,module,exports){
+(function (global){
+'use strict';
+
+/* globals it: false, require: false, getConfig: false */
+
+const ADAPTER_LABEL = 'localstorage';
+const adapterConfig = getConfig( ADAPTER_LABEL );
+
+if ( 'undefined' === typeof window ) {
+	if ( !adapterConfig.data_dir ) {
+		it( 'LocalStorage adapter unconfigured', function unconfiguredAdapter() {
+			this.skip();
+		});
+	}
+
+	const LocalStorage = require( 'node-localstorage' ).LocalStorage;
+	const localStorageDir = adapterConfig.data_dir;
+	global.localStorage = new LocalStorage( localStorageDir );
+	global.localStorage.clear();
+} else {
+	global.localStorage.clear();
+	global.sessionStorage.clear();
+}
+
+var AdapterTestUtils = require( './utils' );
+
+AdapterTestUtils.createDataSource( ADAPTER_LABEL, {}, 'localStorage' );
+AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'LocalStorage', 'localStorage' );
+AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL, 'localStorage' );
+AdapterTestUtils.checkApplications( ADAPTER_LABEL, 'localStorage' );
+AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'localStorage', 'localStorage' );
+if ( 'undefined' !== typeof window ) {
+	AdapterTestUtils.createDataSource( ADAPTER_LABEL, {
+		session: true,
+	}, 'sessionStorage' );
+	AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'SessionStorage', 'sessionStorage' );
+	AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL, 'sessionStorage' );
+	AdapterTestUtils.checkApplications( ADAPTER_LABEL, 'sessionStorage' );
+	AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'sessionStorage', 'sessionStorage' );
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./utils":10,"node-localstorage":undefined}],"/test/models/components.js":[function(require,module,exports){
+(function (process){
+'use strict';
+
+/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false */
+
+let testModel;
+let testEntity;
+let testSet;
+const MODEL_NAME = 'testModelComponents';
+const SOURCE = 'inMemory';
+
+
+it( 'Should create a model', () => {
+	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+		sources:    [ SOURCE ],
+		schema:     false,
+		attributes: {},
+	});
+	expect( testModel ).to.be.an( 'object' );
+	if ( !process.browser ) {
+		expect( testModel.constructor.name ).to.be.eql( 'Model' );
+	}
+	testEntity = testModel.spawn({});
+	testSet = testModel.spawnMulti([{}, {}]);
+});
+const randomTimeout = ( time ) => {
+	return new Promise( resolve => {
+		setTimeout( resolve, time || l.random( 0, 100 ));
+	});
+};
+describe( 'Test entity', () => {
+	describe( 'Check events', () => {
+		it( 'before/after update', () => {
+			let beforeCalled = false;
+			let afterCalled = false;
+			testEntity.on( 'beforeUpdate', () => {
+				expect( beforeCalled ).to.be.false;
+				expect( afterCalled ).to.be.false;
+				return randomTimeout().then(() => {
+					beforeCalled = true;
+				});
+			});
+			testEntity.on( 'afterUpdate', () => {
+				expect( beforeCalled ).to.be.true;
+				expect( afterCalled ).to.be.false;
+				return randomTimeout().then(() => {
+					afterCalled = true;
+				});
+			});
+			return testEntity.persist().then(() => {
+				expect( beforeCalled ).to.be.true;
+				expect( afterCalled ).to.be.true;
+			});
+		});
+		it( 'before/after find', () => {
+			let beforeCalled = false;
+			let afterCalled = false;
+			testEntity.on( 'beforeFind', () => {
+				expect( beforeCalled ).to.be.false;
+				expect( afterCalled ).to.be.false;
+				return randomTimeout().then(() => {
+					beforeCalled = true;
+				});
+			});
+			testEntity.on( 'afterFind', () => {
+				expect( beforeCalled ).to.be.true;
+				expect( afterCalled ).to.be.false;
+				return randomTimeout().then(() => {
+					afterCalled = true;
+				});
+			});
+			return testEntity.fetch().then(() => {
+				expect( beforeCalled ).to.be.true;
+				expect( afterCalled ).to.be.true;
+			});
+		});
+		it( 'before/after delete', () => {
+			let beforeCalled = false;
+			let afterCalled = false;
+			testEntity.on( 'beforeDelete', () => {
+				expect( beforeCalled ).to.be.false;
+				expect( afterCalled ).to.be.false;
+				return randomTimeout().then(() => {
+					beforeCalled = true;
+				});
+			});
+			testEntity.on( 'afterDelete', () => {
+				expect( beforeCalled ).to.be.true;
+				expect( afterCalled ).to.be.false;
+				return randomTimeout().then(() => {
+					afterCalled = true;
+				});
+			});
+			return testEntity.destroy().then(() => {
+				expect( beforeCalled ).to.be.true;
+				expect( afterCalled ).to.be.true;
+			});
+		});
+	});
+});
+
+describe( 'Test set', () => {
+	describe( 'Check events', () => {
+		it( 'before/after update', () => {
+			let beforeCalled = l.times( testSet.length, l.constant( false ));
+			let afterCalled = l.times( testSet.length, l.constant( false ));
+			testSet.forEach(( entity, index ) => {
+				entity.on( 'beforeUpdate', () => {
+					expect( beforeCalled[index]).to.be.false;
+					testSet.forEach(( subentity, subindex ) => {
+						expect( afterCalled[subindex]).to.be.false;
+					});
+					return randomTimeout( index * 20 ).then(() => {
+						beforeCalled[index] = true;
+					});
+				});
+				entity.on( 'afterUpdate', () => {
+					testSet.forEach(( subentity, subindex ) => {
+						expect( beforeCalled[subindex]).to.be.true;
+					});
+					expect( afterCalled[index]).to.be.false;
+					return randomTimeout( index * 20 ).then(() => {
+						afterCalled[index] = true;
+					});
+				});
+			});
+			return testSet.persist().then(() => {
+				testSet.forEach(( subentity, subindex ) => {
+					expect( beforeCalled[subindex]).to.be.true;
+					expect( afterCalled[subindex]).to.be.true;
+				});
+			});
+		});
+		it( 'before/after find', () => {
+			let beforeCalled = l.times( testSet.length, l.constant( false ));
+			let afterCalled = l.times( testSet.length, l.constant( false ));
+			testSet.forEach(( entity, index ) => {
+				entity.on( 'beforeFind', () => {
+					expect( beforeCalled[index]).to.be.false;
+					testSet.forEach(( subentity, subindex ) => {
+						expect( afterCalled[subindex]).to.be.false;
+					});
+					return randomTimeout( index * 20 ).then(() => {
+						beforeCalled[index] = true;
+					});
+				});
+				entity.on( 'afterFind', () => {
+					testSet.forEach(( subentity, subindex ) => {
+						expect( beforeCalled[subindex]).to.be.true;
+					});
+					expect( afterCalled[index]).to.be.false;
+					return randomTimeout( index * 20 ).then(() => {
+						afterCalled[index] = true;
+					});
+				});
+			});
+			return testSet.fetch().then(() => {
+				testSet.forEach(( subentity, subindex ) => {
+					expect( beforeCalled[subindex]).to.be.true;
+					expect( afterCalled[subindex]).to.be.true;
+				});
+			});
+		});
+		it( 'before/after delete', () => {
+			let beforeCalled = l.times( testSet.length, l.constant( false ));
+			let afterCalled = l.times( testSet.length, l.constant( false ));
+			testSet.forEach(( entity, index ) => {
+				entity.on( 'beforeDelete', () => {
+					expect( beforeCalled[index]).to.be.false;
+					testSet.forEach(( subentity, subindex ) => {
+						expect( afterCalled[subindex]).to.be.false;
+					});
+					return randomTimeout( index * 20 ).then(() => {
+						beforeCalled[index] = true;
+					});
+				});
+				entity.on( 'afterDelete', () => {
+					testSet.forEach(( subentity, subindex ) => {
+						expect( beforeCalled[subindex]).to.be.true;
+					});
+					expect( afterCalled[index]).to.be.false;
+					return randomTimeout( index * 20 ).then(() => {
+						afterCalled[index] = true;
+					});
+				});
+			});
+			return testSet.destroy().then(() => {
+				testSet.forEach(( subentity, subindex ) => {
+					expect( beforeCalled[subindex]).to.be.true;
+					expect( afterCalled[subindex]).to.be.true;
+				});
+			});
+		});
+	});
+});
+
+}).call(this,require('_process'))
+},{"_process":9}],"/test/models/index.js":[function(require,module,exports){
+(function (__dirname){
+'use strict';
+
+/* globals getStyle: false, importTest: false */
+
+importTest( getStyle( 'model', 'Test entities & sets' ), `${ __dirname  }/components.js` );
+importTest( getStyle( 'model', 'Simple model (single source)' ), `${ __dirname  }/simple.js` );
+importTest( getStyle( 'model', 'Simple model with remapping (single source)' ), `${ __dirname  }/simple-remapping.js` );
+importTest( getStyle( 'model', 'Simple model with validations (single source)' ), `${ __dirname  }/validations.js` );
+
+}).call(this,"/test/models")
+},{}],"/test/models/simple-remapping.js":[function(require,module,exports){
+'use strict';
+
+/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false */
+
+let testModel;
+let store;
+let testedEntity;
+const MODEL_NAME = 'remapped';
+const SOURCE = 'inMemory';
+
+
+const checkDataStoreRemap = ( item, propsObject ) => {
+	const dataStoreItem = l.find( store.items, {
+		id: item.dataSources.inMemory.id,
+	});
+	expect( dataStoreItem ).to.not.have.property( 'foo' );
+	if ( propsObject ) {
+		if ( c.assigned( propsObject.foo )) {
+			expect( dataStoreItem ).to.be.an( 'object' ).that.have.property( 'bar', propsObject.foo );
+		} else {
+			expect( dataStoreItem ).to.satisfy( obj => {
+				return !obj.hasOwnProperty( 'bar' ) || c.undefined( obj.bar );
+			});
+		}
+	}
+};
+
+it( 'Should create a model', () => {
+	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+		sources: {
+			[ SOURCE ]: {
+				foo: 'bar',
+			},
+		},
+		schema:     false,
+		attributes: {
+			foo: {
+				type: 'string',
+			},
+		},
+	});
+	expect( testModel ).to.be.an( 'object' );
+	if ( 'undefined' === typeof window ) {
+		expect( testModel.constructor.name ).to.be.eql( 'Model' );
+	}
+	store = Diaspora.dataSources.test.inMemory.store.remapped;
+});
+it( 'Should be able to create an entity of the defined model.', () => {
+	const entity1 = testModel.spawn();
+	expect( entity1 ).to.be.an.entity( testModel, {}, true );
+	const entity2 = testModel.spawn({
+		foo: 'bar',
+	});
+	expect( entity2 ).to.be.an.entity( testModel, {
+		foo: 'bar',
+	}, true );
+});
+it( 'Should be able to create multiple entities.', () => {
+	const objects = [
+		{
+			foo: 'bar', 
+		},
+		undefined,
+	];
+	const entities = testModel.spawnMulti( objects );
+	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
+});
+describe( 'Should be able to use model methods to find, update, delete & create', () => {
+	describe( '- Create instances', () => {
+		it( 'Create a single instance', () => {
+			expect( testModel ).to.respondTo( 'insert' );
+			const object = {
+				foo: 'bar', 
+			};
+			return testModel.insert( object ).then( newEntity => {
+				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
+				checkDataStoreRemap( newEntity, object );
+			});
+		});
+		it( 'Create multiple instances', () => {
+			expect( testModel ).to.respondTo( 'insertMany' );
+			const objects = [
+				{
+					foo: 'baz', 
+				},
+				undefined,
+				{
+					foo: undefined, 
+				},
+				{
+					foo: 'baz', 
+				},
+			];
+			return testModel.insertMany( objects ).then( newEntities => {
+				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
+				return Promise.map( newEntities.value(), ( newEntity, index ) => {
+					const object = objects[index];
+					checkDataStoreRemap( newEntity, object );
+				});
+			});
+		});
+	});
+	describe( '- Find instances', () => {
+		const checkFind = ( query, many = true ) => {
+			return testModel[many ? 'findMany' : 'find']( query ).then( foundEntities => {
+				if ( many ) {
+					expect( foundEntities ).to.be.a.set.of.entity( testModel, query, SOURCE );
+				} else if ( c.assigned( foundEntities )) {
+					expect( foundEntities ).to.be.an.entity( testModel, query, SOURCE );
+				}
+				return Promise.resolve( foundEntities );
+			});
+		};
+		it( 'Find a single instance', () => {
+			expect( testModel ).to.respondTo( 'find' );
+			return Promise.mapSeries([
+				{
+					foo: undefined, 
+				},
+				{
+					foo: 'baz', 
+				},
+				{
+					foo: 'bar', 
+				},
+			], item => checkFind( item, false ));
+		});
+		it( 'Find multiple instances', () => {
+			expect( testModel ).to.respondTo( 'findMany' );
+			return Promise.mapSeries([
+				{
+					query: {
+						foo: undefined, 
+					},
+					length: 2,
+				},
+				{
+					query: {
+						foo: 'baz', 
+					},
+					length: 2,
+				},
+				{
+					query: {
+						foo: 'bar', 
+					},
+					length: 1,
+				},
+			], item => checkFind( item.query, true ).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( item.length );
+			}));
+		});
+		it( 'Find all instances', () => {
+			return testModel.findMany({}).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( 5 );
+			});
+		});
+	});
+	describe( '- Update instances', () => {
+		const checkUpdate = ( query, update, many = true ) => {
+			return testModel[many ? 'updateMany' : 'update']( query, update ).then( updatedEntities => {
+				if ( many ) {
+					expect( updatedEntities ).to.be.a.set.of.entity( testModel, update, SOURCE );
+					l.forEach( updatedEntities, updatedEntity => {
+						checkDataStoreRemap( updatedEntity, update );
+					});
+				} else if ( c.assigned( updatedEntities )) {
+					expect( updatedEntities ).to.be.an.entity( testModel, update, SOURCE );
+					checkDataStoreRemap( updatedEntities, update );
+				}
+				return Promise.resolve( updatedEntities );
+			});
+		};
+		it( 'Update a single instance', () => {
+			expect( testModel ).to.respondTo( 'update' );
+			return Promise.resolve()
+				.then(() => checkUpdate({
+					foo: undefined,
+				}, {
+					foo: 'qux',
+				}, false ))
+				.then(() => checkUpdate({
+					foo: 'baz',
+				}, {
+					foo: 'qux',
+				}, false ))
+				.then(() => checkUpdate({
+					foo: 'bar',
+				}, {
+					foo: undefined,
+				}, false ));
+		});
+		it( 'Update multiple instances', () => {
+			expect( testModel ).to.respondTo( 'updateMany' );
+			return Promise.resolve()
+				.then(() => checkUpdate({
+					foo: undefined,
+				}, {
+					foo: 'bar',
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 2 );
+					return Promise.resolve();
+				}))
+				.then(() => checkUpdate({
+					foo: 'baz',
+				}, {
+					foo: undefined,
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 1 );
+					return Promise.resolve();
+				}))
+				.then(() => checkUpdate({
+					foo: 'bat',
+				}, {
+					foo: 'twy',
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 0 );
+					return Promise.resolve();
+				}));
+		});
+	});
+	describe( '- Delete instances', () => {
+		const checkDestroy = ( query, many = true ) => {
+			return testModel.findMany( query ).then( entities => {
+				return Promise.resolve( entities.length );
+			}).then( beforeCount => {
+				return testModel[many ? 'deleteMany' : 'delete']( query ).then(() => Promise.resolve( beforeCount ));
+			}).then( beforeCount => {
+				return testModel.findMany( query ).then( entities => {
+					return Promise.resolve({
+						before: beforeCount,
+						after:  entities.length,
+					});
+				});
+			}).then( result => {
+				if ( many || 0 === result.before ) {
+					expect( result.after ).to.be.equal( 0 );
+				} else {
+					expect( result.after ).to.be.equal( result.before - 1 );
+				}
+			});
+		};
+		it( 'Delete a single instance', () => {
+			expect( testModel ).to.respondTo( 'delete' );
+			return Promise.resolve()
+				.then(() => checkDestroy({
+					foo: undefined,
+				}, false ))
+				.then(() => checkDestroy({
+					foo: 'bar',
+				}, false ));
+		});
+		it( 'Delete multiple instances', () => {
+			expect( testModel ).to.respondTo( 'deleteMany' );
+			return Promise.resolve().then(() => checkDestroy({
+				foo: undefined,
+			}, true )).then(() => checkDestroy({
+				foo: 'baz',
+			}, true )).then(() => checkDestroy({
+				foo: 'qux',
+			}, true ));
+		});
+		it( 'Delete all instances', () => {
+			return testModel.deleteMany({});
+		});
+	});
+});
+describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
+	it( 'Persist should change the entity', () => {
+		const object = {
+			foo: 'bar', 
+		};
+		testedEntity = testModel.spawn( object );
+		expect( testedEntity ).to.be.an.entity( testModel, object, true );
+		const retPromise = testedEntity.persist();
+		expect( testedEntity.state ).to.be.eql( 'syncing' );
+		expect( testedEntity ).to.be.an.entity( testModel, object, null );
+		return retPromise.then(() => {
+			expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
+		});
+	});
+	it( 'Fetch should change the entity', () => {
+		const object = {
+			foo: 'bar',
+		};
+		return testModel.find( object ).then( entity => {
+			expect( entity ).to.respondTo( 'fetch' );
+			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
+			entity.foo = 'baz';
+			expect( entity ).to.be.an.entity( testModel, {
+				foo: 'baz',
+			}, SOURCE );
+			const retPromise = entity.fetch();
+			expect( entity.state ).to.be.eql( 'syncing' );
+			return retPromise.then(() => {
+				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
+			});
+		});
+	});
+	it( 'Destroy should change the entity', () => {
+		const object = {
+			foo: 'bar',
+		};
+		return testModel.find( object ).then( entity => {
+			expect( entity ).to.respondTo( 'destroy' );
+			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
+			const retPromise = entity.destroy();
+			expect( entity.state ).to.be.eql( 'syncing' );
+			return retPromise.then(() => {
+				expect( entity.lastDataSource ).to.be.eql( SOURCE );
+				expect( entity.state ).to.be.eql( 'orphan' );
+				expect( entity ).to.be.an.entity( testModel, {}, null );
+			});
+		});
+	});
+});
+
+},{}],"/test/models/simple.js":[function(require,module,exports){
+'use strict';
+
+/* globals c: false, it: false, describe: false, require: false, expect: false, Diaspora: false */
+
+let testModel;
+let testedEntity;
+const MODEL_NAME = 'testModel';
+const SOURCE = 'inMemory';
+
+
+it( 'Should create a model', () => {
+	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+		sources:    [ SOURCE ],
+		schema:     false,
+		attributes: {
+			foo: {
+				type: 'string',
+			},
+		},
+	});
+	expect( testModel ).to.be.an( 'object' );
+	if ( 'undefined' === typeof window ) {
+		expect( testModel.constructor.name ).to.be.eql( 'Model' );
+	}
+});
+it( 'Should be able to create an entity of the defined model.', () => {
+	const entity1 = testModel.spawn();
+	expect( entity1 ).to.be.an.entity( testModel, {}, true );
+	const entity2 = testModel.spawn({
+		foo: 'bar',
+	});
+	expect( entity2 ).to.be.an.entity( testModel, {
+		foo: 'bar',
+	}, true );
+});
+it( 'Should be able to create multiple entities.', () => {
+	const objects = [
+		{
+			foo: 'bar', 
+		},
+		undefined,
+	];
+	const entities = testModel.spawnMulti( objects );
+	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
+});
+describe( 'Should be able to use model methods to find, update, delete & create', () => {
+	describe( '- Create instances', () => {
+		it( 'Create a single instance', () => {
+			expect( testModel ).to.respondTo( 'insert' );
+			const object = {
+				foo: 'bar', 
+			};
+			return testModel.insert( object ).then( newEntity => {
+				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
+				return Promise.resolve();
+			});
+		});
+		it( 'Create multiple instances', () => {
+			expect( testModel ).to.respondTo( 'insertMany' );
+			const objects = [
+				{
+					foo: 'baz', 
+				},
+				undefined,
+				{
+					foo: undefined, 
+				},
+				{
+					foo: 'baz', 
+				},
+			];
+			return testModel.insertMany( objects ).then( newEntities => {
+				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
+				return Promise.resolve();
+			});
+		});
+	});
+	describe( '- Find instances', () => {
+		const checkFind = ( query, many = true ) => {
+			return testModel[many ? 'findMany' : 'find']( query ).then( foundEntities => {
+				if ( many ) {
+					expect( foundEntities ).to.be.a.set.of.entity( testModel, query, SOURCE );
+				} else if ( c.assigned( foundEntities )) {
+					expect( foundEntities ).to.be.an.entity( testModel, query, SOURCE );
+				}
+				return Promise.resolve( foundEntities );
+			});
+		};
+		it( 'Find a single instance', () => {
+			expect( testModel ).to.respondTo( 'find' );
+			return Promise.mapSeries([
+				{
+					foo: undefined, 
+				},
+				{
+					foo: 'baz', 
+				},
+				{
+					foo: 'bar', 
+				},
+			], item => checkFind( item, false ));
+		});
+		it( 'Find multiple instances', () => {
+			expect( testModel ).to.respondTo( 'findMany' );
+			return Promise.mapSeries([
+				{
+					query: {
+						foo: undefined, 
+					},
+					length: 2,
+				},
+				{
+					query: {
+						foo: 'baz', 
+					},
+					length: 2,
+				},
+				{
+					query: {
+						foo: 'bar', 
+					},
+					length: 1,
+				},
+			], item => checkFind( item.query, true ).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( item.length );
+			}));
+		});
+		it( 'Find all instances', () => {
+			return testModel.findMany({}).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( 5 );
+			});
+		});
+	});
+	describe( '- Update instances', () => {
+		const checkUpdate = ( query, update, many = true ) => {
+			return testModel[many ? 'updateMany' : 'update']( query, update ).then( updatedEntities => {
+				if ( many ) {
+					expect( updatedEntities ).to.be.a.set.of.entity( testModel, update, SOURCE );
+				} else if ( c.assigned( updatedEntities )) {
+					expect( updatedEntities ).to.be.an.entity( testModel, update, SOURCE );
+				}
+				return Promise.resolve( updatedEntities );
+			});
+		};
+		it( 'Update a single instance', () => {
+			expect( testModel ).to.respondTo( 'update' );
+			return Promise.resolve()
+				.then(() => checkUpdate({
+					foo: undefined,
+				}, {
+					foo: 'qux',
+				}, false ))
+				.then(() => checkUpdate({
+					foo: 'baz',
+				}, {
+					foo: 'qux',
+				}, false ))
+				.then(() => checkUpdate({
+					foo: 'bar',
+				}, {
+					foo: undefined,
+				}, false ));
+		});
+		it( 'Update multiple instances', () => {
+			//process.exit()
+			expect( testModel ).to.respondTo( 'updateMany' );
+			return Promise.resolve()
+				.then(() => checkUpdate({
+					foo: undefined,
+				}, {
+					foo: 'bar',
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 2 );
+					return Promise.resolve();
+				}))
+				.then(() => checkUpdate({
+					foo: 'baz',
+				}, {
+					foo: undefined,
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 1 );
+					return Promise.resolve();
+				}))
+				.then(() => checkUpdate({
+					foo: 'bat',
+				}, {
+					foo: 'twy',
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 0 );
+					return Promise.resolve();
+				}));
+		});
+	});
+	describe( '- Delete instances', () => {
+		const checkDestroy = ( query, many = true ) => {
+			return testModel.findMany( query ).then( entities => {
+				return Promise.resolve( entities.length );
+			}).then( beforeCount => {
+				return testModel[many ? 'deleteMany' : 'delete']( query ).then(() => Promise.resolve( beforeCount ));
+			}).then( beforeCount => {
+				return testModel.findMany( query ).then( entities => {
+					return Promise.resolve({
+						before: beforeCount,
+						after:  entities.length,
+					});
+				});
+			}).then( result => {
+				if ( many || 0 === result.before ) {
+					expect( result.after ).to.be.equal( 0 );
+				} else {
+					expect( result.after ).to.be.equal( result.before - 1 );
+				}
+			});
+		};
+		it( 'Delete a single instance', () => {
+			expect( testModel ).to.respondTo( 'delete' );
+			return Promise.resolve()
+				.then(() => checkDestroy({
+					foo: undefined,
+				}, false ))
+				.then(() => checkDestroy({
+					foo: 'bar',
+				}, false ));
+		});
+		it( 'Delete multiple instances', () => {
+			expect( testModel ).to.respondTo( 'deleteMany' );
+			return Promise.resolve().then(() => checkDestroy({
+				foo: undefined,
+			}, true )).then(() => checkDestroy({
+				foo: 'baz',
+			}, true )).then(() => checkDestroy({
+				foo: 'qux',
+			}, true ));
+		});
+		it( 'Delete all instances', () => {
+			return testModel.deleteMany({});
+		});
+	});
+});
+describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
+	it( 'Persist should change the entity', () => {
+		const object = {
+			foo: 'bar', 
+		};
+		testedEntity = testModel.spawn( object );
+		expect( testedEntity ).to.be.an.entity( testModel, object, true );
+		const retPromise = testedEntity.persist();
+		expect( testedEntity.state ).to.be.eql( 'syncing' );
+		expect( testedEntity ).to.be.an.entity( testModel, object, null );
+		return retPromise.then(() => {
+			expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
+		});
+	});
+	it( 'Fetch should change the entity', () => {
+		const object = {
+			foo: 'bar',
+		};
+		return testModel.find( object ).then( entity => {
+			expect( entity ).to.respondTo( 'fetch' );
+			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
+			entity.foo = 'baz';
+			expect( entity ).to.be.an.entity( testModel, {
+				foo: 'baz',
+			}, SOURCE );
+			const retPromise = entity.fetch();
+			expect( entity.state ).to.be.eql( 'syncing' );
+			return retPromise.then(() => {
+				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
+			});
+		});
+	});
+	it( 'Destroy should change the entity', () => {
+		const object = {
+			foo: 'bar',
+		};
+		return testModel.find( object ).then( entity => {
+			expect( entity ).to.respondTo( 'destroy' );
+			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
+			const retPromise = entity.destroy();
+			expect( entity.state ).to.be.eql( 'syncing' );
+			return retPromise.then(() => {
+				expect( entity.lastDataSource ).to.be.eql( SOURCE );
+				expect( entity.state ).to.be.eql( 'orphan' );
+				expect( entity ).to.be.an.entity( testModel, {}, null );
+			});
+		});
+	});
+});
+
+},{}],"/test/models/validations.js":[function(require,module,exports){
+'use strict';
+
+/* globals it: false, require: false, expect: false, Diaspora: false */
+
+let testModel;
+const MODEL_NAME = 'validatedModel';
+const SOURCE = 'inMemory';
+const ValidationError = require( 'lib/validationError' );
+
+
+it( 'Should create a model', () => {
+	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+		sources:    [ SOURCE ],
+		schema:     false,
+		attributes: {
+			prop1: {
+				type: 'string',
+			},
+			prop2: {
+				type:     'integer',
+				enum:     [ 1, 2, 3, 4, 'foo' ],
+				required: true,
+			},
+			prop3: {
+				type:    'float',
+				default: 0.1,
+			},
+		},
+	});
+	expect( testModel ).to.be.an( 'object' );
+	if ( 'undefined' === typeof window ) {
+		expect( testModel.constructor.name ).to.be.eql( 'Model' );
+	}
+});
+it( 'Should reject persistance of badly configured entities.', () => {
+	const fail1 = testModel.spawn({
+		prop1: 1,
+		prop2: 2,
+	}).persist();
+	const fail2 = testModel.spawn({
+		prop2: 0,
+	}).persist();
+	const fail3 = testModel.spawn({
+		prop2: 'foo',
+	}).persist();
+	const fail4 = testModel.spawn({}).persist();
+	return Promise.all([
+		expect( fail1 ).to.be.rejectedWith( ValidationError ),
+		expect( fail1 ).to.be.rejectedWith( /(\W|^)prop1\W.*\Wstring(\W|$)/m ),
+		expect( fail2 ).to.be.rejectedWith( ValidationError ),
+		expect( fail2 ).to.be.rejectedWith( /(\W|^)prop2\W.*\Wenumerat(ed|ion)(\W|$)/m ),
+		expect( fail3 ).to.be.rejectedWith( ValidationError ),
+		expect( fail3 ).to.be.rejectedWith( /(\W|^)prop2\W.*\Winteger(\W|$)/m ),
+		expect( fail4 ).to.be.rejectedWith( ValidationError ),
+		expect( fail4 ).to.be.rejectedWith( /(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m ),
+	]);
+});
+it( 'Should define default values on valid items', () => {
+	return Promise.all([
+		testModel.spawn({
+			prop2: 2,
+		}).persist().then( entity => {
+			expect( entity ).to.be.an.entity( testModel, {
+				prop2: 2,
+				prop3: 0.1,
+			}, 'inMemory' );
+		}),
+		testModel.spawn({
+			prop2: 3,
+			prop3: 12,
+		}).persist().then( entity => {
+			expect( entity ).to.be.an.entity( testModel, {
+				prop2: 3,
+				prop3: 12,
+			}, 'inMemory' );
+		}),
+	]);
+});
+/*it( 'Should be able to create multiple entities.', () => {
+	const objects = [
+		{
+			foo: 'bar', 
+		},
+		undefined,
+	];
+	const entities = testModel.spawnMulti( objects );
+	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
+});
+describe( 'Should be able to use model methods to find, update, delete & create', () => {
+	describe( '- Create instances', () => {
+		it( 'Create a single instance', () => {
+			expect( testModel ).to.respondTo( 'insert' );
+			const object = {
+				foo: 'bar', 
+			};
+			return testModel.insert( object ).then( newEntity => {
+				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
+				return Promise.resolve();
+			});
+		});
+		it( 'Create multiple instances', () => {
+			expect( testModel ).to.respondTo( 'insertMany' );
+			const objects = [
+				{
+					foo: 'baz', 
+				},
+				undefined,
+				{
+					foo: undefined, 
+				},
+				{
+					foo: 'baz', 
+				},
+			];
+			return testModel.insertMany( objects ).then( newEntities => {
+				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
+				return Promise.resolve();
+			});
+		});
+	});
+	describe( '- Find instances', () => {
+		function checkFind( query, many = true ) {
+			return testModel[many ? 'findMany' : 'find']( query ).then( foundEntities => {
+				if ( many ) {
+					expect( foundEntities ).to.be.a.set.of.entity( testModel, query, SOURCE );
+				} else if ( c.assigned( foundEntities )) {
+					expect( foundEntities ).to.be.an.entity( testModel, query, SOURCE );
+				}
+				return Promise.resolve( foundEntities );
+			});
+		}
+		it( 'Find a single instance', () => {
+			expect( testModel ).to.respondTo( 'find' );
+			return Promise.mapSeries([
+				{
+					foo: undefined, 
+				},
+				{
+					foo: 'baz', 
+				},
+				{
+					foo: 'bar', 
+				},
+			], item => checkFind( item, false ));
+		});
+		it( 'Find multiple instances', () => {
+			expect( testModel ).to.respondTo( 'findMany' );
+			return Promise.mapSeries([
+				{
+					query: {
+						foo: undefined, 
+					},
+					length: 2,
+				},
+				{
+					query: {
+						foo: 'baz', 
+					},
+					length: 2,
+				},
+				{
+					query: {
+						foo: 'bar', 
+					},
+					length: 1,
+				},
+			], item => checkFind( item.query, true ).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( item.length );
+			}));
+		});
+		it( 'Find all instances', () => {
+			return testModel.findMany({}).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( 5 );
+			});
+		});
+	});
+	describe( '- Update instances', () => {
+		function checkUpdate( query, update, many = true ) {
+			return testModel[many ? 'updateMany' : 'update']( query, update ).then( updatedEntities => {
+				if ( many ) {
+					expect( updatedEntities ).to.be.a.set.of.entity( testModel, update, SOURCE );
+				} else if ( c.assigned( updatedEntities )) {
+					expect( updatedEntities ).to.be.an.entity( testModel, update, SOURCE );
+				}
+				return Promise.resolve( updatedEntities );
+			});
+		}
+		it( 'Update a single instance', () => {
+			expect( testModel ).to.respondTo( 'update' );
+			return Promise.resolve()
+				.then(() => checkUpdate({
+				foo: undefined,
+			}, {
+				foo: 'qux',
+			}, false ))
+				.then(() => checkUpdate({
+				foo: 'baz',
+			}, {
+				foo: 'qux',
+			}, false ))
+				.then(() => checkUpdate({
+				foo: 'bar',
+			}, {
+				foo: undefined,
+			}, false ));
+		});
+		it( 'Update multiple instances', () => {
+			//process.exit()
+			expect( testModel ).to.respondTo( 'updateMany' );
+			return Promise.resolve()
+				.then(() => checkUpdate({
+				foo: undefined,
+			}, {
+				foo: 'bar',
+			}, true ).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( 2 );
+				return Promise.resolve();
+			}))
+				.then(() => checkUpdate({
+				foo: 'baz',
+			}, {
+				foo: undefined,
+			}, true ).then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( 1 );
+				return Promise.resolve();
+			}))
+				.then(() => checkUpdate({
+				foo: 'bat',
+			}, {
+				foo: 'twy',
+			}, true )
+					  .then( foundEntities => {
+				expect( foundEntities ).to.have.lengthOf( 0 );
+				return Promise.resolve();
+			}));
+		});
+	});
+	describe( '- Delete instances', () => {
+		function checkDestroy( query, many = true ) {
+			return testModel.findMany( query ).then( entities => {
+				return Promise.resolve( entities.length );
+			}).then( beforeCount => {
+				return testModel[many ? 'deleteMany' : 'delete']( query ).then(() => Promise.resolve( beforeCount ));
+			}).then( beforeCount => {
+				return testModel.findMany( query ).then( entities => {
+					return Promise.resolve({
+						before: beforeCount,
+						after:  entities.length,
+					});
+				});
+			}).then( result => {
+				if ( many || 0 === result.before ) {
+					expect( result.after ).to.be.equal( 0 );
+				} else {
+					expect( result.after ).to.be.equal( result.before - 1 );
+				}
+			});
+		}
+		it( 'Delete a single instance', () => {
+			expect( testModel ).to.respondTo( 'delete' );
+			return Promise.resolve()
+				.then(() => checkDestroy({
+				foo: undefined,
+			}, false ))
+				.then(() => checkDestroy({
+				foo: 'bar',
+			}, false ));
+		});
+		it( 'Delete multiple instances', () => {
+			expect( testModel ).to.respondTo( 'deleteMany' );
+			return Promise.resolve().then(() => checkDestroy({
+				foo: undefined,
+			}, true )).then(() => checkDestroy({
+				foo: 'baz',
+			}, true )).then(() => checkDestroy({
+				foo: 'qux',
+			}, true ));
+		});
+		it( 'Delete all instances', () => {
+			return testModel.deleteMany({});
+		});
+	});
+});
+describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
+	it( 'Persist should change the entity', () => {
+		const object = {
+			foo: 'bar', 
+		};
+		testedEntity = testModel.spawn( object );
+		expect( testedEntity ).to.be.an.entity( testModel, object, true );
+		const retPromise = testedEntity.persist();
+		expect( testedEntity.state).to.be.eql( 'syncing' );
+		expect( testedEntity ).to.be.an.entity( testModel, object, null );
+		return retPromise.then(() => {
+			expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
+		});
+	});
+	it( 'Fetch should change the entity', () => {
+		const object = {
+			foo: 'bar',
+		};
+		return testModel.find( object ).then( entity => {
+			expect( entity ).to.respondTo( 'fetch' );
+			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
+			entity.foo = 'baz';
+			expect( entity ).to.be.an.entity( testModel, {
+				foo: 'baz',
+			}, SOURCE );
+			const retPromise = entity.fetch();
+			expect( entity.state).to.be.eql( 'syncing' );
+			return retPromise.then(() => {
+				expect( testedEntity ).to.be.an.entity( testModel, object, SOURCE );
+			});
+		});
+	});
+	it( 'Destroy should change the entity', () => {
+		const object = {
+			foo: 'bar',
+		};
+		return testModel.find( object ).then( entity => {
+			expect( entity ).to.respondTo( 'destroy' );
+			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
+			const retPromise = entity.destroy();
+			expect( entity.state).to.be.eql( 'syncing' );
+			return retPromise.then(() => {
+				expect( entity.lastDataSource).to.be.eql( SOURCE );
+				expect( entity.state).to.be.eql( 'orphan' );
+				expect( entity ).to.be.an.entity( testModel, {}, null );
+			});
+		});
+	});
+});
+*/
+
+},{"lib/validationError":2}]},{},[12,11,"/test/models/components.js","/test/models/index.js","/test/models/simple-remapping.js","/test/models/simple.js","/test/models/validations.js","/test/adapters/index.js","/test/adapters/inMemory.js","/test/adapters/localStorage.js",10,13,14]);

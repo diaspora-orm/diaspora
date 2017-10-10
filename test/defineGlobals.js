@@ -1,23 +1,26 @@
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false */
+/* globals l: false, c: false, describe: false, require: false, expect: false, chalk: false, chai: false, path: false */
 
-const glob = 'undefined' !== typeof window ? window : global;
+let config = {};
+let getCurrentDir;
+
+let styles = {};
 
 if ( 'undefined' === typeof window ) {
-	glob.path = require( 'path' );
-	glob.projectPath = path.resolve( '../' );
-	glob.chalk = require( 'chalk' );
+	global.path = require( 'path' );
+	global.projectPath = path.resolve( '../' );
+	global.chalk = require( 'chalk' );
 
 	const stackTrace = require( 'stack-trace' );
-	glob.getCurrentDir = () => {
+	getCurrentDir = () => {
 		const stackItem = stackTrace.get()[2];
 		return path.dirname( stackItem.getFileName());
 	};
 
-	glob.chalk = require( 'chalk' );
+	global.chalk = require( 'chalk' );
 	try {
-		glob.config = require( './config.js' );
+		config = require( './config.js' );
 	} catch ( err ) {
 		if ( 'MODULE_NOT_FOUND' === err.code ) {
 			console.error( 'Missing required file "config.js", please copy "config-sample.js" and edit it.' );
@@ -27,77 +30,60 @@ if ( 'undefined' === typeof window ) {
 		process.exit();
 	}
 
+	styles = {
+		category:     chalk.bold.underline.blue,
+		taskCategory: chalk.underline.white,
+		bold:         chalk.bold,
+		adapter:      chalk.bold.red,
+		model:        chalk.bold.red,
+	};
 } else {
-	glob.config = {};
-	glob.getCurrentDir = () => {
+	config = {};
+	getCurrentDir = () => {
 		return '';
-		var scriptPath = '';
-		try {
-			//Throw an error to generate a stack trace
-			throw new Error();
-		} catch ( e ) {
-			console.log( e, e.stack );
-			//Split the stack trace into each line
-			var stackLines = e.stack.split( '\n' );
-			console.log( stackLines );
-			var callerIndex = 0;
-			//Now walk though each line until we find a path reference
-			for ( var i in stackLines ) {
-				if ( !stackLines[i].match( /(?:https?|file):\/\// )) {
-					continue; 
-				}
-				//We skipped all the lines with out an http so we now have a script reference
-				//This one is the class constructor, the next is the getScriptPath() call
-				//The one after that is the user code requesting the path info (so offset by 2)
-				callerIndex = Number( i ) + 2;
-				break;
-			}
-			//Now parse the string for each section we want to return
-			pathParts = stackLines[callerIndex].match( /((?:https?|file):\/\/.+\/)([^\/]+\.js)/ );
-			return pathParts[1];
-		}
 	};
 }
 
-glob.getConfig = adapterName => {
+global.getStyle = ( styleName, text ) => {
+	const styleFct = styles[styleName];
+	if ( l.isFunction( styleFct )) {
+		return styleFct( text );
+	}
+	return text;
+};
+
+global.getConfig = adapterName => {
 	return ( config && config[adapterName]) || {};
 };
 
-glob.importTest = ( name, modulePath ) => {
-	const fullPath = 'undefined' === typeof window ? path.resolve( getCurrentDir(), modulePath ) : modulePath;
+global.importTest = ( name, modulePath ) => {
 	describe( name, () => {
-		require( fullPath );
+		require( modulePath );
 	});
 };
 
-glob.l = require( 'lodash' );
-glob.c = require( 'check-types' );
-glob.CheckTypes = c;
+global.l = require( 'lodash' );
+global.c = require( 'check-types' );
+global.CheckTypes = c;
 if ( 'undefined' === typeof window ) {
-	glob.chai = require( 'chai' );
+	global.chai = require( 'chai' );
 }
-var chaiAsPromised = require('chai-as-promised');
-chai.use(chaiAsPromised);
-glob.assert = chai.assert;
-glob.expect = chai.expect;
-glob.SequentialEvent = require( 'sequential-event' );
-glob.Promise = require( 'bluebird' );
+const chaiAsPromised = require( 'chai-as-promised' );
+chai.use( chaiAsPromised );
+global.assert = chai.assert;
+global.expect = chai.expect;
+global.SequentialEvent = require( 'sequential-event' );
+global.Promise = require( 'bluebird' );
 
-glob.style = {
-	white: 'undefined' === typeof window ? chalk.underline.white : v => v,
-	bold:  'undefined' === typeof window ? chalk.bold : v => v,
-};
-
-chai.use( function( _chai, utils ) {
-	utils.addProperty( chai.Assertion.prototype, 'set', function() {
-		var obj = utils.flag( this, 'object' );
-		const assert = this.assert(
-			c.array( this._obj ),
+chai.use( function chaiUse( _chai, utils ) {
+	utils.addProperty( chai.Assertion.prototype, 'set', function chaiSet() {
+		this.assert(
+			c.array( this._obj ) || this._obj.hasOwnProperty( 'entities' ),
 			'expected #{this} to be a collection',
 			'expected #{this} to not be a collection' );
 		utils.flag( this, 'collection', true );
 	});
-	utils.addProperty( chai.Assertion.prototype, 'of', function() {});
+	utils.addProperty( chai.Assertion.prototype, 'of', () => {});
 	utils.addChainableMethod( chai.Assertion.prototype, 'boolean', function checkBool() {
 		const elem = this._obj;
 		const collection = utils.flag( this, 'collection' );
@@ -164,63 +150,56 @@ chai.use( function( _chai, utils ) {
 		const collection = utils.flag( this, 'collection' );
 		utils.flag( this, 'entityType', 'entity' );
 		const check = ( entity, props = {}) => {
-			try {
-				expect( entity.model ).to.equal( model );
-				var dataSource = 'string' === typeof orphan ? orphan : false;
-				orphan = dataSource ? false : orphan;
-				switch ( orphan ) {
-					case true: {
-						expect( entity.getState(), 'Entity should be orphan' ).to.equal( 'orphan' );
-					} break;
+			expect( entity.constructor.model ).to.equal( model );
+			var dataSource = 'string' === typeof orphan ? orphan : false;
+			orphan = dataSource ? false : orphan;
+			switch ( orphan ) {
+				case true: {
+					expect( entity.state, 'Entity should be orphan' ).to.equal( 'orphan' );
+				} break;
 
-					case false: {
-						expect( entity.getState(), 'Entity should not be orphan' ).to.not.equal( 'orphan' );
-					} break;
-
-					case null: {
-					} break;
-				}
-				if ( orphan ) {
-					expect( entity.getLastDataSource(), 'Orphans should not have a last data source' ).to.be.eql( null );
-					expect( entity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
-					expect( entity, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
-				} else if ( null !== orphan ) {
-					if ( dataSource ) {
-						expect( entity.getLastDataSource()).to.be.eql( dataSource );
-					} else {
-						expect( entity.getLastDataSource(), 'Non orphans should have a last data source' ).to.be.not.eql( null );
-					}
-					const lds = entity.getLastDataSource();
-					expect( entity.dataSources[lds], 'id should be a defined value on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'id' );
-					expect( entity.dataSources[lds], 'idHash should be a hash on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-					expect( entity, 'id should not be copied in model\'s value' ).to.be.an( 'object' ).that.have.not.property( 'id' );
-					expect( entity, 'idHash should be a hash on non-orphan model' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-				}
-				expect( entity ).to.respondTo( 'persist' );
-				expect( entity ).to.respondTo( 'toObject' );
-				const toObj = entity.toObject();
-				l.forEach( props, ( val, key ) => {
-					if ( c.undefined( val )) {
-						expect( toObj ).to.satisfy( obj => {
-							return c.undefined( obj[key]) || !obj.hasOwnProperty( key );
-						});
-					} else {
-						expect( toObj ).to.have.property( key, val );
-					}
-				});
-			} catch ( e ) {
-				return e;
+				case false: {
+					expect( entity.state, 'Entity should not be orphan' ).to.not.equal( 'orphan' );
+				} break;
 			}
+			if ( orphan ) {
+				expect( entity.lastDataSource, 'Orphans should not have a last data source' ).to.be.eql( null );
+				expect( entity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
+				expect( entity, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
+			} else if ( null !== orphan ) {
+				if ( dataSource ) {
+					expect( entity.lastDataSource ).to.be.eql( dataSource );
+				} else {
+					expect( entity.lastDataSource, 'Non orphans should have a last data source' ).to.be.not.eql( null );
+				}
+				const lds = entity.lastDataSource;
+				expect( entity.dataSources[lds], 'id should be a defined value on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'id' );
+				expect( entity.dataSources[lds], 'idHash should be a hash on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+				expect( entity, 'id should not be copied in model\'s value' ).to.be.an( 'object' ).that.have.not.property( 'id' );
+				expect( entity, 'idHash should be a hash on non-orphan model' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+			}
+			expect( entity ).to.respondTo( 'persist' );
+			expect( entity ).to.respondTo( 'toObject' );
+			const toObj = entity.toObject();
+			l.forEach( props, ( val, key ) => {
+				if ( c.undefined( val )) {
+					expect( toObj ).to.satisfy( obj => {
+						return c.undefined( obj[key]) || !obj.hasOwnProperty( key );
+					});
+				} else {
+					expect( toObj ).to.have.property( key, val );
+				}
+			});
 		};
 		let errorOut;
 		if ( collection ) {
 			if ( c.array( properties ) && properties.length === data.length ) {
-				l.forEach( data, ( entity, index ) => {
+				data.forEach(( entity, index ) => {
 					errorOut = check( entity, properties[index]);
 					return !errorOut;
 				});
 			} else {
-				l.forEach( data, entity => {
+				data.forEach( entity => {
 					errorOut = check( entity, properties );
 					return !errorOut;
 				});
