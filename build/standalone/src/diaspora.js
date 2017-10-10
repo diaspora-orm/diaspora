@@ -889,8 +889,8 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
 	 */
 	findOne( table, queryFind, options = {}) {
@@ -909,8 +909,8 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`)
 	 */
 	findMany( table, queryFind, options = {}) {
@@ -932,9 +932,9 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to update data in
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
 	 * @param   {Object} update Object properties to set
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`)
 	 */
 	updateOne( table, queryFind, update, options = {}) {
@@ -961,9 +961,9 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to update data in
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
 	 * @param   {Object} update Object properties to set
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`)
 	 */
 	updateMany( table, queryFind, update, options = {}) {
@@ -994,8 +994,8 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*)
 	 */
 	deleteOne( table, queryFind, options = {}) {
@@ -1015,8 +1015,8 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
 	 */
 	deleteMany( table, queryFind, options = {}) {
@@ -1259,8 +1259,8 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the model to retrieve data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
 	 */
 	findOne( table, queryFind, options = {}) {
@@ -1301,9 +1301,9 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to update data in
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
 	 * @param   {Object} update Object properties to set
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link LocalStorageEntity}* `entity`)
 	 */
 	updateOne( table, queryFind, update, options ) {
@@ -1336,8 +1336,8 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*)
 	 */
 	deleteOne( table, queryFind, options = {}) {
@@ -1363,8 +1363,8 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
 	 */
 	deleteMany( table, queryFind, options = {}) {

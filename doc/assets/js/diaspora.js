@@ -416,8 +416,8 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
 	 */},{key:"findOne",value:function findOne(table,queryFind){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);var matches=_.filter(storeTable.items,_.partial(this.matchEntity,queryFind));var reducedMatches=this.constructor.applyOptionsToSet(matches,options);return Promise.resolve(reducedMatches.length>0?new this.classEntity(_.first(reducedMatches),this):undefined);}/**
 	 * @method findMany
@@ -428,8 +428,8 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`)
 	 */},{key:"findMany",value:function findMany(table,queryFind){var _this10=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);var matches=_.filter(storeTable.items,_.partial(this.matchEntity,queryFind));var reducedMatches=this.constructor.applyOptionsToSet(matches,options);return Promise.resolve(_.map(reducedMatches,function(entity){return new _this10.classEntity(entity,_this10);}));}// -----
 // ### Update
@@ -442,9 +442,9 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to update data in
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
 	 * @param   {Object} update Object properties to set
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`)
 	 */},{key:"updateOne",value:function updateOne(table,queryFind,update){var _this11=this;var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};return this.findOne(table,queryFind,options).then(function(found){if(!_.isNil(found)){var storeTable=_this11.ensureCollectionExists(table);var match=_.find(storeTable.items,{id:found.id});_this11.applyUpdateEntity(update,match);return Promise.resolve(new _this11.classEntity(match,_this11));}else{return Promise.resolve();}});}/**
 	 * @method updateMany
@@ -455,9 +455,9 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to update data in
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
 	 * @param   {Object} update Object properties to set
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`)
 	 */},{key:"updateMany",value:function updateMany(table,queryFind,update){var _this12=this;var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};return this.findMany(table,queryFind,options).then(function(found){if(!_.isNil(found)&&found.length>0){var storeTable=_this12.ensureCollectionExists(table);var foundIds=_.map(found,'id');var matches=_.filter(storeTable.items,function(item){return-1!==foundIds.indexOf(item.id);});return Promise.resolve(_.map(matches,function(item){_this12.applyUpdateEntity(update,item);return new _this12.classEntity(item,_this12);}));}else{return Promise.resolve();}});}// -----
 // ### Delete
@@ -470,8 +470,8 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*)
 	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this13=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findOne(table,queryFind,options).then(function(entityToDelete){storeTable.items=_.reject(storeTable.items,function(entity){return entity.id===entityToDelete.idHash[_this13.name];});return Promise.resolve();});}/**
 	 * @method deleteMany
@@ -482,8 +482,8 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
 	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this14=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var entitiesIds=_.map(entitiesToDelete,function(entity){return _.get(entity,"idHash."+_this14.name);});storeTable.items=_.reject(storeTable.items,function(entity){return _.includes(entitiesIds,entity.id);});return Promise.resolve();});}}],[{key:"applyOptionsToSet",value:function applyOptionsToSet(set,options){_.defaults(options,{limit:Infinity,skip:0});set=set.slice(options.skip);if(set.length>options.limit){set=set.slice(0,options.limit);}return set;}}]);return InMemoryDiasporaAdapter;}(DiasporaAdapter);module.exports=InMemoryDiasporaAdapter;}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"lib/adapters/baseAdapter.js":3,"lib/dataStoreEntities/inMemoryEntity.js":7,"lib/dependencies":9}],5:[function(require,module,exports){(function(global){'use strict';var _require3=require('lib/dependencies'),_=_require3._,Promise=_require3.Promise;var DiasporaAdapter=require('lib/adapters/baseAdapter.js');var LocalStorageEntity=require('lib/dataStoreEntities/localStorageEntity.js');/**
  * @class LocalStorageDiasporaAdapter
@@ -592,8 +592,8 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the model to retrieve data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
 	 */},{key:"findOne",value:function findOne(table,queryFind){var _this17=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};_.defaults(options,{skip:0});if(!_.isObject(queryFind)){return this.findOneById(table,queryFind);}else if(_.isEqual(_.keys(queryFind),['id'])&&_.isEqual(_.keys(queryFind.id),['$equal'])){return this.findOneById(table,queryFind.id.$equal);}var items=this.ensureCollectionExists(table);var returnedItem=void 0;var matched=0;_.each(items,function(itemId){var item=JSON.parse(_this17.source.getItem(_this17.getItemName(table,itemId)));if(_this17.matchEntity(queryFind,item)){matched++;// If we matched enough items
 if(matched>options.skip){returnedItem=item;return false;}}});return Promise.resolve(!_.isNil(returnedItem)?new this.classEntity(returnedItem,this):undefined);}// -----
@@ -607,9 +607,9 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to update data in
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
 	 * @param   {Object} update Object properties to set
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link LocalStorageEntity}* `entity`)
 	 */},{key:"updateOne",value:function updateOne(table,queryFind,update,options){var _this18=this;_.defaults(options,{skip:0});return this.findOne(table,queryFind,options).then(function(entity){if(_.isNil(entity)){return Promise.resolve();}_this18.applyUpdateEntity(update,entity);try{_this18.source.setItem(_this18.getItemName(table,entity.id),JSON.stringify(entity));return Promise.resolve(entity);}catch(error){return Promise.reject(error);}});}// -----
 // ### Delete
@@ -622,8 +622,8 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*)
 	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this19=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};return this.findOne(table,queryFind,options).then(function(entityToDelete){try{var tableIndex=_this19.ensureCollectionExists(table);_.pull(tableIndex,entityToDelete.id);_this19.source.setItem(table,JSON.stringify(tableIndex));_this19.source.removeItem(_this19.getItemName(table,entityToDelete.id));}catch(error){return Promise.reject(error);}return Promise.resolve();});}/**
 	 * @method deleteMany
@@ -634,8 +634,8 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 	 * @instance
 	 * @author gerkin
 	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryOptions} [options={}] Hash of options.
+	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
+	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
 	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this20=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};try{return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var tableIndex=_this20.ensureCollectionExists(table);_.pullAll(tableIndex,_.map(entitiesToDelete,'id'));_this20.source.setItem(table,JSON.stringify(tableIndex));_.forEach(entitiesToDelete,function(entityToDelete){_this20.source.removeItem(_this20.getItemName(table,entityToDelete.id));});return Promise.resolve();});}catch(error){return Promise.reject(error);}}}],[{key:"applyOptionsToSet",value:function applyOptionsToSet(set,options){_.defaults(options,{limit:Infinity,skip:0});set=set.slice(options.skip);if(set.length>options.limit){set=set.slice(0,options.limit);}return set;}}]);return LocalStorageDiasporaAdapter;}(DiasporaAdapter);module.exports=LocalStorageDiasporaAdapter;}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"lib/adapters/baseAdapter.js":3,"lib/dataStoreEntities/localStorageEntity.js":8,"lib/dependencies":9}],6:[function(require,module,exports){'use strict';var _require4=require('lib/dependencies'),_=_require4._;/**
  * @namespace DataStoreEntities
