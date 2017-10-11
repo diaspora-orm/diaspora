@@ -25,7 +25,10 @@ toc: false
         Entity
         </h2>
         
-            <div class="class-description"><p>An entity is a document in the population of all your datas of the same type</p></div>
+            <div class="class-description"><p>The entity is the class you use to manage a single document in all data sources managed by your model. </p>
+<blockquote>
+<p>Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes</p>
+</blockquote></div>
         
     
 </header>
@@ -39,6 +42,8 @@ toc: false
 <dt>
     <h4 class="name" id="Entity"><span class="type-signature"></span>new Entity( [source])</h4>
     
+    
+    <p class="summary"><p>An entity is a document in the population of all your datas of the same type</p></p>
     
 </dt>
 <dd>
@@ -91,6 +96,9 @@ toc: false
             
                 
 <span class="param-type">Object</span>
+|
+
+<span class="param-type"><a href="DataStoreEntities.DataStoreEntity.html">DataStoreEntities.DataStoreEntity</a></span>
 
 
 
@@ -117,7 +125,7 @@ toc: false
                 </td>
             
 
-            <td class="description last"><p>Hash with properties to copy on the new object</p></td>
+            <td class="description last"><p>Hash with properties to copy on the new object.<br>If provided object inherits DataStoreEntity, the constructed entity is built in <code>sync</code> state</p></td>
         </tr>
 
     
@@ -146,13 +154,6 @@ toc: false
 
 	
 
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li>gerkin</li>
-			</ul>
-	</dd>
 	
 
 	
@@ -192,6 +193,17 @@ toc: false
     </div>
 
     
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>SequentialEvent</li>
+    </ul>
+
+
+    
 
     
 
@@ -208,70 +220,32 @@ toc: false
             
 <hr>
 <dt class="name" id=".model">
-    <h4 id=".model"><span class="type-signature">&lt;static> </span>model<span class="type-signature"></span></h4>
+    <h4 id=".model"><span class="type-signature">&lt;static, readonly> </span>model<span class="type-signature"> :<a href="Model.html">Model</a></span></h4>
 
     
 </dt>
 <dd>
     
-
+    <div class="description">
+        <p>Reference to this entity's model</p>
+    </div>
     
 
     
-<dl class="details">
-    
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    <dl>
-
-<table class="props table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>model</code></td>
-            
-
-            <td class="type">
-            
+        <h5>Type:</h5>
+        <ul>
+            <li>
                 
 <span class="param-type"><a href="Model.html">Model</a></span>
 
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Reference to this entity's model</p></td>
-        </tr>
+            </li>
+        </ul>
+    
 
     
-    </tbody>
-</table>
-</dl>
-
+<dl class="details">
     
 
 	
@@ -324,70 +298,32 @@ toc: false
             
 <hr>
 <dt class="name" id=".name">
-    <h4 id=".name"><span class="type-signature">&lt;static> </span>name<span class="type-signature"></span></h4>
+    <h4 id=".name"><span class="type-signature">&lt;static, readonly> </span>name<span class="type-signature"> :String</span></h4>
 
     
 </dt>
 <dd>
     
-
+    <div class="description">
+        <p>Name of the class</p>
+    </div>
     
 
     
-<dl class="details">
-    
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    <dl>
-
-<table class="props table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
+        <h5>Type:</h5>
+        <ul>
+            <li>
                 
 <span class="param-type">String</span>
 
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Name of the class</p></td>
-        </tr>
+            </li>
+        </ul>
+    
 
     
-    </tbody>
-</table>
-</dl>
-
+<dl class="details">
     
 
 	
@@ -440,70 +376,191 @@ toc: false
             
 <hr>
 <dt class="name" id="dataSources">
-    <h4 id="dataSources"><span class="type-signature"></span>dataSources<span class="type-signature"></span></h4>
+    <h4 id="dataSources"><span class="type-signature">&lt;readonly> </span>dataSources<span class="type-signature"> :Entity.State</span></h4>
 
     
 </dt>
 <dd>
     
+    <div class="description">
+        <p>Get entity's current state</p>
+    </div>
+    
 
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Entity.State</span>
+
+
+
+            </li>
+        </ul>
     
 
     
 <dl class="details">
     
 
-    <h5 class="subsection-title">Properties:</h5>
+	
 
-    <dl>
+	
 
-<table class="props table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
+	
 
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
     
 
-        <tr>
-            
-                <td class="name"><code>dataSources</code></td>
-            
+    
 
-            <td class="type">
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
             
+<hr>
+<dt class="name" id="dataSources">
+    <h4 id="dataSources"><span class="type-signature">&lt;readonly> </span>dataSources<span class="type-signature"> :null|String</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Get entity's last data source</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">null</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="dataSources">
+    <h4 id="dataSources"><span class="type-signature">&lt;readonly> </span>dataSources<span class="type-signature"> :Object</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
                 
 <span class="param-type">Object</span>
 
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Hash that links each data source with its name</p></td>
-        </tr>
+            </li>
+        </ul>
+    
 
     
-    </tbody>
-</table>
-</dl>
-
+<dl class="details">
     
 
 	
@@ -795,6 +852,13 @@ toc: false
     
 
     
+    <h5>Fires:</h5>
+    <ul>
+        <li><a href="Entity.html#event:beforeDelete">Entity#event:beforeDelete</a></li>
+    
+        <li><a href="Entity.html#event:afterDelete">Entity#event:afterDelete</a></li>
+    </ul>
+    
 
     
 
@@ -1068,6 +1132,13 @@ toc: false
     
 
     
+    <h5>Fires:</h5>
+    <ul>
+        <li><a href="Entity.html#event:beforeFind">Entity#event:beforeFind</a></li>
+    
+        <li><a href="Entity.html#event:afterFind">Entity#event:afterFind</a></li>
+    </ul>
+    
 
     
 
@@ -1092,542 +1163,6 @@ toc: false
     <dd>
         
 <span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getLastDataSource"><span class="type-signature"></span>getLastDataSource()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Return entity's last data source</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li>gerkin</li>
-			</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Name of the last data source used</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">String</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getState"><span class="type-signature"></span>getState()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Return entity's current state.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li>gerkin</li>
-			</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>State of this entity</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Entity.State</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getTable"><span class="type-signature"></span>getTable(sourceName)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Return the table of this entity in the specified data source</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>sourceName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Name of the data source to persist entity in</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li>gerkin</li>
-			</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Name of the table</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">String</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getUidQuery"><span class="type-signature"></span>getUidQuery(dataSource)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Generate the query to get this unique entity in the desired data source</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>dataSource</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Adapters.DiasporaAdapter.html">Adapters.DiasporaAdapter</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
-	<dd class="tag-author">
-		<ul>
-			<li>gerkin</li>
-			</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Query to find this entity</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Object</span>
 
 
 
@@ -1877,6 +1412,13 @@ toc: false
     
 
     
+    <h5>Fires:</h5>
+    <ul>
+        <li><a href="Entity.html#event:beforeUpdate">Entity#event:beforeUpdate</a></li>
+    
+        <li><a href="Entity.html#event:afterUpdate">Entity#event:afterUpdate</a></li>
+    </ul>
+    
 
     
 
@@ -1901,6 +1443,165 @@ toc: false
     <dd>
         
 <span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="table"><span class="type-signature"></span>table(sourceName)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Return the table of this entity in the specified data source</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sourceName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Name of the data source to persist entity in</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Name of the table</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
 
 
 
@@ -2022,11 +1723,812 @@ toc: false
     
 </dd>
 
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="uidQuery"><span class="type-signature"></span>uidQuery(dataSource)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Generate the query to get this unique entity in the desired data source</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dataSource</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Adapters.DiasporaAdapter.html">Adapters.DiasporaAdapter</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Query to find this entity</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="~beforeUpdateValidate"><span class="type-signature">&lt;inner> </span>beforeUpdateValidate()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Check if the entity matches model description</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li>gerkin</li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="Diaspora.html#.check">Diaspora.check</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+    <h5>Listens to Events:</h5>
+    <ul>
+        <li><a href="Entity.html#event:beforeUpdate">Entity#event:beforeUpdate</a></li>
+    </ul>
+    
+
+    
+
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        <p>ValidationError Thrown if validation failed. This breaks event chain and prevent persistance.</p>
+    
+    </div>
+
+
+        
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
         </dl>
     
 
     
 
+    
+        <h3 class="subsection-title">Events</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:afterDelete"><a href="Entity.html">Entity</a>#event:afterDelete</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Fired after deleting this entity from the data source. Argument is the data source name deleted from</p>
+    </div>
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:afterFind"><a href="Entity.html">Entity</a>#event:afterFind</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Fired after reloading this entity from the data source. Argument is the data source name searched in</p>
+    </div>
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:afterUpdate"><a href="Entity.html">Entity</a>#event:afterUpdate</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Fired after updating this entity in the data source. Argument is the data source name updated</p>
+    </div>
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:beforeDelete"><a href="Entity.html">Entity</a>#event:beforeDelete</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Fired before deleting this entity from the data source. Argument is the data source name to delete from</p>
+    </div>
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:beforeFind"><a href="Entity.html">Entity</a>#event:beforeFind</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Fired before reloading this entity from the data source. Argument is the data source name to search in</p>
+    </div>
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:beforeUpdate"><a href="Entity.html">Entity</a>#event:beforeUpdate</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Fired before updating this entity in the data source. Argument is the data source name to update</p>
+    </div>
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+    <h5>Listeners of This Event:</h5>
+    <ul>
+        <li><a href="Entity.html#~beforeUpdateValidate">Entity~beforeUpdateValidate</a></li>
+    </ul>
+    
+
+    
+
+    
+
+    
+</dd>
+
+        </dl>
     
 </article>
 
@@ -2055,7 +2557,7 @@ toc: false
 	<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 		
-		on 2017-10-11T01:41:12+02:00
+		on 2017-10-11T03:17:00+02:00
 		
 		using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 	</span>

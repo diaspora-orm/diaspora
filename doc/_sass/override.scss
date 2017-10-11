@@ -922,6 +922,9 @@ sup{
 	font-size: 0.75em;
 	vertical-align: super;
 }
+blockquote{
+	border-left: 5px solid #ccc;
+}
 
 .dropdown-submenu{
 	height: 0;
@@ -1135,8 +1138,10 @@ table{
 			background: #dedede;
 		}
 	}
-	td, th{
-		word-break: break-word;
+	@media(max-width: 800px){
+		td, th{
+			word-break: break-word;
+		}
 	}
 }
 td p{
