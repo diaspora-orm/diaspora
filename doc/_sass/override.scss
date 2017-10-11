@@ -1369,6 +1369,12 @@ body.docpage{
 		padding: 0;
 		margin: 0;
 	}
+	dl p{
+		font-style: normal;
+	}
+	dl, dt, dd, dl p {
+		color: #444;
+	}
 }
 section{
 	float: none;

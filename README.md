@@ -15,13 +15,13 @@ Fancy badges:
 [![license](https://img.shields.io/github/license/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)    
 [![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
 
-## GitHub repository
+## Documentation & important notes
 
 Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](https://diaspora.ithoughts.io/), the [Quick Code Review](https://diaspora.ithoughts.io/docco/index.html) or the [API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
 
 > ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:  
  * *Relations*: Not implemented
- * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2 for default adapters
+ * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2.
  * *Registering external adapter*: Soon
 
 ---
@@ -32,21 +32,30 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 	<thead>
 		<tr>
 			<th>Adapter</th>
-			<th>Repository</th>
+			<th>Links</th>
 			<th>Maintainer</th>
 			<th>Other infos</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td><img width="100" src="https://github.com/GerkinDev/Diaspora/raw/master/media/inMemory.png"/></td>
-			<td colspan="2">Built-in</td>
-			<td>QL v2</td>
+			<td style="vertical-align: middle;"><img width="100" alt="In memory" src="https://github.com/GerkinDev/Diaspora/raw/master/media/inMemory.svg"/></td>
+			<td colspan="2" style="vertical-align: middle;">Built-in</td>
+			<td rowspan="2" style="vertical-align: middle;">QL v2</td>
 		</tr>
 		<tr>
-			<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage"><img width="100" src="https://github.com/GerkinDev/Diaspora/raw/master/media/browserStorage.png"/></a></td>
-			<td colspan="2">Built-in (browser build only)</td>
-			<td>QL v2</td>
+			<td style="vertical-align: middle;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage"><img width="100" alt="Browser storage" src="https://github.com/GerkinDev/Diaspora/raw/master/media/browserStorage.svg"/></a></td>
+			<td colspan="2" style="vertical-align: middle;">Built-in (browser build only)</td>
+		</tr>
+		<tr>
+			<td style="vertical-align: middle;"><a href="https://www.mongodb.com/"><img width="100" alt="MongoDB" src="https://github.com/GerkinDev/Diaspora-Mongo/raw/master/media/mongo.svg"/></a></td>
+			<td style="vertical-align: middle;">
+				[![GitHub release](https://img.shields.io/github/release/GerkinDev/Diaspora-Mongo.svg?label=GitHub)](https://github.com/GerkinDev/Diaspora-Mongo)
+				[![npm](https://img.shields.io/npm/v/diaspora-mongo.svg)](https://www.npmjs.com/package/diaspora-mongo)
+				[![yarn](https://img.shields.io/npm/v/diaspora-mongo.svg?label=yarn)](yarnpkg.com/en/package/diaspora-mongo)
+			</td>
+			<td style="vertical-align: middle;">[![GitHub followers](https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev)](https://github.com/GerkinDev)</td>
+			<td style="vertical-align: middle;">QL v2</td>
 		</tr>
 	</tbody>
 </table>
@@ -54,7 +63,21 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 ## Compatibility
 
 Diaspora requires:
-* Node >= 6.4.0
+* Node `>=` 6.4.0
+* Browsers:
+  * Edge `>=` 12
+  * Firefox `>=` 18
+  * Chrome `>=` 49
+  * Safari & iOS Safari `>=`10
+  * Chrome for Android `>=` 61
+  * Samsung Internet `>=` 5
+
+More briefly, Diaspora runs on all browsers & JavaScript engines that supports [Proxies](http://caniuse.com/#feat=proxy).
+
+Notable incompatible browsers are
+* Internet Explorer (all versions)
+* Opera Mini
+* UC Browser for Android
 
 ## API Overview
 
