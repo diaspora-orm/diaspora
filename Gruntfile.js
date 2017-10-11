@@ -225,6 +225,22 @@ module.exports = function gruntInit( grunt ) {
 					dest:   `${ baseDocPath }/assets/js/`,
 				}],
 			},
+			build_isolated_to_dist: {
+				files: [{
+					expand: true,
+					cwd:    './build/isolated/dist/',
+					src:    [ './diaspora*.js*' ],
+					dest:   'dist/isolated',
+				}],
+			},
+			build_standalone_to_dist: {
+				files: [{
+					expand: true,
+					cwd:    './build/standalone/dist/',
+					src:    [ './diaspora*.js*' ],
+					dest:   'dist/standalone',
+				}],
+			},
 		},
 		clean: {
 			doc_jsdoc: {
@@ -271,11 +287,13 @@ module.exports = function gruntInit( grunt ) {
 		'babel:standalone',
 		'uglify:standalone',
 		'copy:diaspora_to_docs_site',
+		'copy:build_standalone_to_dist',
 	]);
 	grunt.registerTask( 'buildIsolated', [
 		'browserify:isolated',
 		'babel:isolated',
 		'uglify:isolated',
+		'copy:build_isolated_to_dist',
 	]);
 	grunt.registerTask( 'lint', [
 		'eslint:info',

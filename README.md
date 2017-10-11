@@ -20,9 +20,9 @@ Fancy badges:
 Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](https://diaspora.ithoughts.io/), the [Quick Code Review](https://diaspora.ithoughts.io/docco/index.html) or the [API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
 
 > ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:  
-* *Relations*: Not implemented
-* *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2.
-* *Registering external adapter*: Soon
+> * *Relations*: Not implemented
+> * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2.
+> * *Registering external adapter*: Soon
 
 ---
 

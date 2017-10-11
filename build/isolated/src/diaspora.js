@@ -10,7 +10,7 @@ module.exports = Diaspora;
 
 const {
 	_, Promise, SequentialEvent,
-} = require( 'lib/dependencies' );
+} = require( '../dependencies' );
 
 /**
  * @namespace ConstrainedTypes
@@ -69,24 +69,25 @@ const {
  */
 
 /**
+ * By default, all conditions in a single SelectQueryCondition are combined with an `AND` operator.
+ * 
  * @typedef {Object} SelectQueryCondition
- * @description By default, all conditions in a single SelectQueryCondition are combined with an `AND` operator
  * @memberof QueryLanguage
  * @public
  * @instance
  * @author gerkin
  * @property {Any} $equals Match if item value is equal to this. Objects and array are compared deeply. **Alias: `==`**
  * @property {Any} $diff Match if item value is different to this. Objects and array are compared deeply. **Alias: `!=`** **NOT IMPLEMENTED YET**
- * @property {Boolean} $exists If `true`, match items where this prop is defined. If `false`, match when prop is null or not set. **Alias: `~`** **NOT IMPLEMENTED YET**
- * @property {Integer} $less Match if item value is less than this. **Alias: `<`** **NOT IMPLEMENTED YET**
- * @property {Integer} $lessEqual Match if item value is less than this or equals to this. **Alias: `<=`** **NOT IMPLEMENTED YET**
- * @property {Integer} $greater Match if item value is greater than this. **Alias: `>`** **NOT IMPLEMENTED YET**
- * @property {Integer} $greaterEqual Match if item value is greater than this or equals to this. **Alias: `>=`** **NOT IMPLEMENTED YET** 
+ * @property {boolean} $exists If `true`, match items where this prop is defined. If `false`, match when prop is null or not set. **Alias: `~`** **NOT IMPLEMENTED YET**
+ * @property {integer} $less Match if item value is less than this. **Alias: `<`** **NOT IMPLEMENTED YET**
+ * @property {integer} $lessEqual Match if item value is less than this or equals to this. **Alias: `<=`** **NOT IMPLEMENTED YET**
+ * @property {integer} $greater Match if item value is greater than this. **Alias: `>`** **NOT IMPLEMENTED YET**
+ * @property {integer} $greaterEqual Match if item value is greater than this or equals to this. **Alias: `>=`** **NOT IMPLEMENTED YET** 
  * @property {QueryLanguage#SelectQueryOrCondition[]} $or Match if *one of* the conditions in the array is true. **Alias: `||`** **NOT IMPLEMENTED YET**
  * @property {QueryLanguage#SelectQueryOrCondition[]} $and Match if *all* the conditions in the array are true. Optional, because several conditions in a single SelectQueryCondition are combined with an `AND` operator. **Alias: `&&`** **NOT IMPLEMENTED YET**
  * @property {QueryLanguage#SelectQueryOrCondition[]} $xor Match if *a single* of the conditions in the array is true. **Alias: `^^`** **NOT IMPLEMENTED YET**
  * @property {QueryLanguage#SelectQueryOrCondition} $not Invert the condition **Alias: `!`** **NOT IMPLEMENTED YET**
- * @property {String} $contains On *string*, it will check if query is included in item using GLOB. **NOT IMPLEMENTED YET**
+ * @property {string} $contains On *string*, it will check if query is included in item using GLOB. **NOT IMPLEMENTED YET**
  * @property {QueryLanguage#SelectQueryOrCondition|Any} $contains On *array*, it will check if item contains the query. **NOT IMPLEMENTED YET**
  * @property {Any[]} $in Check if item value is contained (using deep comparaison) in query. **NOT IMPLEMENTED YET**
  */
@@ -104,25 +105,72 @@ const {
  */
 
 /**
- * @constructor DiasporaAdapter
- * @classdesc DiasporaAdapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
+ * DiasporaAdapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
+ * @extends SequentialEvent
  * @memberof Adapters
  * @author gerkin
  */
 class DiasporaAdapter extends SequentialEvent {
+
+	// -----
+	// ### Initialization
+	
 	/**
-	 * @description Create a new instance of adapter. This base class should be used by all other adapters.
-	 * @memberof Adapters
+	 * Create a new instance of adapter. This base class should be used by all other adapters.
+	 * 
 	 * @public
 	 * @author gerkin
-	 * @param {DataStoreEntities.DataStoreEntity} classEntity Entity spawned by this adapter.
+	 * @param {DataStoreEntities.DataStoreEntity} classEntity - Entity to spawn with this adapter.
 	 */
 	constructor( classEntity ) {
 		super();
+		/**
+		 * Describe current adapter status.
+		 * 
+		 * @type {string}
+		 * @author Gerkin
+		 */
+		this.state = 'preparing';
+		/**
+		 * Hash to transform entity fields to data store fields.
+		 * 
+		 * @type {Object}
+		 * @property {string} * - Data store field associated with this entity field.
+		 * @author Gerkin
+		 */
 		this.remaps = {};
+		/**
+		 * Hash to transform data store fields to entity fields.
+		 * 
+		 * @type {Object}
+		 * @property {string} * - Entity field associated with this data store field.
+		 * @author Gerkin
+		 */
 		this.remapsInverted = {};
+		/**
+		 * Hash of functions to cast data store values to JSON standard values in entity.
+		 * 
+		 * @type {Object}
+		 * @property {Function} * - Filter to execute to get standard JSON value.
+		 * @author Gerkin
+		 */
 		this.filters = {};
+		/**
+		 * Link to the constructor of the class generated by this adapter.
+		 * 
+		 * @type {DataStoreEntities.DataStoreEntity}
+		 * @author Gerkin
+		 */
 		this.classEntity = classEntity;
+		/**
+		 * Error triggered by adapter initialization.
+		 * 
+		 * @type {Error}
+		 * @author Gerkin
+		 */
+		this.error = undefined;
+		
+		// Bind events
 		this.on( 'ready', () => {
 			this.state = 'ready';
 		}).on( 'error', err => {
@@ -130,32 +178,15 @@ class DiasporaAdapter extends SequentialEvent {
 			this.error = err;
 		});
 	}
-	
-	/**
-	 * @event Adapters.DiasporaAdapter#ready
-	 * @description Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
-	 * @type {undefined}
-	 * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
-	 */
-	
-	/**
-	 * @event Adapters.DiasporaAdapter#error
-	 * @description Fired if the adapter failed to initialize or changed to `error` state. Called with the triggering `error`
-	 * @type {Error}
-	 * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
-	 */
 
 	/**
-	 * @method configureCollection
-	 * @description Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
+	 * 
 	 * @author gerkin
-	 * @param {String} tableName Name of the table (usually, model name)
-	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
-	 * @param {Object} [filters = {}]   Not used yet...
-	 * @returns {undefined}
+	 * @param   {string} tableName    - Name of the table (usually, model name).
+	 * @param   {Object} remaps       - Associative hash that links entity field names with data source field names.
+	 * @param   {Object} [filters={}] - Not used yet...
+	 * @returns {undefined} This function does not return anything.
 	 */
 	configureCollection( tableName, remaps, filters = {}) {
 		this.remaps[tableName] = remaps;
@@ -164,16 +195,34 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	// -----
+	// ### Events
+
+	/**
+	 * Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
+	 * 
+	 * @event Adapters.DiasporaAdapter#ready
+	 * @type {undefined}
+	 * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
+	 */
+
+	/**
+	 * Fired if the adapter failed to initialize or changed to `error` state. Called with the triggering `error`.
+	 * 
+	 * @event Adapters.DiasporaAdapter#error
+	 * @type {Error}
+	 * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
+	 */
+
+	// -----
 	// ### Utils
 
 	/**
-	 * @method waitReady
-	 * @description Returns a promise resolved once adapter state is ready
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Returns a promise resolved once adapter state is ready.
+	 * 
 	 * @author gerkin
-	 * @returns {Promise} Promise resolved when adapter is ready, and rejected if an error occured
+	 * @listens Adapters.DiasporaAdapter#error
+	 * @listens Adapters.DiasporaAdapter#ready
+	 * @returns {Promise} Promise resolved when adapter is ready, and rejected if an error occured.
 	 */
 	waitReady() {
 		return new Promise(( resolve, reject ) => {
@@ -191,15 +240,12 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method remapFields
-	 * @description Cast entity field names to table field name, or the opposite.
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Cast entity field names to table field name, or the opposite.
+	 * 
 	 * @author gerkin
-	 * @param   {String} tableName Name of the table we are remapping for
-	 * @param   {Object} query Hash representing the raw query to remap
-	 * @param   {Boolean} [invert = false] `false` to cast to `table` field names, `true` to cast to `entity` field name
+	 * @param   {string}  tableName      - Name of the table we are remapping for.
+	 * @param   {Object}  query          - Hash representing the raw query to remap.
+	 * @param   {boolean} [invert=false] - `false` to cast to `table` field names, `true` to cast to `entity` field name.
 	 * @returns {Object} Remapped object.
 	 */
 	remapFields( tableName, query, invert = false ) {
@@ -216,16 +262,13 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method remapInput
-	 * @description TODO
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * TODO.
+	 * 
 	 * @author gerkin
-	 * @see TODO remapping
-	 * @param   {String} tableName  Name of the table for which we remap
-	 * @param   {Object} query Hash representing the entity to remap
-	 * @returns {Object} Remapped object
+	 * @see TODO remapping.
+	 * @param   {string} tableName - Name of the table for which we remap.
+	 * @param   {Object} query     - Hash representing the entity to remap.
+	 * @returns {Object} Remapped object.
 	 */
 	remapInput( tableName, query ) {
 		if ( _.isNil( query )) {
@@ -247,16 +290,13 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method remapOutput
-	 * @description TODO
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * TODO.
+	 * 
 	 * @author gerkin
-	 * @see TODO remapping
-	 * @param   {String} tableName  Name of the table for which we remap
-	 * @param   {Object} query Hash representing the entity to remap
-	 * @returns {Object} Remapped object
+	 * @see TODO remapping.
+	 * @param   {string} tableName - Name of the table for which we remap.
+	 * @param   {Object} query     - Hash representing the entity to remap.
+	 * @returns {Object} Remapped object.
 	 */
 	remapOutput( tableName, query ) {
 		if ( _.isNil( query )) {
@@ -278,15 +318,12 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method setIdHash
-	 * @description Refresh the `idHash` with current adapter's `id` injected
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Refresh the `idHash` with current adapter's `id` injected.
+	 * 
 	 * @author gerkin
-	 * @param   {Object}   entity          Object containing attributes of the entity
-	 * @param   {String} propName = 'id' Name of the `id` field
-	 * @returns {Object} Modified entity (for chaining)
+	 * @param   {Object} entity          - Object containing attributes of the entity.
+	 * @param   {string} [propName='id'] - Name of the `id` field.
+	 * @returns {Object} Modified entity (for chaining).
 	 */
 	setIdHash( entity, propName = 'id' ) {
 		entity.idHash = _.assign({}, entity.idHash, {
@@ -296,15 +333,12 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method matchEntity
-	 * @description Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function.
+	 * 
 	 * @author gerkin
-	 * @param   {QueryLanguage.SelectQuery} query  Query to match against
-	 * @param   {Object} entity Entity to test
-	 * @returns {Boolean}  `true` if query matches, `false` otherwise
+	 * @param   {QueryLanguage#SelectQuery} query  - Query to match against.
+	 * @param   {Object}                    entity - Entity to test.
+	 * @returns {boolean} `true` if query matches, `false` otherwise.
 	 */
 	matchEntity( query, entity ) {
 		const matchResult = _.every( _.toPairs( query ), ([ key, desc ]) => {
@@ -349,14 +383,12 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method applyUpdateEntity
-	 * @description Merge update query with the entity. This operation allows to delete fields.
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
-	 * @param {Object} update Hash representing modified values. A field with an `undefined` value deletes this field from the entity
-	 * @param {Object} entity Entity to update
-	 * @returns {Object} Entity modified
+	 * Merge update query with the entity. This operation allows to delete fields.
+	 * 
+	 * @author gerkin
+	 * @param   {Object} update - Hash representing modified values. A field with an `undefined` value deletes this field from the entity.
+	 * @param   {Object} entity - Entity to update.
+	 * @returns {Object} Entity modified.
 	 */
 	applyUpdateEntity( update, entity ) {
 		_.forEach( update, ( val, key ) => {
@@ -370,16 +402,14 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method normalizeOptions
-	 * @description Transform options to their canonical form. This function must be applied before calling adapters' methods
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
-	 * @throws {TypeError} Thrown if an option does not have an acceptable type
-	 * @throws {ReferenceError} Thrown if a required option is not present
-	 * @throws {Error} Thrown when there isn't more precise description of the error is available (eg. when conflicts occurs) 
-	 * @param   {Object}   [opts={}] Options to transform
-	 * @returns {Object} Transformed options (also called `canonical options`)
+	 * Transform options to their canonical form. This function must be applied before calling adapters' methods.
+	 * 
+	 * @author gerkin
+	 * @throws  {TypeError} Thrown if an option does not have an acceptable type.
+	 * @throws  {ReferenceError} Thrown if a required option is not present.
+	 * @throws  {Error} Thrown when there isn't more precise description of the error is available (eg. when conflicts occurs) .
+	 * @param   {Object} [opts={}] - Options to transform.
+	 * @returns {Object} Transformed options (also called `canonical options`).
 	 */
 	normalizeOptions( opts = {}) {
 		opts = _.cloneDeep( opts );
@@ -432,14 +462,12 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method normalizeQuery
-	 * @description Transform a search query to its canonical form, replacing aliases or shorthands by full query.
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
-	 * @param {QueryLanguage.SelectQueryOrCondition} originalQuery Query to cast to its canonical form
-	 * @param {QueryLanguage.Options} options       Options for this query
-	 * @returns {QueryLanguage.SelectQueryOrCondition} Query in its canonical form
+	 * Transform a search query to its canonical form, replacing aliases or shorthands by full query.
+	 * 
+	 * @author gerkin
+	 * @param   {QueryLanguage#SelectQueryOrCondition} originalQuery - Query to cast to its canonical form.
+	 * @param   {QueryLanguage#Options}                options       - Options for this query.
+	 * @returns {QueryLanguage#SelectQueryOrCondition} Query in its canonical form.
 	 */
 	normalizeQuery( originalQuery, options ) {
 		const canonicalOperations = {
@@ -493,32 +521,26 @@ class DiasporaAdapter extends SequentialEvent {
 	// ### Insert
 
 	/**
-	 * @method insertOne
-	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter
-	 * @description Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertOne` itself
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertOne` itself.
+	 * 
+	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to insert data in
-	 * @param   {Object} entity Hash representing the entity to insert
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntity}* entity)
+	 * @param   {string} table  - Name of the table to insert data in.
+	 * @param   {Object} entity - Hash representing the entity to insert.
+	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntity}* entity).
 	 */
 	insertOne( table, entity ) {
 		return this.insertMany( table, [ entity ]).then( entities => Promise.resolve( _.first( entities )));
 	}
 
 	/**
-	 * @method insertMany
-	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter
-	 * @description Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself.
+	 * 
+	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to insert data in
-	 * @param   {Object[]} entities Array of hashs representing the entities to insert
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntity}[]* entities)
+	 * @param   {string}   table    - Name of the table to insert data in.
+	 * @param   {Object[]} entities - Array of hashs representing the entities to insert.
+	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntity}[]* entities).
 	 */
 	insertMany( table, entities ) {
 		return Promise.mapSeries( entities, entity => this.insertOne( table, entity || {}));
@@ -528,17 +550,14 @@ class DiasporaAdapter extends SequentialEvent {
 	// ### Find
 
 	/**
-	 * @method findOne
-	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter
-	 * @description Retrieve a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `findOne` itself
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Retrieve a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `findOne` itself.
+	 * 
+	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`)
+	 * @param   {string}                               table        - Name of the table to retrieve data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`).
 	 */
 	findOne( table, queryFind, options = {}) {
 		options.limit = 1;
@@ -546,17 +565,14 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method findMany
-	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter
-	 * @description Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `findMany` itself
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `findMany` itself.
+	 * 
+	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`)
+	 * @param   {string}                               table        - Name of the table to retrieve data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
 	findMany( table, queryFind, options = {}) {
 		const foundEntities = [];
@@ -590,18 +606,15 @@ class DiasporaAdapter extends SequentialEvent {
 	// ### Update
 
 	/**
-	 * @method updateOne
-	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter
-	 * @description Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateOne` itself
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateOne` itself.
+	 * 
+	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {Object} update Object properties to set
-	 * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`)
+	 * @param   {string}                               table        - Name of the table to retrieve data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {Object}                               update       - Object properties to set.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`).
 	 */
 	updateOne( table, queryFind, update, options = {}) {
 		options.limit = 1;
@@ -609,18 +622,15 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method updateMany
-	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter
-	 * @description Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateMany` itself
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateMany` itself.
+	 * 
+	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {Object} update Object properties to set
-	 * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`)
+	 * @param   {string}                               table        - Name of the table to retrieve data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	 * @param   {Object}                               update       - Object properties to set.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
 	updateMany( table, queryFind, update, options = {}) {
 		const foundEntities = [];
@@ -652,17 +662,14 @@ class DiasporaAdapter extends SequentialEvent {
 	// ### Delete
 
 	/**
-	 * @method deleteOne
-	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter
-	 * @description Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteOne` itself
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Delete a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteOne` itself.
+	 * 
+	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing the entities to find
-	 * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`)
+	 * @param   {string}                               table        - Name of the table to delete data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entities to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`).
 	 */
 	deleteOne( table, queryFind, options = {}) {
 		options.limit = 1;
@@ -670,17 +677,14 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * @method deleteMany
-	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter
-	 * @description Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteMany` itself
-	 * @memberof Adapters.DiasporaAdapter
-	 * @public
-	 * @instance
+	 * Delete several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteMany` itself.
+	 * 
+	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind Hash representing the entities to find
-	 * @param   {QueryLanguage#QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`)
+	 * @param   {string}                               table        - Name of the table to delete data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entities to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
 	deleteMany( table, queryFind, options = {}) {
 		let count = 0;
@@ -710,346 +714,63 @@ class DiasporaAdapter extends SequentialEvent {
 
 module.exports = DiasporaAdapter;
 
-},{"lib/dependencies":8}],3:[function(require,module,exports){
+},{"../dependencies":8}],3:[function(require,module,exports){
 (function (global){
 'use strict';
 
 const {
 	_, Promise,
-} = require( 'lib/dependencies' );
-
-const DiasporaAdapter = require( 'lib/adapters/baseAdapter.js' );
-const InMemoryEntity = require( 'lib/dataStoreEntities/inMemoryEntity.js' );
+} = require( '../dependencies' );
+const DiasporaAdapter = require( './baseAdapter.js' );
+const BrowserStorageEntity = require( '../dataStoreEntities/browserStorageEntity.js' );
 
 /**
- * @class InMemoryDiasporaAdapter
- * @classdesc This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS
+ * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
+ * 
  * @extends Adapters.DiasporaAdapter
  * @memberof Adapters
  */
-class InMemoryDiasporaAdapter extends DiasporaAdapter {
+class BrowserStorageDiasporaAdapter extends DiasporaAdapter {
 	/**
-	 * @description Create a new instance of in memory adapter
-	 * @memberof Adapters
-	 * @public
+	 * Create a new instance of local storage adapter.
+	 * 
 	 * @author gerkin
-	 */
-	constructor() {
-		super( InMemoryEntity );
-		this.state = 'ready';
-		this.store = {};
-	}
-
-	/**
-	 * @method configureCollection
-	 * @description Create the data store and call {@link Adapters.DiasporaAdapter.configureCollection}
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param {String} tableName Name of the table (usually, model name)
-	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
-	 * @returns {undefined}
-	 */
-	configureCollection( tableName, remaps ) {
-		super.configureCollection( tableName, remaps );
-		this.ensureCollectionExists( tableName );
-	}
-
-	// -----
-	// ### Utils
-
-	/**
-	 * @method generateUUID
-	 * @description Create a new unique id for this store's entity
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @returns {String} Generated unique id
-	 */
-	generateUUID() {
-		let d = new Date().getTime();
-		// Use high-precision timer if available
-		if ( global.performance && 'function' === typeof global.performance.now ) {
-			d += global.performance.now();
-		}
-		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
-			const r = ( d + Math.random() * 16 ) % 16 | 0;
-			d = Math.floor( d / 16 );
-			return ( 'x' === c ? r : ( r & 0x3 | 0x8 )).toString( 16 );
-		});
-		return uuid;
-	}
-
-	/**
-	 * @method ensureCollectionExists
-	 * @description Get or create the store hash
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {String} table  Name of the table
-	 * @returns {DataStoreTable} In memory table to use
-	 */
-	ensureCollectionExists( table ) {
-		if ( this.store.hasOwnProperty( table )) {
-			return this.store[table];
-		} else {
-			return this.store[table] = {
-				items: [],
-			};
-		} 
-	}
-
-	/**
-	 * @method applyOptionsToSet
-	 * @description Reduce, offset or sort provided set
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {Object[]} set  Objects retrieved from memory store
-	 * @param   {Object} options Options to apply to the set
-	 * @returns {Object[]} Set with options applied
-	 */
-	static applyOptionsToSet( set, options ) {
-		_.defaults( options, {
-			limit: Infinity,
-			skip:  0,
-		});
-		set = set.slice( options.skip );
-		if ( set.length > options.limit ) {
-			set = set.slice( 0, options.limit );
-		}
-		return set;
-	}
-
-	// -----
-	// ### Insert
-
-	/**
-	 * @method insertOne
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.
-	 * @description Insert a single entity in the memory store.
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {String} table  Name of the table to insert data in
-	 * @param   {Object} entity Hash representing the entity to insert
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link InMemoryEntity}* `entity`)
-	 */
-	insertOne( table, entity ) {
-		entity = _.cloneDeep( entity );
-		const storeTable = this.ensureCollectionExists( table );
-		entity.id = this.generateUUID();
-		this.setIdHash( entity );
-		storeTable.items.push( entity );
-		return Promise.resolve( new this.classEntity( entity, this ));
-	}
-
-	// -----
-	// ### Find
-
-	/**
-	 * @method findOne
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for in-memory interactions.
-	 * @description Retrieve a single entity from the memory.
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
-	 */
-	findOne( table, queryFind, options = {}) {
-		const storeTable = this.ensureCollectionExists( table );
-		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-		return Promise.resolve( reducedMatches.length > 0 ? new this.classEntity( _.first( reducedMatches ), this ) : undefined );
-	}
-
-	/**
-	 * @method findMany
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.
-	 * @description Retrieve several entities from the memory.
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {String} table  Name of the table to retrieve data from
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`)
-	 */
-	findMany( table, queryFind, options = {}) {
-		const storeTable = this.ensureCollectionExists( table );
-		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
-		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity( entity, this )));
-	}
-
-	// -----
-	// ### Update
-
-	/**
-	 * @method updateOne
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.
-	 * @description Update a single entity in the memory.
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {String} table  Name of the table to update data in
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {Object} update Object properties to set
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`)
-	 */
-	updateOne( table, queryFind, update, options = {}) {
-		return this.findOne( table, queryFind, options ).then( found => {
-			if ( !_.isNil( found )) {
-				const storeTable = this.ensureCollectionExists( table );
-				const match = _.find( storeTable.items, {
-					id: found.id,
-				});
-				this.applyUpdateEntity( update, match );
-				return Promise.resolve( new this.classEntity( match, this ));
-			} else {
-				return Promise.resolve();
-			}
-		});
-	}
-
-	/**
-	 * @method updateMany
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
-	 * @description Update several entities in the memory.
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {String} table  Name of the table to update data in
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {Object} update Object properties to set
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`)
-	 */
-	updateMany( table, queryFind, update, options = {}) {
-		return this.findMany( table, queryFind, options ).then( found => {
-			if ( !_.isNil( found ) && found.length > 0 ) {
-				const storeTable = this.ensureCollectionExists( table );
-				const foundIds = _.map( found, 'id' );
-				const matches = _.filter( storeTable.items, item => -1 !== foundIds.indexOf( item.id ));
-				return Promise.resolve( _.map( matches, item => {
-					this.applyUpdateEntity( update, item );
-					return new this.classEntity( item, this );
-				}));
-			} else {
-				return Promise.resolve();
-			}
-		});
-	}
-
-	// -----
-	// ### Delete
-
-	/**
-	 * @method deleteOne
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.
-	 * @description Delete a single entity from the memory.
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*)
-	 */
-	deleteOne( table, queryFind, options = {}) {
-		const storeTable = this.ensureCollectionExists( table );
-		return this.findOne( table, queryFind, options ).then( entityToDelete => {
-			storeTable.items = _.reject( storeTable.items, entity => entity.id === entityToDelete.idHash[this.name]);
-			return Promise.resolve();
-		});
-	}
-
-	/**
-	 * @method deleteMany
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
-	 * @description Delete several entities from the memory.
-	 * @memberof Adapters.InMemoryDiasporaAdapter
-	 * @public
-	 * @instance
-	 * @author gerkin
-	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
-	 */
-	deleteMany( table, queryFind, options = {}) {
-		const storeTable = this.ensureCollectionExists( table );
-		return this.findMany( table, queryFind, options ).then( entitiesToDelete => {
-			const entitiesIds = _.map( entitiesToDelete, entity => _.get( entity, `idHash.${ this.name }` ));
-			storeTable.items = _.reject( storeTable.items, entity => {
-				return _.includes( entitiesIds, entity.id );
-			});
-			return Promise.resolve();
-		});
-	}
-}
-
-module.exports = InMemoryDiasporaAdapter;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"lib/adapters/baseAdapter.js":2,"lib/dataStoreEntities/inMemoryEntity.js":6,"lib/dependencies":8}],4:[function(require,module,exports){
-(function (global){
-'use strict';
-
-const {
-	_, Promise,
-} = require( 'lib/dependencies' );
-const DiasporaAdapter = require( 'lib/adapters/baseAdapter.js' );
-const LocalStorageEntity = require( 'lib/dataStoreEntities/localStorageEntity.js' );
-
-/**
- * @class LocalStorageDiasporaAdapter
- * @classdesc This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser
- * @extends Adapters.DiasporaAdapter
- * @memberof Adapters
- */
-class LocalStorageDiasporaAdapter extends DiasporaAdapter {
-	/**
-	 * @description Create a new instance of local storage adapter
-	 * @memberof Adapters
-	 * @public
-	 * @author gerkin
-	 * @param {Object} config Configuration object
-	 * @param {Boolean} [config.session = false] Set to true to use sessionStorage instead of localStorage
+	 * @param {Object}  config                 - Configuration object.
+	 * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
 	 */
 	constructor( config ) {
-		super( LocalStorageEntity );
+		/**
+		 * Link to the BrowserStorageEntity.
+		 * 
+		 * @name classEntity
+		 * @type {DataStoreEntities.BrowserStorageEntity}
+		 * @memberof Adapters.BrowserStorageDiasporaAdapter
+		 * @instance
+		 * @author Gerkin
+		 */
+		super( BrowserStorageEntity );
 		_.defaults( config, {
 			session: false,
 		});
 		this.state = 'ready';
+		/**
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
+		 * 
+		 * @type {Storage}
+		 * @author Gerkin
+		 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
+		 * @see {@link Adapters.BrowserStorageDiasporaAdapter}:config.session parameter.
+		 */
 		this.source = ( true === config.session ? global.sessionStorage : global.localStorage );
 	}
 
 	/**
-	 * @method configureCollection
-	 * @description Create the collection index and call {@link Adapters.DiasporaAdapter.configureCollection}
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
+	 * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
+	 * 
 	 * @author gerkin
-	 * @param {String} tableName Name of the table (usually, model name)
-	 * @param {Object} remaps    Associative hash that links entity field names with data source field names
-	 * @returns {undefined}
+	 * @param {string} tableName - Name of the table (usually, model name).
+	 * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
+	 * @returns {undefined} This function does not return anything.
 	 */
 	configureCollection( tableName, remaps ) {
 		super.configureCollection( tableName, remaps );
@@ -1060,13 +781,10 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	// ### Utils
 
 	/**
-	 * @method generateUUID
-	 * @description Create a new unique id for this store's entity
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
+	 * Create a new unique id for this store's entity.
+	 * 
 	 * @author gerkin
-	 * @returns {String} Generated unique id
+	 * @returns {string} Generated unique id.
 	 */
 	generateUUID() {
 		let d = new Date().getTime();
@@ -1082,14 +800,11 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * @method ensureCollectionExists
-	 * @description Create the table key if it does not exist
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
+	 * Create the table key if it does not exist.
+	 * 
 	 * @author gerkin
-	 * @param   {String} table  Name of the table
-	 * @returns {String[]} Index of the collection
+	 * @param   {string} table - Name of the table.
+	 * @returns {string[]} Index of the collection.
 	 */
 	ensureCollectionExists( table ) {
 		let index = this.source.getItem( table );
@@ -1103,15 +818,12 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * @method applyOptionsToSet
-	 * @description Reduce, offset or sort provided set
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
+	 * Reduce, offset or sort provided set.
+	 * 
 	 * @author gerkin
-	 * @param   {Object[]} set  Objects retrieved from memory store
-	 * @param   {Object} options Options to apply to the set
-	 * @returns {Object[]} Set with options applied
+	 * @param   {Object[]} set     - Objects retrieved from memory store.
+	 * @param   {Object}   options - Options to apply to the set.
+	 * @returns {Object[]} Set with options applied.
 	 */
 	static applyOptionsToSet( set, options ) {
 		_.defaults( options, {
@@ -1126,15 +838,12 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * @method getItemName
-	 * @description Deduce the item name from table name and item ID
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
+	 * Deduce the item name from table name and item ID.
+	 * 
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to construct name for
-	 * @param   {String} id Id of the item to find
-	 * @returns {String} Name of the item
+	 * @param   {string} table - Name of the table to construct name for.
+	 * @param   {string} id    - Id of the item to find.
+	 * @returns {string} Name of the item.
 	 */
 	getItemName( table, id ) {
 		return `${ table }.id=${ id }`;
@@ -1144,16 +853,13 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	// ### Insert
 
 	/**
-	 * @method insertOne
+	 * Insert a single entity in the local storage.
+	 * 
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
-	 * @description Insert a single entity in the local storage.
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to insert data in
-	 * @param   {Object} entity Hash representing the entity to insert
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link LocalStorageEntity}* `entity`)
+	 * @param   {string} table  - Name of the table to insert data in.
+	 * @param   {Object} entity - Hash representing the entity to insert.
+	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
 	 */
 	insertOne( table, entity ) {
 		entity = _.cloneDeep( entity || {});
@@ -1171,16 +877,13 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * @method insertMany
+	 * Insert several entities in the local storage.
+	 * 
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
-	 * @description Insert several entities in the local storage.
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to insert data in
-	 * @param   {Object[]} entities Array of hashes representing entities to insert
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link LocalStorageEntity[Ø]}* `entities`)
+	 * @param   {string}   table    - Name of the table to insert data in.
+	 * @param   {Object[]} entities - Array of hashes representing entities to insert.
+	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}[]* `entities`).
 	 */
 	insertMany( table, entities ) {
 		entities = _.cloneDeep( entities );
@@ -1204,15 +907,12 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	// ### Find
 
 	/**
-	 * @method findOneById
-	 * @description Find a single local storage entity using its id
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
+	 * Find a single local storage entity using its id.
+	 * 
 	 * @author gerkin
-	 * @param   {String} table Name of the collection to search entity in
-	 * @param   {String} id    Id of the entity to search
-	 * @returns {DataStoreEntities.LocalStorageEntity|undefined} Found entity, or undefined if not found
+	 * @param   {string} table - Name of the collection to search entity in.
+	 * @param   {string} id    - Id of the entity to search.
+	 * @returns {DataStoreEntities.BrowserStorageEntity|undefined} Found entity, or undefined if not found.
 	 */
 	findOneById( table, id ) {
 		const item = this.source.getItem( this.getItemName( table, id ));
@@ -1223,17 +923,14 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * @method findOne
+	 * Retrieve a single entity from the local storage.
+	 * 
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
-	 * @description Retrieve a single entity from the local storage.
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
 	 * @author gerkin
-	 * @param   {String} table  Name of the model to retrieve data from
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`)
+	 * @param   {string}                               table        - Name of the model to retrieve data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
 	 */
 	findOne( table, queryFind, options = {}) {
 		_.defaults( options, {
@@ -1265,18 +962,15 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	// ### Update
 
 	/**
-	 * @method updateOne
+	 * Update a single entity in the memory.
+	 * 
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
-	 * @description Update a single entity in the memory.
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to update data in
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {Object} update Object properties to set
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link LocalStorageEntity}* `entity`)
+	 * @param   {string}                               table        - Name of the table to update data in.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {Object}                               update       - Object properties to set.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
 	 */
 	updateOne( table, queryFind, update, options ) {
 		_.defaults( options, {
@@ -1300,17 +994,14 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	// ### Delete
 
 	/**
-	 * @method deleteOne
+	 * Delete a single entity from the local storage.
+	 * 
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
-	 * @description Delete a single entity from the local storage.
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing the entity to find
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*)
+	 * @param   {string}                               table        - Name of the table to delete data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*).
 	 */
 	deleteOne( table, queryFind, options = {}) {
 		return this.findOne( table, queryFind, options ).then( entityToDelete => {
@@ -1327,17 +1018,14 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * @method deleteMany
+	 * Delete several entities from the local storage.
+	 * 
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
-	 * @description Delete several entities from the local storage.
-	 * @memberof Adapters.LocalStorageDiasporaAdapter
-	 * @public
-	 * @instance
 	 * @author gerkin
-	 * @param   {String} table  Name of the table to delete data from
-	 * @param   {QueryLanguage.SelectQueryOrCondition} queryFind Hash representing entities to find
-	 * @param   {QueryLanguage.QueryOptions} [options={}] Hash of options.
-	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*)
+	 * @param   {string}                               table        - Name of the table to delete data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
 	 */
 	deleteMany( table, queryFind, options = {}) {
 		try {
@@ -1356,30 +1044,307 @@ class LocalStorageDiasporaAdapter extends DiasporaAdapter {
 	}
 }
 
-module.exports = LocalStorageDiasporaAdapter;
+module.exports = BrowserStorageDiasporaAdapter;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"lib/adapters/baseAdapter.js":2,"lib/dataStoreEntities/localStorageEntity.js":7,"lib/dependencies":8}],5:[function(require,module,exports){
+},{"../dataStoreEntities/browserStorageEntity.js":6,"../dependencies":8,"./baseAdapter.js":2}],4:[function(require,module,exports){
+(function (global){
+'use strict';
+
+const {
+	_, Promise,
+} = require( '../dependencies' );
+
+const DiasporaAdapter = require( './baseAdapter.js' );
+const InMemoryEntity = require( '../dataStoreEntities/inMemoryEntity.js' );
+
+/**
+ * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
+ * 
+ * @extends Adapters.DiasporaAdapter
+ * @memberof Adapters
+ */
+class InMemoryDiasporaAdapter extends DiasporaAdapter {
+	/**
+	 * Create a new instance of in memory adapter.
+	 * 
+	 * @author gerkin
+	 */
+	constructor() {
+		/**
+		 * Link to the InMemoryEntity.
+		 * 
+		 * @name classEntity
+		 * @type {DataStoreEntities.InMemoryEntity}
+		 * @memberof Adapters.InMemoryDiasporaAdapter
+		 * @instance
+		 * @author Gerkin
+		 */
+		super( InMemoryEntity );
+		this.state = 'ready';
+		/**
+		 * Plain old javascript object used as data store.
+		 * 
+		 * @author Gerkin
+		 */
+		this.store = {};
+	}
+
+	/**
+	 * Create the data store and call {@link Adapters.DiasporaAdapter#configureCollection}.
+	 * 
+	 * @author gerkin
+	 * @param   {string} tableName - Name of the table (usually, model name).
+	 * @param   {Object} remaps    - Associative hash that links entity field names with data source field names.
+	 * @returns {undefined} This function does not return anything.
+	 */
+	configureCollection( tableName, remaps ) {
+		super.configureCollection( tableName, remaps );
+		this.ensureCollectionExists( tableName );
+	}
+
+	// -----
+	// ### Utils
+
+	/**
+	 * Create a new unique id for this store's entity.
+	 * 
+	 * @author gerkin
+	 * @returns {string} Generated unique id.
+	 */
+	generateUUID() {
+		let d = new Date().getTime();
+		// Use high-precision timer if available
+		if ( global.performance && 'function' === typeof global.performance.now ) {
+			d += global.performance.now();
+		}
+		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
+			const r = ( d + Math.random() * 16 ) % 16 | 0;
+			d = Math.floor( d / 16 );
+			return ( 'x' === c ? r : ( r & 0x3 | 0x8 )).toString( 16 );
+		});
+		return uuid;
+	}
+
+	/**
+	 * Get or create the store hash.
+	 * 
+	 * @author gerkin
+	 * @param   {string} table - Name of the table.
+	 * @returns {DataStoreTable} In memory table to use.
+	 */
+	ensureCollectionExists( table ) {
+		if ( this.store.hasOwnProperty( table )) {
+			return this.store[table];
+		} else {
+			return this.store[table] = {
+				items: [],
+			};
+		} 
+	}
+
+	/**
+	 * Reduce, offset or sort provided set.
+	 * 
+	 * @author gerkin
+	 * @param   {Object[]} set     - Objects retrieved from memory store.
+	 * @param   {Object}   options - Options to apply to the set.
+	 * @returns {Object[]} Set with options applied.
+	 */
+	static applyOptionsToSet( set, options ) {
+		_.defaults( options, {
+			limit: Infinity,
+			skip:  0,
+		});
+		set = set.slice( options.skip );
+		if ( set.length > options.limit ) {
+			set = set.slice( 0, options.limit );
+		}
+		return set;
+	}
+
+	// -----
+	// ### Insert
+
+	/**
+	 * Insert a single entity in the memory store.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.
+	 * @author gerkin
+	 * @param   {string} table  - Name of the table to insert data in.
+	 * @param   {Object} entity - Hash representing the entity to insert.
+	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link InMemoryEntity}* `entity`).
+	 */
+	insertOne( table, entity ) {
+		entity = _.cloneDeep( entity );
+		const storeTable = this.ensureCollectionExists( table );
+		entity.id = this.generateUUID();
+		this.setIdHash( entity );
+		storeTable.items.push( entity );
+		return Promise.resolve( new this.classEntity( entity, this ));
+	}
+
+	// -----
+	// ### Find
+
+	/**
+	 * Retrieve a single entity from the memory.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for in-memory interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to retrieve data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`).
+	 */
+	findOne( table, queryFind, options = {}) {
+		const storeTable = this.ensureCollectionExists( table );
+		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
+		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
+		return Promise.resolve( reducedMatches.length > 0 ? new this.classEntity( _.first( reducedMatches ), this ) : undefined );
+	}
+
+	/**
+	 * Retrieve several entities from the memory.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to retrieve data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`).
+	 */
+	findMany( table, queryFind, options = {}) {
+		const storeTable = this.ensureCollectionExists( table );
+		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
+		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
+		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity( entity, this )));
+	}
+
+	// -----
+	// ### Update
+
+	/**
+	 * Update a single entity in the memory.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to update data in.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {Object}                               update       - Object properties to set.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`).
+	 */
+	updateOne( table, queryFind, update, options = {}) {
+		return this.findOne( table, queryFind, options ).then( found => {
+			if ( !_.isNil( found )) {
+				const storeTable = this.ensureCollectionExists( table );
+				const match = _.find( storeTable.items, {
+					id: found.id,
+				});
+				this.applyUpdateEntity( update, match );
+				return Promise.resolve( new this.classEntity( match, this ));
+			} else {
+				return Promise.resolve();
+			}
+		});
+	}
+
+	/**
+	 * Update several entities in the memory.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to update data in.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	 * @param   {Object}                               update       - Object properties to set.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`).
+	 */
+	updateMany( table, queryFind, update, options = {}) {
+		return this.findMany( table, queryFind, options ).then( found => {
+			if ( !_.isNil( found ) && found.length > 0 ) {
+				const storeTable = this.ensureCollectionExists( table );
+				const foundIds = _.map( found, 'id' );
+				const matches = _.filter( storeTable.items, item => -1 !== foundIds.indexOf( item.id ));
+				return Promise.resolve( _.map( matches, item => {
+					this.applyUpdateEntity( update, item );
+					return new this.classEntity( item, this );
+				}));
+			} else {
+				return Promise.resolve();
+			}
+		});
+	}
+
+	// -----
+	// ### Delete
+
+	/**
+	 * Delete a single entity from the memory.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to delete data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*).
+	 */
+	deleteOne( table, queryFind, options = {}) {
+		const storeTable = this.ensureCollectionExists( table );
+		return this.findOne( table, queryFind, options ).then( entityToDelete => {
+			storeTable.items = _.reject( storeTable.items, entity => entity.id === entityToDelete.idHash[this.name]);
+			return Promise.resolve();
+		});
+	}
+
+	/**
+	 * Delete several entities from the memory.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to delete data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
+	 */
+	deleteMany( table, queryFind, options = {}) {
+		const storeTable = this.ensureCollectionExists( table );
+		return this.findMany( table, queryFind, options ).then( entitiesToDelete => {
+			const entitiesIds = _.map( entitiesToDelete, entity => _.get( entity, `idHash.${ this.name }` ));
+			storeTable.items = _.reject( storeTable.items, entity => {
+				return _.includes( entitiesIds, entity.id );
+			});
+			return Promise.resolve();
+		});
+	}
+}
+
+module.exports = InMemoryDiasporaAdapter;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../dataStoreEntities/inMemoryEntity.js":7,"../dependencies":8,"./baseAdapter.js":2}],5:[function(require,module,exports){
 'use strict';
 
 const {
 	_,
-} = require( 'lib/dependencies' );
+} = require( '../dependencies' );
 
 /**
  * @namespace DataStoreEntities
  */
 
+/**
+ * DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
+ * @memberof DataStoreEntities
+ */
 class DataStoreEntity {
 	/**
-	 * @class DataStoreEntity
-	 * @classdesc DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself
-	 * @memberof DataStoreEntities
-	 * @description Construct a new data source entity with specified content & parent
-	 * @public
+	 * Construct a new data source entity with specified content & parent.
+	 * 
 	 * @author gerkin
-	 * @param {Object}                   entity     Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
-	 * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
+	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
 	 */
 	constructor( entity, dataSource ) {
 		if ( _.isNil( entity )) {
@@ -1399,12 +1364,10 @@ class DataStoreEntity {
 	}
 	
 	/**
-	 * @method toObject
-	 * @description Returns a plain object corresponding to this entity attributes
-	 * @memberof DataStoreEntities.DataStoreEntity
-	 * @public
+	 * Returns a plain object corresponding to this entity attributes.
+	 * 
 	 * @author gerkin
-	 * @returns {Object} Plain object representing this entity
+	 * @returns {Object} Plain object representing this entity.
 	 */
 	toObject() {
 		return _.omit( this, [ 'dataSource', 'id' ]);
@@ -1413,22 +1376,49 @@ class DataStoreEntity {
 
 module.exports = DataStoreEntity;
 
-},{"lib/dependencies":8}],6:[function(require,module,exports){
+},{"../dependencies":8}],6:[function(require,module,exports){
 'use strict';
 
-const DataStoreEntity = require( 'lib/dataStoreEntities/baseEntity.js' );
+const DataStoreEntity = require( './baseEntity.js' );
 
+/**
+ * Entity stored in {@link Adapters.BrowserStorageDiasporaAdapter the local storage adapter}.
+ * 
+ * @extends DataStoreEntities.DataStoreEntity
+ * @memberof DataStoreEntities
+ */
+class BrowserStorageEntity extends DataStoreEntity {
+	/**
+	 * Construct a local storage entity with specified content & parent.
+	 * 
+	 * @author gerkin
+	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
+	 */
+	constructor( entity, dataSource ) {
+		super( entity, dataSource );
+	}
+}
+
+module.exports = BrowserStorageEntity;
+
+},{"./baseEntity.js":5}],7:[function(require,module,exports){
+'use strict';
+
+const DataStoreEntity = require( './baseEntity.js' );
+
+/**
+ * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
+ * @extends DataStoreEntities.DataStoreEntity
+ * @memberof DataStoreEntities
+ */
 class InMemoryEntity extends DataStoreEntity {
 	/**
-	 * @class InMemoryEntity
-	 * @classdesc Entity stored in {@link InMemoryDiasporaAdapter the in-memory adapter}.
-	 * @extends DataStoreEntity
-	 * @description Construct a in memory entity with specified content & parent
-	 * @memberof DataStoreEntities
-	 * @public
+	 * Construct a in memory entity with specified content & parent.
+	 * 
 	 * @author gerkin
-	 * @param {Object} entity Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
-	 * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
+	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
 	 */
 	constructor( entity, dataSource ) {
 		super( entity, dataSource );
@@ -1437,31 +1427,7 @@ class InMemoryEntity extends DataStoreEntity {
 
 module.exports = InMemoryEntity;
 
-},{"lib/dataStoreEntities/baseEntity.js":5}],7:[function(require,module,exports){
-'use strict';
-
-const DataStoreEntity = require( 'lib/dataStoreEntities/baseEntity.js' );
-
-class LocalStorageEntity extends DataStoreEntity {
-	/**
-	 * @class LocalStorageEntity
-	 * @classdesc Entity stored in {@link LocalStorageDiasporaAdapter the local storage adapter}.
-	 * @extends DataStoreEntity
-	 * @description Construct a local storage entity with specified content & parent
-	 * @memberof DataStoreEntities
-	 * @public
-	 * @author gerkin
-	 * @param {Object} entity Object containing attributes to inject in this entity. The only **reserved key** is `dataSource``
-	 * @param {Adapters.DiasporaAdapter} dataSource Adapter that spawn this entity
-	 */
-	constructor( entity, dataSource ) {
-		super( entity, dataSource );
-	}
-}
-
-module.exports = LocalStorageEntity;
-
-},{"lib/dataStoreEntities/baseEntity.js":5}],8:[function(require,module,exports){
+},{"./baseEntity.js":5}],8:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1479,17 +1445,15 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"bluebird":undefined,"lodash":undefined,"sequential-event":undefined}],9:[function(require,module,exports){
+(function (process){
 'use strict';
 
+const dependencies = require( './dependencies' );
 const {
-	_, Promise, SequentialEvent,
-} = require( 'lib/dependencies' );
-const DiasporaAdapter = require( 'lib/adapters/baseAdapter.js' );
+	_, Promise,
+} = dependencies;
 
-const adapters = {
-	'in-memory':    require( 'lib/adapters/inMemoryAdapter' ),
-	'localstorage': require( 'lib/adapters/localStorageAdapter' ),
-};
+const adapters = {};
 const dataSources = {};
 const models = {};
 
@@ -1560,6 +1524,7 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 		});
 	};
 };
+
 /**
  * Diaspora main namespace
  * @namespace Diaspora
@@ -1568,14 +1533,12 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
  */
 const Diaspora = {
 	/**
-	 * @function check
-	 * @description Check if the value matches the field description provided, thus verify if it is valid
-	 * @memberof Diaspora
-	 * @public
+	 * Check if the value matches the field description provided, thus verify if it is valid.
+	 * 
 	 * @author gerkin
-	 * @param   {Object} entity    Entity to check
-	 * @param   {module:ModelExtension.ModelPrototype} modelDesc Model description
-	 * @returns {Error[]} Array of errors
+	 * @param   {Object}                               entity    - Entity to check.
+	 * @param   {module:ModelExtension.ModelPrototype} modelDesc - Model description.
+	 * @returns {Error[]} Array of errors.
 	 */
 	check( entity, modelDesc = {}) {
 		// Apply method `checkField` on each field described
@@ -1587,15 +1550,13 @@ const Diaspora = {
 	},
 
 	/**
-	 * @function checkField
-	 * @description Check if the value matches the field description provided, thus verify if it is valid
-	 * @memberof Diaspora
-	 * @public
+	 * Check if the value matches the field description provided, thus verify if it is valid.
+	 * 
 	 * @author gerkin
-	 * @param {Any} value   Value to check
-	 * @param {module:ModelExtension.FieldDescriptor} fieldDesc Description of the field to check with
-	 * @param {String[]} keys Array of keys from highest ancestor to this property
-	 * @returns {Object} Hash describing errors
+	 * @param   {Any}                                   value     - Value to check.
+	 * @param   {module:ModelExtension.FieldDescriptor} fieldDesc - Description of the field to check with.
+	 * @param   {String[]}                              keys      - Array of keys from highest ancestor to this property.
+	 * @returns {Object} Hash describing errors.
 	 */
 	checkField( value, fieldDesc, keys ) {
 		if ( !_.isObject( fieldDesc )) {
@@ -1731,15 +1692,13 @@ const Diaspora = {
 	},
 
 	/**
-	* @function default
-	* @description Set default values if required
-	* @memberof Diaspora
-	* @public
-	* @author gerkin
-	* @param   {Object} entity    Entity to set defaults in
-	* @param   {module:ModelExtension.ModelPrototype} modelDesc Model description
-	* @returns {Object} Entity merged with default values
-	*/
+	 * Set default values if required.
+	 * 
+	 * @author gerkin
+	 * @param   {Object}         entity    - Entity to set defaults in.
+	 * @param   {ModelPrototype} modelDesc - Model description.
+	 * @returns {Object} Entity merged with default values.
+	 */
 	default( entity, modelDesc ) {
 		// Apply method `defaultField` on each field described
 		return _.defaults(
@@ -1755,15 +1714,13 @@ const Diaspora = {
 	},
 
 	/**
-	* @function defaultField
-	* @description Set the default on a single field according to its description
-	* @memberof Diaspora
-	* @public
-	* @author gerkin
-	* @param {Any} value   Value to default
-	* @param {module:ModelExtension.FieldDescriptor} fieldDesc Description of the field to default
-	* @returns {Any} Defaulted value
-	*/
+	 * Set the default on a single field according to its description.
+	 * 
+	 * @author gerkin
+	 * @param   {Any}             value     - Value to default.
+	 * @param   {FieldDescriptor} fieldDesc - Description of the field to default.
+	 * @returns {Any} Defaulted value.
+	 */
 	defaultField( value, fieldDesc ) {
 		let out;
 		if ( !_.isUndefined( value )) {
@@ -1778,11 +1735,20 @@ const Diaspora = {
 		}
 	},
 
-	createDataSource( adapter, config ) {
-		if ( !adapters.hasOwnProperty( adapter )) {
-			throw new Error( `Unknown adapter "${ adapter }". Available currently are ${ Object.keys( adapters ).join( ', ' ) }` );
+	/**
+	 * Create a data source (usually, a database connection) that may be used by models.
+	 * 
+	 * @author gerkin
+	 * @throws  {Error} Thrown if provided `adapter` label does not correspond to any adapter registered.
+	 * @param   {string} adapterLabel - Label of the adapter used to create the data source.
+	 * @param   {Object} config       - Configuration hash. This configuration hash depends on the adapter we want to use.
+	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
+	 */
+	createDataSource( adapterLabel, config ) {
+		if ( !adapters.hasOwnProperty( adapterLabel )) {
+			throw new Error( `Unknown adapter "${ adapterLabel }". Available currently are ${ Object.keys( adapters ).join( ', ' ) }` );
 		}
-		const baseAdapter = new adapters[adapter]( config );
+		const baseAdapter = new adapters[adapterLabel]( config );
 		const newDataSource = new Proxy( baseAdapter, {
 			get( target, key ) {
 				// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
@@ -1803,109 +1769,206 @@ const Diaspora = {
 	},
 
 	/**
-	* @method registerDataSource
-	* @description Stores the data source with provided label
-	* @memberof Diaspora
-	* @public
-	* @author gerkin
-	* @throws {Error} Error is thrown if parameters are incorrect or the name is already used or `dataSource` is not an adapter.
-	* @param {String}          moduleName Module declaring this datasource. Modules requiring the provided dataSource will be able to use this dataSource using the `name` provided
-	* @param {String}          name       Name associated with this datasource
-	* @param {DiasporaAdapter} dataSource Datasource itself
-	* @returns {undefined}
-	*/
-	registerDataSource( moduleName, name, dataSource ) {
-		if ( !_.isString( moduleName ) && moduleName.length > 0 ) {
-			throw new Error( `Module name must be a non empty string, had "${ moduleName }"` );
-		}
+	 * Stores the data source with provided label.
+	 * 
+	 * @author gerkin
+	 * @throws  {Error} Error is thrown if parameters are incorrect or the name is already used or `dataSource` is not an adapter.
+	 * @param   {string}          name       - Name associated with this datasource.
+	 * @param   {DiasporaAdapter} dataSource - Datasource itself.
+	 * @returns {undefined} This function does not return anything.
+	 */
+	registerDataSource( name, dataSource ) {
 		if ( !_.isString( name ) && name.length > 0 ) {
 			throw new Error( `DataSource name must be a non empty string, had "${ name }"` );
 		}
 		if ( dataSources.hasOwnProperty( name )) {
 			throw new Error( `DataSource name already used, had "${ name }"` );
 		}
-		if ( !( dataSource instanceof DiasporaAdapter )) {
+		if ( !( dataSource instanceof Diaspora.components.DiasporaAdapter )) {
 			throw new Error( 'DataSource must be an instance inheriting "DiasporaAdapter"' );
 		}
 		dataSource.name = name;
 		_.merge( dataSources, {
-			[moduleName]: {
-				[name]: dataSource,
-			},
+			[name]: dataSource,
 		});
 	},
 
 	/**
-	* @method declareModel
-	* @description Create a new Model with provided description
-	* @memberof Diaspora
-	* @public
-	* @author gerkin
-	* @throws {Error} Thrown if parameters are incorrect
-	* @param {String} moduleName       Module declaring this datasource. Modules requiring the provided dataSource will be able to use this dataSource using the `name` provided
-	* @param {String} name       Name associated with this datasource
-	* @param {Object} modelDesc Description of the model to define
-	* @returns {Model} Model created
-	*/
-	declareModel( moduleName, name, modelDesc ) {
-		if ( !_.isString( moduleName ) && moduleName.length > 0 ) {
-			throw new Error( `Module name must be a non empty string, had "${ moduleName }"` );
-		}
+	 * Create a data source (usually, a database connection) that may be used by models.
+	 * 
+	 * @author gerkin
+	 * @throws  {Error} Thrown if provided `adapter` label does not correspond to any adapter registered.
+	 * @param   {string} name         - Name associated with this datasource.
+	 * @param   {string} adapterLabel - Label of the adapter used to create the data source.
+	 * @param   {Object} config       - Configuration hash. This configuration hash depends on the adapter we want to use.
+	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
+	 */
+	createNamedDataSource( name, adapterLabel, config ) {
+		const dataSource = Diaspora.createDataSource( adapterLabel, config );
+		Diaspora.registerDataSource( name, dataSource );
+	},
+
+	/**
+	 * Create a new Model with provided description.
+	 * 
+	 * @author gerkin
+	 * @throws  {Error} Thrown if parameters are incorrect.
+	 * @param   {string} name      - Name associated with this datasource.
+	 * @param   {Object} modelDesc - Description of the model to define.
+	 * @returns {Model} Model created.
+	 */
+	declareModel( name, modelDesc ) {
 		if ( !_.isString( name ) && name.length > 0 ) {
 			throw new Error( `DataSource name must be a non empty string, had "${ name }"` );
 		}
 		if ( !_.isObject( modelDesc )) {
 			throw new Error( '"modelDesc" must be an object' );
 		}
-		const model = new Model( moduleName, name, modelDesc );
+		const model = new Diaspora.components.Model( name, modelDesc );
 		_.assign( models, {
-			[moduleName]: {},
+			[name]: model,
 		});
-		models[moduleName][name] = model;
 		return model;
 	},
 
-	models,
-	dataSources,
-	adapters,
-	dependencies: {
-		lodash:             _,
-		bluebird:           Promise,
-		'sequential-event': SequentialEvent,
+	/**
+	 * Register a new adapter and make it available to use by models.
+	 * 
+	 * @author gerkin
+	 * @throws  {Error} Thrown if an adapter already exists with same label.
+	 * @throws  {TypeError} Thrown if adapter does not extends {@link Adapters.DiasporaAdapter}.
+	 * @param   {string}                   label   - Label of the adapter to register.
+	 * @param   {Adapters.DiasporaAdapter} adapter - The adapter to register.
+	 * @returns {undefined} This function does not return anything.
+	 */
+	registerAdapter( label, adapter ) {
+		if ( adapters[label]) {
+			throw new Error( `Adapter with label "${ label }" already exists.` );
+		}
+		// Check inheritance of adapter
+		if ( !( adapter.prototype instanceof Diaspora.components.DiasporaAdapter )) {
+			throw new TypeError( `Trying to register an adapter with label "${ label }", but it does not extends DiasporaAdapter.` );
+		}
+		adapters[label] = adapter;
 	},
+
+	/**
+	 * Hash containing all available models.
+	 * 
+	 * @type {Object}
+	 * @property {Model} * - Model associated with that name.
+	 * @memberof Diaspora
+	 * @public
+	 * @author gerkin
+	 * @see Use {@link Diaspora.declareModel} to add models.
+	 */
+	models,
+	/**
+	 * Hash containing all available data sources.
+	 * 
+	 * @type {Object}
+	 * @property {Adapters.DiasporaAdapter} * - Instances of adapters declared.
+	 * @memberof Diaspora
+	 * @private
+	 * @author gerkin
+	 * @see Use {@link Diaspora.createNamedDataSource} or {@link Diaspora.registerDataSource} to make data sources available for models.
+	 */
+	dataSources,
+	/**
+	 * Hash containing all available adapters. The only universal adapter is `inMemory`.
+	 * 
+	 * @type {Object}
+	 * @property {Adapters.DiasporaAdapter}        *        - Adapter constructor. Those constructors must be subclasses of DiasporaAdapter.
+	 * @property {Adapters.InMemorDiasporaAdapter} inMemory - InMemoryDiasporaAdapter constructor.
+	 * @memberof Diaspora
+	 * @private
+	 * @author gerkin
+	 * @see Use {@link Diaspora.registerAdapter} to add adapters.
+	 */
+	adapters,
+	/**
+	 * Dependencies of Diaspora.
+	 * 
+	 * @type {Object}
+	 * @property {Bluebird}        Promise          - Bluebird lib.
+	 * @property {Lodash}          _                - Lodash lib.
+	 * @property {SequentialEvent} sequential-event - SequentialEvent lib.
+	 * @memberof Diaspora
+	 * @private
+	 * @author gerkin
+	 */
+	dependencies: dependencies,
 };
 
 module.exports = Diaspora;
 
-// Load Model class after, so that Model requires Diaspora once it is declared
-const Model = require( './model' );
+// Load components after export, so requires of Diaspora returns a complete object
+/**
+ * Hash of components exposed by Diaspora.
+ * 
+ * @type {Object}
+ * @memberof Diaspora
+ * @private
+ * @author gerkin
+ */
+Diaspora.components = {
+	Entity:          require( './entityFactory' )( null, {}, null ),
+	Set:             require( './set' ),
+	Model:           require( './model' ),
+	ValidationError: require( './validationError' ),
+	DiasporaAdapter: require( './adapters/baseAdapter' ),
+	DataStoreEntity: require( './dataStoreEntities/baseEntity' ),
+};
 
-},{"./model":11,"lib/adapters/baseAdapter.js":2,"lib/adapters/inMemoryAdapter":3,"lib/adapters/localStorageAdapter":4,"lib/dependencies":8}],10:[function(require,module,exports){
+// Register available built-in adapters
+Diaspora.registerAdapter( 'inMemory', require( './adapters/inMemoryAdapter' ));
+// Register browserStorage only if in browser
+if ( process.browser ) {
+	Diaspora.registerAdapter( 'browserStorage', require( './adapters/browserStorageAdapter' ));
+}
+
+}).call(this,require('_process'))
+},{"./adapters/baseAdapter":2,"./adapters/browserStorageAdapter":3,"./adapters/inMemoryAdapter":4,"./dataStoreEntities/baseEntity":5,"./dependencies":8,"./entityFactory":10,"./model":11,"./set":12,"./validationError":14,"_process":15}],10:[function(require,module,exports){
 'use strict';
 
 const {
 	_, Promise, SequentialEvent,
-} = require( 'lib/dependencies' );
+} = require( './dependencies' );
 const Diaspora = require( './diaspora' );
-const DataStoreEntity = require( 'lib/dataStoreEntities/baseEntity' );
-const ValidationError = require( 'lib/validationError' );
-const Utils = require( 'lib/utils' );
+const DataStoreEntity = require( './dataStoreEntities/baseEntity' );
+const ValidationError = require( './validationError' );
+const Utils = require( './utils' );
 
+/**
+ * @namespace EntityFactory
+ */
+
+/**
+ * This factory function generate a new class constructor, prepared for a specific model.
+ * 
+ * @memberof EntityFactory
+ * @param   {string} name       - Name of this model.
+ * @param   {Object} modelAttrs - Object describing a model.
+ * @param   {Model}  model      - Model that will spawn entities.
+ * @returns {Entity} Entity constructor to use with this model.
+ */
 function EntityFactory( name, modelAttrs, model ) {
 	const modelAttrsKeys = _.keys( modelAttrs );
 
 	/**
-	 * @classdesc An entity is a document in the population of all your datas of the same type
-	 * @public
-	 * @author gerkin
+	 * The entity is the class you use to manage a single document in all data sources managed by your model. 
+	 * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
+	 * @summary An entity is a document in the population of all your datas of the same type
+	 * @extends SequentialEvent
+	 * @memberof EntityFactory
 	 */
 	class Entity extends SequentialEvent {
 		/**
-		 * @constructs Entity
-		 * @description Create a new entity
-		 * @public
+		 * Create a new entity.
+		 * 
 		 * @author gerkin
-		 * @param {Object} [source = {}] Hash with properties to copy on the new object
+		 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.  
+		 *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
 		 */
 		constructor( source = {}) {
 			super();
@@ -1917,38 +1980,43 @@ function EntityFactory( name, modelAttrs, model ) {
 
 			const entityPrototype = {
 				/**
-				 * @property {Object} dataSources Hash that links each data source with its name
-				 * @memberof Entity
+				 * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
+				 * 
+				 * @name dataSources
+				 * @readonly
+				 * @type {Object}
+				 * @memberof EntityFactory.Entity
 				 * @instance
-				 * @public
 				 * @author gerkin
 				 */
 				dataSources: {
 					value: dataSources,
 				},
 				/**
+				 * Returns a copy of this entity attributes.
+				 * 
 				 * @method toObject
-				 * @description Returns a copy of this entity attributes
-				 * @memberof Entity
-				 * @public
+				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
-				 * @returns {Object} Attributes of this entity
+				 * @returns {Object} Attributes of this entity.
 				 */
 				toObject: () => {
 					return _.omit( attributes, entityPrototypeProperties ); 
 				}, 
 				/**
+				 * Save this entity in specified data source.
+				 * 
 				 * @method persist
-				 * @description Save this entity in specified data source
-				 * @memberof Entity
-				 * @public
+				 * @memberof EntityFactory.Entity
 				 * @instance
+				 * @fires EntityFactory.Entity#beforeUpdate
+				 * @fires EntityFactory.Entity#afterUpdate
 				 * @author gerkin
-				 * @param {String} sourceName Name of the data source to persist entity in
-				 * @param {Object} [options] Hash of options for this query
-				 * @param {Boolean} [options.skipEvents=false] If true, won't trigger events `beforeUpdate` and `afterUpdate`
-				 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`
+				 * @param   {string}  sourceName                 - Name of the data source to persist entity in.
+				 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
+				 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
 				 */
 				persist: ( sourceName, options = {}) => {
 					_.defaults( options, {
@@ -1961,18 +2029,16 @@ function EntityFactory( name, modelAttrs, model ) {
 					if ( options.skipEvents ) {
 						promise = Promise.resolve();
 					} else {
-						promise = this.emit( 'beforeUpdate' );
+						promise = this.emit( 'beforeUpdate', sourceName );
 					}
 					return promise.then(() => {
-						let promise;
+						lastDataSource = dataSource.name;
 						// Depending on state, we are going to perform a different operation
 						if ( 'orphan' === beforeState ) {
-							promise = dataSource.insertOne( this.table( sourceName ), this.toObject());
+							return dataSource.insertOne( this.table( sourceName ), this.toObject());
 						} else {
-							promise = dataSource.updateOne( this.table( sourceName ), this.uidQuery( dataSource ), this.toObject());
+							return dataSource.updateOne( this.table( sourceName ), this.uidQuery( dataSource ), this.toObject());
 						}
-						lastDataSource = dataSource.name;
-						return promise;
 					}).then( dataStoreEntity => {
 						state = 'sync';
 						entityDefined.dataSources[dataSource.name] = dataStoreEntity;
@@ -1980,21 +2046,23 @@ function EntityFactory( name, modelAttrs, model ) {
 						if ( options.skipEvents ) {
 							return  Promise.resolve( entityProxied );
 						} else {
-							return this.emit( 'afterUpdate' ).then(() => Promise.resolve( entityProxied ));
+							return this.emit( 'afterUpdate', sourceName ).then(() => Promise.resolve( entityProxied ));
 						}
 					});
 				},
 				/**
+				 * Reload this entity from specified data source.
+				 * 
 				 * @method fetch
-				 * @description Reload this entity from specified data source
-				 * @memberof Entity
-				 * @public
+				 * @memberof EntityFactory.Entity
 				 * @instance
+				 * @fires EntityFactory.Entity#beforeFind
+				 * @fires EntityFactory.Entity#afterFind
 				 * @author gerkin
-				 * @param {String} sourceName Name of the data source to fetch entity from
-				 * @param {Object} [options] Hash of options for this query
-				 * @param {Boolean} [options.skipEvents=false] If true, won't trigger events `beforeUpdate` and `afterUpdate`
-				 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`
+				 * @param   {string}  sourceName                 - Name of the data source to fetch entity from.
+				 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeFind` and `afterFind`.
+				 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
 				 */
 				fetch: ( sourceName, options = {}) => {
 					_.defaults( options, {
@@ -2007,18 +2075,16 @@ function EntityFactory( name, modelAttrs, model ) {
 					if ( options.skipEvents ) {
 						promise = Promise.resolve();
 					} else {
-						promise = this.emit( 'beforeFind' );
+						promise = this.emit( 'beforeFind', sourceName );
 					}
 					return promise.then(() => {
-						let promise;
 						// Depending on state, we are going to perform a different operation
 						if ( 'orphan' === beforeState ) {
-							promise = Promise.reject( 'Can\'t fetch an orphan entity' );
+							return Promise.reject( 'Can\'t fetch an orphan entity' );
 						} else {
-							promise = dataSource.findOne( this.table( sourceName ), this.uidQuery( dataSource ));
+							lastDataSource = dataSource.name;
+							return dataSource.findOne( this.table( sourceName ), this.uidQuery( dataSource ));
 						}
-						lastDataSource = dataSource.name;
-						return promise;
 					}).then( dataStoreEntity => {
 						state = 'sync';
 						entityDefined.dataSources[dataSource.name] = dataStoreEntity;
@@ -2026,21 +2092,23 @@ function EntityFactory( name, modelAttrs, model ) {
 						if ( options.skipEvents ) {
 							return  Promise.resolve( entityProxied );
 						} else {
-							return this.emit( 'afterFind' ).then(() => Promise.resolve( entityProxied ));
+							return this.emit( 'afterFind', sourceName ).then(() => Promise.resolve( entityProxied ));
 						}
 					});
 				},
 				/**
+				 * Delete this entity from the specified data source.
+				 * 
 				 * @method destroy
-				 * @description Delete this entity from the specified data source
-				 * @memberof Entity
-				 * @public
+				 * @memberof EntityFactory.Entity
 				 * @instance
+				 * @fires EntityFactory.Entity#beforeDelete
+				 * @fires EntityFactory.Entity#afterDelete
 				 * @author gerkin
-				 * @param {String} sourceName Name of the data source to delete entity from
-				 * @param {Object} [options] Hash of options for this query
-				 * @param {Boolean} [options.skipEvents=false] If true, won't trigger events `beforeUpdate` and `afterUpdate`
-				 * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`
+				 * @param   {string}  sourceName                 - Name of the data source to delete entity from.
+				 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeDelete` and `afterDelete`.
+				 * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`.
 				 */
 				destroy: ( sourceName, options = {}) => {
 					_.defaults( options, {
@@ -2053,18 +2121,16 @@ function EntityFactory( name, modelAttrs, model ) {
 					if ( options.skipEvents ) {
 						promise = Promise.resolve();
 					} else {
-						promise = this.emit( 'beforeDelete' );
+						promise = this.emit( 'beforeDelete', sourceName );
 					}
 					return promise.then(() => {
-						let promise;
 						if ( 'orphan' === beforeState ) {
-							promise = Promise.reject( new Error( 'Can\'t destroy an orphan entity' ));
+							return Promise.reject( new Error( 'Can\'t destroy an orphan entity' ));
 						} else {
-							promise = dataSource.deleteOne( this.table( sourceName ), this.uidQuery( dataSource ));
+							lastDataSource = dataSource.name;
+							return dataSource.deleteOne( this.table( sourceName ), this.uidQuery( dataSource ));
 						}
-						lastDataSource = dataSource.name;
-						return promise;
-					}).then( dataStoreEntity => {
+					}).then(() => {
 						// If this was our only data source, then go back to orphan state
 						if ( 0 === _.without( model.dataSources, dataSource.name ).length ) {
 							state = 'orphan';
@@ -2073,22 +2139,22 @@ function EntityFactory( name, modelAttrs, model ) {
 							delete attributes.idHash[dataSource.name];
 						}
 						entityDefined.dataSources[dataSource.name] = undefined;
-						dataStoreEntity = null;
 						if ( options.skipEvents ) {
 							return  Promise.resolve( entityProxied );
 						} else {
-							return this.emit( 'afterDelete' ).then(() => Promise.resolve( entityProxied ));
+							return this.emit( 'afterDelete', sourceName ).then(() => Promise.resolve( entityProxied ));
 						}
 					});
-				}, 
+				},
 				/**
-				 * @method getState
-				 * @description Return entity's current state.
-				 * @memberof Entity
-				 * @public
+				 * Get entity's current state.
+				 * 
+				 * @name dataSources
+				 * @readonly
+				 * @type {Entity.State}
+				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
-				 * @returns {Entity.State} State of this entity
 				 */
 				state: {
 					get() {
@@ -2096,13 +2162,14 @@ function EntityFactory( name, modelAttrs, model ) {
 					},
 				},
 				/**
-				 * @method getLastDataSource
-				 * @description Return entity's last data source
-				 * @memberof Entity
-				 * @public
+				 * Get entity's last data source.
+				 * 
+				 * @name dataSources
+				 * @readonly
+				 * @type {null|string}
+				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
-				 * @returns {String} Name of the last data source used
 				 */
 				lastDataSource: {
 					get() {
@@ -2110,14 +2177,14 @@ function EntityFactory( name, modelAttrs, model ) {
 					},
 				},
 				/**
-				 * @method getUidQuery
-				 * @description Generate the query to get this unique entity in the desired data source
-				 * @memberof Entity
-				 * @public
+				 * Generate the query to get this unique entity in the desired data source.
+				 * 
+				 * @method uidQuery
+				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
-				 * @param {Adapters.DiasporaAdapter} dataSource 
-				 * @returns {Object} Query to find this entity
+				 * @param   {Adapters.DiasporaAdapter} dataSource - Name of the data source to get query for.
+				 * @returns {Object} Query to find this entity.
 				 */
 				uidQuery( dataSource ) {
 					return {
@@ -2125,16 +2192,16 @@ function EntityFactory( name, modelAttrs, model ) {
 					};
 				},
 				/**
-				 * @method getTable
-				 * @description Return the table of this entity in the specified data source
-				 * @memberof Entity
-				 * @public
+				 * Return the table of this entity in the specified data source.
+				 * 
+				 * @method table
+				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
-				 * @param {String} sourceName Name of the data source to persist entity in
-				 * @returns {String} Name of the table
+				 * @returns {string} Name of the table.
 				 */
-				table( sourceName ) {
+				table( /*sourceName*/ ) {
+					// Will be used later
 					return name;
 				},
 			};
@@ -2150,7 +2217,7 @@ function EntityFactory( name, modelAttrs, model ) {
 			// Check keys provided in source
 			const sourceKeys = _.keys( source );
 			// Check if there is an intersection with reserved, and have differences with model attributes
-			const sourceUReserved = _.intersection( source, entityPrototypeProperties );
+			const sourceUReserved = _.intersection( sourceKeys, entityPrototypeProperties );
 			if ( 0 !== sourceUReserved.length ) {
 				throw new Error( `Source has reserved keys: ${ JSON.stringify( sourceUReserved ) } in ${ JSON.stringify( source ) }` );
 			}
@@ -2165,6 +2232,18 @@ function EntityFactory( name, modelAttrs, model ) {
 			// Default model attributes with our model desc
 			Diaspora.default( attributes, modelAttrs );
 
+			/**
+			 * Check if the entity matches model description.
+			 * 
+			 * @method beforeUpdateValidate
+			 * @memberof EntityFactory.Entity
+			 * @inner
+			 * @listens EntityFactory.Entity#beforeUpdate
+			 * @author gerkin
+			 * @throws ValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
+			 * @returns {undefined} This function does not return anything.
+			 * @see Diaspora.check
+			 */
 			this.on( 'beforeUpdate', () => {
 				const validationErrors = Diaspora.check( attributes, modelAttrs );
 				if ( !_.isEmpty( validationErrors )) {
@@ -2191,10 +2270,10 @@ function EntityFactory( name, modelAttrs, model ) {
 					}
 					return attributes[key] = value;
 				},
-				enumerate: obj => {
+				enumerate: () => {
 					return _.keys( attributes );
 				},
-				ownKeys: obj => {
+				ownKeys: () => {
 					return _( attributes ).keys().concat( entityPrototypeProperties ).value();
 				},
 				has: ( obj, key ) => {
@@ -2207,10 +2286,12 @@ function EntityFactory( name, modelAttrs, model ) {
 	}
 	const EntityWrapped = Object.defineProperties( Entity, {
 		/**
-		 * @property {String} name Name of the class
-		 * @memberof Entity
+		 * Name of the class.
+		 * 
+		 * @type {string}
+		 * @readonly
+		 * @memberof EntityFactory.Entity
 		 * @static
-		 * @public
 		 * @author gerkin
 		 */
 		name: {
@@ -2219,10 +2300,12 @@ function EntityFactory( name, modelAttrs, model ) {
 			enumerable: true, 
 		},
 		/**
-		 * @property {Model} model Reference to this entity's model
-		 * @memberof Entity
+		 * Reference to this entity's model.
+		 * 
+		 * @type {Model}
+		 * @readonly
+		 * @memberof EntityFactory.Entity
 		 * @static
-		 * @public
 		 * @author gerkin
 		 */
 		model: {
@@ -2232,39 +2315,75 @@ function EntityFactory( name, modelAttrs, model ) {
 		},
 	});
 	return EntityWrapped;
-
-	entityGenericConstructor = Entity;
 }
+
+// -----
+// ### Events
+
+/**
+ * Fired before updating this entity in the data source. Argument is the data source name to update
+ * @event EntityFactory.Entity#beforeUpdate
+ * @type {String}
+ */
+
+/**
+ * Fired after updating this entity in the data source. Argument is the data source name updated
+ * @event EntityFactory.Entity#afterUpdate
+ * @type {String}
+ */
+
+/**
+ * Fired before reloading this entity from the data source. Argument is the data source name to search in
+ * @event EntityFactory.Entity#beforeFind
+ * @type {String}
+ */
+
+/**
+ * Fired after reloading this entity from the data source. Argument is the data source name searched in
+ * @event EntityFactory.Entity#afterFind
+ * @type {String}
+ */
+
+/**
+ * Fired before deleting this entity from the data source. Argument is the data source name to delete from
+ * @event EntityFactory.Entity#beforeDelete
+ * @type {String}
+ */
+
+/**
+ * Fired after deleting this entity from the data source. Argument is the data source name deleted from
+ * @event EntityFactory.Entity#afterDelete
+ * @type {String}
+ */
 
 module.exports = EntityFactory;
 
-},{"./diaspora":9,"lib/dataStoreEntities/baseEntity":5,"lib/dependencies":8,"lib/utils":13,"lib/validationError":14}],11:[function(require,module,exports){
+},{"./dataStoreEntities/baseEntity":5,"./dependencies":8,"./diaspora":9,"./utils":13,"./validationError":14}],11:[function(require,module,exports){
 'use strict';
 
 const {
 	_, Promise,
-} = require( 'lib/dependencies' );
-const EntityFactory = require( 'lib/entityFactory' );
-const Diaspora = require( 'lib/diaspora' );
-const Set = require( 'lib/set' );
+} = require( './dependencies' );
+const EntityFactory = require( './entityFactory' );
+const Diaspora = require( './diaspora' );
+const Set = require( './set' );
 
 const {
 	entityPrototypeProperties,
 } = EntityFactory;
 
 /**
- * @classdesc The model class is used to interact with the population of all data of the same type.
+ * The model class is used to interact with the population of all data of the same type.
  */
 class Model {
 	/**
-	 * @description Create a new Model that is allowed to interact with all entities of data sources tables selected
-	 * @public
+	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
+	 * 
 	 * @author gerkin
-	 * @param {String}           namespace Namespace of the model. This may be used for scope or inheriting mechanisms
-	 * @param {String}           name      Name of the model
-	 * @param {ModelDescription} modelDesc Hash representing the configuration of the model
+	 * @param {string}           name      - Name of the model.
+	 * @param {ModelDescription} modelDesc - Hash representing the configuration of the model.
 	 */
-	constructor( namespace, name, modelDesc ) {
+	constructor( name, modelDesc ) {
 		const reservedPropIntersect = _.intersection( entityPrototypeProperties, _.keys( modelDesc.attributes ));
 		if ( 0 !== reservedPropIntersect.length ) {
 			throw new Error( `${ JSON.stringify( reservedPropIntersect ) } is/are reserved property names. To match those column names in data source, please use the data source mapper property` );
@@ -2284,8 +2403,7 @@ class Model {
 		});
 		// List sources required by this model
 		const sourceNames = _.keys( sourcesNormalized );
-		// Get sources. Later, implement scoping so that modules A requiring module B can access dataSources from module B
-		const scopeAvailableSources = Diaspora.dataSources[namespace];
+		const scopeAvailableSources = Diaspora.dataSources;
 		const modelSources = _.pick( scopeAvailableSources, sourceNames );
 		const missingSources = _.difference( sourceNames, _.keys( modelSources ));
 		if ( 0 !== missingSources.length ) {
@@ -2304,15 +2422,12 @@ class Model {
 	}
 
 	/**
-	 * @method getDataSource
-	 * @description Create a new Model that is allowed to interact with all entities of data sources tables selected
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
+	 * 
 	 * @author gerkin
-	 * @throws {Error} Thrown if requested source name does not exists
-	 * @param   {String} [sourceName=Model.defaultDataSource] Name of the source to get. It corresponds to one of the sources you set in Model#modelDesc.sources
-	 * @returns {Adapters.DiasporaAdapter} Source adapter with requested name
+	 * @throws  {Error} Thrown if requested source name does not exists.
+	 * @param   {string} [sourceName=Model.defaultDataSource] - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.sources.
+	 * @returns {Adapters.DiasporaAdapter} Source adapter with requested name.
 	 */
 	getDataSource( sourceName ) {
 		if ( _.isNil( sourceName )) {
@@ -2324,14 +2439,11 @@ class Model {
 	}
 
 	/**
-	 * @method spawn
-	 * @description Create a new *orphan* {@link Entity entity}
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Create a new *orphan* {@link Entity entity}.
+	 * 
 	 * @author gerkin
-	 * @param   {Object} source Object to copy attributes from
-	 * @returns {Entity} New *orphan* entity
+	 * @param   {Object} source - Object to copy attributes from.
+	 * @returns {Entity} New *orphan* entity.
 	 */
 	spawn( source ) {
 		const newEntity = new this.entityFactory( source );
@@ -2339,29 +2451,23 @@ class Model {
 	}
 
 	/**
-	 * @method spawnMulti
-	 * @description Create multiple new *orphan* {@link Entity entities}
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Create multiple new *orphan* {@link Entity entities}.
+	 * 
 	 * @author gerkin
-	 * @param   {Object[]} sources Array of objects to copy attributes from
-	 * @returns {Set} Set with new *orphan* entities
+	 * @param   {Object[]} sources - Array of objects to copy attributes from.
+	 * @returns {Set} Set with new *orphan* entities.
 	 */
 	spawnMulti( sources ) {
 		return new Set( this, _.map( sources, source => this.spawn( source )));
 	}
 
 	/**
-	 * @method insert
-	 * @description Insert a raw source object in the data store
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Insert a raw source object in the data store.
+	 * 
 	 * @author gerkin
-	 * @param   {Object} source Object to copy attributes from
-	 * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to insert in
-	 * @returns {Promise} Promise resolved with new *sync* {@link Entity entity}
+	 * @param   {Object} source                                   - Object to copy attributes from.
+	 * @param   {string} [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
+	 * @returns {Promise} Promise resolved with new *sync* {@link Entity entity}.
 	 */
 	insert( source, dataSourceName ) {
 		const dataSource = this.getDataSource( dataSourceName );
@@ -2371,15 +2477,12 @@ class Model {
 	}
 
 	/**
-	 * @method insertMany
-	 * @description Insert multiple raw source objects in the data store
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Insert multiple raw source objects in the data store.
+	 * 
 	 * @author gerkin
-	 * @param   {Object[]} sources Array of object to copy attributes from
-	 * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to insert in
-	 * @returns {Promise} Promise resolved with a {@link Set collection} containing new *sync* entities
+	 * @param   {Object[]} sources                                  - Array of object to copy attributes from.
+	 * @param   {string}   [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
+	 * @returns {Promise} Promise resolved with a {@link Set set} containing new *sync* entities.
 	 */
 	insertMany( sources, dataSourceName ) {
 		const dataSource = this.getDataSource( dataSourceName );
@@ -2391,16 +2494,13 @@ class Model {
 	}
 
 	/**
-	 * @method find
-	 * @description Retrieve a single entity from specified data source that matches provided `queryFind` and `options`
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Retrieve a single entity from specified data source that matches provided `queryFind` and `options`.
+	 * 
 	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entity
-	 * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
-	 * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entity from
-	 * @returns {Promise} Promise resolved with the found {@link Entity entity} in *sync* state
+	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
+	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entity from.
+	 * @returns {Promise} Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */
 	find( queryFind = {}, options = {}, dataSourceName ) {
 		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
@@ -2423,16 +2523,13 @@ class Model {
 	}
 
 	/**
-	 * @method findMany
-	 * @description Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`.
+	 * 
 	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entities
-	 * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
-	 * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entities from
-	 * @returns {Promise} Promise resolved with a {@link Set collection} of found entities in *sync* state
+	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
+	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entities from.
+	 * @returns {Promise} Promise resolved with a {@link Set set} of found entities in *sync* state.
 	 */
 	findMany( queryFind = {}, options = {}, dataSourceName ) {
 		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
@@ -2452,17 +2549,14 @@ class Model {
 	}
 
 	/**
-	 * @method update
-	 * @description Update a single entity from specified data source that matches provided `queryFind` and `options`
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Update a single entity from specified data source that matches provided `queryFind` and `options`.
+	 * 
 	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind      Query to get desired entity
-	 * @param   {Object} update Attributes to update on matched set
-	 * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
-	 * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entity from
-	 * @returns {Promise} Promise resolved with the updated {@link Entity entity} in *sync* state
+	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
+	 * @param   {Object}                               update                                   - Attributes to update on matched set.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
+	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entity from.
+	 * @returns {Promise} Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */
 	update( queryFind, update, options = {}, dataSourceName ) {
 		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
@@ -2480,17 +2574,14 @@ class Model {
 	}
 
 	/**
-	 * @method updateMany
-	 * @description Update multiple entities from specified data source that matches provided `queryFind` and `options`
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Update multiple entities from specified data source that matches provided `queryFind` and `options`.
+	 * 
 	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entities
-	 * @param   {Object} update Attributes to update on matched set
-	 * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
-	 * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entities from
-	 * @returns {Promise} Promise resolved with the {@link Set collection} of found entities in *sync* state
+	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
+	 * @param   {Object}                               update                                   - Attributes to update on matched set.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
+	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entities from.
+	 * @returns {Promise} Promise resolved with the {@link Set set} of found entities in *sync* state.
 	 */
 	updateMany( queryFind, update, options = {}, dataSourceName ) {
 		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
@@ -2506,16 +2597,13 @@ class Model {
 	}
 
 	/**
-	 * @method delete
-	 * @description Delete a single entity from specified data source that matches provided `queryFind` and `options`
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
+	 * 
 	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entity
-	 * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
-	 * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entity from
-	 * @returns {Promise} Promise resolved with `undefined`
+	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
+	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entity from.
+	 * @returns {Promise} Promise resolved with `undefined`.
 	 */
 	delete( queryFind = {}, options = {}, dataSourceName ) {
 		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
@@ -2527,16 +2615,13 @@ class Model {
 	}
 
 	/**
-	 * @method deleteMany
-	 * @description Delete multiple entities from specified data source that matches provided `queryFind` and `options`
-	 * @memberof Model
-	 * @public
-	 * @instance
+	 * Delete multiple entities from specified data source that matches provided `queryFind` and `options`.
+	 * 
 	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]      Query to get desired entities
-	 * @param   {QueryLanguage#QueryOptions} [options={}]        Options for this query
-	 * @param   {String} [dataSourceName=Model.defaultDataSource] Name of the data source to get entities from
-	 * @returns {Promise} Promise resolved with `undefined`
+	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
+	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entities from.
+	 * @returns {Promise} Promise resolved with `undefined`.
 	 */
 	deleteMany( queryFind = {}, options = {}, dataSourceName ) {
 		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
@@ -2550,28 +2635,23 @@ class Model {
 
 module.exports = Model;
 
-},{"lib/dependencies":8,"lib/diaspora":9,"lib/entityFactory":10,"lib/set":12}],12:[function(require,module,exports){
+},{"./dependencies":8,"./diaspora":9,"./entityFactory":10,"./set":12}],12:[function(require,module,exports){
 'use strict';
 
 const {
-	_, Promise, SequentialEvent,
-} = require( 'lib/dependencies' );
-const DataStoreEntity = require( 'lib/dataStoreEntities/baseEntity' );
-const Utils = require( 'lib/utils' );
+	_, Promise,
+} = require( './dependencies' );
+const Utils = require( './utils' );
 
 /**
- * @class Set
- * @classdesc Collections are used to manage multiple entities at the same time
+ * Collections are used to manage multiple entities at the same time. You may try to use this class as an array.
  */
 class Set {
 	/**
-	 * @lends Set
-	 * @constructs
-	 * @description Create a new set, managing provided `entities` that must be generated from provided `model`
-	 * @member {Model} model Model that generated those `entities`
-	 * @member {Lodash} entities Entities member of this collection
-	 * @param {Model} model       Model describing entities managed by this set
-	 * @param {Entity|Entity[]} entities Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
+	 * Create a new set, managing provided `entities` that must be generated from provided `model`.
+	 * 
+	 * @param {Model}           model    - Model describing entities managed by this set.
+	 * @param {Entity|Entity[]} entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
 	 */
 	constructor( model, ...entities ) {
 		// Flatten arguments
@@ -2580,8 +2660,38 @@ class Set {
 		Set.checkEntitiesFromModel( entities.value(), model );
 
 		const defined = Utils.defineEnumerableProperties( this, {
+			/**
+			 * List entities of this set.
+			 * 
+			 * @name entities
+			 * @readonly
+			 * @memberof Set
+			 * @instance
+			 * @type {LodashWrapper<Entity>}
+			 * @author Gerkin
+			 */
 			entities: entities,
+			/**
+			 * Model that generated this set.
+			 * 
+			 * @name model
+			 * @readonly
+			 * @memberof Set
+			 * @instance
+			 * @type {Model}
+			 * @author Gerkin
+			 */
 			model:    model,
+			/**
+			 * Number of entities in this set.
+			 * 
+			 * @name length
+			 * @readonly
+			 * @memberof Set
+			 * @instance
+			 * @type {Integer}
+			 * @author Gerkin
+			 */
 			length:   {
 				get() {
 					return this.entities.size();
@@ -2610,6 +2720,15 @@ class Set {
 		});
 	}
 
+	/**
+	 * Check if all entities in the first argument are from the expected model.
+	 * 
+	 * @author gerkin
+	 * @throws {TypeError} Thrown if one of the entity is not from provided `model`.
+	 * @param {Entity[]} entities - Array of entities to check.
+	 * @param {Model}    model    - Model expected to be the source of all entities.
+	 * @returns {undefined} This function does not return anything.
+	 */
 	static checkEntitiesFromModel( entities, model ) {
 		entities.forEach(( entity, index ) => {
 			if ( entity.constructor.model !== model ) {
@@ -2619,15 +2738,14 @@ class Set {
 	}
 
 	/**
-	 * @method persist
-	 * @description Persist all entities of this collection
-	 * @memberof Set
-	 * @public
-	 * @instance
+	 * Persist all entities of this collection.
+	 * 
+	 * @fires EntityFactory.Entity#beforeUpdate
+	 * @fires EntityFactory.Entity#afterUpdate
 	 * @author gerkin
-	 * @param {String} sourceName Data source name to persist in
-	 * @returns {Promise} Promise resolved once all items are persisted
-	 * @see {@link module:EntityFactory.Entity#persist}
+	 * @param {string} sourceName - Data source name to persist in.
+	 * @returns {Promise} Promise resolved once all items are persisted.
+	 * @see {@link EntityFactory.Entity#persist}
 	 */
 	persist( sourceName ) {
 		return Promise.all( this.entities.map( entity => entity.emit( 'beforeUpdate' ))).then(() => {
@@ -2640,15 +2758,14 @@ class Set {
 	}
 
 	/**
-	 * @method fetch
-	 * @description Reload all entities of this collection
-	 * @memberof Set
-	 * @public
-	 * @instance
+	 * Reload all entities of this collection.
+	 * 
+	 * @fires EntityFactory.Entity#beforeFind
+	 * @fires EntityFactory.Entity#afterFind
 	 * @author gerkin
-	 * @param {String} sourceName Data source name to reload entities from
-	 * @returns {Promise} Promise resolved once all items are reloaded
-	 * @see {@link module:EntityFactory.Entity#fetch}
+	 * @param {string} sourceName - Data source name to reload entities from.
+	 * @returns {Promise} Promise resolved once all items are reloaded.
+	 * @see {@link EntityFactory.Entity#fetch}
 	 */
 	fetch( sourceName ) {
 		return Promise.all( this.entities.map( entity => entity.emit( 'beforeFind' ))).then(() => {
@@ -2661,15 +2778,14 @@ class Set {
 	}
 
 	/**
-	 * @method destroy
-	 * @description Destroy all entities from this collection
-	 * @memberof Set
-	 * @public
-	 * @instance
+	 * Destroy all entities from this collection.
+	 * 
+	 * @fires EntityFactory.Entity#beforeDelete
+	 * @fires EntityFactory.Entity#afterDelete
 	 * @author gerkin
-	 * @param {String} sourceName Name of the data source to delete entities from
-	 * @returns {Promise} Promise resolved once all items are destroyed
-	 * @see {@link module:EntityFactory.Entity#destroy}
+	 * @param {string} sourceName - Name of the data source to delete entities from.
+	 * @returns {Promise} Promise resolved once all items are destroyed.
+	 * @see {@link EntityFactory.Entity#destroy}
 	 */
 	destroy( sourceName ) {
 		return Promise.all( this.entities.map( entity => entity.emit( 'beforeDelete' ))).then(() => {
@@ -2682,14 +2798,11 @@ class Set {
 	}
 
 	/**
-	 * @method update
-	 * @description Update all entities in the set with given object
-	 * @memberof Set
-	 * @public
-	 * @instance
+	 * Update all entities in the set with given object.
+	 * 
 	 * @author gerkin
-	 * @param   {Object} newData Attributes to change in each entity of the collection
-	 * @returns {Collection} `this`
+	 * @param   {Object} newData - Attributes to change in each entity of the collection.
+	 * @returns {Collection} `this`.
 	 */
 	update( newData ) {
 		this.entities.forEach( entity => {
@@ -2707,12 +2820,12 @@ class Set {
 
 module.exports = Set;
 
-},{"lib/dataStoreEntities/baseEntity":5,"lib/dependencies":8,"lib/utils":13}],13:[function(require,module,exports){
+},{"./dependencies":8,"./utils":13}],13:[function(require,module,exports){
 'use strict';
 
 const {
 	_,
-} = require( 'lib/dependencies' );
+} = require( './dependencies' );
 
 module.exports = {
 	defineEnumerableProperties( subject, handlers ) {
@@ -2735,12 +2848,12 @@ module.exports = {
 	},
 };
 
-},{"lib/dependencies":8}],14:[function(require,module,exports){
+},{"./dependencies":8}],14:[function(require,module,exports){
 'use strict';
 
 const {
 	_,
-} = require( 'lib/dependencies' );
+} = require( './dependencies' );
 
 const stringifyValidationObject = validationErrors => {
 	return _( validationErrors ).mapValues(( error, key ) => {
@@ -2749,18 +2862,19 @@ const stringifyValidationObject = validationErrors => {
 	}).values().join( '\n* ' );
 };
 
+/**
+ * This class represents an error related to validation.
+ * @extends Error
+ */
 class ValidationError extends Error {
 	/**
-	 * @class ValidationError
-	 * @classdesc This class represents an error related to validation
-	 * @extends Error
-	 * @description Construct a new validation error
-	 * @public
+	 * Construct a new validation error.
+	 * 
 	 * @author gerkin
 	 * @see Diaspora.check
-	 * @param {Object} validationErrors Object describing validation errors, usually returned by {@link Diaspora.check}
-	 * @param {String} message          Message of this error
-	 * @param {*} errorArgs...        Arguments to transfer to parent Error
+	 * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
+	 * @param {string} message          - Message of this error.
+	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
 	 */
 	constructor( validationErrors, message, ...errorArgs ) {
 		message += `
@@ -2775,5 +2889,191 @@ ${ stringifyValidationObject( validationErrors ) }`;
 
 module.exports = ValidationError;
 
-},{"lib/dependencies":8}]},{},[1])(1)
+},{"./dependencies":8}],15:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}]},{},[1])(1)
 });

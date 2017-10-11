@@ -1,15 +1,13 @@
 'use strict';
 
-/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false, importTest: false */
+/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false, getStyle: false, importTest: false */
 
 require( './defineGlobals' );
 
 if ( process.env.SAUCE_ONLY !== 'true' ) {
-	(() => {
-		if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
-			global.Diaspora = require( '../diaspora' );
-		}
-	})();
+	if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
+		global.Diaspora = require( '../diaspora' );
+	}
 	global.dataSources = {};
 	describe( '"check" feature', () => {
 		it( 'Basic tests with types', () => {
@@ -327,11 +325,10 @@ if ( process.env.SAUCE_ONLY !== 'true' ) {
 		});
 	});
 
-	const styleFunction = 'undefined' === typeof window ? chalk.bold.underline.blue : l.identity;
-	importTest( styleFunction( 'Adapters' ), `${ __dirname  }/adapters/index.js` );
-	importTest( styleFunction( 'Models' ), `${ __dirname  }/models/index.js` );
+	importTest( getStyle( 'category', 'Adapters' ), `${ __dirname  }/adapters/index.js` );
+	importTest( getStyle( 'category', 'Models' ), `${ __dirname  }/models/index.js` );
 }
 
 if ( 'undefined' === typeof window && process.env.NO_SAUCE !== 'true' ) {
-	require( `${ __dirname  }/browser/selenium.js` );
+	importTest( getStyle( 'category', 'Browser tests' ), `${ __dirname  }/browser/selenium.js` );
 }
