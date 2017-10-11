@@ -3,7 +3,6 @@
 /* globals l: false, c: false, describe: false, require: false, expect: false, chalk: false, chai: false, path: false */
 
 let config = {};
-let getCurrentDir;
 
 let styles = {};
 
@@ -11,12 +10,6 @@ if ( 'undefined' === typeof window ) {
 	global.path = require( 'path' );
 	global.projectPath = path.resolve( '../' );
 	global.chalk = require( 'chalk' );
-
-	const stackTrace = require( 'stack-trace' );
-	getCurrentDir = () => {
-		const stackItem = stackTrace.get()[2];
-		return path.dirname( stackItem.getFileName());
-	};
 
 	global.chalk = require( 'chalk' );
 	try {
@@ -39,9 +32,6 @@ if ( 'undefined' === typeof window ) {
 	};
 } else {
 	config = {};
-	getCurrentDir = () => {
-		return '';
-	};
 }
 
 global.getStyle = ( styleName, text ) => {

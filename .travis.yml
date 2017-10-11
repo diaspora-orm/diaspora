@@ -23,6 +23,12 @@ matrix:
       env: NO_SAUCE=true
     - node_js: "7"
       env: NO_SAUCE=true
+    - node_js: "6.4"
+      env: NO_SAUCE=true
+    - node_js: "6.3"
+      env: NO_SAUCE=true
+    - node_js: "6.0"
+      env: NO_SAUCE=true
 env: 
   global:
     - SAUCE_USERNAME=Gerkin
