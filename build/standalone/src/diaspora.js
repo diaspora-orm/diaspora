@@ -2655,7 +2655,7 @@ class Set {
 	 * @author gerkin
 	 * @param {String} sourceName Data source name to persist in
 	 * @returns {Promise} Promise resolved once all items are persisted
-	 * @see {@link Entity#persist}
+	 * @see {@link module:EntityFactory.Entity#persist}
 	 */
 	persist( sourceName ) {
 		return Promise.all( this.entities.map( entity => entity.emit( 'beforeUpdate' ))).then(() => {
@@ -2676,7 +2676,7 @@ class Set {
 	 * @author gerkin
 	 * @param {String} sourceName Data source name to reload entities from
 	 * @returns {Promise} Promise resolved once all items are reloaded
-	 * @see {@link Entity#fetch}
+	 * @see {@link module:EntityFactory.Entity#fetch}
 	 */
 	fetch( sourceName ) {
 		return Promise.all( this.entities.map( entity => entity.emit( 'beforeFind' ))).then(() => {
@@ -2697,7 +2697,7 @@ class Set {
 	 * @author gerkin
 	 * @param {String} sourceName Name of the data source to delete entities from
 	 * @returns {Promise} Promise resolved once all items are destroyed
-	 * @see {@link Entity#destroy}
+	 * @see {@link module:EntityFactory.Entity#destroy}
 	 */
 	destroy( sourceName ) {
 		return Promise.all( this.entities.map( entity => entity.emit( 'beforeDelete' ))).then(() => {

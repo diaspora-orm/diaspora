@@ -10,7 +10,8 @@ Fancy badges:
 [![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
 [![Dependency Status](https://gemnasium.com/badges/github.com/GerkinDev/Diaspora.svg)](https://gemnasium.com/github.com/GerkinDev/Diaspora)
 [![npm](https://img.shields.io/npm/dm/diaspora.svg)](https://npmjs.org/package/diaspora)
-[![GitHub commit activity the past week, 4 weeks, yea](https://img.shields.io/github/commit-activity/y/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)
+[![npm version](https://badge.fury.io/js/diaspora.svg)](https://badge.fury.io/js/diaspora)
+[![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)
 [![license](https://img.shields.io/github/license/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)    
 [![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
 

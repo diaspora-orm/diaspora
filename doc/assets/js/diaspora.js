@@ -1028,7 +1028,7 @@ Set.checkEntitiesFromModel(entities.value(),model);var defined=Utils.defineEnume
 	 * @author gerkin
 	 * @param {String} sourceName Data source name to persist in
 	 * @returns {Promise} Promise resolved once all items are persisted
-	 * @see {@link Entity#persist}
+	 * @see {@link module:EntityFactory.Entity#persist}
 	 */value:function persist(sourceName){var _this34=this;return Promise.all(this.entities.map(function(entity){return entity.emit('beforeUpdate');})).then(function(){return Promise.all(_this34.entities.map(function(entity){return entity.persist(sourceName,{skipEvents:true});}));}).then(function(){return Promise.all(_this34.entities.map(function(entity){return entity.emit('afterUpdate');}));}).then(function(){return _this34;});}/**
 	 * @method fetch
 	 * @description Reload all entities of this collection
@@ -1038,7 +1038,7 @@ Set.checkEntitiesFromModel(entities.value(),model);var defined=Utils.defineEnume
 	 * @author gerkin
 	 * @param {String} sourceName Data source name to reload entities from
 	 * @returns {Promise} Promise resolved once all items are reloaded
-	 * @see {@link Entity#fetch}
+	 * @see {@link module:EntityFactory.Entity#fetch}
 	 */},{key:"fetch",value:function fetch(sourceName){var _this35=this;return Promise.all(this.entities.map(function(entity){return entity.emit('beforeFind');})).then(function(){return Promise.all(_this35.entities.map(function(entity){return entity.fetch(sourceName,{skipEvents:true});}));}).then(function(){return Promise.all(_this35.entities.map(function(entity){return entity.emit('afterFind');}));}).then(function(){return _this35;});}/**
 	 * @method destroy
 	 * @description Destroy all entities from this collection
@@ -1048,7 +1048,7 @@ Set.checkEntitiesFromModel(entities.value(),model);var defined=Utils.defineEnume
 	 * @author gerkin
 	 * @param {String} sourceName Name of the data source to delete entities from
 	 * @returns {Promise} Promise resolved once all items are destroyed
-	 * @see {@link Entity#destroy}
+	 * @see {@link module:EntityFactory.Entity#destroy}
 	 */},{key:"destroy",value:function destroy(sourceName){var _this36=this;return Promise.all(this.entities.map(function(entity){return entity.emit('beforeDelete');})).then(function(){return Promise.all(_this36.entities.map(function(entity){return entity.destroy(sourceName,{skipEvents:true});}));}).then(function(){return Promise.all(_this36.entities.map(function(entity){return entity.emit('afterDelete');}));}).then(function(){return _this36;});}/**
 	 * @method update
 	 * @description Update all entities in the set with given object
