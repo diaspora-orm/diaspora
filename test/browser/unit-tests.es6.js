@@ -1,61 +1,4 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function (global){
-'use strict';
-
-module.exports = {
-	_: (() => { 
-		return global._ || require( 'lodash' );
-	})(),
-	SequentialEvent: (() => { 
-		return global.SequentialEvent || require( 'sequential-event' );
-	})(),
-	Promise: (() => { 
-		return global.Promise && global.Promise.version ? global.Promise : require( 'bluebird' );
-	})(),
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bluebird":3,"lodash":8,"sequential-event":15}],2:[function(require,module,exports){
-'use strict';
-
-const {
-	_,
-} = require( 'lib/dependencies' );
-
-const stringifyValidationObject = validationErrors => {
-	return _( validationErrors ).mapValues(( error, key ) => {
-		return `${ key } => ${ JSON.stringify( error.value ) }
-* ${ _( error ).omit([ 'value' ]).values().map( _.identity ).value() }`;
-	}).values().join( '\n* ' );
-};
-
-class ValidationError extends Error {
-	/**
-	 * @class ValidationError
-	 * @classdesc This class represents an error related to validation
-	 * @extends Error
-	 * @description Construct a new validation error
-	 * @public
-	 * @author gerkin
-	 * @see Diaspora.check
-	 * @param {Object} validationErrors Object describing validation errors, usually returned by {@link Diaspora.check}
-	 * @param {String} message          Message of this error
-	 * @param {*} errorArgs...        Arguments to transfer to parent Error
-	 */
-	constructor( validationErrors, message, ...errorArgs ) {
-		message += `
-${ stringifyValidationObject( validationErrors ) }`;
-		super( message, ...errorArgs );
-		this.validationErrors = validationErrors;
-		if ( Error.captureStackTrace ) {
-			Error.captureStackTrace( this, this.constructor );
-		}
-	}
-}
-
-module.exports = ValidationError;
-
-},{"lib/dependencies":1}],3:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)
@@ -82,7 +25,7 @@ module.exports = ValidationError;
  * 
  */
 /**
- * bluebird build version 3.5.0
+ * bluebird build version 3.5.1
  * Features enabled: core, race, call_get, generators, map, nodeify, promisify, props, reduce, settle, some, using, timers, filter, any, each
 */
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Promise=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -765,7 +708,10 @@ Promise.prototype.suppressUnhandledRejections = function() {
 Promise.prototype._ensurePossibleRejectionHandled = function () {
     if ((this._bitField & 524288) !== 0) return;
     this._setRejectionIsUnhandled();
-    async.invokeLater(this._notifyUnhandledRejection, this, undefined);
+    var self = this;
+    setTimeout(function() {
+        self._notifyUnhandledRejection();
+    }, 1);
 };
 
 Promise.prototype._notifyUnhandledRejectionIsHandled = function () {
@@ -3555,7 +3501,7 @@ _dereq_("./synchronous_inspection")(Promise);
 _dereq_("./join")(
     Promise, PromiseArray, tryConvertToPromise, INTERNAL, async, getDomain);
 Promise.Promise = Promise;
-Promise.version = "3.5.0";
+Promise.version = "3.5.1";
 _dereq_('./map.js')(Promise, PromiseArray, apiRejection, tryConvertToPromise, INTERNAL, debug);
 _dereq_('./call_get.js')(Promise);
 _dereq_('./using.js')(Promise, apiRejection, tryConvertToPromise, createContext, INTERNAL, debug);
@@ -5519,10 +5465,11 @@ function safeToString(obj) {
 }
 
 function isError(obj) {
-    return obj !== null &&
+    return obj instanceof Error ||
+        (obj !== null &&
            typeof obj === "object" &&
            typeof obj.message === "string" &&
-           typeof obj.name === "string";
+           typeof obj.name === "string");
 }
 
 function markAsOriginatingFromRejection(e) {
@@ -5677,7 +5624,7 @@ module.exports = ret;
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":9}],4:[function(require,module,exports){
+},{"_process":7}],2:[function(require,module,exports){
 "use strict";
 /* eslint-disable no-invalid-this */
 let checkError = require("check-error");
@@ -6040,7 +5987,7 @@ module.exports.transferPromiseness = (assertion, promise) => {
 
 module.exports.transformAsserterArgs = values => values;
 
-},{"check-error":5}],5:[function(require,module,exports){
+},{"check-error":3}],3:[function(require,module,exports){
 'use strict';
 
 /* !
@@ -6214,7 +6161,7 @@ module.exports = {
   getConstructorName: getConstructorName,
 };
 
-},{}],6:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /*globals define, module, Symbol */
 /*jshint -W056 */
 
@@ -7114,7 +7061,7 @@ module.exports = {
   }
 }(this));
 
-},{}],7:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7418,7 +7365,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],8:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -24506,7 +24453,7 @@ function isUndefined(arg) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -24692,7 +24639,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],10:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 /* globals it: false, describe: false, require: false, expect: false, Diaspora: false, dataSources: false, define: false, getStyle: false */
@@ -25538,10 +25485,9 @@ var AdapterTestUtils = {
 	},
 	checkRegisterAdapter: ( adapterLabel, dataSourceName, addName = '' ) => {
 		it( getStyle( 'taskCategory', `Register named ${ adapterLabel } dataSource` ), () => {
-			const namespace = TABLE;
-			Diaspora.registerDataSource( namespace, dataSourceName, dataSources[getDataSourceLabel( adapterLabel, addName )]);
+			Diaspora.registerDataSource( dataSourceName, dataSources[getDataSourceLabel( adapterLabel, addName )]);
 			//console.log(Diaspora.dataSources);
-			expect( Diaspora.dataSources[namespace][dataSourceName]).to.eql( dataSources[getDataSourceLabel( adapterLabel, addName )]);
+			expect( Diaspora.dataSources[dataSourceName]).to.eql( dataSources[getDataSourceLabel( adapterLabel, addName )]);
 		});
 	},
 };
@@ -25552,14 +25498,13 @@ if ( 'undefined' !== typeof define ) {
 	module.exports = AdapterTestUtils;
 }
 
-},{"../testApps/adapters/index":14,"bluebird":3,"lodash":8}],11:[function(require,module,exports){
+},{"../testApps/adapters/index":12,"bluebird":1,"lodash":6}],9:[function(require,module,exports){
 (function (process,global){
 'use strict';
 
 /* globals l: false, c: false, describe: false, require: false, expect: false, chalk: false, chai: false, path: false */
 
 let config = {};
-let getCurrentDir;
 
 let styles = {};
 
@@ -25567,12 +25512,6 @@ if ( 'undefined' === typeof window ) {
 	global.path = require( 'path' );
 	global.projectPath = path.resolve( '../' );
 	global.chalk = require( 'chalk' );
-
-	const stackTrace = require( 'stack-trace' );
-	getCurrentDir = () => {
-		const stackItem = stackTrace.get()[2];
-		return path.dirname( stackItem.getFileName());
-	};
 
 	global.chalk = require( 'chalk' );
 	try {
@@ -25595,9 +25534,6 @@ if ( 'undefined' === typeof window ) {
 	};
 } else {
 	config = {};
-	getCurrentDir = () => {
-		return '';
-	};
 }
 
 global.getStyle = ( styleName, text ) => {
@@ -25634,7 +25570,7 @@ global.Promise = require( 'bluebird' );
 chai.use( function chaiUse( _chai, utils ) {
 	utils.addProperty( chai.Assertion.prototype, 'set', function chaiSet() {
 		this.assert(
-			c.array( this._obj ) || this._obj.hasOwnProperty('entities'),
+			c.array( this._obj ) || this._obj.hasOwnProperty( 'entities' ),
 			'expected #{this} to be a collection',
 			'expected #{this} to not be a collection' );
 		utils.flag( this, 'collection', true );
@@ -25772,20 +25708,18 @@ chai.use( function chaiUse( _chai, utils ) {
 });
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./config.js":undefined,"_process":9,"bluebird":3,"chai":undefined,"chai-as-promised":4,"chalk":undefined,"check-types":6,"lodash":8,"path":undefined,"sequential-event":15,"stack-trace":undefined}],12:[function(require,module,exports){
+},{"./config.js":undefined,"_process":7,"bluebird":1,"chai":undefined,"chai-as-promised":2,"chalk":undefined,"check-types":4,"lodash":6,"path":undefined,"sequential-event":13}],10:[function(require,module,exports){
 (function (process,global,__dirname){
 'use strict';
 
-/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false, chalk: false, importTest: false */
+/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false, getStyle: false, importTest: false */
 
 require( './defineGlobals' );
 
 if ( process.env.SAUCE_ONLY !== 'true' ) {
-	(() => {
-		if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
-			global.Diaspora = require( '../diaspora' );
-		}
-	})();
+	if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
+		global.Diaspora = require( '../diaspora' );
+	}
 	global.dataSources = {};
 	describe( '"check" feature', () => {
 		it( 'Basic tests with types', () => {
@@ -26103,17 +26037,16 @@ if ( process.env.SAUCE_ONLY !== 'true' ) {
 		});
 	});
 
-	const styleFunction = 'undefined' === typeof window ? chalk.bold.underline.blue : l.identity;
-	importTest( styleFunction( 'Adapters' ), `${ __dirname  }/adapters/index.js` );
-	importTest( styleFunction( 'Models' ), `${ __dirname  }/models/index.js` );
+	importTest( getStyle( 'category', 'Adapters' ), `${ __dirname  }/adapters/index.js` );
+	importTest( getStyle( 'category', 'Models' ), `${ __dirname  }/models/index.js` );
 }
 
 if ( 'undefined' === typeof window && process.env.NO_SAUCE !== 'true' ) {
-	require( `${ __dirname  }/browser/selenium.js` );
+	importTest( getStyle( 'category', 'Browser tests' ), `${ __dirname  }/browser/selenium.js` );
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},"/test")
-},{"../diaspora":undefined,"./defineGlobals":11,"_process":9}],13:[function(require,module,exports){
+},{"../diaspora":undefined,"./defineGlobals":9,"_process":7}],11:[function(require,module,exports){
 'use strict';
 
 /* globals l: false, c: false, it: false, require: false, expect: false, chalk: false */
@@ -26297,7 +26230,7 @@ module.exports = ( adapter, data, tableName ) => {
 	});
 };
 
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 /* globals describe: false, require: false, chalk: false */
@@ -26326,10 +26259,10 @@ module.exports = adapter => {
 
 // Symbols: ✨ 🔎 🔃 ❌
 
-},{}],15:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = require('./lib/sequential-event.js');
 
-},{"./lib/sequential-event.js":16}],16:[function(require,module,exports){
+},{"./lib/sequential-event.js":14}],14:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -26491,37 +26424,13 @@ class SequentialEvent extends EventEmitter {
 module.exports = SequentialEvent;
 
 }).call(this,require('_process'))
-},{"_process":9,"events":7}],"/test/adapters/inMemory.js":[function(require,module,exports){
-'use strict';
-
-const AdapterTestUtils = require( './utils' );
-const ADAPTER_LABEL = 'in-memory';
-
-AdapterTestUtils.createDataSource( ADAPTER_LABEL, {});
-AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'InMemory' );
-AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
-AdapterTestUtils.checkApplications( ADAPTER_LABEL );
-AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'inMemory' );
-
-},{"./utils":10}],"/test/adapters/index.js":[function(require,module,exports){
-(function (__dirname){
-'use strict';
-
-/* globals importTest: false, getStyle: false */
-
-importTest( getStyle( 'adapter', 'In Memory' ), `${ __dirname  }/inMemory.js` );
-if ( 'undefined' !== typeof window ) {
-	importTest( getStyle( 'adapter', 'Local Storage' ), `${ __dirname  }/localStorage.js` );
-}
-
-}).call(this,"/test/adapters")
-},{}],"/test/adapters/localStorage.js":[function(require,module,exports){
+},{"_process":7,"events":5}],"/test/adapters/browserStorage.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
 /* globals it: false, require: false, getConfig: false */
 
-const ADAPTER_LABEL = 'localstorage';
+const ADAPTER_LABEL = 'browserStorage';
 const adapterConfig = getConfig( ADAPTER_LABEL );
 
 if ( 'undefined' === typeof window ) {
@@ -26558,11 +26467,35 @@ if ( 'undefined' !== typeof window ) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./utils":10,"node-localstorage":undefined}],"/test/models/components.js":[function(require,module,exports){
+},{"./utils":8,"node-localstorage":undefined}],"/test/adapters/inMemory.js":[function(require,module,exports){
+'use strict';
+
+const AdapterTestUtils = require( './utils' );
+const ADAPTER_LABEL = 'inMemory';
+
+AdapterTestUtils.createDataSource( ADAPTER_LABEL, {});
+AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'InMemory' );
+AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
+AdapterTestUtils.checkApplications( ADAPTER_LABEL );
+AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'inMemory' );
+
+},{"./utils":8}],"/test/adapters/index.js":[function(require,module,exports){
+(function (__dirname){
+'use strict';
+
+/* globals importTest: false, getStyle: false */
+
+importTest( getStyle( 'adapter', 'In Memory' ), `${ __dirname  }/inMemory.js` );
+if ( 'undefined' !== typeof window ) {
+	importTest( getStyle( 'adapter', 'Browser Storage' ), `${ __dirname  }/browserStorage.js` );
+}
+
+}).call(this,"/test/adapters")
+},{}],"/test/models/components.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
-/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false */
+/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false */
 
 let testModel;
 let testEntity;
@@ -26572,7 +26505,7 @@ const SOURCE = 'inMemory';
 
 
 it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
 		attributes: {},
@@ -26756,7 +26689,7 @@ describe( 'Test set', () => {
 });
 
 }).call(this,require('_process'))
-},{"_process":9}],"/test/models/index.js":[function(require,module,exports){
+},{"_process":7}],"/test/models/index.js":[function(require,module,exports){
 (function (__dirname){
 'use strict';
 
@@ -26797,7 +26730,7 @@ const checkDataStoreRemap = ( item, propsObject ) => {
 };
 
 it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources: {
 			[ SOURCE ]: {
 				foo: 'bar',
@@ -26814,7 +26747,7 @@ it( 'Should create a model', () => {
 	if ( 'undefined' === typeof window ) {
 		expect( testModel.constructor.name ).to.be.eql( 'Model' );
 	}
-	store = Diaspora.dataSources.test.inMemory.store.remapped;
+	store = Diaspora.dataSources.inMemory.store.remapped;
 });
 it( 'Should be able to create an entity of the defined model.', () => {
 	const entity1 = testModel.spawn();
@@ -27098,7 +27031,7 @@ const SOURCE = 'inMemory';
 
 
 it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
 		attributes: {
@@ -27384,11 +27317,11 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 let testModel;
 const MODEL_NAME = 'validatedModel';
 const SOURCE = 'inMemory';
-const ValidationError = require( 'lib/validationError' );
+const ValidationError = Diaspora.components.ValidationError;
 
 
 it( 'Should create a model', () => {
-	testModel = Diaspora.declareModel( 'test', MODEL_NAME, {
+	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
 		attributes: {
@@ -27711,4 +27644,4 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 });
 */
 
-},{"lib/validationError":2}]},{},[12,11,"/test/models/components.js","/test/models/index.js","/test/models/simple-remapping.js","/test/models/simple.js","/test/models/validations.js","/test/adapters/index.js","/test/adapters/inMemory.js","/test/adapters/localStorage.js",10,13,14]);
+},{}]},{},[10,9,"/test/models/components.js","/test/models/index.js","/test/models/simple-remapping.js","/test/models/simple.js","/test/models/validations.js","/test/adapters/index.js","/test/adapters/inMemory.js","/test/adapters/browserStorage.js",8,11,12]);

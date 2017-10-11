@@ -3390,8 +3390,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					var _this37 = _possibleConstructorReturn(this, (_ref3 = ValidationError.__proto__ || Object.getPrototypeOf(ValidationError)).call.apply(_ref3, [this, message].concat(errorArgs)));
 
 					_this37.validationErrors = validationErrors;
-					if (Error.captureStackTrace) {
+					_this37.constructor = ValidationError;
+					if ('function' === typeof Error.captureStackTrace) {
 						Error.captureStackTrace(_this37, _this37.constructor);
+					} else {
+						_this37.stack = new Error(message).stack;
 					}
 					return _this37;
 				}

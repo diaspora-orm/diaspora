@@ -9,7 +9,7 @@ module.exports = function gruntInit( grunt ) {
 	// Project configuration.
 
 	const baseDocPath = 'doc';
-	const testFiles = [ 'index.js', 'defineGlobals.js', 'models/**/*.js', 'adapters/index.js', 'adapters/inMemory.js', 'adapters/localStorage.js', 'adapters/utils.js', 'testApps/**/*.js' ];
+	const testFiles = [ 'index.js', 'defineGlobals.js', 'models/**/*.js', 'adapters/index.js', 'adapters/inMemory.js', 'adapters/browserStorage.js', 'adapters/utils.js', 'testApps/**/*.js' ];
 	const doccoPath = `${ baseDocPath }/docco`;
 	const jsdocPath = `${ baseDocPath }/jsdoc`;
 	const jsAssets = /*['lib/adapters/baseAdapter.js'] ||*/ [
@@ -115,7 +115,7 @@ module.exports = function gruntInit( grunt ) {
 					alias: {
 						'/test/adapters/index.js':          './test/adapters/index.js',
 						'/test/adapters/inMemory.js':       './test/adapters/inMemory.js',
-						'/test/adapters/localStorage.js':   './test/adapters/localStorage.js',
+						'/test/adapters/browserStorage.js': './test/adapters/browserStorage.js',
 						'/test/models/index.js':            './test/models/index.js',
 						'/test/models/simple.js':           './test/models/simple.js',
 						'/test/models/simple-remapping.js': './test/models/simple-remapping.js',
@@ -123,6 +123,11 @@ module.exports = function gruntInit( grunt ) {
 						'/test/models/components.js':       './test/models/components.js',
 					},
 					exclude: [ './browser/selenium.js', './config.js', 'chai', '../diaspora', 'path', 'chalk', 'stack-trace', 'expect.js', 'node-localstorage', 'fs' ],
+					options: {
+						browserifyOptions: {
+							fullPaths: false,
+						},
+					},
 				},
 			},
 		},

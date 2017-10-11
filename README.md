@@ -34,6 +34,7 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 			<th>Adapter</th>
 			<th>Links</th>
 			<th>Maintainer</th>
+			<th>Platform</th>
 			<th>Other infos</th>
 		</tr>
 	</thead>
@@ -41,11 +42,13 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 		<tr>
 			<td style="vertical-align: middle;"><img width="100" alt="In memory" src="https://cdn.rawgit.com/GerkinDev/Diaspora/master/media/inMemory.svg"/></td>
 			<td colspan="2" style="vertical-align: middle;">Built-in</td>
+			<td>Node + Browser</td>
 			<td rowspan="2" style="vertical-align: middle;">QL v2</td>
 		</tr>
 		<tr>
 			<td style="vertical-align: middle;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage"><img width="100" alt="Browser storage" src="https://cdn.rawgit.com/GerkinDev/Diaspora/master/media/browserStorage.svg"/></a></td>
-			<td colspan="2" style="vertical-align: middle;">Built-in (browser build only)</td>
+			<td colspan="2" style="vertical-align: middle;">Built-in</td>
+			<td>Browser</td>
 		</tr>
 		<tr>
 			<td style="vertical-align: middle;"><a href="https://www.mongodb.com/"><img width="100" alt="MongoDB" src="https://cdn.rawgit.com/GerkinDev/Diaspora-Mongo/master/media/mongo.svg"/></a></td>
@@ -55,6 +58,7 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 				<a href="yarnpkg.com/en/package/diaspora-mongo" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-mongo.svg?label=yarn"/></a>
 			</td>
 			<td style="vertical-align: middle;"><a href="https://github.com/GerkinDev" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev"/></a></td>
+			<td>Node</td>
 			<td style="vertical-align: middle;">QL v2</td>
 		</tr>
 	</tbody>
@@ -153,7 +157,8 @@ Reload entity from specified `source`.
 
 > IndexedDB Adapter (browser)
 
-*Unsure* > IndexedDB technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+*Unsure* > IndexedDB technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).  
+*Note: Plan to show fallback implementations*
 
 > Auto-switch to API server/client
 

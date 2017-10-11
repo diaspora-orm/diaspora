@@ -51,7 +51,7 @@ it( 'Should reject persistance of badly configured entities.', () => {
 		expect( fail2 ).to.be.rejectedWith( /(\W|^)prop2\W.*\Wenumerat(ed|ion)(\W|$)/m ),
 		expect( fail3 ).to.be.rejectedWith( ValidationError ),
 		expect( fail3 ).to.be.rejectedWith( /(\W|^)prop2\W.*\Winteger(\W|$)/m ),
-		expect( fail4 ).to.be.rejectedWith(),
+		expect( fail4 ).to.be.rejectedWith( ValidationError ),
 		expect( fail4 ).to.be.rejectedWith( /(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m ),
 	]);
 });

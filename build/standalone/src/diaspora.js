@@ -2909,8 +2909,11 @@ class ValidationError extends Error {
 ${ stringifyValidationObject( validationErrors ) }`;
 		super( message, ...errorArgs );
 		this.validationErrors = validationErrors;
-		if ( Error.captureStackTrace ) {
+		this.constructor = ValidationError;
+		if ( 'function' === typeof Error.captureStackTrace ) {
 			Error.captureStackTrace( this, this.constructor );
+		} else { 
+			this.stack = ( new Error( message )).stack; 
 		}
 	}
 }
