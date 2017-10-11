@@ -50,11 +50,11 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 		<tr>
 			<td style="vertical-align: middle;"><a href="https://www.mongodb.com/"><img width="100" alt="MongoDB" src="https://github.com/GerkinDev/Diaspora-Mongo/raw/master/media/mongo.svg"/></a></td>
 			<td style="vertical-align: middle;">
-				[![GitHub release](https://img.shields.io/github/release/GerkinDev/Diaspora-Mongo.svg?label=GitHub)](https://github.com/GerkinDev/Diaspora-Mongo)
-				[![npm](https://img.shields.io/npm/v/diaspora-mongo.svg)](https://www.npmjs.com/package/diaspora-mongo)
-				[![yarn](https://img.shields.io/npm/v/diaspora-mongo.svg?label=yarn)](yarnpkg.com/en/package/diaspora-mongo)
+				<a href="https://github.com/GerkinDev/Diaspora-Mongo" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/GerkinDev/Diaspora-Mongo.svg?label=GitHub"/></a>
+				<a href="https://www.npmjs.com/package/diaspora-mongo" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-mongo.svg"/></a>
+				<a href="yarnpkg.com/en/package/diaspora-mongo" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-mongo.svg?label=yarn"/></a>
 			</td>
-			<td style="vertical-align: middle;">[![GitHub followers](https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev)](https://github.com/GerkinDev)</td>
+			<td style="vertical-align: middle;"><a href="https://github.com/GerkinDev" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev"/></a></td>
 			<td style="vertical-align: middle;">QL v2</td>
 		</tr>
 	</tbody>
