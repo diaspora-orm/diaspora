@@ -9,6 +9,8 @@
 Fancy badges:  
 [![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
 [![Dependency Status](https://gemnasium.com/badges/github.com/GerkinDev/Diaspora.svg)](https://gemnasium.com/github.com/GerkinDev/Diaspora)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6fdd8d23491248afccb9/maintainability)](https://codeclimate.com/github/GerkinDev/Diaspora/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/6fdd8d23491248afccb9/test_coverage)](https://codeclimate.com/github/GerkinDev/Diaspora/test_coverage)  
 [![npm](https://img.shields.io/npm/dm/diaspora.svg)](https://npmjs.org/package/diaspora)
 [![npm version](https://badge.fury.io/js/diaspora.svg)](https://badge.fury.io/js/diaspora)
 [![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)

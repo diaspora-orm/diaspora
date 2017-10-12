@@ -32,6 +32,8 @@ notifications:
   slack:
     rooms:
       - altenter-project:Pc8sMyCuHNPBCg1TOw0weD9S#tech
+before_install:
+  - rm npm-shrinkwrap.json
 before_script:
   - |
     if [ $SAUCE == "yes" ]; then
