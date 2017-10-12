@@ -13,8 +13,8 @@ engines:
     enabled: true
   markdownlint:
     enabled: true
-	exclude_paths:
-	- "!**.md"
+    exclude_paths:
+    - "!**.md"
 exclude_paths:
 - "dist/"
 - "build/"
