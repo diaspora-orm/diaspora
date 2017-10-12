@@ -1,4 +1,4 @@
-# Changelog
+# Diaspora changelog
 
 ## v0.2.0 ()
 
@@ -9,6 +9,8 @@
 	* beforeFind => fetch => afterFind
 	* beforeDelete => destroy => afterDelete
 
+---
+
 ## v0.1.0 (10/03/2017)
 
-Initial release
+* Initial release

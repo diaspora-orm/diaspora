@@ -25716,7 +25716,7 @@ chai.use( function chaiUse( _chai, utils ) {
 
 require( './defineGlobals' );
 
-if ( process.env.SAUCE_ONLY !== 'true' ) {
+if ( 'no' === process.env.SAUCE || 'undefined' === typeof process.env.SAUCE ) {
 	if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
 		global.Diaspora = require( '../diaspora' );
 	}
@@ -26041,7 +26041,7 @@ if ( process.env.SAUCE_ONLY !== 'true' ) {
 	importTest( getStyle( 'category', 'Models' ), `${ __dirname  }/models/index.js` );
 }
 
-if ( 'undefined' === typeof window && process.env.NO_SAUCE !== 'true' ) {
+if ( 'yes' === process.env.SAUCE ) {
 	importTest( getStyle( 'category', 'Browser tests' ), `${ __dirname  }/browser/selenium.js` );
 }
 
@@ -26275,11 +26275,12 @@ module.exports = require('./lib/sequential-event.js');
 const EventEmitter = require( 'events' ).EventEmitter;
 
 /**
- * Handle execution of all handlers in sequence
- * @param	{Function|Function[]}	handlers	Function(s) to execute. Each function may return a Promise
- * @param	{EventEmitter}			object		Objecto call event on
- * @param	{Any[]}					[args]		Arguments to pass to each called function
- * @returns	{Promise}				Promise resolved once each function is executed
+ * Handle execution of all handlers in sequence.
+ * 
+ * @param   {Function|Function[]} handlers - Function(s) to execute. Each function may return a Promise.
+ * @param   {EventEmitter}        object   - Objecto call event on.
+ * @param   {Any[]}               [args]   - Arguments to pass to each called function.
+ * @returns {Promise} Promise resolved once each function is executed.
  * @memberof SequentialEvent
  * @author Gerkin
  * @private
@@ -26294,11 +26295,13 @@ function emitHandlers( handlers, object, args ) {
 
 		const sourcePromise = new Promise(( resolve, reject ) => {
 			/**
-			 * Generate next promise for sequence
-			 * @param	{Any}	prevResolve	Previous event chain resolved value
-			 * @returns	{undefined}
+			 * Generate next promise for sequence.
+			 * 
+			 * @param   {Any} prevResolve - Event chain resolved value.
+			 * @returns {undefined} *This function does not return anything*.
+			 * @memberof SequentialEvent
 			 * @author Gerkin
-			 * @private
+			 * @inner
 			 */
 			function getNextPromise( prevResolve ) {
 				if ( i < handlersLength ) {
@@ -26317,11 +26320,12 @@ function emitHandlers( handlers, object, args ) {
 }
 
 /**
- * Handle execution of a single handler
- * @param	{Function}		handler	Function to execute. It may return a Promise
- * @param	{EventEmitter}	object	Object to call event on
- * @param	{Any[]}			[args]	Arguments to pass to each called function
- * @returns	{Promise}		Promise resolved once this function is done
+ * Handle execution of a single handler.
+ * 
+ * @param   {Function}     handler - Function to execute. It may return a Promise.
+ * @param   {EventEmitter} object  - Object to call event on.
+ * @param   {Any[]}        [args]  - Arguments to pass to each called function.
+ * @returns {Promise} Promise resolved once this function is done.
  * @memberof SequentialEvent
  * @author Gerkin
  * @private
@@ -26340,13 +26344,15 @@ function emitHandler( handler, object, args ) {
 }
 
 /**
- * @classdesc Event emitter that guarantees sequential execution of handlers. Each handler may return a **Promise**
+ * Event emitter that guarantees sequential execution of handlers. Each handler may return a **Promise**.
+ * 
  * @extends EventEmitter
- * @see {@link https://nodejs.org/api/events.html Node EventEmitter}
+ * @see {@link https://nodejs.org/api/events.html Node EventEmitter}.
  */
 class SequentialEvent extends EventEmitter {
 	/**
-	 * Constructs a new SequentialEvent
+	 * Constructs a new SequentialEvent.
+	 * 
 	 * @author Gerkin
 	 */
 	constructor() {
@@ -26354,10 +26360,11 @@ class SequentialEvent extends EventEmitter {
 	}
 
 	/**
-	 * SequentialEvents each corresponding handlers in sequence
-	 * @param   {Any}				type		Name of the event to sequential-event
-	 * @param   {Any[]}				[args...]	Parameters to pass to handlers
-	 * @returns	{boolean|Promise}	false if no handlers found or an error occured. Otherwise, returns a Promise resolved when then chain is done
+	 * SequentialEvents each corresponding handlers in sequence.
+	 * 
+	 * @param   {Any}   type   - Name of the event to sequential-event.
+	 * @param   {Any[]} [args] - Parameters to pass to handlers.
+	 * @returns {Promise} Returns a Promise resolved when then chain is done.
 	 * @author Gerkin
 	 */
 	emit( type, ...args ) {

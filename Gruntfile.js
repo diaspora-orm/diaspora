@@ -133,7 +133,6 @@ module.exports = function gruntInit( grunt ) {
 		},
 		babel: {
 			options: {
-				sourceMap: true,
 				presets:   [[ 'env', {
 					modules: false,
 					targets: {
@@ -155,6 +154,22 @@ module.exports = function gruntInit( grunt ) {
 				}],
 			},
 			standalone: {
+				options: {
+					plugins: [
+						[ '@comandeer/babel-plugin-banner', {
+							banner: `/**
+* @file <%= pkg.name %>
+* 
+* <%= pkg.description %>
+* Standalone build compiled on <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %>
+*
+* @license <%= pkg.license %>
+* @version <%= pkg.version %>
+* @author <%= pkg.author %>
+*/`,
+						}],
+					],
+				},
 				files: [{
 					expand: true,
 					cwd:    'build/standalone/src',
@@ -164,6 +179,22 @@ module.exports = function gruntInit( grunt ) {
 				}],
 			},
 			isolated: {
+				options: {
+					plugins: [
+						[ '@comandeer/babel-plugin-banner', {
+							banner: `/**
+* @file <%= pkg.name %>
+* 
+* <%= pkg.description %>
+* Isolated build compiled on <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %>
+*
+* @license <%= pkg.license %>
+* @version <%= pkg.version %>
+* @author <%= pkg.author %>
+*/`,
+						}],
+					],
+				},
 				files: [{
 					expand: true,
 					cwd:    'build/isolated/src',
@@ -186,7 +217,6 @@ module.exports = function gruntInit( grunt ) {
 		},
 		uglify: {
 			options: {
-				banner:    '/*! <%= pkg.name %> build on <%= grunt.template.today("yyyy-mm-dd hh:MM:ss") %> for v<%= pkg.version %> */',
 				sourceMap: true,
 				output:    {
 					comments: 'some',
@@ -259,7 +289,6 @@ module.exports = function gruntInit( grunt ) {
 
 	grunt.loadNpmTasks( 'grunt-jsdoc' );
 	grunt.loadNpmTasks( 'grunt-docco-husky' );
-	grunt.loadNpmTasks( 'grunt-markdown' );
 	grunt.loadNpmTasks( 'gruntify-eslint' );
 	grunt.loadNpmTasks( 'grunt-changed' );
 	grunt.loadNpmTasks( 'grunt-browserify' );
@@ -276,7 +305,7 @@ module.exports = function gruntInit( grunt ) {
 		'jsdoc',
 		'docco_husky',
 	]);
-	grunt.registerTask( 'refreshScripts', [
+	grunt.registerTask( 'dist', [
 		'lint',
 		'buildStandalone',
 		'buildIsolated',

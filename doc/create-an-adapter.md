@@ -24,7 +24,7 @@ class MyEntity extends DataStoreEntity {
 
 // Your adapter logic.
 class MyDiasporaAdapter extends DiasporaAdapter {
-	constructor() {
+	constructor( config ) {
 		super( MyEntity );
 	}
 	
@@ -53,7 +53,7 @@ class MyDiasporaAdapter extends DiasporaAdapter {
 }
 
 // Here, give a name to your adapter, and register it in Diaspora
-Diaspora.registerAdapter( 'my-adapter', MyDiasporaAdapter );
+require('diaspora').registerAdapter( 'my-adapter', MyDiasporaAdapter );
 
 // Optionnally, you can export it
 module.exports = MyDiasporaAdapter;

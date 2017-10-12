@@ -4,7 +4,7 @@
 
 require( './defineGlobals' );
 
-if ( process.env.SAUCE_ONLY !== 'true' ) {
+if ( 'no' === process.env.SAUCE || 'undefined' === typeof process.env.SAUCE ) {
 	if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
 		global.Diaspora = require( '../diaspora' );
 	}
@@ -329,6 +329,6 @@ if ( process.env.SAUCE_ONLY !== 'true' ) {
 	importTest( getStyle( 'category', 'Models' ), `${ __dirname  }/models/index.js` );
 }
 
-if ( 'undefined' === typeof window && process.env.NO_SAUCE !== 'true' ) {
+if ( 'yes' === process.env.SAUCE ) {
 	importTest( getStyle( 'category', 'Browser tests' ), `${ __dirname  }/browser/selenium.js` );
 }

@@ -1,0 +1,27 @@
+---
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  nodesecurity:
+    enabled: true
+  markdownlint:
+    enabled: true
+	exclude_paths:
+	- "!**.md"
+exclude_paths:
+- "dist/"
+- "build/"
+- "node_modules/"
+- "test/"
+- "docs/"
+- "Gruntfile.js"
+- "LICENSE"
+- "*.md"
+- "*.json"

@@ -1,4 +1,13 @@
-var _get=function get(object,property,receiver){if(object===null)object=Function.prototype;var desc=Object.getOwnPropertyDescriptor(object,property);if(desc===undefined){var parent=Object.getPrototypeOf(object);if(parent===null){return undefined;}else{return get(parent,property,receiver);}}else if("value"in desc){return desc.value;}else{var getter=desc.get;if(getter===undefined){return undefined;}return getter.call(receiver);}};var _slicedToArray=function(){function sliceIterator(arr,i){var _arr=[];var _n=true;var _d=false;var _e=undefined;try{for(var _i=arr[Symbol.iterator](),_s;!(_n=(_s=_i.next()).done);_n=true){_arr.push(_s.value);if(i&&_arr.length===i)break;}}catch(err){_d=true;_e=err;}finally{try{if(!_n&&_i["return"])_i["return"]();}finally{if(_d)throw _e;}}return _arr;}return function(arr,i){if(Array.isArray(arr)){return arr;}else if(Symbol.iterator in Object(arr)){return sliceIterator(arr,i);}else{throw new TypeError("Invalid attempt to destructure non-iterable instance");}};}();var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==Symbol.prototype?"symbol":typeof obj;};function _defineProperty(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}(function(f){if((typeof exports==="undefined"?"undefined":_typeof(exports))==="object"&&typeof module!=="undefined"){module.exports=f();}else if(typeof define==="function"&&define.amd){define([],f);}else{var g;if(typeof window!=="undefined"){g=window;}else if(typeof global!=="undefined"){g=global;}else if(typeof self!=="undefined"){g=self;}else{g=this;}g.Diaspora=f();}})(function(){var define,module,exports;return function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f;}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e);},l,l.exports,e,t,n,r);}return n[o].exports;}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++){s(r[o]);}return s;}({1:[function(require,module,exports){(function(global){"use strict";var _typeof2="function"==typeof Symbol&&"symbol"==_typeof(Symbol.iterator)?function(t){return typeof t==="undefined"?"undefined":_typeof(t);}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t==="undefined"?"undefined":_typeof(t);};!function t(e,n,r){function i(u,a){if(!n[u]){if(!e[u]){var c="function"==typeof require&&require;if(!a&&c)return c(u,!0);if(o)return o(u,!0);var s=new Error("Cannot find module '"+u+"'");throw s.code="MODULE_NOT_FOUND",s;}var l=n[u]={exports:{}};e[u][0].call(l.exports,function(t){var n=e[u][1][t];return i(n||t);},l,l.exports,t,e,n,r);}return n[u].exports;}for(var o="function"==typeof require&&require,u=0;u<r.length;u++){i(r[u]);}return i;}({1:[function(t,e,n){(function(t,r){/* @preserve
+/**
+* @file diaspora
+* 
+* Multi-Layer ORM for Javascript Client+Server
+* Standalone build compiled on 2017-10-12 02:31:16
+*
+* @license GPL-3.0
+* @version 0.1.0
+* @author Gerkin
+*/var _get=function get(object,property,receiver){if(object===null)object=Function.prototype;var desc=Object.getOwnPropertyDescriptor(object,property);if(desc===undefined){var parent=Object.getPrototypeOf(object);if(parent===null){return undefined;}else{return get(parent,property,receiver);}}else if("value"in desc){return desc.value;}else{var getter=desc.get;if(getter===undefined){return undefined;}return getter.call(receiver);}};var _slicedToArray=function(){function sliceIterator(arr,i){var _arr=[];var _n=true;var _d=false;var _e=undefined;try{for(var _i=arr[Symbol.iterator](),_s;!(_n=(_s=_i.next()).done);_n=true){_arr.push(_s.value);if(i&&_arr.length===i)break;}}catch(err){_d=true;_e=err;}finally{try{if(!_n&&_i["return"])_i["return"]();}finally{if(_d)throw _e;}}return _arr;}return function(arr,i){if(Array.isArray(arr)){return arr;}else if(Symbol.iterator in Object(arr)){return sliceIterator(arr,i);}else{throw new TypeError("Invalid attempt to destructure non-iterable instance");}};}();var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==Symbol.prototype?"symbol":typeof obj;};function _defineProperty(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}(function(f){if((typeof exports==="undefined"?"undefined":_typeof(exports))==="object"&&typeof module!=="undefined"){module.exports=f();}else if(typeof define==="function"&&define.amd){define([],f);}else{var g;if(typeof window!=="undefined"){g=window;}else if(typeof global!=="undefined"){g=global;}else if(typeof self!=="undefined"){g=self;}else{g=this;}g.Diaspora=f();}})(function(){var define,module,exports;return function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f;}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e);},l,l.exports,e,t,n,r);}return n[o].exports;}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++){s(r[o]);}return s;}({1:[function(require,module,exports){(function(global){"use strict";var _typeof2="function"==typeof Symbol&&"symbol"==_typeof(Symbol.iterator)?function(t){return typeof t==="undefined"?"undefined":_typeof(t);}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t==="undefined"?"undefined":_typeof(t);};!function t(e,n,r){function i(u,a){if(!n[u]){if(!e[u]){var c="function"==typeof require&&require;if(!a&&c)return c(u,!0);if(o)return o(u,!0);var s=new Error("Cannot find module '"+u+"'");throw s.code="MODULE_NOT_FOUND",s;}var l=n[u]={exports:{}};e[u][0].call(l.exports,function(t){var n=e[u][1][t];return i(n||t);},l,l.exports,t,e,n,r);}return n[u].exports;}for(var o="function"==typeof require&&require,u=0;u<r.length;u++){i(r[u]);}return i;}({1:[function(t,e,n){(function(t,r){/* @preserve
              * The MIT License (MIT)
              * 
              * Copyright (c) 2013-2017 Petka Antonov
@@ -10763,42 +10772,49 @@ process.versions={};function noop(){}process.on=noop;process.addListener=noop;pr
  * @licence GPLv3
  * @author Gerkin
  */var EventEmitter=require('events').EventEmitter;/**
- * Handle execution of all handlers in sequence
- * @param	{Function|Function[]}	handlers	Function(s) to execute. Each function may return a Promise
- * @param	{EventEmitter}			object		Objecto call event on
- * @param	{Any[]}					[args]		Arguments to pass to each called function
- * @returns	{Promise}				Promise resolved once each function is executed
+ * Handle execution of all handlers in sequence.
+ * 
+ * @param   {Function|Function[]} handlers - Function(s) to execute. Each function may return a Promise.
+ * @param   {EventEmitter}        object   - Objecto call event on.
+ * @param   {Any[]}               [args]   - Arguments to pass to each called function.
+ * @returns {Promise} Promise resolved once each function is executed.
  * @memberof SequentialEvent
  * @author Gerkin
  * @private
  */function emitHandlers(handlers,object,args){// Check if the provided handler is a single function or an array of functions
 if('function'===typeof handlers){return emitHandler(handlers,object,args);}else{var i=0;var handlersLength=handlers.length;var sourcePromise=new Promise(function(resolve,reject){/**
-			 * Generate next promise for sequence
-			 * @param	{Any}	prevResolve	Previous event chain resolved value
-			 * @returns	{undefined}
+			 * Generate next promise for sequence.
+			 * 
+			 * @param   {Any} prevResolve - Event chain resolved value.
+			 * @returns {undefined} *This function does not return anything*.
+			 * @memberof SequentialEvent
 			 * @author Gerkin
-			 * @private
+			 * @inner
 			 */function getNextPromise(prevResolve){if(i<handlersLength){var stepArgs='undefined'!==typeof prevResolve?args.concat([prevResolve]):args.slice(0);var newPromise=emitHandler(handlers[i],object,stepArgs);newPromise.then(getNextPromise).catch(reject);i++;}else{return resolve.call(null,prevResolve);}}getNextPromise();});return sourcePromise;}}/**
- * Handle execution of a single handler
- * @param	{Function}		handler	Function to execute. It may return a Promise
- * @param	{EventEmitter}	object	Object to call event on
- * @param	{Any[]}			[args]	Arguments to pass to each called function
- * @returns	{Promise}		Promise resolved once this function is done
+ * Handle execution of a single handler.
+ * 
+ * @param   {Function}     handler - Function to execute. It may return a Promise.
+ * @param   {EventEmitter} object  - Object to call event on.
+ * @param   {Any[]}        [args]  - Arguments to pass to each called function.
+ * @returns {Promise} Promise resolved once this function is done.
  * @memberof SequentialEvent
  * @author Gerkin
  * @private
  */function emitHandler(handler,object,args){try{var retVal=handler.apply(object,args);if('object'===(typeof retVal==="undefined"?"undefined":_typeof(retVal))&&'function'===typeof retVal.then){return retVal;}else{return Promise.resolve(retVal);}}catch(e){return Promise.reject(e);}}/**
- * @classdesc Event emitter that guarantees sequential execution of handlers. Each handler may return a **Promise**
+ * Event emitter that guarantees sequential execution of handlers. Each handler may return a **Promise**.
+ * 
  * @extends EventEmitter
- * @see {@link https://nodejs.org/api/events.html Node EventEmitter}
+ * @see {@link https://nodejs.org/api/events.html Node EventEmitter}.
  */var SequentialEvent=function(_EventEmitter){_inherits(SequentialEvent,_EventEmitter);/**
-	 * Constructs a new SequentialEvent
+	 * Constructs a new SequentialEvent.
+	 * 
 	 * @author Gerkin
 	 */function SequentialEvent(){_classCallCheck(this,SequentialEvent);return _possibleConstructorReturn(this,(SequentialEvent.__proto__||Object.getPrototypeOf(SequentialEvent)).call(this));}/**
-	 * SequentialEvents each corresponding handlers in sequence
-	 * @param   {Any}				type		Name of the event to sequential-event
-	 * @param   {Any[]}				[args...]	Parameters to pass to handlers
-	 * @returns	{boolean|Promise}	false if no handlers found or an error occured. Otherwise, returns a Promise resolved when then chain is done
+	 * SequentialEvents each corresponding handlers in sequence.
+	 * 
+	 * @param   {Any}   type   - Name of the event to sequential-event.
+	 * @param   {Any[]} [args] - Parameters to pass to handlers.
+	 * @returns {Promise} Returns a Promise resolved when then chain is done.
 	 * @author Gerkin
 	 */_createClass(SequentialEvent,[{key:"emit",value:function emit(type){for(var _len4=arguments.length,args=Array(_len4>1?_len4-1:0),_key4=1;_key4<_len4;_key4++){args[_key4-1]=arguments[_key4];}var needDomainExit=false;var doError='error'===type;var events=this._events;if(events){doError=doError&&null==events.error;}else if(!doError){return false;}var domain=this.domain;// If there is no 'error' event listener then throw.
 if(doError){var er=void 0;if(arguments.length>1){er=arguments[1];}if(domain){if(!er){er=new Error('Unhandled "error" event');}if('object'===(typeof er==="undefined"?"undefined":_typeof(er))&&er!==null){er.domainEmitter=this;er.domain=domain;er.domainThrown=false;}domain.emit('error',er);}else if(er instanceof Error){throw er;// Unhandled 'error' event

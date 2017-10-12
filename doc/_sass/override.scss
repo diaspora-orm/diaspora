@@ -1382,7 +1382,7 @@ body.doccopage {
 	}
 	table td, table th {
 		word-break: normal;
-    max-width: 50vw;
+		max-width: 50vw;
 	}
 	.code_stats th {
 		font-size: 14px;
@@ -1490,6 +1490,10 @@ code{
 	.s1 {
 		background: none;
 		color: #a26605;
+	}
+	.sb {
+		background: none;
+		color: #00abe2;
 	}
 }
 

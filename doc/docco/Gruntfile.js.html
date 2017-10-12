@@ -161,163 +161,193 @@ toc: false
 </span><span id="line-158">                <span class="p">}],</span>
 </span><span id="line-159">            <span class="p">},</span>
 </span><span id="line-160">            <span class="nx">standalone</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-161">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-162">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-163">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;build/standalone/src&#39;</span><span class="p">,</span>
-</span><span id="line-164">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;diaspora.js&#39;</span> <span class="p">],</span>
-</span><span id="line-165">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;build/standalone/dist&#39;</span><span class="p">,</span>
-</span><span id="line-166">                    <span class="nx">ext</span><span class="o">:</span>    <span class="s1">&#39;.js&#39;</span><span class="p">,</span>
-</span><span id="line-167">                <span class="p">}],</span>
-</span><span id="line-168">            <span class="p">},</span>
-</span><span id="line-169">            <span class="nx">isolated</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-170">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-171">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-172">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;build/isolated/src&#39;</span><span class="p">,</span>
-</span><span id="line-173">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;diaspora.js&#39;</span> <span class="p">],</span>
-</span><span id="line-174">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;build/isolated/dist&#39;</span><span class="p">,</span>
-</span><span id="line-175">                    <span class="nx">ext</span><span class="o">:</span>    <span class="s1">&#39;.js&#39;</span><span class="p">,</span>
-</span><span id="line-176">                <span class="p">}],</span>
-</span><span id="line-177">            <span class="p">},</span>
-</span><span id="line-178">            <span class="nx">test</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-179">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-180">                    <span class="nx">sourceMap</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-</span><span id="line-181">                <span class="p">},</span>
-</span><span id="line-182">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-183">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-184">                    <span class="nx">src</span><span class="o">:</span>    <span class="s1">&#39;test/browser/unit-tests.es6.js&#39;</span><span class="p">,</span>
-</span><span id="line-185">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;./&#39;</span><span class="p">,</span>
-</span><span id="line-186">                    <span class="nx">ext</span><span class="o">:</span>    <span class="s1">&#39;.js&#39;</span><span class="p">,</span>
-</span><span id="line-187">                <span class="p">}],</span>
-</span><span id="line-188">            <span class="p">},</span>
-</span><span id="line-189">        <span class="p">},</span>
-</span><span id="line-190">        <span class="nx">uglify</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-191">            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-192">                <span class="nx">banner</span><span class="o">:</span>    <span class="s1">&#39;/*! &lt;%= pkg.name %&gt; build on &lt;%= grunt.template.today(&quot;yyyy-mm-dd hh:MM:ss&quot;) %&gt; for v&lt;%= pkg.version %&gt; */&#39;</span><span class="p">,</span>
-</span><span id="line-193">                <span class="nx">sourceMap</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-194">                <span class="nx">output</span><span class="o">:</span>    <span class="p">{</span>
-</span><span id="line-195">                    <span class="nx">comments</span><span class="o">:</span> <span class="s1">&#39;some&#39;</span><span class="p">,</span>
-</span><span id="line-196">                <span class="p">},</span>
-</span><span id="line-197">            <span class="p">},</span>
-</span><span id="line-198">            <span class="nx">deps</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-199">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-200">                    <span class="nx">banner</span><span class="o">:</span>    <span class="kc">false</span><span class="p">,</span>
-</span><span id="line-201">                    <span class="nx">sourceMap</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-</span><span id="line-202">                <span class="p">},</span>
-</span><span id="line-203">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-204">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-205">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;build/dependencies/dist/dependencies.js&#39;</span> <span class="p">],</span>
-</span><span id="line-206">                    <span class="nx">dest</span><span class="o">:</span>     <span class="s1">&#39;.&#39;</span><span class="p">,</span>
-</span><span id="line-207">                    <span class="nx">rename</span><span class="o">:</span> <span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s1">&#39;.min.js&#39;</span> <span class="p">)),</span>
+</span><span id="line-161">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-162">                    <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span>
+</span><span id="line-163">                        <span class="p">[</span> <span class="s1">&#39;@comandeer/babel-plugin-banner&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span id="line-164">                            <span class="nx">banner</span><span class="o">:</span> <span class="sb">`/**</span>
+</span><span id="line-165"><span class="sb">* @file &lt;%= pkg.name %&gt;</span>
+</span><span id="line-166"><span class="sb">* </span>
+</span><span id="line-167"><span class="sb">* &lt;%= pkg.description %&gt;</span>
+</span><span id="line-168"><span class="sb">* Standalone build compiled on &lt;%= grunt.template.today(&quot;yyyy-mm-dd hh:MM:ss&quot;) %&gt;</span>
+</span><span id="line-169"><span class="sb">*</span>
+</span><span id="line-170"><span class="sb">* @license &lt;%= pkg.license %&gt;</span>
+</span><span id="line-171"><span class="sb">* @version &lt;%= pkg.version %&gt;</span>
+</span><span id="line-172"><span class="sb">* @author &lt;%= pkg.author %&gt;</span>
+</span><span id="line-173"><span class="sb">*/`</span><span class="p">,</span>
+</span><span id="line-174">                        <span class="p">}],</span>
+</span><span id="line-175">                    <span class="p">],</span>
+</span><span id="line-176">                <span class="p">},</span>
+</span><span id="line-177">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-178">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-179">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;build/standalone/src&#39;</span><span class="p">,</span>
+</span><span id="line-180">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;diaspora.js&#39;</span> <span class="p">],</span>
+</span><span id="line-181">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;build/standalone/dist&#39;</span><span class="p">,</span>
+</span><span id="line-182">                    <span class="nx">ext</span><span class="o">:</span>    <span class="s1">&#39;.js&#39;</span><span class="p">,</span>
+</span><span id="line-183">                <span class="p">}],</span>
+</span><span id="line-184">            <span class="p">},</span>
+</span><span id="line-185">            <span class="nx">isolated</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-186">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-187">                    <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span>
+</span><span id="line-188">                        <span class="p">[</span> <span class="s1">&#39;@comandeer/babel-plugin-banner&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span id="line-189">                            <span class="nx">banner</span><span class="o">:</span> <span class="sb">`/**</span>
+</span><span id="line-190"><span class="sb">* @file &lt;%= pkg.name %&gt;</span>
+</span><span id="line-191"><span class="sb">* </span>
+</span><span id="line-192"><span class="sb">* &lt;%= pkg.description %&gt;</span>
+</span><span id="line-193"><span class="sb">* Isolated build compiled on &lt;%= grunt.template.today(&quot;yyyy-mm-dd hh:MM:ss&quot;) %&gt;</span>
+</span><span id="line-194"><span class="sb">*</span>
+</span><span id="line-195"><span class="sb">* @license &lt;%= pkg.license %&gt;</span>
+</span><span id="line-196"><span class="sb">* @version &lt;%= pkg.version %&gt;</span>
+</span><span id="line-197"><span class="sb">* @author &lt;%= pkg.author %&gt;</span>
+</span><span id="line-198"><span class="sb">*/`</span><span class="p">,</span>
+</span><span id="line-199">                        <span class="p">}],</span>
+</span><span id="line-200">                    <span class="p">],</span>
+</span><span id="line-201">                <span class="p">},</span>
+</span><span id="line-202">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-203">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-204">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;build/isolated/src&#39;</span><span class="p">,</span>
+</span><span id="line-205">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;diaspora.js&#39;</span> <span class="p">],</span>
+</span><span id="line-206">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;build/isolated/dist&#39;</span><span class="p">,</span>
+</span><span id="line-207">                    <span class="nx">ext</span><span class="o">:</span>    <span class="s1">&#39;.js&#39;</span><span class="p">,</span>
 </span><span id="line-208">                <span class="p">}],</span>
 </span><span id="line-209">            <span class="p">},</span>
-</span><span id="line-210">            <span class="nx">standalone</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-211">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-212">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-213">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;build/standalone/dist/diaspora.js&#39;</span> <span class="p">],</span>
-</span><span id="line-214">                    <span class="nx">dest</span><span class="o">:</span>     <span class="s1">&#39;.&#39;</span><span class="p">,</span>
-</span><span id="line-215">                    <span class="nx">rename</span><span class="o">:</span> <span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s1">&#39;.min.js&#39;</span> <span class="p">)),</span>
-</span><span id="line-216">                <span class="p">}],</span>
-</span><span id="line-217">            <span class="p">},</span>
-</span><span id="line-218">            <span class="nx">isolated</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-219">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-220">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-221">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;build/isolated/dist/diaspora.js&#39;</span> <span class="p">],</span>
-</span><span id="line-222">                    <span class="nx">dest</span><span class="o">:</span>     <span class="s1">&#39;.&#39;</span><span class="p">,</span>
-</span><span id="line-223">                    <span class="nx">rename</span><span class="o">:</span> <span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s1">&#39;.min.js&#39;</span> <span class="p">)),</span>
-</span><span id="line-224">                <span class="p">}],</span>
-</span><span id="line-225">            <span class="p">},</span>
-</span><span id="line-226">        <span class="p">},</span>
-</span><span id="line-227">        <span class="nx">copy</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-228">            <span class="nx">diaspora_to_docs_site</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-229">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-230">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-231">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;./build/standalone/dist/&#39;</span><span class="p">,</span>
-</span><span id="line-232">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;./diaspora*.js*&#39;</span> <span class="p">],</span>
-</span><span id="line-233">                    <span class="nx">dest</span><span class="o">:</span>   <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/assets/js/`</span><span class="p">,</span>
-</span><span id="line-234">                <span class="p">}],</span>
-</span><span id="line-235">            <span class="p">},</span>
-</span><span id="line-236">            <span class="nx">build_isolated_to_dist</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-237">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-238">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-239">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;./build/isolated/dist/&#39;</span><span class="p">,</span>
-</span><span id="line-240">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;./diaspora*.js*&#39;</span> <span class="p">],</span>
-</span><span id="line-241">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;dist/isolated&#39;</span><span class="p">,</span>
-</span><span id="line-242">                <span class="p">}],</span>
-</span><span id="line-243">            <span class="p">},</span>
-</span><span id="line-244">            <span class="nx">build_standalone_to_dist</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-245">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
-</span><span id="line-246">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-247">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;./build/standalone/dist/&#39;</span><span class="p">,</span>
-</span><span id="line-248">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;./diaspora*.js*&#39;</span> <span class="p">],</span>
-</span><span id="line-249">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;dist/standalone&#39;</span><span class="p">,</span>
-</span><span id="line-250">                <span class="p">}],</span>
-</span><span id="line-251">            <span class="p">},</span>
-</span><span id="line-252">        <span class="p">},</span>
-</span><span id="line-253">        <span class="nx">clean</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-254">            <span class="nx">doc_jsdoc</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-255">                <span class="nx">src</span><span class="o">:</span> <span class="p">[</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/jsdoc`</span> <span class="p">],</span>
+</span><span id="line-210">            <span class="nx">test</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-211">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-212">                    <span class="nx">sourceMap</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span id="line-213">                <span class="p">},</span>
+</span><span id="line-214">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-215">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-216">                    <span class="nx">src</span><span class="o">:</span>    <span class="s1">&#39;test/browser/unit-tests.es6.js&#39;</span><span class="p">,</span>
+</span><span id="line-217">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;./&#39;</span><span class="p">,</span>
+</span><span id="line-218">                    <span class="nx">ext</span><span class="o">:</span>    <span class="s1">&#39;.js&#39;</span><span class="p">,</span>
+</span><span id="line-219">                <span class="p">}],</span>
+</span><span id="line-220">            <span class="p">},</span>
+</span><span id="line-221">        <span class="p">},</span>
+</span><span id="line-222">        <span class="nx">uglify</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-223">            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-224">                <span class="nx">sourceMap</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-225">                <span class="nx">output</span><span class="o">:</span>    <span class="p">{</span>
+</span><span id="line-226">                    <span class="nx">comments</span><span class="o">:</span> <span class="s1">&#39;some&#39;</span><span class="p">,</span>
+</span><span id="line-227">                <span class="p">},</span>
+</span><span id="line-228">            <span class="p">},</span>
+</span><span id="line-229">            <span class="nx">deps</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-230">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-231">                    <span class="nx">banner</span><span class="o">:</span>    <span class="kc">false</span><span class="p">,</span>
+</span><span id="line-232">                    <span class="nx">sourceMap</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span id="line-233">                <span class="p">},</span>
+</span><span id="line-234">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-235">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-236">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;build/dependencies/dist/dependencies.js&#39;</span> <span class="p">],</span>
+</span><span id="line-237">                    <span class="nx">dest</span><span class="o">:</span>     <span class="s1">&#39;.&#39;</span><span class="p">,</span>
+</span><span id="line-238">                    <span class="nx">rename</span><span class="o">:</span> <span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s1">&#39;.min.js&#39;</span> <span class="p">)),</span>
+</span><span id="line-239">                <span class="p">}],</span>
+</span><span id="line-240">            <span class="p">},</span>
+</span><span id="line-241">            <span class="nx">standalone</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-242">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-243">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-244">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;build/standalone/dist/diaspora.js&#39;</span> <span class="p">],</span>
+</span><span id="line-245">                    <span class="nx">dest</span><span class="o">:</span>     <span class="s1">&#39;.&#39;</span><span class="p">,</span>
+</span><span id="line-246">                    <span class="nx">rename</span><span class="o">:</span> <span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s1">&#39;.min.js&#39;</span> <span class="p">)),</span>
+</span><span id="line-247">                <span class="p">}],</span>
+</span><span id="line-248">            <span class="p">},</span>
+</span><span id="line-249">            <span class="nx">isolated</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-250">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-251">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-252">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;build/isolated/dist/diaspora.js&#39;</span> <span class="p">],</span>
+</span><span id="line-253">                    <span class="nx">dest</span><span class="o">:</span>     <span class="s1">&#39;.&#39;</span><span class="p">,</span>
+</span><span id="line-254">                    <span class="nx">rename</span><span class="o">:</span> <span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span> <span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s1">&#39;.min.js&#39;</span> <span class="p">)),</span>
+</span><span id="line-255">                <span class="p">}],</span>
 </span><span id="line-256">            <span class="p">},</span>
-</span><span id="line-257">            <span class="nx">doc_docco</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-258">                <span class="nx">src</span><span class="o">:</span> <span class="p">[</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/docco`</span> <span class="p">],</span>
-</span><span id="line-259">            <span class="p">},</span>
-</span><span id="line-260">        <span class="p">},</span>
-</span><span id="line-261">    <span class="p">});</span>
-</span><span id="line-262">
-</span><span id="line-263">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-jsdoc&#39;</span> <span class="p">);</span>
-</span><span id="line-264">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-docco-husky&#39;</span> <span class="p">);</span>
-</span><span id="line-265">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-markdown&#39;</span> <span class="p">);</span>
-</span><span id="line-266">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;gruntify-eslint&#39;</span> <span class="p">);</span>
-</span><span id="line-267">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-changed&#39;</span> <span class="p">);</span>
-</span><span id="line-268">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-browserify&#39;</span> <span class="p">);</span>
-</span><span id="line-269">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-uglify&#39;</span> <span class="p">);</span>
-</span><span id="line-270">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-copy&#39;</span> <span class="p">);</span>
-</span><span id="line-271">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-clean&#39;</span> <span class="p">);</span>
-</span><span id="line-272">
-</span><span id="line-273">    <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;load-grunt-tasks&#39;</span> <span class="p">)(</span> <span class="nx">grunt</span> <span class="p">);</span>
-</span><span id="line-274">
-</span><span id="line-275">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;documentate&#39;</span><span class="p">,</span> <span class="p">[</span>
-</span><span id="line-276">        <span class="s1">&#39;lint&#39;</span><span class="p">,</span>
-</span><span id="line-277">        <span class="s1">&#39;clean:doc_jsdoc&#39;</span><span class="p">,</span>
-</span><span id="line-278">        <span class="s1">&#39;clean:doc_docco&#39;</span><span class="p">,</span>
-</span><span id="line-279">        <span class="s1">&#39;jsdoc&#39;</span><span class="p">,</span>
-</span><span id="line-280">        <span class="s1">&#39;docco_husky&#39;</span><span class="p">,</span>
-</span><span id="line-281">    <span class="p">]);</span>
-</span><span id="line-282">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;refreshScripts&#39;</span><span class="p">,</span> <span class="p">[</span>
-</span><span id="line-283">        <span class="s1">&#39;lint&#39;</span><span class="p">,</span>
-</span><span id="line-284">        <span class="s1">&#39;buildStandalone&#39;</span><span class="p">,</span>
-</span><span id="line-285">        <span class="s1">&#39;buildIsolated&#39;</span><span class="p">,</span>
-</span><span id="line-286">    <span class="p">]);</span>
-</span><span id="line-287">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildDependencies&#39;</span><span class="p">,</span> <span class="p">[</span>
-</span><span id="line-288">        <span class="s1">&#39;browserify:deps&#39;</span><span class="p">,</span>
-</span><span id="line-289">        <span class="s1">&#39;babel:deps&#39;</span><span class="p">,</span>
-</span><span id="line-290">        <span class="s1">&#39;uglify:deps&#39;</span><span class="p">,</span>
-</span><span id="line-291">    <span class="p">]);</span>
-</span><span id="line-292">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildStandalone&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-257">        <span class="p">},</span>
+</span><span id="line-258">        <span class="nx">copy</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-259">            <span class="nx">diaspora_to_docs_site</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-260">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-261">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-262">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;./build/standalone/dist/&#39;</span><span class="p">,</span>
+</span><span id="line-263">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;./diaspora*.js*&#39;</span> <span class="p">],</span>
+</span><span id="line-264">                    <span class="nx">dest</span><span class="o">:</span>   <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/assets/js/`</span><span class="p">,</span>
+</span><span id="line-265">                <span class="p">}],</span>
+</span><span id="line-266">            <span class="p">},</span>
+</span><span id="line-267">            <span class="nx">build_isolated_to_dist</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-268">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-269">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-270">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;./build/isolated/dist/&#39;</span><span class="p">,</span>
+</span><span id="line-271">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;./diaspora*.js*&#39;</span> <span class="p">],</span>
+</span><span id="line-272">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;dist/isolated&#39;</span><span class="p">,</span>
+</span><span id="line-273">                <span class="p">}],</span>
+</span><span id="line-274">            <span class="p">},</span>
+</span><span id="line-275">            <span class="nx">build_standalone_to_dist</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-276">                <span class="nx">files</span><span class="o">:</span> <span class="p">[{</span>
+</span><span id="line-277">                    <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-278">                    <span class="nx">cwd</span><span class="o">:</span>    <span class="s1">&#39;./build/standalone/dist/&#39;</span><span class="p">,</span>
+</span><span id="line-279">                    <span class="nx">src</span><span class="o">:</span>    <span class="p">[</span> <span class="s1">&#39;./diaspora*.js*&#39;</span> <span class="p">],</span>
+</span><span id="line-280">                    <span class="nx">dest</span><span class="o">:</span>   <span class="s1">&#39;dist/standalone&#39;</span><span class="p">,</span>
+</span><span id="line-281">                <span class="p">}],</span>
+</span><span id="line-282">            <span class="p">},</span>
+</span><span id="line-283">        <span class="p">},</span>
+</span><span id="line-284">        <span class="nx">clean</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-285">            <span class="nx">doc_jsdoc</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-286">                <span class="nx">src</span><span class="o">:</span> <span class="p">[</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/jsdoc`</span> <span class="p">],</span>
+</span><span id="line-287">            <span class="p">},</span>
+</span><span id="line-288">            <span class="nx">doc_docco</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-289">                <span class="nx">src</span><span class="o">:</span> <span class="p">[</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/docco`</span> <span class="p">],</span>
+</span><span id="line-290">            <span class="p">},</span>
+</span><span id="line-291">        <span class="p">},</span>
+</span><span id="line-292">    <span class="p">});</span>
 </span><span id="line-293">
-</span><span id="line-294"></pre></div></td></tr><tr class="section" id="section-5"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-5">&#182;</a></div><pre><code>'changed:buildDependencies',
-</code></pre></td><td class="code"><div class="highlight"><pre></span><span id="line-295">        <span class="s1">&#39;browserify:standalone&#39;</span><span class="p">,</span>
-</span><span id="line-296">        <span class="s1">&#39;babel:standalone&#39;</span><span class="p">,</span>
-</span><span id="line-297">        <span class="s1">&#39;uglify:standalone&#39;</span><span class="p">,</span>
-</span><span id="line-298">        <span class="s1">&#39;copy:diaspora_to_docs_site&#39;</span><span class="p">,</span>
-</span><span id="line-299">        <span class="s1">&#39;copy:build_standalone_to_dist&#39;</span><span class="p">,</span>
-</span><span id="line-300">    <span class="p">]);</span>
-</span><span id="line-301">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildIsolated&#39;</span><span class="p">,</span> <span class="p">[</span>
-</span><span id="line-302">        <span class="s1">&#39;browserify:isolated&#39;</span><span class="p">,</span>
-</span><span id="line-303">        <span class="s1">&#39;babel:isolated&#39;</span><span class="p">,</span>
-</span><span id="line-304">        <span class="s1">&#39;uglify:isolated&#39;</span><span class="p">,</span>
-</span><span id="line-305">        <span class="s1">&#39;copy:build_isolated_to_dist&#39;</span><span class="p">,</span>
-</span><span id="line-306">    <span class="p">]);</span>
-</span><span id="line-307">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;lint&#39;</span><span class="p">,</span> <span class="p">[</span>
-</span><span id="line-308">        <span class="s1">&#39;eslint:info&#39;</span><span class="p">,</span>
-</span><span id="line-309">    <span class="p">]);</span>
-</span><span id="line-310">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="p">[</span>
-</span><span id="line-311">        <span class="s1">&#39;refreshScripts&#39;</span><span class="p">,</span>
-</span><span id="line-312">        <span class="s1">&#39;documentate&#39;</span><span class="p">,</span>
-</span><span id="line-313">    <span class="p">]);</span>
-</span><span id="line-314">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;refreshTests&#39;</span><span class="p">,</span> <span class="p">[</span>
-</span><span id="line-315">        <span class="s1">&#39;browserify:test&#39;</span><span class="p">,</span>
-</span><span id="line-316">        <span class="s1">&#39;babel:test&#39;</span><span class="p">,</span>
-</span><span id="line-317">    <span class="p">]);</span>
-</span><span id="line-318"><span class="p">};</span>
+</span><span id="line-294">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-jsdoc&#39;</span> <span class="p">);</span>
+</span><span id="line-295">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-docco-husky&#39;</span> <span class="p">);</span>
+</span><span id="line-296">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;gruntify-eslint&#39;</span> <span class="p">);</span>
+</span><span id="line-297">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-changed&#39;</span> <span class="p">);</span>
+</span><span id="line-298">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-browserify&#39;</span> <span class="p">);</span>
+</span><span id="line-299">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-uglify&#39;</span> <span class="p">);</span>
+</span><span id="line-300">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-copy&#39;</span> <span class="p">);</span>
+</span><span id="line-301">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-clean&#39;</span> <span class="p">);</span>
+</span><span id="line-302">
+</span><span id="line-303">    <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;load-grunt-tasks&#39;</span> <span class="p">)(</span> <span class="nx">grunt</span> <span class="p">);</span>
+</span><span id="line-304">
+</span><span id="line-305">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;documentate&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-306">        <span class="s1">&#39;lint&#39;</span><span class="p">,</span>
+</span><span id="line-307">        <span class="s1">&#39;clean:doc_jsdoc&#39;</span><span class="p">,</span>
+</span><span id="line-308">        <span class="s1">&#39;clean:doc_docco&#39;</span><span class="p">,</span>
+</span><span id="line-309">        <span class="s1">&#39;jsdoc&#39;</span><span class="p">,</span>
+</span><span id="line-310">        <span class="s1">&#39;docco_husky&#39;</span><span class="p">,</span>
+</span><span id="line-311">    <span class="p">]);</span>
+</span><span id="line-312">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-313">        <span class="s1">&#39;lint&#39;</span><span class="p">,</span>
+</span><span id="line-314">        <span class="s1">&#39;buildStandalone&#39;</span><span class="p">,</span>
+</span><span id="line-315">        <span class="s1">&#39;buildIsolated&#39;</span><span class="p">,</span>
+</span><span id="line-316">    <span class="p">]);</span>
+</span><span id="line-317">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildDependencies&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-318">        <span class="s1">&#39;browserify:deps&#39;</span><span class="p">,</span>
+</span><span id="line-319">        <span class="s1">&#39;babel:deps&#39;</span><span class="p">,</span>
+</span><span id="line-320">        <span class="s1">&#39;uglify:deps&#39;</span><span class="p">,</span>
+</span><span id="line-321">    <span class="p">]);</span>
+</span><span id="line-322">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildStandalone&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-323">
+</span><span id="line-324"></pre></div></td></tr><tr class="section" id="section-5"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-5">&#182;</a></div><pre><code>'changed:buildDependencies',
+</code></pre></td><td class="code"><div class="highlight"><pre></span><span id="line-325">        <span class="s1">&#39;browserify:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-326">        <span class="s1">&#39;babel:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-327">        <span class="s1">&#39;uglify:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-328">        <span class="s1">&#39;copy:diaspora_to_docs_site&#39;</span><span class="p">,</span>
+</span><span id="line-329">        <span class="s1">&#39;copy:build_standalone_to_dist&#39;</span><span class="p">,</span>
+</span><span id="line-330">    <span class="p">]);</span>
+</span><span id="line-331">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildIsolated&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-332">        <span class="s1">&#39;browserify:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-333">        <span class="s1">&#39;babel:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-334">        <span class="s1">&#39;uglify:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-335">        <span class="s1">&#39;copy:build_isolated_to_dist&#39;</span><span class="p">,</span>
+</span><span id="line-336">    <span class="p">]);</span>
+</span><span id="line-337">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;lint&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-338">        <span class="s1">&#39;eslint:info&#39;</span><span class="p">,</span>
+</span><span id="line-339">    <span class="p">]);</span>
+</span><span id="line-340">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-341">        <span class="s1">&#39;refreshScripts&#39;</span><span class="p">,</span>
+</span><span id="line-342">        <span class="s1">&#39;documentate&#39;</span><span class="p">,</span>
+</span><span id="line-343">    <span class="p">]);</span>
+</span><span id="line-344">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;refreshTests&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-345">        <span class="s1">&#39;browserify:test&#39;</span><span class="p">,</span>
+</span><span id="line-346">        <span class="s1">&#39;babel:test&#39;</span><span class="p">,</span>
+</span><span id="line-347">    <span class="p">]);</span>
+</span><span id="line-348"><span class="p">};</span>
 </span>
 </pre></div></td></tr></tbody></table></div>

@@ -1,0 +1,14 @@
+PKG_NAME=$(node -p -e "require('./package.json').name")
+
+rm "$PKG_NAME-*.tgz"
+
+VERSION=$(node -p -e "require('./package.json').version")
+
+npm pack
+tar -tzf "$PKG_NAME-$VERSION.tgz"
+
+read -p "Are files okay? (y/n) " -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    exit 1
+fi
