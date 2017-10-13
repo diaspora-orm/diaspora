@@ -28,9 +28,8 @@ module.exports = function gruntInit( grunt ) {
 		pkg:    grunt.file.readJSON( 'package.json' ),
 		eslint: {
 			options: {
-				format:     'stylish', //'node_modules/eslint-tap',
-				fix:        true,
-				configFile: 'eslint-es6-node.json',
+				format: 'stylish', //'node_modules/eslint-tap',
+				fix:    true,
 			},
 			info: {
 				options: {
@@ -133,7 +132,7 @@ module.exports = function gruntInit( grunt ) {
 		},
 		babel: {
 			options: {
-				presets:   [[ 'env', {
+				presets: [[ 'env', {
 					modules: false,
 					targets: {
 						browsers: '>= 1%',

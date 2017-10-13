@@ -1102,22 +1102,29 @@ $menuHeight: 36px;
 		pointer-events: none;
 		transition: 0.5s opacity, 0.5s height;
 		width: 100%;
-		top: 25px;
+		top: 40px;
+		overflow-x: auto;
 
 		&.active{
 			pointer-events: all;
 			opacity: 1;
 		}
 	}
+	> nav > ul{
+		padding-left: 0;
+		list-style: none;
+
+		li{
+			transition: 0.5s background;
+			display: inline-block;
+		}
+	}
 	&.tabs-code {
 		> nav > ul{
 			padding-left: 10px;
-			list-style: none;
-
-			li{
-				transition: 0.5s background;
-				display: inline-block;
-			}
+		}
+		.tab{
+			top: 25px;
 		}
 		p + .note, .highlight + .note{
 			margin-top: 0;
@@ -1620,7 +1627,7 @@ code{
 		display: none;
 	}
 	#content{
-		padding-right: 35px;
+		padding-right: 20px;
 	}
 	body.default{
 		.wrapper > header{
