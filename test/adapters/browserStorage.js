@@ -3,7 +3,7 @@
 /* globals it: false, require: false, getConfig: false */
 
 const ADAPTER_LABEL = 'browserStorage';
-const adapterConfig = getConfig( ADAPTER_LABEL );
+const adapterConfig = global.getConfig( ADAPTER_LABEL );
 
 if ( 'undefined' === typeof window ) {
 	if ( !adapterConfig.data_dir ) {
