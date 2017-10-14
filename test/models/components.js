@@ -23,76 +23,145 @@ it( 'Should create a model', () => {
 	testSet = testModel.spawnMulti([{}, {}]);
 });
 const randomTimeout = ( time ) => {
+	return Promise.resolve();
 	return new Promise( resolve => {
 		setTimeout( resolve, time || l.random( 0, 100 ));
 	});
 };
+const events = {
+	create: [
+		'beforePersist',
+		'beforeValidate',
+		'afterValidate',
+		'beforePersistCreate',
+		'afterPersistCreate',
+		'afterPersist',
+	],
+	update: [
+		'beforePersist',
+		'beforeValidate',
+		'afterValidate',
+		'beforePersistUpdate',
+		'afterPersistUpdate',
+		'afterPersist',
+	],
+	find: [
+		'beforeFetch',
+		'afterFetch',
+	],
+	delete: [
+		'beforeDestroy',
+		'afterDestroy',
+	],
+};
 describe( 'Test entity', () => {
 	describe( 'Check events', () => {
-		it( 'before/after update', () => {
-			let beforeCalled = false;
-			let afterCalled = false;
-			testEntity.on( 'beforeUpdate', () => {
-				expect( beforeCalled ).to.be.false;
-				expect( afterCalled ).to.be.false;
-				return randomTimeout().then(() => {
-					beforeCalled = true;
+		it( 'before/after persist (create)', () => {
+			const eventCat = 'create';
+			const eventCatList = events[eventCat];
+			const eventsFlags = l.zipObject(eventCatList, l.times(eventCatList.length, l.constant(false)));
+			l.forEach(eventCatList, (eventName, eventIndex) => {
+				const parts = l.partition(eventCatList, subEventName => {
+					const subEventIndex = l.indexOf(eventCatList, subEventName);
+					return eventIndex <= subEventIndex;
 				});
-			});
-			testEntity.on( 'afterUpdate', () => {
-				expect( beforeCalled ).to.be.true;
-				expect( afterCalled ).to.be.false;
-				return randomTimeout().then(() => {
-					afterCalled = true;
+				testEntity.once( eventName, () => {
+					l.forEach(parts[0], subEventName => {
+						expect(eventsFlags[subEventName], `Event ${subEventName} should be false: ${JSON.stringify(eventsFlags)}`).to.be.false;
+					});
+					l.forEach(parts[1], subEventName => {
+						expect(eventsFlags[subEventName], `Event ${subEventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+					});
+					return randomTimeout().then(() => {
+						eventsFlags[eventCatList[eventIndex]] = true;
+					});
 				});
 			});
 			return testEntity.persist().then(() => {
-				expect( beforeCalled ).to.be.true;
-				expect( afterCalled ).to.be.true;
-			});
-		});
-		it( 'before/after find', () => {
-			let beforeCalled = false;
-			let afterCalled = false;
-			testEntity.on( 'beforeFind', () => {
-				expect( beforeCalled ).to.be.false;
-				expect( afterCalled ).to.be.false;
-				return randomTimeout().then(() => {
-					beforeCalled = true;
+				l.forEach(eventsFlags, (eventFlag, eventName) => {
+					expect(eventFlag, `Event ${eventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
 				});
 			});
-			testEntity.on( 'afterFind', () => {
-				expect( beforeCalled ).to.be.true;
-				expect( afterCalled ).to.be.false;
-				return randomTimeout().then(() => {
-					afterCalled = true;
+		});
+		it( 'before/after persist (update)', () => {
+			const eventCat = 'update';
+			const eventCatList = events[eventCat];
+			const eventsFlags = l.zipObject(eventCatList, l.times(eventCatList.length, l.constant(false)));
+			l.forEach(eventCatList, (eventName, eventIndex) => {
+				const parts = l.partition(eventCatList, subEventName => {
+					const subEventIndex = l.indexOf(eventCatList, subEventName);
+					return eventIndex <= subEventIndex;
+				});
+				testEntity.once( eventName, () => {
+					l.forEach(parts[0], subEventName => {
+						expect(eventsFlags[subEventName], `Event ${subEventName} should be false: ${JSON.stringify(eventsFlags)}`).to.be.false;
+					});
+					l.forEach(parts[1], subEventName => {
+						expect(eventsFlags[subEventName], `Event ${subEventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+					});
+					return randomTimeout().then(() => {
+						eventsFlags[eventCatList[eventIndex]] = true;
+					});
+				});
+			});
+			return testEntity.persist().then(() => {
+				l.forEach(eventsFlags, (eventFlag, eventName) => {
+					expect(eventFlag, `Event ${eventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+				});
+			});
+		});
+		it( 'before/after fetch', () => {
+			const eventCat = 'find';
+			const eventCatList = events[eventCat];
+			const eventsFlags = l.zipObject(eventCatList, l.times(eventCatList.length, l.constant(false)));
+			l.forEach(eventCatList, (eventName, eventIndex) => {
+				const parts = l.partition(eventCatList, subEventName => {
+					const subEventIndex = l.indexOf(eventCatList, subEventName);
+					return eventIndex <= subEventIndex;
+				});
+				testEntity.once( eventName, () => {
+					l.forEach(parts[0], subEventName => {
+						expect(eventsFlags[subEventName], `Event ${subEventName} should be false: ${JSON.stringify(eventsFlags)}`).to.be.false;
+					});
+					l.forEach(parts[1], subEventName => {
+						expect(eventsFlags[subEventName], `Event ${subEventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+					});
+					return randomTimeout().then(() => {
+						eventsFlags[eventCatList[eventIndex]] = true;
+					});
 				});
 			});
 			return testEntity.fetch().then(() => {
-				expect( beforeCalled ).to.be.true;
-				expect( afterCalled ).to.be.true;
-			});
-		});
-		it( 'before/after delete', () => {
-			let beforeCalled = false;
-			let afterCalled = false;
-			testEntity.on( 'beforeDelete', () => {
-				expect( beforeCalled ).to.be.false;
-				expect( afterCalled ).to.be.false;
-				return randomTimeout().then(() => {
-					beforeCalled = true;
+				l.forEach(eventsFlags, (eventFlag, eventName) => {
+					expect(eventFlag, `Event ${eventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
 				});
 			});
-			testEntity.on( 'afterDelete', () => {
-				expect( beforeCalled ).to.be.true;
-				expect( afterCalled ).to.be.false;
-				return randomTimeout().then(() => {
-					afterCalled = true;
+		});
+		it( 'before/after destroy', () => {
+			const eventCat = 'delete';
+			const eventCatList = events[eventCat];
+			const eventsFlags = l.zipObject(eventCatList, l.times(eventCatList.length, l.constant(false)));
+			l.forEach(eventCatList, (eventName, eventIndex) => {
+				const parts = l.partition(eventCatList, subEventName => {
+					const subEventIndex = l.indexOf(eventCatList, subEventName);
+					return eventIndex <= subEventIndex;
+				});
+				testEntity.once( eventName, () => {
+					l.forEach(parts[0], subEventName => {
+						expect(eventsFlags[subEventName], `Event ${subEventName} should be false: ${JSON.stringify(eventsFlags)}`).to.be.false;
+					});
+					l.forEach(parts[1], subEventName => {
+						expect(eventsFlags[subEventName], `Event ${subEventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+					});
+					return randomTimeout().then(() => {
+						eventsFlags[eventCatList[eventIndex]] = true;
+					});
 				});
 			});
 			return testEntity.destroy().then(() => {
-				expect( beforeCalled ).to.be.true;
-				expect( afterCalled ).to.be.true;
+				l.forEach(eventsFlags, (eventFlag, eventName) => {
+					expect(eventFlag, `Event ${eventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+				});
 			});
 		});
 	});
@@ -100,93 +169,127 @@ describe( 'Test entity', () => {
 
 describe( 'Test set', () => {
 	describe( 'Check events', () => {
-		it( 'before/after update', () => {
-			let beforeCalled = l.times( testSet.length, l.constant( false ));
-			let afterCalled = l.times( testSet.length, l.constant( false ));
-			testSet.forEach(( entity, index ) => {
-				entity.on( 'beforeUpdate', () => {
-					expect( beforeCalled[index]).to.be.false;
-					testSet.forEach(( subentity, subindex ) => {
-						expect( afterCalled[subindex]).to.be.false;
+		it( 'before/after persist (create)', () => {
+			const eventCat = 'create';
+			const eventCatList = events[eventCat];
+			const eventsFlags = l.zipObject(eventCatList, l.times(eventCatList.length, () => l.times(testSet.length, l.constant(false))));
+			testSet.forEach((entity, entityIndex) => {
+				l.forEach(eventCatList, (eventName, eventIndex) => {
+					const parts = l.partition(eventCatList, subEventName => {
+						const subEventIndex = l.indexOf(eventCatList, subEventName);
+						return eventIndex <= subEventIndex;
 					});
-					return randomTimeout( index * 20 ).then(() => {
-						beforeCalled[index] = true;
-					});
-				});
-				entity.on( 'afterUpdate', () => {
-					testSet.forEach(( subentity, subindex ) => {
-						expect( beforeCalled[subindex]).to.be.true;
-					});
-					expect( afterCalled[index]).to.be.false;
-					return randomTimeout( index * 20 ).then(() => {
-						afterCalled[index] = true;
+					entity.once( eventName, () => {
+						l.forEach(parts[0], subEventName => {
+							expect(eventsFlags[subEventName][entityIndex], `Event ${subEventName} should be false: ${JSON.stringify(eventsFlags)}`).to.be.false;
+						});
+						l.forEach(parts[1], subEventName => {
+							expect(eventsFlags[subEventName][entityIndex], `Event ${subEventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+						});
+						return randomTimeout(/*index * 50*/).then(() => {
+							eventsFlags[eventCatList[eventIndex]][entityIndex] = true;
+						});
 					});
 				});
 			});
 			return testSet.persist().then(() => {
-				testSet.forEach(( subentity, subindex ) => {
-					expect( beforeCalled[subindex]).to.be.true;
-					expect( afterCalled[subindex]).to.be.true;
+				l.forEach(eventsFlags, eventFlagEntity => {
+					l.forEach(eventFlagEntity, (eventFlag, eventName) => {
+						expect(eventFlag, `Event ${eventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+					});
 				});
 			});
 		});
-		it( 'before/after find', () => {
-			let beforeCalled = l.times( testSet.length, l.constant( false ));
-			let afterCalled = l.times( testSet.length, l.constant( false ));
-			testSet.forEach(( entity, index ) => {
-				entity.on( 'beforeFind', () => {
-					expect( beforeCalled[index]).to.be.false;
-					testSet.forEach(( subentity, subindex ) => {
-						expect( afterCalled[subindex]).to.be.false;
+		it( 'before/after persist (update)', () => {
+			const eventCat = 'update';
+			const eventCatList = events[eventCat];
+			const eventsFlags = l.zipObject(eventCatList, l.times(eventCatList.length, () => l.times(testSet.length, l.constant(false))));
+			testSet.forEach((entity, index) => {
+				l.forEach(eventCatList, (eventName, eventIndex) => {
+					const parts = l.partition(eventCatList, subEventName => {
+						const subEventIndex = l.indexOf(eventCatList, subEventName);
+						return eventIndex <= subEventIndex;
 					});
-					return randomTimeout( index * 20 ).then(() => {
-						beforeCalled[index] = true;
+					entity.once( eventName, () => {
+						l.forEach(parts[0], subEventName => {
+							expect(eventsFlags[subEventName][index], `Event ${subEventName} should be false: ${JSON.stringify(eventsFlags)}`).to.be.false;
+						});
+						l.forEach(parts[1], subEventName => {
+							expect(eventsFlags[subEventName][index], `Event ${subEventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+						});
+						return randomTimeout(index * 50).then(() => {
+							eventsFlags[eventCatList[eventIndex]][index] = true;
+						});
 					});
 				});
-				entity.on( 'afterFind', () => {
-					testSet.forEach(( subentity, subindex ) => {
-						expect( beforeCalled[subindex]).to.be.true;
+			});
+			return testSet.persist().then(() => {
+				l.forEach(eventsFlags, eventFlagEntity => {
+					l.forEach(eventFlagEntity, (eventFlag, eventName) => {
+						expect(eventFlag, `Event ${eventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
 					});
-					expect( afterCalled[index]).to.be.false;
-					return randomTimeout( index * 20 ).then(() => {
-						afterCalled[index] = true;
+				});
+			});
+		});
+		it( 'before/after fetch', () => {
+			const eventCat = 'find';
+			const eventCatList = events[eventCat];
+			const eventsFlags = l.zipObject(eventCatList, l.times(eventCatList.length, () => l.times(testSet.length, l.constant(false))));
+			testSet.forEach((entity, index) => {
+				l.forEach(eventCatList, (eventName, eventIndex) => {
+					const parts = l.partition(eventCatList, subEventName => {
+						const subEventIndex = l.indexOf(eventCatList, subEventName);
+						return eventIndex <= subEventIndex;
+					});
+					entity.once( eventName, () => {
+						l.forEach(parts[0], subEventName => {
+							expect(eventsFlags[subEventName][index], `Event ${subEventName} should be false: ${JSON.stringify(eventsFlags)}`).to.be.false;
+						});
+						l.forEach(parts[1], subEventName => {
+							expect(eventsFlags[subEventName][index], `Event ${subEventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+						});
+						return randomTimeout(index * 50).then(() => {
+							eventsFlags[eventCatList[eventIndex]][index] = true;
+						});
 					});
 				});
 			});
 			return testSet.fetch().then(() => {
-				testSet.forEach(( subentity, subindex ) => {
-					expect( beforeCalled[subindex]).to.be.true;
-					expect( afterCalled[subindex]).to.be.true;
+				l.forEach(eventsFlags, eventFlagEntity => {
+					l.forEach(eventFlagEntity, (eventFlag, eventName) => {
+						expect(eventFlag, `Event ${eventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+					});
 				});
 			});
 		});
-		it( 'before/after delete', () => {
-			let beforeCalled = l.times( testSet.length, l.constant( false ));
-			let afterCalled = l.times( testSet.length, l.constant( false ));
-			testSet.forEach(( entity, index ) => {
-				entity.on( 'beforeDelete', () => {
-					expect( beforeCalled[index]).to.be.false;
-					testSet.forEach(( subentity, subindex ) => {
-						expect( afterCalled[subindex]).to.be.false;
+		it( 'before/after destroy', () => {
+			const eventCat = 'delete';
+			const eventCatList = events[eventCat];
+			const eventsFlags = l.zipObject(eventCatList, l.times(eventCatList.length, () => l.times(testSet.length, l.constant(false))));
+			testSet.forEach((entity, index) => {
+				l.forEach(eventCatList, (eventName, eventIndex) => {
+					const parts = l.partition(eventCatList, subEventName => {
+						const subEventIndex = l.indexOf(eventCatList, subEventName);
+						return eventIndex <= subEventIndex;
 					});
-					return randomTimeout( index * 20 ).then(() => {
-						beforeCalled[index] = true;
-					});
-				});
-				entity.on( 'afterDelete', () => {
-					testSet.forEach(( subentity, subindex ) => {
-						expect( beforeCalled[subindex]).to.be.true;
-					});
-					expect( afterCalled[index]).to.be.false;
-					return randomTimeout( index * 20 ).then(() => {
-						afterCalled[index] = true;
+					entity.once( eventName, () => {
+						l.forEach(parts[0], subEventName => {
+							expect(eventsFlags[subEventName][index], `Event ${subEventName} should be false: ${JSON.stringify(eventsFlags)}`).to.be.false;
+						});
+						l.forEach(parts[1], subEventName => {
+							expect(eventsFlags[subEventName][index], `Event ${subEventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+						});
+						return randomTimeout(index * 50).then(() => {
+							eventsFlags[eventCatList[eventIndex]][index] = true;
+						});
 					});
 				});
 			});
 			return testSet.destroy().then(() => {
-				testSet.forEach(( subentity, subindex ) => {
-					expect( beforeCalled[subindex]).to.be.true;
-					expect( afterCalled[subindex]).to.be.true;
+				l.forEach(eventsFlags, eventFlagEntity => {
+					l.forEach(eventFlagEntity, (eventFlag, eventName) => {
+						expect(eventFlag, `Event ${eventName} should be true: ${JSON.stringify(eventsFlags)}`).to.be.true;
+					});
 				});
 			});
 		});

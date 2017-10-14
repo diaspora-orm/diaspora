@@ -48,7 +48,7 @@ Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](
 			<td rowspan="2" style="vertical-align: middle;">QL v2</td>
 		</tr>
 		<tr>
-			<td style="vertical-align: middle;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage"><img width="100" alt="Browser storage" src="https://cdn.rawgit.com/GerkinDev/Diaspora/master/media/browserStorage.svg"/></a></td>
+			<td style="vertical-align: middle;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage"><img width="100" alt="Browser storage" src="https://cdn.rawgit.com/GerkinDev/Diaspora/master/media/webStorage.svg"/></a></td>
 			<td colspan="2" style="vertical-align: middle;">Built-in</td>
 			<td>Browser</td>
 		</tr>
