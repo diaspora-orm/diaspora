@@ -58,9 +58,8 @@ typings/
 .env
 
 .localStorageTest/
-
 doc/\.sass-cache/
-
 mongoServiceLog*
-
 site/\.sass-cache/
+.DS_Store
+*~
