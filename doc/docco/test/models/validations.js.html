@@ -52,37 +52,7 @@ toc: false
 </span><span id="line-48">    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
 </span><span id="line-49">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail1</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="nx">ValidationError</span> <span class="p">),</span>
 </span><span id="line-50">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail1</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="sr">/(\W|^)prop1\W.*\Wstring(\W|$)/m</span> <span class="p">),</span>
-</span><span id="line-51">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail2</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="nx">ValidationError</span> <span class="p">),</span>
-</span><span id="line-52">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail2</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="sr">/(\W|^)prop2\W.*\Wenumerat(ed|ion)(\W|$)/m</span> <span class="p">),</span>
-</span><span id="line-53">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail3</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="nx">ValidationError</span> <span class="p">),</span>
-</span><span id="line-54">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail3</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="sr">/(\W|^)prop2\W.*\Winteger(\W|$)/m</span> <span class="p">),</span>
-</span><span id="line-55">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail4</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="nx">ValidationError</span> <span class="p">),</span>
-</span><span id="line-56">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail4</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="sr">/(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m</span> <span class="p">),</span>
-</span><span id="line-57">    <span class="p">]);</span>
-</span><span id="line-58"><span class="p">});</span>
-</span><span id="line-59"><span class="nx">it</span><span class="p">(</span> <span class="s1">&#39;Should define default values on valid items&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span><span id="line-60">    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
-</span><span id="line-61">        <span class="nx">testModel</span><span class="p">.</span><span class="nx">spawn</span><span class="p">({</span>
-</span><span id="line-62">            <span class="nx">prop2</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span id="line-63">        <span class="p">}).</span><span class="nx">persist</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span><span id="line-64">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">an</span><span class="p">.</span><span class="nx">entity</span><span class="p">(</span> <span class="nx">testModel</span><span class="p">,</span> <span class="p">{</span>
-</span><span id="line-65">                <span class="nx">prop2</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span id="line-66">                <span class="nx">prop3</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">,</span>
-</span><span id="line-67">            <span class="p">},</span> <span class="s1">&#39;inMemory&#39;</span> <span class="p">);</span>
-</span><span id="line-68">        <span class="p">}),</span>
-</span><span id="line-69">        <span class="nx">testModel</span><span class="p">.</span><span class="nx">spawn</span><span class="p">({</span>
-</span><span id="line-70">            <span class="nx">prop2</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span id="line-71">            <span class="nx">prop3</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
-</span><span id="line-72">        <span class="p">}).</span><span class="nx">persist</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span><span id="line-73">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">an</span><span class="p">.</span><span class="nx">entity</span><span class="p">(</span> <span class="nx">testModel</span><span class="p">,</span> <span class="p">{</span>
-</span><span id="line-74">                <span class="nx">prop2</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span id="line-75">                <span class="nx">prop3</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
-</span><span id="line-76">            <span class="p">},</span> <span class="s1">&#39;inMemory&#39;</span> <span class="p">);</span>
-</span><span id="line-77">        <span class="p">}),</span>
-</span><span id="line-78">    <span class="p">]);</span>
-</span><span id="line-79"><span class="p">});</span>
-</span><span id="line-80">
-</span><span id="line-81"></pre></div></td></tr><tr class="section" id="section-3"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-3">&#182;</a></div><div class="dox"><div class="summary"><p>it( 'Should be able to create multiple entities.', () =&gt; {<br />
+</span><span </pre></div></td></tr><tr class="section" id="section-3"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-3">&#182;</a></div><div class="dox"><div class="summary"><p>it( 'Should be able to create multiple entities.', () =&gt; {<br />
     const objects = [<br />
         {<br />
             foo: 'bar',<br />
@@ -335,5 +305,4 @@ describe( 'Should be able to persist, fetch &amp; delete an entity of the define
             });<br />
         });<br />
     });<br />
-});</p></div><div class="body"></div></div></td><td class="code"><div class="highlight"><pre></span>
-</pre></div></td></tr></tbody></table></div>
+});</p></div><div class="body"></div></div></td><td class="code"><div class="highlight"><pre>undefined</pre></div></td></tr></tbody></table></div>
