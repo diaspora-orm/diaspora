@@ -1,6 +1,6 @@
 ---
 layout: docpage
-title: "Namespace: EntityFactory"
+title: "Class: ExtendableError"
 toc: false
 ---
 
@@ -16,14 +16,16 @@ toc: false
 			<div id="main">
 				
 
-	<h1 class="page-title">Namespace: EntityFactory</h1>
+	<h1 class="page-title">Class: ExtendableError</h1>
 <section>
 
 <header>
     
         <h2>
-        EntityFactory
+        ExtendableError
         </h2>
+        
+            <div class="class-description"><p>This class is the base class for custom Diaspora errors</p></div>
         
     
 </header>
@@ -33,78 +35,9 @@ toc: false
     <div class="container-overview">
     
         
-
-        
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="EntityFactory.Entity.html">Entity</a></dt>
-            <dd><p>An entity is a document in the population of all your datas of the same type</p></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
 <hr>
 <dt>
-    <h4 class="name" id=".EntityFactory"><span class="type-signature">&lt;static> </span>EntityFactory(name, modelDesc, model)</h4>
+    <h4 class="name" id="ExtendableError"><span class="type-signature"></span>new ExtendableError(message, errorArgs)</h4>
     
     
 </dt>
@@ -112,7 +45,7 @@ toc: false
 
     
     <div class="description">
-        <p>This factory function generate a new class constructor, prepared for a specific model.</p>
+        <p>Construct a new extendable error.</p>
     </div>
     
 
@@ -135,6 +68,8 @@ toc: false
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -147,7 +82,7 @@ toc: false
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>message</code></td>
             
 
             <td class="type">
@@ -161,23 +96,31 @@ toc: false
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>Name of this model.</p></td>
+            <td class="description last"><p>Message of this error.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>modelDesc</code></td>
+                <td class="name"><code>errorArgs</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">ModelDescription</span>
+<span class="param-type">*</span>
 
 
 
@@ -185,34 +128,20 @@ toc: false
             </td>
 
             
-
-            
-
-            <td class="description last"><p>Model configuration that generated the associated <code>model</code>.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>model</code></td>
-            
-
-            <td class="type">
-            
+                <td class="attributes">
                 
-<span class="param-type"><a href="Model.html">Model</a></span>
 
+                
 
-
-            
-            </td>
-
-            
-
+                
+                    &lt;repeatable><br>
+                
+                </td>
             
 
-            <td class="description last"><p>Model that will spawn entities.</p></td>
+            
+
+            <td class="description last"><p>Arguments to transfer to parent Error.</p></td>
         </tr>
 
     
@@ -272,35 +201,36 @@ toc: false
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Entity constructor to use with this model.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Entity</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
 
-        </dl>
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>Error</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     

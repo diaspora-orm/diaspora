@@ -57,7 +57,7 @@ module.exports = function gruntInit( grunt ) {
 			options: {
 				private:     true,
 				destination: jsdocPath,
-				config:      `${ baseDocPath }/jsdoc.json`, 
+				config:      `${ baseDocPath }/jsdoc.json`,
 				template:    'node_modules/diaspora_doc/jsdoc',
 				readme:      'README-jsdoc.md',
 			},
@@ -91,6 +91,7 @@ module.exports = function gruntInit( grunt ) {
 						standalone: 'Diaspora',
 						external:   [ 'lodash', 'bluebird', 'sequential-event' ],
 					},
+					exclude: [ 'winston' ],
 				},
 			},
 			isolated: {
@@ -102,6 +103,7 @@ module.exports = function gruntInit( grunt ) {
 						'lodash',
 						'bluebird',
 						'sequential-event',
+						'winston',
 					],
 				},
 				src:  [ 'diaspora.js' ],
@@ -158,7 +160,7 @@ module.exports = function gruntInit( grunt ) {
 						[ '@comandeer/babel-plugin-banner', {
 							banner: `/**
 * @file <%= pkg.name %>
-* 
+*
 * <%= pkg.description %>
 * Standalone build compiled on <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %>
 *
@@ -183,7 +185,7 @@ module.exports = function gruntInit( grunt ) {
 						[ '@comandeer/babel-plugin-banner', {
 							banner: `/**
 * @file <%= pkg.name %>
-* 
+*
 * <%= pkg.description %>
 * Isolated build compiled on <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %>
 *

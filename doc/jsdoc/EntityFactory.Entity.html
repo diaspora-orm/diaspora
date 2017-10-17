@@ -378,14 +378,14 @@ toc: false
             
 <hr>
 <dt class="name" id="dataSources">
-    <h4 id="dataSources"><span class="type-signature">&lt;readonly> </span>dataSources<span class="type-signature"> :Object</span></h4>
+    <h4 id="dataSources"><span class="type-signature">&lt;readonly> </span>dataSources<span class="type-signature"> :null|string</span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.</p>
+        <p>Get entity's last data source.</p>
     </div>
     
 
@@ -394,7 +394,10 @@ toc: false
         <ul>
             <li>
                 
-<span class="param-type">Object</span>
+<span class="param-type">null</span>
+|
+
+<span class="param-type">string</span>
 
 
 
@@ -534,14 +537,14 @@ toc: false
             
 <hr>
 <dt class="name" id="dataSources">
-    <h4 id="dataSources"><span class="type-signature">&lt;readonly> </span>dataSources<span class="type-signature"> :null|string</span></h4>
+    <h4 id="dataSources"><span class="type-signature">&lt;readonly> </span>dataSources<span class="type-signature"> :Object</span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Get entity's last data source.</p>
+        <p>Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.</p>
     </div>
     
 
@@ -550,10 +553,7 @@ toc: false
         <ul>
             <li>
                 
-<span class="param-type">null</span>
-|
-
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
 
 
 
@@ -856,9 +856,9 @@ toc: false
     
     <h5>Fires:</h5>
     <ul>
-        <li><a href="EntityFactory.Entity.html#event:beforeDelete">EntityFactory.Entity#event:beforeDelete</a></li>
+        <li>EntityFactory.Entity#event:beforeDelete</li>
     
-        <li><a href="EntityFactory.Entity.html#event:afterDelete">EntityFactory.Entity#event:afterDelete</a></li>
+        <li>EntityFactory.Entity#event:afterDelete</li>
     </ul>
     
 
@@ -1416,9 +1416,9 @@ toc: false
     
     <h5>Fires:</h5>
     <ul>
-        <li><a href="EntityFactory.Entity.html#event:beforeUpdate">EntityFactory.Entity#event:beforeUpdate</a></li>
+        <li>EntityFactory.Entity#event:beforeUpdate</li>
     
-        <li><a href="EntityFactory.Entity.html#event:afterUpdate">EntityFactory.Entity#event:afterUpdate</a></li>
+        <li>EntityFactory.Entity#event:afterUpdate</li>
     </ul>
     
 
@@ -1838,7 +1838,7 @@ toc: false
             
 <hr>
 <dt>
-    <h4 class="name" id="~beforeUpdateValidate"><span class="type-signature">&lt;inner> </span>beforeUpdateValidate()</h4>
+    <h4 class="name" id="validate"><span class="type-signature"></span>validate()</h4>
     
     
 </dt>
@@ -1916,11 +1916,6 @@ toc: false
     
 
     
-    <h5>Listens to Events:</h5>
-    <ul>
-        <li><a href="EntityFactory.Entity.html#event:beforeUpdate">EntityFactory.Entity#event:beforeUpdate</a></li>
-    </ul>
-    
 
     
 
@@ -1979,16 +1974,12 @@ toc: false
             
 <hr>
 <dt>
-    <h4 class="name" id="event:afterDelete"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:afterDelete</h4>
+    <h4 class="name" id="event:afterDestroy"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:afterDestroy</h4>
     
     
 </dt>
 <dd>
 
-    
-    <div class="description">
-        <p>Fired after deleting this entity from the data source. Argument is the data source name deleted from</p>
-    </div>
     
 
     
@@ -2070,9 +2061,85 @@ toc: false
 <dd>
 
     
-    <div class="description">
-        <p>Fired after reloading this entity from the data source. Argument is the data source name searched in</p>
-    </div>
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:afterPersist"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:afterPersist</h4>
+    
+    
+</dt>
+<dd>
+
     
 
     
@@ -2147,16 +2214,12 @@ toc: false
             
 <hr>
 <dt>
-    <h4 class="name" id="event:afterUpdate"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:afterUpdate</h4>
+    <h4 class="name" id="event:afterPersistCreate"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:afterPersistCreate</h4>
     
     
 </dt>
 <dd>
 
-    
-    <div class="description">
-        <p>Fired after updating this entity in the data source. Argument is the data source name updated</p>
-    </div>
     
 
     
@@ -2231,16 +2294,172 @@ toc: false
             
 <hr>
 <dt>
-    <h4 class="name" id="event:beforeDelete"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:beforeDelete</h4>
+    <h4 class="name" id="event:afterPersistUpdate"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:afterPersistUpdate</h4>
     
     
 </dt>
 <dd>
 
     
-    <div class="description">
-        <p>Fired before deleting this entity from the data source. Argument is the data source name to delete from</p>
-    </div>
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:afterValidate"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:afterValidate</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:beforeDestroy"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:beforeDestroy</h4>
+    
+    
+</dt>
+<dd>
+
     
 
     
@@ -2322,9 +2541,85 @@ toc: false
 <dd>
 
     
-    <div class="description">
-        <p>Fired before reloading this entity from the data source. Argument is the data source name to search in</p>
-    </div>
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:beforePersist"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:beforePersist</h4>
+    
+    
+</dt>
+<dd>
+
     
 
     
@@ -2399,16 +2694,12 @@ toc: false
             
 <hr>
 <dt>
-    <h4 class="name" id="event:beforeUpdate"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:beforeUpdate</h4>
+    <h4 class="name" id="event:beforePersistCreate"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:beforePersistCreate</h4>
     
     
 </dt>
 <dd>
 
-    
-    <div class="description">
-        <p>Fired before updating this entity in the data source. Argument is the data source name to update</p>
-    </div>
     
 
     
@@ -2471,10 +2762,165 @@ toc: false
     
 
     
-    <h5>Listeners of This Event:</h5>
-    <ul>
-        <li><a href="EntityFactory.Entity.html#~beforeUpdateValidate">EntityFactory.Entity~beforeUpdateValidate</a></li>
-    </ul>
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:beforePersistUpdate"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:beforePersistUpdate</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="event:beforeValidate"><a href="EntityFactory.Entity.html">EntityFactory.Entity</a>#event:beforeValidate</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+        <h5>Type: 
+<span class="param-type">String</span>
+
+
+</h5>
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
     
 
     
@@ -2513,7 +2959,7 @@ toc: false
 	<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 		
-		on 2017-10-12T22:18:25+02:00
+		on 2017-10-17T12:30:39+02:00
 		
 		using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 	</span>

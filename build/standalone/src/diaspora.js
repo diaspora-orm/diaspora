@@ -98,26 +98,23 @@ const {
 
 /**
  * By default, all conditions in a single SelectQueryCondition are combined with an `AND` operator.
- * 
- * @typedef {Object} SelectQueryCondition
- * @memberof QueryLanguage
- * @public
- * @instance
+ *
+ * @typedef {Object} QueryLanguage.SelectQueryCondition
  * @author gerkin
- * @property {Any} $equals Match if item value is equal to this. Objects and array are compared deeply. **Alias: `==`**
- * @property {Any} $diff Match if item value is different to this. Objects and array are compared deeply. **Alias: `!=`** **NOT IMPLEMENTED YET**
- * @property {boolean} $exists If `true`, match items where this prop is defined. If `false`, match when prop is null or not set. **Alias: `~`** **NOT IMPLEMENTED YET**
- * @property {integer} $less Match if item value is less than this. **Alias: `<`** **NOT IMPLEMENTED YET**
- * @property {integer} $lessEqual Match if item value is less than this or equals to this. **Alias: `<=`** **NOT IMPLEMENTED YET**
- * @property {integer} $greater Match if item value is greater than this. **Alias: `>`** **NOT IMPLEMENTED YET**
- * @property {integer} $greaterEqual Match if item value is greater than this or equals to this. **Alias: `>=`** **NOT IMPLEMENTED YET** 
- * @property {QueryLanguage#SelectQueryOrCondition[]} $or Match if *one of* the conditions in the array is true. **Alias: `||`** **NOT IMPLEMENTED YET**
- * @property {QueryLanguage#SelectQueryOrCondition[]} $and Match if *all* the conditions in the array are true. Optional, because several conditions in a single SelectQueryCondition are combined with an `AND` operator. **Alias: `&&`** **NOT IMPLEMENTED YET**
- * @property {QueryLanguage#SelectQueryOrCondition[]} $xor Match if *a single* of the conditions in the array is true. **Alias: `^^`** **NOT IMPLEMENTED YET**
- * @property {QueryLanguage#SelectQueryOrCondition} $not Invert the condition **Alias: `!`** **NOT IMPLEMENTED YET**
- * @property {string} $contains On *string*, it will check if query is included in item using GLOB. **NOT IMPLEMENTED YET**
- * @property {QueryLanguage#SelectQueryOrCondition|Any} $contains On *array*, it will check if item contains the query. **NOT IMPLEMENTED YET**
- * @property {Any[]} $in Check if item value is contained (using deep comparaison) in query. **NOT IMPLEMENTED YET**
+ * @property {Any}                                      $equals       - Match if item value is equal to this. Objects and array are compared deeply. **Alias: `==`**
+ * @property {Any}                                      $diff         - Match if item value is different to this. Objects and array are compared deeply. **Alias: `!=`**
+ * @property {boolean}                                  $exists       - If `true`, match items where this prop is defined. If `false`, match when prop is null or not set. **Alias: `~`**
+ * @property {integer}                                  $less         - Match if item value is less than this. **Alias: `<`**
+ * @property {integer}                                  $lessEqual    - Match if item value is less than this or equals to this. **Alias: `<=`**
+ * @property {integer}                                  $greater      - Match if item value is greater than this. **Alias: `>`**
+ * @property {integer}                                  $greaterEqual - Match if item value is greater than this or equals to this. **Alias: `>=`**
+ * @property {QueryLanguage#SelectQueryOrCondition[]}   $or           - Match if *one of* the conditions in the array is true. **Alias: `||`** **NOT IMPLEMENTED YET**
+ * @property {QueryLanguage#SelectQueryOrCondition[]}   $and          - Match if *all* the conditions in the array are true. Optional, because several conditions in a single SelectQueryCondition are combined with an `AND` operator. **Alias: `&&`** **NOT IMPLEMENTED YET**
+ * @property {QueryLanguage#SelectQueryOrCondition[]}   $xor          - Match if *a single* of the conditions in the array is true. **Alias: `^^`** **NOT IMPLEMENTED YET**
+ * @property {QueryLanguage#SelectQueryOrCondition}     $not          - Invert the condition **Alias: `!`** **NOT IMPLEMENTED YET**
+ * @property {string}                                   $contains     - On *string*, it will check if query is included in item using GLOB. **NOT IMPLEMENTED YET**
+ * @property {QueryLanguage#SelectQueryOrCondition|Any} $contains     - On *array*, it will check if item contains the query. **NOT IMPLEMENTED YET**
+ * @property {Any[]}                                    $in           - Check if item value is contained (using deep comparaison) in query. **NOT IMPLEMENTED YET**
  */
 
 /**
@@ -142,10 +139,10 @@ class DiasporaAdapter extends SequentialEvent {
 
 	// -----
 	// ### Initialization
-	
+
 	/**
 	 * Create a new instance of adapter. This base class should be used by all other adapters.
-	 * 
+	 *
 	 * @public
 	 * @author gerkin
 	 * @param {DataStoreEntities.DataStoreEntity} classEntity - Entity to spawn with this adapter.
@@ -154,14 +151,14 @@ class DiasporaAdapter extends SequentialEvent {
 		super();
 		/**
 		 * Describe current adapter status.
-		 * 
+		 *
 		 * @type {string}
 		 * @author Gerkin
 		 */
 		this.state = 'preparing';
 		/**
 		 * Hash to transform entity fields to data store fields.
-		 * 
+		 *
 		 * @type {Object}
 		 * @property {string} * - Data store field associated with this entity field.
 		 * @author Gerkin
@@ -169,7 +166,7 @@ class DiasporaAdapter extends SequentialEvent {
 		this.remaps = {};
 		/**
 		 * Hash to transform data store fields to entity fields.
-		 * 
+		 *
 		 * @type {Object}
 		 * @property {string} * - Entity field associated with this data store field.
 		 * @author Gerkin
@@ -177,7 +174,7 @@ class DiasporaAdapter extends SequentialEvent {
 		this.remapsInverted = {};
 		/**
 		 * Hash of functions to cast data store values to JSON standard values in entity.
-		 * 
+		 *
 		 * @type {Object}
 		 * @property {Function} * - Filter to execute to get standard JSON value.
 		 * @author Gerkin
@@ -185,19 +182,19 @@ class DiasporaAdapter extends SequentialEvent {
 		this.filters = {};
 		/**
 		 * Link to the constructor of the class generated by this adapter.
-		 * 
+		 *
 		 * @type {DataStoreEntities.DataStoreEntity}
 		 * @author Gerkin
 		 */
 		this.classEntity = classEntity;
 		/**
 		 * Error triggered by adapter initialization.
-		 * 
+		 *
 		 * @type {Error}
 		 * @author Gerkin
 		 */
 		this.error = undefined;
-		
+
 		// Bind events
 		this.on( 'ready', () => {
 			this.state = 'ready';
@@ -209,7 +206,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} tableName    - Name of the table (usually, model name).
 	 * @param   {Object} remaps       - Associative hash that links entity field names with data source field names.
@@ -227,7 +224,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
-	 * 
+	 *
 	 * @event Adapters.DiasporaAdapter#ready
 	 * @type {undefined}
 	 * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
@@ -235,7 +232,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Fired if the adapter failed to initialize or changed to `error` state. Called with the triggering `error`.
-	 * 
+	 *
 	 * @event Adapters.DiasporaAdapter#error
 	 * @type {Error}
 	 * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
@@ -246,7 +243,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Returns a promise resolved once adapter state is ready.
-	 * 
+	 *
 	 * @author gerkin
 	 * @listens Adapters.DiasporaAdapter#error
 	 * @listens Adapters.DiasporaAdapter#ready
@@ -269,7 +266,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Cast entity field names to table field name, or the opposite.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string}  tableName      - Name of the table we are remapping for.
 	 * @param   {Object}  query          - Hash representing the raw query to remap.
@@ -291,7 +288,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * TODO.
-	 * 
+	 *
 	 * @author gerkin
 	 * @see TODO remapping.
 	 * @param   {string} tableName - Name of the table for which we remap.
@@ -303,7 +300,7 @@ class DiasporaAdapter extends SequentialEvent {
 			return query;
 		}
 		const filtered = _.mapValues( query, ( value, key ) => {
-			if ( this.filters.input.hasOwnProperty( key )) {
+			if ( _.isObject( _.get( this, 'filters.input' )) && this.filters.input.hasOwnProperty( key )) {
 				return this.filters.input[key]( value );
 			}
 			return value;
@@ -319,7 +316,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * TODO.
-	 * 
+	 *
 	 * @author gerkin
 	 * @see TODO remapping.
 	 * @param   {string} tableName - Name of the table for which we remap.
@@ -331,7 +328,7 @@ class DiasporaAdapter extends SequentialEvent {
 			return query;
 		}
 		const filtered = _.mapValues( query, ( value, key ) => {
-			if ( this.filters.output.hasOwnProperty( key )) {
+			if ( _.isObject( _.get( this, 'filters.output' )) && this.filters.output.hasOwnProperty( key )) {
 				return this.filters.output[key]( value );
 			}
 			return value;
@@ -347,7 +344,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Refresh the `idHash` with current adapter's `id` injected.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object} entity          - Object containing attributes of the entity.
 	 * @param   {string} [propName='id'] - Name of the `id` field.
@@ -362,7 +359,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQuery} query  - Query to match against.
 	 * @param   {Object}                    entity - Entity to test.
@@ -412,7 +409,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Merge update query with the entity. This operation allows to delete fields.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object} update - Hash representing modified values. A field with an `undefined` value deletes this field from the entity.
 	 * @param   {Object} entity - Entity to update.
@@ -431,7 +428,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Transform options to their canonical form. This function must be applied before calling adapters' methods.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws  {TypeError} Thrown if an option does not have an acceptable type.
 	 * @throws  {ReferenceError} Thrown if a required option is not present.
@@ -491,7 +488,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Transform a search query to its canonical form, replacing aliases or shorthands by full query.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} originalQuery - Query to cast to its canonical form.
 	 * @param   {QueryLanguage#Options}                options       - Options for this query.
@@ -550,7 +547,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertOne` itself.
-	 * 
+	 *
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 * @param   {string} table  - Name of the table to insert data in.
@@ -563,7 +560,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself.
-	 * 
+	 *
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 * @param   {string}   table    - Name of the table to insert data in.
@@ -579,7 +576,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Retrieve a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `findOne` itself.
-	 * 
+	 *
 	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -594,7 +591,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `findMany` itself.
-	 * 
+	 *
 	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -635,7 +632,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateOne` itself.
-	 * 
+	 *
 	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -651,7 +648,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateMany` itself.
-	 * 
+	 *
 	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -691,7 +688,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Delete a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteOne` itself.
-	 * 
+	 *
 	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
@@ -706,7 +703,7 @@ class DiasporaAdapter extends SequentialEvent {
 
 	/**
 	 * Delete several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteMany` itself.
-	 * 
+	 *
 	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
@@ -1472,7 +1469,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bluebird":16,"lodash":18,"sequential-event":20}],10:[function(require,module,exports){
+},{"bluebird":18,"lodash":20,"sequential-event":22}],10:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1480,6 +1477,35 @@ const dependencies = require( './dependencies' );
 const {
 	_, Promise,
 } = dependencies;
+
+const logger = (() => {
+	if ( !process.browser ) {
+		const winston = require( 'winston' );
+		const log = winston.createLogger({
+			level:      'silly',
+			format:     winston.format.json(),
+			transports: [
+				//
+				// - Write to all logs with level `info` and below to `combined.log`
+				// - Write all logs error (and below) to `error.log`.
+				//
+			],
+		});
+
+		//
+		// If we're not in production then log to the `console` with the format:
+		// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+		//
+		if ( process.env.NODE_ENV !== 'production' ) {
+			log.add( new winston.transports.Console({
+				format: winston.format.simple(),
+			}));
+		}
+		return log;
+	} else {
+		return console;
+	}
+})();
 
 const adapters = {};
 const dataSources = {};
@@ -1562,7 +1588,7 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 const Diaspora = {
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object}                               entity    - Entity to check.
 	 * @param   {module:ModelExtension.ModelPrototype} modelDesc - Model description.
@@ -1579,7 +1605,7 @@ const Diaspora = {
 
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Any}                                   value     - Value to check.
 	 * @param   {module:ModelExtension.FieldDescriptor} fieldDesc - Description of the field to check with.
@@ -1640,14 +1666,14 @@ const Diaspora = {
 						if ( !_.isObject( value )) {
 							error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
 						} else {
-							const deepTest = _.isObject( 
-								fieldDesc.attributes 
-							) ? _( value ).mapValues( 
-									( propVal, propName ) => this.checkField( 
-										propVal, 
-										fieldDesc.attributes[propName], 
-										_.concat( keys, [ propName ]) 
-									) 
+							const deepTest = _.isObject(
+								fieldDesc.attributes
+							) ? _( value ).mapValues(
+									( propVal, propName ) => this.checkField(
+										propVal,
+										fieldDesc.attributes[propName],
+										_.concat( keys, [ propName ])
+									)
 								)
 									.omitBy( _.isEmpty )
 									.value() : {};
@@ -1661,19 +1687,19 @@ const Diaspora = {
 						if ( !_.isArray( value )) {
 							error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
 						} else {
-							const deepTest = _.isObject( 
-								fieldDesc.of 
-							) ? _( value ).map( 
-									( propVal, propName ) => { 
-										if ( _.isArrayLike( fieldDesc.of )) { 
-											const subErrors = _( fieldDesc.of ).map( desc => this.checkField( propVal, desc, _.concat( keys, [ propName ]))); 
-											if ( !_.find( subErrors, v => 0 === v.length )) { 
-												return subErrors; 
-											} 
-										} else { 
-											return this.checkField( propVal, fieldDesc.of, _.concat( keys, [ propName ])); 
-										} 
-									} 
+							const deepTest = _.isObject(
+								fieldDesc.of
+							) ? _( value ).map(
+									( propVal, propName ) => {
+										if ( _.isArrayLike( fieldDesc.of )) {
+											const subErrors = _( fieldDesc.of ).map( desc => this.checkField( propVal, desc, _.concat( keys, [ propName ])));
+											if ( !_.find( subErrors, v => 0 === v.length )) {
+												return subErrors;
+											}
+										} else {
+											return this.checkField( propVal, fieldDesc.of, _.concat( keys, [ propName ]));
+										}
+									}
 								)
 									.omitBy( _.isEmpty )
 									.value() : {};
@@ -1721,7 +1747,7 @@ const Diaspora = {
 
 	/**
 	 * Set default values if required.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object}         entity    - Entity to set defaults in.
 	 * @param   {ModelPrototype} modelDesc - Model description.
@@ -1743,7 +1769,7 @@ const Diaspora = {
 
 	/**
 	 * Set the default on a single field according to its description.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Any}             value     - Value to default.
 	 * @param   {FieldDescriptor} fieldDesc - Description of the field to default.
@@ -1765,7 +1791,7 @@ const Diaspora = {
 
 	/**
 	 * Create a data source (usually, a database connection) that may be used by models.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws  {Error} Thrown if provided `adapter` label does not correspond to any adapter registered.
 	 * @param   {string} adapterLabel - Label of the adapter used to create the data source.
@@ -1798,7 +1824,7 @@ const Diaspora = {
 
 	/**
 	 * Stores the data source with provided label.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws  {Error} Error is thrown if parameters are incorrect or the name is already used or `dataSource` is not an adapter.
 	 * @param   {string}          name       - Name associated with this datasource.
@@ -1823,7 +1849,7 @@ const Diaspora = {
 
 	/**
 	 * Create a data source (usually, a database connection) that may be used by models.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws  {Error} Thrown if provided `adapter` label does not correspond to any adapter registered.
 	 * @param   {string} name         - Name associated with this datasource.
@@ -1838,7 +1864,7 @@ const Diaspora = {
 
 	/**
 	 * Create a new Model with provided description.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws  {Error} Thrown if parameters are incorrect.
 	 * @param   {string} name      - Name associated with this datasource.
@@ -1861,7 +1887,7 @@ const Diaspora = {
 
 	/**
 	 * Register a new adapter and make it available to use by models.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws  {Error} Thrown if an adapter already exists with same label.
 	 * @throws  {TypeError} Thrown if adapter does not extends {@link Adapters.DiasporaAdapter}.
@@ -1882,7 +1908,7 @@ const Diaspora = {
 
 	/**
 	 * Hash containing all available models.
-	 * 
+	 *
 	 * @type {Object}
 	 * @property {Model} * - Model associated with that name.
 	 * @memberof Diaspora
@@ -1893,7 +1919,7 @@ const Diaspora = {
 	models,
 	/**
 	 * Hash containing all available data sources.
-	 * 
+	 *
 	 * @type {Object}
 	 * @property {Adapters.DiasporaAdapter} * - Instances of adapters declared.
 	 * @memberof Diaspora
@@ -1904,7 +1930,7 @@ const Diaspora = {
 	dataSources,
 	/**
 	 * Hash containing all available adapters. The only universal adapter is `inMemory`.
-	 * 
+	 *
 	 * @type {Object}
 	 * @property {Adapters.DiasporaAdapter}        *        - Adapter constructor. Those constructors must be subclasses of DiasporaAdapter.
 	 * @property {Adapters.InMemorDiasporaAdapter} inMemory - InMemoryDiasporaAdapter constructor.
@@ -1916,7 +1942,7 @@ const Diaspora = {
 	adapters,
 	/**
 	 * Dependencies of Diaspora.
-	 * 
+	 *
 	 * @type {Object}
 	 * @property {Bluebird}        Promise          - Bluebird lib.
 	 * @property {Lodash}          _                - Lodash lib.
@@ -1926,6 +1952,15 @@ const Diaspora = {
 	 * @author gerkin
 	 */
 	dependencies: dependencies,
+	/**
+	 * Logger used by Diaspora and its adapters. You can use this property to configure winston. On brower environment, this is replaced by a reference to global {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/console Console}.
+	 *
+	 * @type {Winston|Console}
+	 * @memberof Diaspora
+	 * @public
+	 * @author gerkin
+	 */
+	logger,
 };
 
 module.exports = Diaspora;
@@ -1933,17 +1968,20 @@ module.exports = Diaspora;
 // Load components after export, so requires of Diaspora returns a complete object
 /**
  * Hash of components exposed by Diaspora.
- * 
+ *
  * @type {Object}
  * @memberof Diaspora
  * @private
  * @author gerkin
  */
 Diaspora.components = {
-	Entity:          require( './entityFactory' )( null, {}, null ),
-	Set:             require( './set' ),
-	Model:           require( './model' ),
-	ValidationError: require( './validationError' ),
+	Entity: require( './entityFactory' )( null, {}, null ),
+	Set:    require( './set' ),
+	Model:  require( './model' ),
+	Errors: {
+		ValidationError:  require( './errors/validationError' ),
+		EntityStateError: require( './errors/entityStateError' ),
+	},
 	DiasporaAdapter: require( './adapters/baseAdapter' ),
 	DataStoreEntity: require( './dataStoreEntities/baseEntity' ),
 };
@@ -1956,7 +1994,7 @@ if ( process.browser ) {
 }
 
 }).call(this,require('_process'))
-},{"./adapters/baseAdapter":3,"./adapters/browserStorageAdapter":4,"./adapters/inMemoryAdapter":5,"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./entityFactory":11,"./model":12,"./set":13,"./validationError":15,"_process":19}],11:[function(require,module,exports){
+},{"./adapters/baseAdapter":3,"./adapters/browserStorageAdapter":4,"./adapters/inMemoryAdapter":5,"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./entityFactory":11,"./errors/entityStateError":12,"./errors/validationError":14,"./model":15,"./set":16,"_process":21,"winston":undefined}],11:[function(require,module,exports){
 'use strict';
 
 const {
@@ -1964,7 +2002,8 @@ const {
 } = require( './dependencies' );
 const Diaspora = require( './diaspora' );
 const DataStoreEntity = require( './dataStoreEntities/baseEntity' );
-const ValidationError = require( './validationError' );
+const ValidationError = require( './errors/validationError' );
+const EntityStateError = require( './errors/entityStateError' );
 const Utils = require( './utils' );
 
 /**
@@ -1975,16 +2014,16 @@ const Utils = require( './utils' );
  * This factory function generate a new class constructor, prepared for a specific model.
  * 
  * @memberof EntityFactory
- * @param   {string} name       - Name of this model.
- * @param   {Object} modelAttrs - Object describing a model.
- * @param   {Model}  model      - Model that will spawn entities.
+ * @param   {string}           name       - Name of this model.
+ * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
+ * @param   {Model}            model      - Model that will spawn entities.
  * @returns {Entity} Entity constructor to use with this model.
  */
-function EntityFactory( name, modelAttrs, model ) {
-	const modelAttrsKeys = _.keys( modelAttrs );
+function EntityFactory( name, modelDesc, model ) {
+	const modelAttrsKeys = _.keys( modelDesc.attributes );
 
 	/**
-	 * The entity is the class you use to manage a single document in all data sources managed by your model. 
+	 * The entity is the class you use to manage a single document in all data sources managed by your model.
 	 * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
 	 * @summary An entity is a document in the population of all your datas of the same type
 	 * @extends SequentialEvent
@@ -2053,11 +2092,24 @@ function EntityFactory( name, modelAttrs, model ) {
 					const dataSource = this.constructor.model.getDataSource( sourceName );
 					const beforeState = state;
 					state = 'syncing';
+
+					// Args are always the same.
+					const eventsArgs = [ sourceName ];
 					let promise;
+
+					// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
+					const suffix = 'orphan' === beforeState ? 'Create' : 'Update';
 					if ( options.skipEvents ) {
 						promise = Promise.resolve();
 					} else {
-						promise = this.emit( 'beforeUpdate', sourceName );
+						promise = this.emit( 'beforePersist', ...eventsArgs ).then(() => {
+							return this.emit( 'beforeValidate', ...eventsArgs );
+						}).then(() => {
+							this.validate();
+							return this.emit( 'afterValidate', ...eventsArgs );
+						}).then(() => {
+							return this.emit( `beforePersist${  suffix }`, ...eventsArgs );
+						});
 					}
 					return promise.then(() => {
 						lastDataSource = dataSource.name;
@@ -2068,14 +2120,20 @@ function EntityFactory( name, modelAttrs, model ) {
 							return dataSource.updateOne( this.table( sourceName ), this.uidQuery( dataSource ), this.toObject());
 						}
 					}).then( dataStoreEntity => {
+						if ( options.skipEvents ) {
+							return Promise.resolve( dataStoreEntity );
+						} else {
+							return this.emit( `afterPersist${  suffix }`, ...eventsArgs ).then(() => {
+								return this.emit( 'afterPersist', ...eventsArgs );
+							}).then(() => {
+								return Promise.resolve( dataStoreEntity );
+							});
+						}
+					}).then( dataStoreEntity => {
 						state = 'sync';
 						entityDefined.dataSources[dataSource.name] = dataStoreEntity;
 						attributes = dataStoreEntity.toObject();
-						if ( options.skipEvents ) {
-							return  Promise.resolve( entityProxied );
-						} else {
-							return this.emit( 'afterUpdate', sourceName ).then(() => Promise.resolve( entityProxied ));
-						}
+						return  Promise.resolve( entityProxied );
 					});
 				},
 				/**
@@ -2103,12 +2161,12 @@ function EntityFactory( name, modelAttrs, model ) {
 					if ( options.skipEvents ) {
 						promise = Promise.resolve();
 					} else {
-						promise = this.emit( 'beforeFind', sourceName );
+						promise = this.emit( 'beforeFetch', sourceName );
 					}
 					return promise.then(() => {
 						// Depending on state, we are going to perform a different operation
 						if ( 'orphan' === beforeState ) {
-							return Promise.reject( 'Can\'t fetch an orphan entity' );
+							return Promise.reject( new EntityStateError( 'Can\'t fetch an orphan entity.' ));
 						} else {
 							lastDataSource = dataSource.name;
 							return dataSource.findOne( this.table( sourceName ), this.uidQuery( dataSource ));
@@ -2120,7 +2178,7 @@ function EntityFactory( name, modelAttrs, model ) {
 						if ( options.skipEvents ) {
 							return  Promise.resolve( entityProxied );
 						} else {
-							return this.emit( 'afterFind', sourceName ).then(() => Promise.resolve( entityProxied ));
+							return this.emit( 'afterFetch', sourceName ).then(() => Promise.resolve( entityProxied ));
 						}
 					});
 				},
@@ -2149,11 +2207,11 @@ function EntityFactory( name, modelAttrs, model ) {
 					if ( options.skipEvents ) {
 						promise = Promise.resolve();
 					} else {
-						promise = this.emit( 'beforeDelete', sourceName );
+						promise = this.emit( 'beforeDestroy', sourceName );
 					}
 					return promise.then(() => {
 						if ( 'orphan' === beforeState ) {
-							return Promise.reject( new Error( 'Can\'t destroy an orphan entity' ));
+							return Promise.reject( new EntityStateError( 'Can\'t fetch an orphan entity.' ));
 						} else {
 							lastDataSource = dataSource.name;
 							return dataSource.deleteOne( this.table( sourceName ), this.uidQuery( dataSource ));
@@ -2170,7 +2228,7 @@ function EntityFactory( name, modelAttrs, model ) {
 						if ( options.skipEvents ) {
 							return  Promise.resolve( entityProxied );
 						} else {
-							return this.emit( 'afterDelete', sourceName ).then(() => Promise.resolve( entityProxied ));
+							return this.emit( 'afterDestroy', sourceName ).then(() => Promise.resolve( entityProxied ));
 						}
 					});
 				},
@@ -2232,6 +2290,22 @@ function EntityFactory( name, modelAttrs, model ) {
 					// Will be used later
 					return name;
 				},
+				/**
+				 * Check if the entity matches model description.
+				 * 
+				 * @memberof EntityFactory.Entity
+				 * @instance
+				 * @author gerkin
+				 * @throws ValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
+				 * @returns {undefined} This function does not return anything.
+				 * @see Diaspora.check
+				 */
+				validate() {
+					const validationErrors = Diaspora.check( attributes, modelDesc.attributes );
+					if ( !_.isEmpty( validationErrors )) {
+						throw new ValidationError( validationErrors, 'Validation failed' );
+					}
+				},
 			};
 			const entityPrototypeProperties = _.keys( entityPrototype );
 
@@ -2258,25 +2332,14 @@ function EntityFactory( name, modelAttrs, model ) {
 			// Free the source
 			source = null;
 			// Default model attributes with our model desc
-			Diaspora.default( attributes, modelAttrs );
+			Diaspora.default( attributes, modelDesc.attributes );
 
-			/**
-			 * Check if the entity matches model description.
-			 * 
-			 * @method beforeUpdateValidate
-			 * @memberof EntityFactory.Entity
-			 * @inner
-			 * @listens EntityFactory.Entity#beforeUpdate
-			 * @author gerkin
-			 * @throws ValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
-			 * @returns {undefined} This function does not return anything.
-			 * @see Diaspora.check
-			 */
-			this.on( 'beforeUpdate', () => {
-				const validationErrors = Diaspora.check( attributes, modelAttrs );
-				if ( !_.isEmpty( validationErrors )) {
-					throw new ValidationError( validationErrors, 'Validation failed' );
-				}
+			// Bind events
+			_.forEach( modelDesc.events, ( eventFunctions, eventName ) => {
+				// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
+				_.forEach( _.castArray( eventFunctions ), eventFunction => {
+					this.on( eventName, eventFunction );
+				});
 			});
 
 			// Define getters & setters
@@ -2342,51 +2405,190 @@ function EntityFactory( name, modelAttrs, model ) {
 			enumerable: true, 
 		},
 	});
+
+	// We use keys `methods` and not `functions` as explained in this [StackOverflow thread](https://stackoverflow.com/a/155655/4839162).
+	// Extend prototype with methods in our model description
+	_.forEach( modelDesc.methods, ( methodName, method ) => {
+		Entity.prototype[methodName] = method;
+	});
+	// Add static methods
+	_.forEach( modelDesc.staticMethods, ( staticMethodName, staticMethod ) => {
+		Entity[staticMethodName] = staticMethod;
+	});
 	return EntityWrapped;
 }
 
+// =====
+// ## Lifecycle Events
+
 // -----
-// ### Events
+// ### Persist
 
 /**
- * Fired before updating this entity in the data source. Argument is the data source name to update
- * @event EntityFactory.Entity#beforeUpdate
+ * @event EntityFactory.Entity#beforePersist
  * @type {String}
  */
 
 /**
- * Fired after updating this entity in the data source. Argument is the data source name updated
- * @event EntityFactory.Entity#afterUpdate
+ * @event EntityFactory.Entity#beforeValidate
  * @type {String}
  */
 
 /**
- * Fired before reloading this entity from the data source. Argument is the data source name to search in
+ * @event EntityFactory.Entity#afterValidate
+ * @type {String}
+ */
+
+/**
+ * @event EntityFactory.Entity#beforePersistCreate
+ * @type {String}
+ */
+
+/**
+ * @event EntityFactory.Entity#beforePersistUpdate
+ * @type {String}
+ */
+
+/**
+ * @event EntityFactory.Entity#afterPersistCreate
+ * @type {String}
+ */
+
+/**
+ * @event EntityFactory.Entity#afterPersistUpdate
+ * @type {String}
+ */
+
+/**
+ * @event EntityFactory.Entity#afterPersist
+ * @type {String}
+ */
+
+// -----
+// ### Find
+
+/**
  * @event EntityFactory.Entity#beforeFind
  * @type {String}
  */
 
 /**
- * Fired after reloading this entity from the data source. Argument is the data source name searched in
  * @event EntityFactory.Entity#afterFind
  * @type {String}
  */
 
+// -----
+// ### Destroy
+
 /**
- * Fired before deleting this entity from the data source. Argument is the data source name to delete from
- * @event EntityFactory.Entity#beforeDelete
+ * @event EntityFactory.Entity#beforeDestroy
  * @type {String}
  */
 
 /**
- * Fired after deleting this entity from the data source. Argument is the data source name deleted from
- * @event EntityFactory.Entity#afterDelete
+ * @event EntityFactory.Entity#afterDestroy
  * @type {String}
  */
 
 module.exports = EntityFactory;
 
-},{"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./diaspora":10,"./utils":14,"./validationError":15}],12:[function(require,module,exports){
+},{"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./diaspora":10,"./errors/entityStateError":12,"./errors/validationError":14,"./utils":17}],12:[function(require,module,exports){
+'use strict';
+
+const ExtendableError = require( './extendableError' );
+
+/**
+ * This class represents an error related to validation.
+ * @extends Error
+ */
+class EntityStateError extends ExtendableError {
+	/**
+	 * Construct a new error related to an invalide state of the entity.
+	 * 
+	 * @author gerkin
+	 * @memberof Errors
+	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
+	 */
+	constructor( ...errorArgs ) {
+		super( ...errorArgs );
+	}
+}
+
+module.exports = EntityStateError;
+
+},{"./extendableError":13}],13:[function(require,module,exports){
+'use strict';
+
+/**
+ * @namespace Errors
+ */
+
+/**
+ * This class is the base class for custom Diaspora errors
+ * @extends Error
+ */
+class ExtendableError extends Error {
+	/**
+	 * Construct a new extendable error.
+	 * 
+	 * @author gerkin
+	 * @param {string} message          - Message of this error.
+	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
+	 */
+	constructor( message, ...errorArgs ) {
+		super( message, ...errorArgs );
+		this.constructor = super.target;
+		if ( 'function' === typeof Error.captureStackTrace ) {
+			Error.captureStackTrace( this, super.target );
+		} else { 
+			this.stack = ( new Error( message )).stack; 
+		}
+	}
+}
+
+module.exports = ExtendableError;
+
+},{}],14:[function(require,module,exports){
+'use strict';
+
+const {
+	_,
+} = require( '../dependencies' );
+const ExtendableError = require( './extendableError' );
+
+const stringifyValidationObject = validationErrors => {
+	return _( validationErrors ).mapValues(( error, key ) => {
+		return `${ key } => ${ JSON.stringify( error.value ) }
+* ${ _( error ).omit([ 'value' ]).values().map( _.identity ).value() }`;
+	}).values().join( '\n* ' );
+};
+
+/**
+ * This class represents an error related to validation.
+ * @extends Error
+ */
+class ValidationError extends ExtendableError {
+	/**
+	 * Construct a new validation error.
+	 * 
+	 * @author gerkin
+	 * @see Diaspora.check
+	 * @memberof Errors
+	 * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
+	 * @param {string} message          - Message of this error.
+	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
+	 */
+	constructor( validationErrors, message, ...errorArgs ) {
+		message += `
+${ stringifyValidationObject( validationErrors ) }`;
+		super( message, ...errorArgs );
+		this.validationErrors = validationErrors;
+	}
+}
+
+module.exports = ValidationError;
+
+},{"../dependencies":9,"./extendableError":13}],15:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2401,6 +2603,22 @@ const {
 } = EntityFactory;
 
 /**
+ * @namespace ModelConfiguration
+ */
+
+/**
+ * Object describing a model.
+ * 
+ * @typedef  {Object} ModelConfiguration.ModelDescription
+ * @author gerkin
+ * @property {ModelConfiguration.SourcesDescriptor}    sources       - List of sources to use with this model.
+ * @property {ModelConfiguration.AttributesDescriptor} attributes    - Attributes of the model.
+ * @property {Object<string, Function>}                methods       - Methods to add to entities prototype.
+ * @property {Object<string, Function>}                staticMethods - Static methods to add to entities.
+ * @property {Object<string, Function|Function[]>}     events        - Events to bind on entities.
+ */
+
+/**
  * The model class is used to interact with the population of all data of the same type.
  */
 class Model {
@@ -2408,8 +2626,8 @@ class Model {
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
 	 * 
 	 * @author gerkin
-	 * @param {string}           name      - Name of the model.
-	 * @param {ModelDescription} modelDesc - Hash representing the configuration of the model.
+	 * @param {string}                              name      - Name of the model.
+	 * @param {ModelConfiguration.ModelDescription} modelDesc - Hash representing the configuration of the model.
 	 */
 	constructor( name, modelDesc ) {
 		const reservedPropIntersect = _.intersection( entityPrototypeProperties, _.keys( modelDesc.attributes ));
@@ -2446,7 +2664,7 @@ class Model {
 		this.dataSources = modelSources;
 		this.defaultDataSource = sourceNames[0];
 		this.name = name;
-		this.entityFactory = EntityFactory( name, modelDesc.attributes, this );
+		this.entityFactory = EntityFactory( name, modelDesc, this );
 	}
 
 	/**
@@ -2663,7 +2881,7 @@ class Model {
 
 module.exports = Model;
 
-},{"./dependencies":9,"./diaspora":10,"./entityFactory":11,"./set":13}],13:[function(require,module,exports){
+},{"./dependencies":9,"./diaspora":10,"./entityFactory":11,"./set":16}],16:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2776,12 +2994,23 @@ class Set {
 	 * @see {@link EntityFactory.Entity#persist}
 	 */
 	persist( sourceName ) {
-		return Promise.all( this.entities.map( entity => entity.emit( 'beforeUpdate' ))).then(() => {
+		const suffixes = this.entities.map( entity => 'orphan' === entity.state ? 'Create' : 'Update' ).value();
+		return Promise.all( this.entities.map( entity => entity.emit( 'beforePersist' ))).then(() => {
+			return Promise.all( this.entities.map( entity => entity.emit( 'beforeValidate' )));
+		}).then(() => {
+			return this.entities.map( entity => entity.validate());
+		}).then(() => {
+			return Promise.all( this.entities.map( entity => entity.emit( 'afterValidate' )));
+		}).then(() => {
+			return Promise.all( this.entities.map(( entity, index ) => entity.emit( `beforePersist${  suffixes[index] }` )));
+		}).then(() => {
 			return Promise.all( this.entities.map( entity => entity.persist( sourceName, {
 				skipEvents: true,
 			})));
 		}).then(() => {
-			return Promise.all( this.entities.map( entity => entity.emit( 'afterUpdate' )));
+			return Promise.all( this.entities.map(( entity, index ) => entity.emit( `afterPersist${  suffixes[index] }` )));
+		}).then(() => {
+			return Promise.all( this.entities.map( entity => entity.emit( 'afterPersist' )));
 		}).then(() => this );
 	}
 
@@ -2796,12 +3025,12 @@ class Set {
 	 * @see {@link EntityFactory.Entity#fetch}
 	 */
 	fetch( sourceName ) {
-		return Promise.all( this.entities.map( entity => entity.emit( 'beforeFind' ))).then(() => {
+		return Promise.all( this.entities.map( entity => entity.emit( 'beforeFetch' ))).then(() => {
 			return Promise.all( this.entities.map( entity => entity.fetch( sourceName, {
 				skipEvents: true,
 			})));
 		}).then(() => {
-			return Promise.all( this.entities.map( entity => entity.emit( 'afterFind' )));
+			return Promise.all( this.entities.map( entity => entity.emit( 'afterFetch' )));
 		}).then(() => this );
 	}
 
@@ -2816,12 +3045,12 @@ class Set {
 	 * @see {@link EntityFactory.Entity#destroy}
 	 */
 	destroy( sourceName ) {
-		return Promise.all( this.entities.map( entity => entity.emit( 'beforeDelete' ))).then(() => {
+		return Promise.all( this.entities.map( entity => entity.emit( 'beforeDestroy' ))).then(() => {
 			return Promise.all( this.entities.map( entity => entity.destroy( sourceName, {
 				skipEvents: true,
 			})));
 		}).then(() => {
-			return Promise.all( this.entities.map( entity => entity.emit( 'afterDelete' )));
+			return Promise.all( this.entities.map( entity => entity.emit( 'afterDestroy' )));
 		}).then(() => this );
 	}
 
@@ -2848,7 +3077,7 @@ class Set {
 
 module.exports = Set;
 
-},{"./dependencies":9,"./utils":14}],14:[function(require,module,exports){
+},{"./dependencies":9,"./utils":17}],17:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2876,51 +3105,7 @@ module.exports = {
 	},
 };
 
-},{"./dependencies":9}],15:[function(require,module,exports){
-'use strict';
-
-const {
-	_,
-} = require( './dependencies' );
-
-const stringifyValidationObject = validationErrors => {
-	return _( validationErrors ).mapValues(( error, key ) => {
-		return `${ key } => ${ JSON.stringify( error.value ) }
-* ${ _( error ).omit([ 'value' ]).values().map( _.identity ).value() }`;
-	}).values().join( '\n* ' );
-};
-
-/**
- * This class represents an error related to validation.
- * @extends Error
- */
-class ValidationError extends Error {
-	/**
-	 * Construct a new validation error.
-	 * 
-	 * @author gerkin
-	 * @see Diaspora.check
-	 * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
-	 * @param {string} message          - Message of this error.
-	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
-	 */
-	constructor( validationErrors, message, ...errorArgs ) {
-		message += `
-${ stringifyValidationObject( validationErrors ) }`;
-		super( message, ...errorArgs );
-		this.validationErrors = validationErrors;
-		this.constructor = ValidationError;
-		if ( 'function' === typeof Error.captureStackTrace ) {
-			Error.captureStackTrace( this, this.constructor );
-		} else { 
-			this.stack = ( new Error( message )).stack; 
-		}
-	}
-}
-
-module.exports = ValidationError;
-
-},{"./dependencies":9}],16:[function(require,module,exports){
+},{"./dependencies":9}],18:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)
@@ -8546,7 +8731,7 @@ module.exports = ret;
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":19}],17:[function(require,module,exports){
+},{"_process":21}],19:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -8850,7 +9035,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -25938,7 +26123,7 @@ function isUndefined(arg) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -26124,10 +26309,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = require('./lib/sequential-event.js');
 
-},{"./lib/sequential-event.js":21}],21:[function(require,module,exports){
+},{"./lib/sequential-event.js":23}],23:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -26296,5 +26481,5 @@ class SequentialEvent extends EventEmitter {
 module.exports = SequentialEvent;
 
 }).call(this,require('_process'))
-},{"_process":19,"events":17}]},{},[2,1])(2)
+},{"_process":21,"events":19}]},{},[2,1])(2)
 });

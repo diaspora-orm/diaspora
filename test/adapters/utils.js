@@ -104,50 +104,50 @@ var AdapterTestUtils = {
 						foo: undefined,
 					})).to.deep.eql({
 						foo: {
-							$exists: false, 
-						}, 
+							$exists: false,
+						},
 					});
 					expect( nq({
 						foo: {
-							'~': true, 
-						}, 
+							'~': true,
+						},
 					})).to.deep.eql({
 						foo: {
-							$exists: true, 
-						}, 
+							$exists: true,
+						},
 					});
 					expect( nq({
 						foo: {
-							$exists: true, 
-						}, 
+							$exists: true,
+						},
 					})).to.deep.eql({
 						foo: {
-							$exists: true, 
-						}, 
+							$exists: true,
+						},
 					});
 					expect( nq({
 						foo: {
-							'~': false, 
-						}, 
+							'~': false,
+						},
 					})).to.deep.eql({
 						foo: {
-							$exists: false, 
-						}, 
+							$exists: false,
+						},
 					});
 					expect( nq({
 						foo: {
-							$exists: false, 
-						}, 
+							$exists: false,
+						},
 					})).to.deep.eql({
 						foo: {
-							$exists: false, 
-						}, 
+							$exists: false,
+						},
 					});
 					expect( nq.bind( adapter, {
 						foo: {
 							'~':     'bar',
-							$exists: 'bar', 
-						}, 
+							$exists: 'bar',
+						},
 					})).to.throw();
 				});
 				it( `${ getStyle( 'bold',  '==' ) } ($equal)`, () => {
@@ -155,202 +155,202 @@ var AdapterTestUtils = {
 						foo: 'bar',
 					})).to.deep.eql({
 						foo: {
-							$equal: 'bar', 
-						}, 
+							$equal: 'bar',
+						},
 					});
 					expect( nq({
 						foo: {
-							$equal: 'bar', 
-						}, 
+							$equal: 'bar',
+						},
 					})).to.deep.eql({
 						foo: {
-							$equal: 'bar', 
-						}, 
+							$equal: 'bar',
+						},
 					});
 					expect( nq({
 						foo: {
-							'==': 'bar', 
-						}, 
+							'==': 'bar',
+						},
 					})).to.deep.eql({
 						foo: {
-							$equal: 'bar', 
-						}, 
+							$equal: 'bar',
+						},
 					});
 					expect( nq.bind( adapter, {
 						foo: {
 							'==':   'bar',
-							$equal: 'bar', 
-						}, 
+							$equal: 'bar',
+						},
 					})).to.throw();
 				});
 				it( `${ getStyle( 'bold',  '!=' ) } ($diff)`, () => {
 					expect( nq({
 						foo: {
-							$diff: 'bar', 
-						}, 
+							$diff: 'bar',
+						},
 					})).to.deep.eql({
 						foo: {
-							$diff: 'bar', 
-						}, 
+							$diff: 'bar',
+						},
 					});
 					expect( nq({
 						foo: {
-							'!=': 'bar', 
-						}, 
+							'!=': 'bar',
+						},
 					})).to.deep.eql({
 						foo: {
-							$diff: 'bar', 
-						}, 
+							$diff: 'bar',
+						},
 					});
 					expect( nq.bind( adapter, {
 						foo: {
 							'!=':  'bar',
-							$diff: 'bar', 
-						}, 
+							$diff: 'bar',
+						},
 					})).to.throw();
 				});
 				it( `${ getStyle( 'bold',  '<' ) } ($less)`, () => {
 					expect( nq({
 						foo: {
-							$less: 1, 
-						}, 
+							$less: 1,
+						},
 					})).to.deep.eql({
 						foo: {
-							$less: 1, 
-						}, 
+							$less: 1,
+						},
 					});
 					expect( nq({
 						foo: {
-							'<': 1, 
-						}, 
+							'<': 1,
+						},
 					})).to.deep.eql({
 						foo: {
-							$less: 1, 
-						}, 
+							$less: 1,
+						},
 					});
 					expect( nq.bind( adapter, {
 						foo: {
 							'<':   1,
-							$less: 1, 
-						}, 
+							$less: 1,
+						},
 					})).to.throw();
 					expect( nq.bind( adapter, {
 						foo: {
-							'<': 'aze', 
-						}, 
+							'<': 'aze',
+						},
 					})).to.throw();
 					expect( nq.bind( adapter, {
 						foo: {
-							$less: 'aze', 
-						}, 
+							$less: 'aze',
+						},
 					})).to.throw();
 				});
 				it( `${ getStyle( 'bold',  '<=' ) } ($lessEqual)`, () => {
 					expect( nq({
 						foo: {
-							$lessEqual: 1, 
-						}, 
+							$lessEqual: 1,
+						},
 					})).to.deep.eql({
 						foo: {
-							$lessEqual: 1, 
-						}, 
+							$lessEqual: 1,
+						},
 					});
 					expect( nq({
 						foo: {
-							'<=': 1, 
-						}, 
+							'<=': 1,
+						},
 					})).to.deep.eql({
 						foo: {
-							$lessEqual: 1, 
-						}, 
+							$lessEqual: 1,
+						},
 					});
 					expect( nq.bind( adapter, {
 						foo: {
 							'<=':       1,
-							$lessEqual: 1, 
-						}, 
+							$lessEqual: 1,
+						},
 					})).to.throw();
 					expect( nq.bind( adapter, {
 						foo: {
-							'<=': 'aze', 
-						}, 
+							'<=': 'aze',
+						},
 					})).to.throw();
 					expect( nq.bind( adapter, {
 						foo: {
-							$lessEqual: 'aze', 
-						}, 
+							$lessEqual: 'aze',
+						},
 					})).to.throw();
 				});
 				it( `${ getStyle( 'bold',  '>' ) } ($greater)`, () => {
 					expect( nq({
 						foo: {
-							$greater: 1, 
-						}, 
+							$greater: 1,
+						},
 					})).to.deep.eql({
 						foo: {
-							$greater: 1, 
-						}, 
+							$greater: 1,
+						},
 					});
 					expect( nq({
 						foo: {
-							'>': 1, 
-						}, 
+							'>': 1,
+						},
 					})).to.deep.eql({
 						foo: {
-							$greater: 1, 
-						}, 
+							$greater: 1,
+						},
 					});
 					expect( nq.bind( adapter, {
 						foo: {
 							'>':      1,
-							$greater: 1, 
-						}, 
+							$greater: 1,
+						},
 					})).to.throw();
 					expect( nq.bind( adapter, {
 						foo: {
-							'>': 'aze', 
-						}, 
+							'>': 'aze',
+						},
 					})).to.throw();
 					expect( nq.bind( adapter, {
 						foo: {
-							$greater: 'aze', 
-						}, 
+							$greater: 'aze',
+						},
 					})).to.throw();
 				});
 				it( `${ getStyle( 'bold',  '>=' ) } ($greaterEqual)`, () => {
 					expect( nq({
 						foo: {
-							$greaterEqual: 1, 
-						}, 
+							$greaterEqual: 1,
+						},
 					})).to.deep.eql({
 						foo: {
-							$greaterEqual: 1, 
-						}, 
+							$greaterEqual: 1,
+						},
 					});
 					expect( nq({
 						foo: {
-							'>=': 1, 
-						}, 
+							'>=': 1,
+						},
 					})).to.deep.eql({
 						foo: {
-							$greaterEqual: 1, 
-						}, 
+							$greaterEqual: 1,
+						},
 					});
 					expect( nq.bind( adapter, {
 						foo: {
 							'>=':          1,
-							$greaterEqual: 1, 
-						}, 
+							$greaterEqual: 1,
+						},
 					})).to.throw();
 					expect( nq.bind( adapter, {
 						foo: {
-							'>=': 'aze', 
-						}, 
+							'>=': 'aze',
+						},
 					})).to.throw();
 					expect( nq.bind( adapter, {
 						foo: {
-							$greaterEqual: 'aze', 
-						}, 
+							$greaterEqual: 'aze',
+						},
 					})).to.throw();
 				});
 			});
@@ -725,8 +725,8 @@ var AdapterTestUtils = {
 					return Promise.all([
 						adapter.findOne( TABLE, {
 							foo: {
-								'~': true, 
-							}, 
+								'~': true,
+							},
 						}).then( output => {
 							expect( output ).to.be.a.dataStoreEntity( adapter, {
 								foo: 1,
@@ -734,8 +734,8 @@ var AdapterTestUtils = {
 						}),
 						adapter.findOne( TABLE, {
 							foo: {
-								'~': false, 
-							}, 
+								'~': false,
+							},
 						}).then( output => {
 							expect( output ).to.be.a.dataStoreEntity( adapter, {
 								foo: undefined,
@@ -746,8 +746,8 @@ var AdapterTestUtils = {
 				it( `${ getStyle( 'bold',  '==' ) } ($equal) operator`, () => {
 					return adapter.findOne( TABLE, {
 						foo: {
-							'==': 1, 
-						}, 
+							'==': 1,
+						},
 					}).then( output => {
 						expect( output ).to.be.a.dataStoreEntity( adapter, {
 							foo: 1,
@@ -758,8 +758,8 @@ var AdapterTestUtils = {
 					return Promise.all([
 						adapter.findOne( TABLE, {
 							bar: {
-								'!=': 1, 
-							}, 
+								'!=': 1,
+							},
 						}).then( output => {
 							expect( output ).to.be.a.dataStoreEntity( adapter, {
 								bar: 2,
@@ -767,15 +767,15 @@ var AdapterTestUtils = {
 						}),
 						adapter.findOne( TABLE, {
 							foo: {
-								'!=': 1, 
-							}, 
+								'!=': 1,
+							},
 						}).then( output => {
 							expect( output ).to.be.undefined;
 						}),
 						adapter.findOne( TABLE, {
 							foo: {
-								'!=': 2, 
-							}, 
+								'!=': 2,
+							},
 						}).then( output => {
 							expect( output ).to.be.a.dataStoreEntity( adapter, {
 								foo: 1,
@@ -786,8 +786,8 @@ var AdapterTestUtils = {
 				it( `${ getStyle( 'bold',  '<' ) } ($less) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
-							'<': 2, 
-						}, 
+							'<': 2,
+						},
 					}).then( outputs => {
 						expect( outputs ).to.be.a.set.of.dataStoreEntity( adapter, [{
 							bar: 1,
@@ -797,8 +797,8 @@ var AdapterTestUtils = {
 				it( `${ getStyle( 'bold',  '<=' ) } ($lessEqual) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
-							'<=': 2, 
-						}, 
+							'<=': 2,
+						},
 					}).then( outputs => {
 						expect( outputs ).to.be.a.set.of.dataStoreEntity( adapter, [{
 							bar: 1,
@@ -810,8 +810,8 @@ var AdapterTestUtils = {
 				it( `${ getStyle( 'bold',  '>' ) } ($greater) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
-							'>': 2, 
-						}, 
+							'>': 2,
+						},
 					}).then( outputs => {
 						expect( outputs ).to.be.a.set.of.dataStoreEntity( adapter, [{
 							bar: 3,
@@ -821,8 +821,8 @@ var AdapterTestUtils = {
 				it( `${ getStyle( 'bold',  '>=' ) } ($greaterEqual) operator`, () => {
 					return adapter.findMany( TABLE, {
 						bar: {
-							'>=': 2, 
-						}, 
+							'>=': 2,
+						},
 					}).then( outputs => {
 						expect( outputs ).to.be.a.set.of.dataStoreEntity( adapter, [{
 							bar: 2,

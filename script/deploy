@@ -8,7 +8,7 @@ npm pack
 tar -tzf "$PKG_NAME-$VERSION.tgz"
 
 read -p "Are files okay? (y/n) " -n 1 -r
-echo    # (optional) move to a new line
+echo # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    exit 1
+	exit 1
 fi

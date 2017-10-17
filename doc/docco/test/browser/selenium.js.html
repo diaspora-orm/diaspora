@@ -82,18 +82,4 @@ toc: false
 </span><span id="line-78">        <span class="p">});</span>
 </span><span id="line-79">    <span class="p">});</span>
 </span><span id="line-80">
-</span><span id="line-81">    <span class="nx">it</span><span class="p">(</span> <span class="s1">&#39;Isolated version should pass tests&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span><span id="line-82">        <span class="nx">browser</span><span class="p">.</span><span class="nx">currentBuild</span> <span class="o">=</span> <span class="s1">&#39;isolated&#39;</span><span class="p">;</span>
-</span><span id="line-83">        <span class="k">return</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span> <span class="nx">getTestPath</span><span class="p">(</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">currentBuild</span>  <span class="si">}</span><span class="sb">.html`</span> <span class="p">)).</span><span class="nx">then</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span><span id="line-84">            <span class="k">return</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">findElements</span><span class="p">(</span> <span class="nx">webdriver</span><span class="p">.</span><span class="nx">By</span><span class="p">.</span><span class="nx">xpath</span><span class="p">(</span> <span class="s1">&#39;//*[@id=&quot;mocha-report&quot;]/*&#39;</span> <span class="p">));</span>
-</span><span id="line-85">        <span class="p">}).</span><span class="nx">then</span><span class="p">(</span> <span class="nx">reportChildren</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span><span id="line-86">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">reportChildren</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">have</span><span class="p">.</span><span class="nx">lengthOf</span><span class="p">.</span><span class="nx">above</span><span class="p">(</span> <span class="mi">0</span> <span class="p">);</span>
-</span><span id="line-87">            <span class="k">return</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">findElements</span><span class="p">(</span> <span class="nx">webdriver</span><span class="p">.</span><span class="nx">By</span><span class="p">.</span><span class="nx">className</span><span class="p">(</span> <span class="s1">&#39;fail&#39;</span> <span class="p">));</span>
-</span><span id="line-88">        <span class="p">}).</span><span class="nx">then</span><span class="p">(</span> <span class="nx">failed</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span><span id="line-89">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">failed</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">have</span><span class="p">.</span><span class="nx">lengthOf</span><span class="p">(</span> <span class="mi">0</span> <span class="p">);</span>
-</span><span id="line-90">            <span class="nx">passed</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span><span id="line-91">        <span class="p">});</span>
-</span><span id="line-92">    <span class="p">});</span>
-</span><span id="line-93"><span class="p">});</span>
-</span>
-</pre></div></td></tr></tbody></table></div>
+</span><span id="line-81">    <span class="nx">it</span><span class="p">(</span> <span class="s1">&#39;Isolated version should pass tests&#39;</span><span class="p">,</span> <span class="p">()</span> <span cl</pre></div></td></tr></tbody></table></div>

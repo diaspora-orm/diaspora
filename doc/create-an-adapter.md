@@ -7,10 +7,62 @@ inMenu: true
 
 # Create a custom adapter
 
-Here is a template to create your own custom adapters.
+Creating an adapter for Diaspora is a process in 3 steps:
+* First, get the development version of Diaspora. It will provide you some usefull tools for your development.
+* Then, you have to create the adapter itself, that connects to your data source and interacts with it.
+* Finally, create some tests to ensure your adapter will works correctly on as many situations as possible.
+
+This page will guide you for each steps.
+
+## Set up your environment
+
+On a new NodeJS project, install Diaspora from both the development configuration and the production:
+
+<div class="tabs tabs-code">
+<div class="tab" data-ref="npm">
+
+### Using NPM
+
+{% highlight bash %}
+# Install latest dev version
+npm install --save-dev {{ site.github.clone.ssh }}
+{% endhighlight %}
+
+</div>
+<div class="tab" data-ref="yarn">
+
+### Using Yarn
+
+{% highlight bash %}
+# Install latest dev version
+yarn add {{ site.github.clone.ssh }}
+{% endhighlight %}
+
+</div>
+</div>
+
+Then, because your adapter is a *plugin* for Diaspora, add **Diaspora** as a [peerDependency](https://nodejs.org/en/blog/npm/peer-dependencies/).
+Note that the first version of Diaspora that supports adding an adapter is version `0.2.0`, so your `package.json` should be something like:
+
+{% highlight json %}
+{
+	"devDependencies": {
+		"diaspora": "git+ssh://git@github.com:GerkinDev/Diaspora.git"
+	},
+	"peerDependencies": {
+		"diaspora": ">= 0.2.0"
+	}
+}
+{% endhighlight %}
+
+## Write the adapter
 
 {% highlight javascript %}
 'use strict';
+
+const {
+	_, Promise,
+} = require( 'diaspora/lib/dependencies' );
 
 const DiasporaAdapter = require( 'diaspora/lib/adapters/baseAdapter.js' );
 const DataStoreEntity = require( 'diaspora/lib/dataStoreEntities/baseEntity.js' );
@@ -27,7 +79,7 @@ class MyDiasporaAdapter extends DiasporaAdapter {
 	constructor( config ) {
 		super( MyEntity );
 	}
-	
+
 	configureCollection( tableName, remaps ) {
 		// Call parent `configureCollection` to store remappings & filters
 		super.configureCollection( tableName, remaps );
@@ -36,7 +88,7 @@ class MyDiasporaAdapter extends DiasporaAdapter {
 		this.emit( 'ready' ); // Everything is okay
 		this.emit( 'error', new Error()); // An error happened
 	}
-	
+
 	// Implement at least one method of each couple
 	// Insertion
 	async insertOne( table, entity ) {}
@@ -53,7 +105,10 @@ class MyDiasporaAdapter extends DiasporaAdapter {
 }
 
 // Here, give a name to your adapter, and register it in Diaspora
-require('diaspora').registerAdapter( 'my-adapter', MyDiasporaAdapter );
+// You should check for the environment variable DISABLE_AUTOLOAD_DIASPORA_ADAPTERS.
+if( !process.env.DISABLE_AUTOLOAD_DIASPORA_ADAPTERS ){
+ require( 'diaspora' ).registerAdapter( 'my-adapter', MyDiasporaAdapter );
+}
 
 // Optionnally, you can export it
 module.exports = MyDiasporaAdapter;

@@ -33,70 +33,70 @@ toc: false
 </span><span id="line-30">        <span class="nx">pkg</span><span class="o">:</span>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">readJSON</span><span class="p">(</span> <span class="s1">&#39;package.json&#39;</span> <span class="p">),</span>
 </span><span id="line-31">        <span class="nx">eslint</span><span class="o">:</span> <span class="p">{</span>
 </span><span id="line-32">            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-33">                <span class="nx">format</span><span class="o">:</span>     <span class="s1">&#39;stylish&#39;</span><span class="p">,</span> <span class="c1">//&#39;node_modules/eslint-tap&#39;,</span>
-</span><span id="line-34">                <span class="nx">fix</span><span class="o">:</span>        <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-35">                <span class="nx">configFile</span><span class="o">:</span> <span class="s1">&#39;eslint-es6-node.json&#39;</span><span class="p">,</span>
-</span><span id="line-36">            <span class="p">},</span>
-</span><span id="line-37">            <span class="nx">info</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-38">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-39">                    <span class="nx">silent</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-40">                <span class="p">},</span>
-</span><span id="line-41">                <span class="nx">src</span><span class="o">:</span> <span class="nx">jsFilesWTests</span><span class="p">,</span>
-</span><span id="line-42">            <span class="p">},</span>
-</span><span id="line-43">            <span class="nx">strict</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-44">                <span class="nx">options</span><span class="o">:</span> <span class="p">{},</span>
-</span><span id="line-45">                <span class="nx">src</span><span class="o">:</span>     <span class="nx">jsFilesWTests</span><span class="p">,</span>
-</span><span id="line-46">            <span class="p">},</span>
-</span><span id="line-47">        <span class="p">},</span>
-</span><span id="line-48">        <span class="nx">docco_husky</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-49">            <span class="nx">files</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-50">                <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-51">                <span class="nx">src</span><span class="o">:</span>    <span class="nx">jsFilesWTests</span><span class="p">,</span>
-</span><span id="line-52">            <span class="p">},</span>
-</span><span id="line-53">            <span class="nx">output_dir</span><span class="o">:</span>   <span class="nx">doccoPath</span><span class="p">,</span>
-</span><span id="line-54">            <span class="nx">project_name</span><span class="o">:</span> <span class="s1">&#39;Diaspora&#39;</span><span class="p">,</span>
-</span><span id="line-55">            <span class="nx">template_dir</span><span class="o">:</span> <span class="s1">&#39;node_modules/diaspora_doc/docco&#39;</span><span class="p">,</span>
-</span><span id="line-56">            <span class="nx">readme</span><span class="o">:</span>       <span class="s1">&#39;README-docco.md&#39;</span><span class="p">,</span>
-</span><span id="line-57">        <span class="p">},</span>
-</span><span id="line-58">        <span class="nx">jsdoc</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-59">            <span class="nx">src</span><span class="o">:</span>     <span class="cm">/*[&#39;lib/adapters/baseAdapter.js&#39;],*/</span><span class="nx">jsAssets</span><span class="p">,</span>
-</span><span id="line-60">            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-61">                <span class="kr">private</span><span class="o">:</span>     <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-62">                <span class="nx">destination</span><span class="o">:</span> <span class="nx">jsdocPath</span><span class="p">,</span>
-</span><span id="line-63">                <span class="nx">config</span><span class="o">:</span>      <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/jsdoc.json`</span><span class="p">,</span> 
-</span><span id="line-64">                <span class="nx">template</span><span class="o">:</span>    <span class="s1">&#39;node_modules/diaspora_doc/jsdoc&#39;</span><span class="p">,</span>
-</span><span id="line-65">                <span class="nx">readme</span><span class="o">:</span>      <span class="s1">&#39;README-jsdoc.md&#39;</span><span class="p">,</span>
-</span><span id="line-66">            <span class="p">},</span>
-</span><span id="line-67">        <span class="p">},</span>
-</span><span id="line-68">        <span class="nx">browserify</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-69">            <span class="nx">deps</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-70">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-71">                    <span class="nx">shim</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-72">                        <span class="nx">lodash</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-73">                            <span class="nx">path</span><span class="o">:</span>    <span class="s1">&#39;node_modules/lodash/lodash.min.js&#39;</span><span class="p">,</span>
-</span><span id="line-74">                            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span>
-</span><span id="line-75">                        <span class="p">},</span>
-</span><span id="line-76">                        <span class="s1">&#39;sequential-event&#39;</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-77">                            <span class="nx">path</span><span class="o">:</span>    <span class="s1">&#39;node_modules/sequential-event/dist/sequential-event.min.js&#39;</span><span class="p">,</span>
-</span><span id="line-78">                            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;SequentialEvent&#39;</span><span class="p">,</span>
-</span><span id="line-79">                        <span class="p">},</span>
-</span><span id="line-80">                        <span class="nx">bluebird</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-81">                            <span class="nx">path</span><span class="o">:</span>    <span class="s1">&#39;node_modules/bluebird/js/browser/bluebird.min.js&#39;</span><span class="p">,</span>
-</span><span id="line-82">                            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;Promise&#39;</span><span class="p">,</span>
-</span><span id="line-83">                        <span class="p">},</span>
-</span><span id="line-84">                    <span class="p">},</span>
-</span><span id="line-85">                <span class="p">},</span>
-</span><span id="line-86">                <span class="nx">src</span><span class="o">:</span>  <span class="p">[</span> <span class="s1">&#39;node_modules/lodash/lodash.min.js&#39;</span><span class="p">,</span> <span class="s1">&#39;node_modules/sequential-event/dist/sequential-event.min.js&#39;</span><span class="p">,</span> <span class="s1">&#39;node_modules/bluebird/js/browser/bluebird.min.js&#39;</span> <span class="p">],</span>
-</span><span id="line-87">                <span class="nx">dest</span><span class="o">:</span> <span class="s1">&#39;build/dependencies/src/dependencies.js&#39;</span><span class="p">,</span>
-</span><span id="line-88">            <span class="p">},</span>
-</span><span id="line-89">            <span class="nx">standalone</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-90">                <span class="nx">src</span><span class="o">:</span>     <span class="p">[</span> <span class="s1">&#39;diaspora.js&#39;</span><span class="p">,</span> <span class="s1">&#39;build/dependencies/dist/dependencies.min.js&#39;</span> <span class="p">],</span>
-</span><span id="line-91">                <span class="nx">dest</span><span class="o">:</span>    <span class="s1">&#39;build/standalone/src/diaspora.js&#39;</span><span class="p">,</span>
-</span><span id="line-92">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-93">                    <span class="nx">browserifyOptions</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-94">                        <span class="nx">standalone</span><span class="o">:</span> <span class="s1">&#39;Diaspora&#39;</span><span class="p">,</span>
-</span><span id="line-95">                        <span class="nx">external</span><span class="o">:</span>   <span class="p">[</span> <span class="s1">&#39;lodash&#39;</span><span class="p">,</span> <span class="s1">&#39;bluebird&#39;</span><span class="p">,</span> <span class="s1">&#39;sequential-event&#39;</span> <span class="p">],</span>
-</span><span id="line-96">                    <span class="p">},</span>
+</span><span id="line-33">                <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;stylish&#39;</span><span class="p">,</span> <span class="c1">//&#39;node_modules/eslint-tap&#39;,</span>
+</span><span id="line-34">                <span class="nx">fix</span><span class="o">:</span>    <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-35">            <span class="p">},</span>
+</span><span id="line-36">            <span class="nx">info</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-37">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-38">                    <span class="nx">silent</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-39">                <span class="p">},</span>
+</span><span id="line-40">                <span class="nx">src</span><span class="o">:</span> <span class="nx">jsFilesWTests</span><span class="p">,</span>
+</span><span id="line-41">            <span class="p">},</span>
+</span><span id="line-42">            <span class="nx">strict</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-43">                <span class="nx">options</span><span class="o">:</span> <span class="p">{},</span>
+</span><span id="line-44">                <span class="nx">src</span><span class="o">:</span>     <span class="nx">jsFilesWTests</span><span class="p">,</span>
+</span><span id="line-45">            <span class="p">},</span>
+</span><span id="line-46">        <span class="p">},</span>
+</span><span id="line-47">        <span class="nx">docco_husky</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-48">            <span class="nx">files</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-49">                <span class="nx">expand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-50">                <span class="nx">src</span><span class="o">:</span>    <span class="nx">jsFilesWTests</span><span class="p">,</span>
+</span><span id="line-51">            <span class="p">},</span>
+</span><span id="line-52">            <span class="nx">output_dir</span><span class="o">:</span>   <span class="nx">doccoPath</span><span class="p">,</span>
+</span><span id="line-53">            <span class="nx">project_name</span><span class="o">:</span> <span class="s1">&#39;Diaspora&#39;</span><span class="p">,</span>
+</span><span id="line-54">            <span class="nx">template_dir</span><span class="o">:</span> <span class="s1">&#39;node_modules/diaspora_doc/docco&#39;</span><span class="p">,</span>
+</span><span id="line-55">            <span class="nx">readme</span><span class="o">:</span>       <span class="s1">&#39;README-docco.md&#39;</span><span class="p">,</span>
+</span><span id="line-56">        <span class="p">},</span>
+</span><span id="line-57">        <span class="nx">jsdoc</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-58">            <span class="nx">src</span><span class="o">:</span>     <span class="cm">/*[&#39;lib/adapters/baseAdapter.js&#39;],*/</span><span class="nx">jsAssets</span><span class="p">,</span>
+</span><span id="line-59">            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-60">                <span class="kr">private</span><span class="o">:</span>     <span class="kc">true</span><span class="p">,</span>
+</span><span id="line-61">                <span class="nx">destination</span><span class="o">:</span> <span class="nx">jsdocPath</span><span class="p">,</span>
+</span><span id="line-62">                <span class="nx">config</span><span class="o">:</span>      <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/jsdoc.json`</span><span class="p">,</span>
+</span><span id="line-63">                <span class="nx">template</span><span class="o">:</span>    <span class="s1">&#39;node_modules/diaspora_doc/jsdoc&#39;</span><span class="p">,</span>
+</span><span id="line-64">                <span class="nx">readme</span><span class="o">:</span>      <span class="s1">&#39;README-jsdoc.md&#39;</span><span class="p">,</span>
+</span><span id="line-65">            <span class="p">},</span>
+</span><span id="line-66">        <span class="p">},</span>
+</span><span id="line-67">        <span class="nx">browserify</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-68">            <span class="nx">deps</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-69">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-70">                    <span class="nx">shim</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-71">                        <span class="nx">lodash</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-72">                            <span class="nx">path</span><span class="o">:</span>    <span class="s1">&#39;node_modules/lodash/lodash.min.js&#39;</span><span class="p">,</span>
+</span><span id="line-73">                            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span>
+</span><span id="line-74">                        <span class="p">},</span>
+</span><span id="line-75">                        <span class="s1">&#39;sequential-event&#39;</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-76">                            <span class="nx">path</span><span class="o">:</span>    <span class="s1">&#39;node_modules/sequential-event/dist/sequential-event.min.js&#39;</span><span class="p">,</span>
+</span><span id="line-77">                            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;SequentialEvent&#39;</span><span class="p">,</span>
+</span><span id="line-78">                        <span class="p">},</span>
+</span><span id="line-79">                        <span class="nx">bluebird</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-80">                            <span class="nx">path</span><span class="o">:</span>    <span class="s1">&#39;node_modules/bluebird/js/browser/bluebird.min.js&#39;</span><span class="p">,</span>
+</span><span id="line-81">                            <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;Promise&#39;</span><span class="p">,</span>
+</span><span id="line-82">                        <span class="p">},</span>
+</span><span id="line-83">                    <span class="p">},</span>
+</span><span id="line-84">                <span class="p">},</span>
+</span><span id="line-85">                <span class="nx">src</span><span class="o">:</span>  <span class="p">[</span> <span class="s1">&#39;node_modules/lodash/lodash.min.js&#39;</span><span class="p">,</span> <span class="s1">&#39;node_modules/sequential-event/dist/sequential-event.min.js&#39;</span><span class="p">,</span> <span class="s1">&#39;node_modules/bluebird/js/browser/bluebird.min.js&#39;</span> <span class="p">],</span>
+</span><span id="line-86">                <span class="nx">dest</span><span class="o">:</span> <span class="s1">&#39;build/dependencies/src/dependencies.js&#39;</span><span class="p">,</span>
+</span><span id="line-87">            <span class="p">},</span>
+</span><span id="line-88">            <span class="nx">standalone</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-89">                <span class="nx">src</span><span class="o">:</span>     <span class="p">[</span> <span class="s1">&#39;diaspora.js&#39;</span><span class="p">,</span> <span class="s1">&#39;build/dependencies/dist/dependencies.min.js&#39;</span> <span class="p">],</span>
+</span><span id="line-90">                <span class="nx">dest</span><span class="o">:</span>    <span class="s1">&#39;build/standalone/src/diaspora.js&#39;</span><span class="p">,</span>
+</span><span id="line-91">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-92">                    <span class="nx">browserifyOptions</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-93">                        <span class="nx">standalone</span><span class="o">:</span> <span class="s1">&#39;Diaspora&#39;</span><span class="p">,</span>
+</span><span id="line-94">                        <span class="nx">external</span><span class="o">:</span>   <span class="p">[</span> <span class="s1">&#39;lodash&#39;</span><span class="p">,</span> <span class="s1">&#39;bluebird&#39;</span><span class="p">,</span> <span class="s1">&#39;sequential-event&#39;</span> <span class="p">],</span>
+</span><span id="line-95">                    <span class="p">},</span>
+</span><span id="line-96">                    <span class="nx">exclude</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;winston&#39;</span> <span class="p">],</span>
 </span><span id="line-97">                <span class="p">},</span>
 </span><span id="line-98">            <span class="p">},</span>
 </span><span id="line-99">            <span class="nx">isolated</span><span class="o">:</span> <span class="p">{</span>
@@ -108,38 +108,38 @@ toc: false
 </span><span id="line-105">                        <span class="s1">&#39;lodash&#39;</span><span class="p">,</span>
 </span><span id="line-106">                        <span class="s1">&#39;bluebird&#39;</span><span class="p">,</span>
 </span><span id="line-107">                        <span class="s1">&#39;sequential-event&#39;</span><span class="p">,</span>
-</span><span id="line-108">                    <span class="p">],</span>
-</span><span id="line-109">                <span class="p">},</span>
-</span><span id="line-110">                <span class="nx">src</span><span class="o">:</span>  <span class="p">[</span> <span class="s1">&#39;diaspora.js&#39;</span> <span class="p">],</span>
-</span><span id="line-111">                <span class="nx">dest</span><span class="o">:</span> <span class="s1">&#39;build/isolated/src/diaspora.js&#39;</span><span class="p">,</span>
-</span><span id="line-112">            <span class="p">},</span>
-</span><span id="line-113">            <span class="nx">test</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-114">                <span class="nx">src</span><span class="o">:</span>     <span class="nx">testFiles</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span> <span class="nx">v</span> <span class="p">=&gt;</span>  <span class="sb">`./test/</span><span class="si">${</span>  <span class="nx">v</span> <span class="si">}</span><span class="sb">`</span> <span class="p">),</span>
-</span><span id="line-115">                <span class="nx">dest</span><span class="o">:</span>    <span class="s1">&#39;test/browser/unit-tests.es6.js&#39;</span><span class="p">,</span>
-</span><span id="line-116">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-117">                    <span class="nx">alias</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-118">                        <span class="s1">&#39;/test/adapters/index.js&#39;</span><span class="o">:</span>          <span class="s1">&#39;./test/adapters/index.js&#39;</span><span class="p">,</span>
-</span><span id="line-119">                        <span class="s1">&#39;/test/adapters/inMemory.js&#39;</span><span class="o">:</span>       <span class="s1">&#39;./test/adapters/inMemory.js&#39;</span><span class="p">,</span>
-</span><span id="line-120">                        <span class="s1">&#39;/test/adapters/browserStorage.js&#39;</span><span class="o">:</span> <span class="s1">&#39;./test/adapters/browserStorage.js&#39;</span><span class="p">,</span>
-</span><span id="line-121">                        <span class="s1">&#39;/test/models/index.js&#39;</span><span class="o">:</span>            <span class="s1">&#39;./test/models/index.js&#39;</span><span class="p">,</span>
-</span><span id="line-122">                        <span class="s1">&#39;/test/models/simple.js&#39;</span><span class="o">:</span>           <span class="s1">&#39;./test/models/simple.js&#39;</span><span class="p">,</span>
-</span><span id="line-123">                        <span class="s1">&#39;/test/models/simple-remapping.js&#39;</span><span class="o">:</span> <span class="s1">&#39;./test/models/simple-remapping.js&#39;</span><span class="p">,</span>
-</span><span id="line-124">                        <span class="s1">&#39;/test/models/validations.js&#39;</span><span class="o">:</span>      <span class="s1">&#39;./test/models/validations.js&#39;</span><span class="p">,</span>
-</span><span id="line-125">                        <span class="s1">&#39;/test/models/components.js&#39;</span><span class="o">:</span>       <span class="s1">&#39;./test/models/components.js&#39;</span><span class="p">,</span>
-</span><span id="line-126">                    <span class="p">},</span>
-</span><span id="line-127">                    <span class="nx">exclude</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;./browser/selenium.js&#39;</span><span class="p">,</span> <span class="s1">&#39;./config.js&#39;</span><span class="p">,</span> <span class="s1">&#39;chai&#39;</span><span class="p">,</span> <span class="s1">&#39;../diaspora&#39;</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="s1">&#39;chalk&#39;</span><span class="p">,</span> <span class="s1">&#39;stack-trace&#39;</span><span class="p">,</span> <span class="s1">&#39;expect.js&#39;</span><span class="p">,</span> <span class="s1">&#39;node-localstorage&#39;</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span> <span class="p">],</span>
-</span><span id="line-128">                    <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-129">                        <span class="nx">browserifyOptions</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-130">                            <span class="nx">fullPaths</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-</span><span id="line-131">                        <span class="p">},</span>
-</span><span id="line-132">                    <span class="p">},</span>
-</span><span id="line-133">                <span class="p">},</span>
-</span><span id="line-134">            <span class="p">},</span>
-</span><span id="line-135">        <span class="p">},</span>
-</span><span id="line-136">        <span class="nx">babel</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-137">            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-138">                <span class="nx">sourceMap</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span id="line-139">                <span class="nx">presets</span><span class="o">:</span>   <span class="p">[[</span> <span class="s1">&#39;env&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span id="line-108">                        <span class="s1">&#39;winston&#39;</span><span class="p">,</span>
+</span><span id="line-109">                    <span class="p">],</span>
+</span><span id="line-110">                <span class="p">},</span>
+</span><span id="line-111">                <span class="nx">src</span><span class="o">:</span>  <span class="p">[</span> <span class="s1">&#39;diaspora.js&#39;</span> <span class="p">],</span>
+</span><span id="line-112">                <span class="nx">dest</span><span class="o">:</span> <span class="s1">&#39;build/isolated/src/diaspora.js&#39;</span><span class="p">,</span>
+</span><span id="line-113">            <span class="p">},</span>
+</span><span id="line-114">            <span class="nx">test</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-115">                <span class="nx">src</span><span class="o">:</span>     <span class="nx">testFiles</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span> <span class="nx">v</span> <span class="p">=&gt;</span>  <span class="sb">`./test/</span><span class="si">${</span>  <span class="nx">v</span> <span class="si">}</span><span class="sb">`</span> <span class="p">),</span>
+</span><span id="line-116">                <span class="nx">dest</span><span class="o">:</span>    <span class="s1">&#39;test/browser/unit-tests.es6.js&#39;</span><span class="p">,</span>
+</span><span id="line-117">                <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-118">                    <span class="nx">alias</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-119">                        <span class="s1">&#39;/test/adapters/index.js&#39;</span><span class="o">:</span>          <span class="s1">&#39;./test/adapters/index.js&#39;</span><span class="p">,</span>
+</span><span id="line-120">                        <span class="s1">&#39;/test/adapters/inMemory.js&#39;</span><span class="o">:</span>       <span class="s1">&#39;./test/adapters/inMemory.js&#39;</span><span class="p">,</span>
+</span><span id="line-121">                        <span class="s1">&#39;/test/adapters/browserStorage.js&#39;</span><span class="o">:</span> <span class="s1">&#39;./test/adapters/browserStorage.js&#39;</span><span class="p">,</span>
+</span><span id="line-122">                        <span class="s1">&#39;/test/models/index.js&#39;</span><span class="o">:</span>            <span class="s1">&#39;./test/models/index.js&#39;</span><span class="p">,</span>
+</span><span id="line-123">                        <span class="s1">&#39;/test/models/simple.js&#39;</span><span class="o">:</span>           <span class="s1">&#39;./test/models/simple.js&#39;</span><span class="p">,</span>
+</span><span id="line-124">                        <span class="s1">&#39;/test/models/simple-remapping.js&#39;</span><span class="o">:</span> <span class="s1">&#39;./test/models/simple-remapping.js&#39;</span><span class="p">,</span>
+</span><span id="line-125">                        <span class="s1">&#39;/test/models/validations.js&#39;</span><span class="o">:</span>      <span class="s1">&#39;./test/models/validations.js&#39;</span><span class="p">,</span>
+</span><span id="line-126">                        <span class="s1">&#39;/test/models/components.js&#39;</span><span class="o">:</span>       <span class="s1">&#39;./test/models/components.js&#39;</span><span class="p">,</span>
+</span><span id="line-127">                    <span class="p">},</span>
+</span><span id="line-128">                    <span class="nx">exclude</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;./browser/selenium.js&#39;</span><span class="p">,</span> <span class="s1">&#39;./config.js&#39;</span><span class="p">,</span> <span class="s1">&#39;chai&#39;</span><span class="p">,</span> <span class="s1">&#39;../diaspora&#39;</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="s1">&#39;chalk&#39;</span><span class="p">,</span> <span class="s1">&#39;stack-trace&#39;</span><span class="p">,</span> <span class="s1">&#39;expect.js&#39;</span><span class="p">,</span> <span class="s1">&#39;node-localstorage&#39;</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span> <span class="p">],</span>
+</span><span id="line-129">                    <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-130">                        <span class="nx">browserifyOptions</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-131">                            <span class="nx">fullPaths</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span id="line-132">                        <span class="p">},</span>
+</span><span id="line-133">                    <span class="p">},</span>
+</span><span id="line-134">                <span class="p">},</span>
+</span><span id="line-135">            <span class="p">},</span>
+</span><span id="line-136">        <span class="p">},</span>
+</span><span id="line-137">        <span class="nx">babel</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-138">            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span id="line-139">                <span class="nx">presets</span><span class="o">:</span> <span class="p">[[</span> <span class="s1">&#39;env&#39;</span><span class="p">,</span> <span class="p">{</span>
 </span><span id="line-140">                    <span class="nx">modules</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
 </span><span id="line-141">                    <span class="nx">targets</span><span class="o">:</span> <span class="p">{</span>
 </span><span id="line-142">                        <span class="nx">browsers</span><span class="o">:</span> <span class="s1">&#39;&gt;= 1%&#39;</span><span class="p">,</span>
@@ -166,9 +166,9 @@ toc: false
 </span><span id="line-163">                        <span class="p">[</span> <span class="s1">&#39;@comandeer/babel-plugin-banner&#39;</span><span class="p">,</span> <span class="p">{</span>
 </span><span id="line-164">                            <span class="nx">banner</span><span class="o">:</span> <span class="sb">`/**</span>
 </span><span id="line-165"><span class="sb">* @file &lt;%= pkg.name %&gt;</span>
-</span><span id="line-166"><span class="sb">* </span>
+</span><span id="line-166"><span class="sb">*</span>
 </span><span id="line-167"><span class="sb">* &lt;%= pkg.description %&gt;</span>
-</span><span id="line-168"><span class="sb">* Standalone build compiled on &lt;%= grunt.template.today(&quot;yyyy-mm-dd hh:MM:ss&quot;) %&gt;</span>
+</span><span id="line-168"><span class="sb">* Standalone build compiled on &lt;%= grunt.template.today(&quot;yyyy-mm-dd HH:MM:ss&quot;) %&gt;</span>
 </span><span id="line-169"><span class="sb">*</span>
 </span><span id="line-170"><span class="sb">* @license &lt;%= pkg.license %&gt;</span>
 </span><span id="line-171"><span class="sb">* @version &lt;%= pkg.version %&gt;</span>
@@ -191,9 +191,9 @@ toc: false
 </span><span id="line-188">                        <span class="p">[</span> <span class="s1">&#39;@comandeer/babel-plugin-banner&#39;</span><span class="p">,</span> <span class="p">{</span>
 </span><span id="line-189">                            <span class="nx">banner</span><span class="o">:</span> <span class="sb">`/**</span>
 </span><span id="line-190"><span class="sb">* @file &lt;%= pkg.name %&gt;</span>
-</span><span id="line-191"><span class="sb">* </span>
+</span><span id="line-191"><span class="sb">*</span>
 </span><span id="line-192"><span class="sb">* &lt;%= pkg.description %&gt;</span>
-</span><span id="line-193"><span class="sb">* Isolated build compiled on &lt;%= grunt.template.today(&quot;yyyy-mm-dd hh:MM:ss&quot;) %&gt;</span>
+</span><span id="line-193"><span class="sb">* Isolated build compiled on &lt;%= grunt.template.today(&quot;yyyy-mm-dd HH:MM:ss&quot;) %&gt;</span>
 </span><span id="line-194"><span class="sb">*</span>
 </span><span id="line-195"><span class="sb">* @license &lt;%= pkg.license %&gt;</span>
 </span><span id="line-196"><span class="sb">* @version &lt;%= pkg.version %&gt;</span>
