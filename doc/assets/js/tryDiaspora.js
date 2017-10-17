@@ -31,29 +31,47 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 
-	Diaspora.registerDataSource('tryDiaspora', 'inMemory', Diaspora.createDataSource('in-memory'));
-	Diaspora.registerDataSource('tryDiaspora', 'localStorage', Diaspora.createDataSource('localstorage', {}));
-	window.PhoneBook = Diaspora.declareModel('tryDiaspora', 'PhoneBook', {
+	Diaspora.createNamedDataSource('memoryStore', 'inMemory');
+	Diaspora.createNamedDataSource('localStorage', 'browserStorage', {});
+	window.Drawings = Diaspora.declareModel('drawings', {
 		sources: {
-			inMemory: {
+			memoryStore: {
 				id: 'index',
 			},
 		},
 		attributes:{
-			id: 'Integer',
-			name: 'String',
-			phone: 'String',
-			email: 'String',
-			company: 'String',
-			country: 'String',
-			state: 'String',
-			city: 'String',
-			address: 'String',
+			name: {
+				type: 'string',
+				required: true,
+			},
+			artist: 'string',
+			date: 'integer',
+			movement: 'string',
+			type: {
+				type: 'string',
+				enum: [/(?:\W|^)painting(?:\W|$)/, 'sculpture', 'photography'],
+			},
+			medium: {
+				type: 'string',
+			},
+			museum: 'string',
 		},
 	});
-	window.Queries = Diaspora.declareModel('tryDiaspora', 'Queries', {
+	window.Queries = Diaspora.declareModel('Queries', {
 		sources: ['localStorage'],
-		attributes:{},
+		attributes:{
+			query: {
+				type: 'string',
+				required: true
+			},
+			timestamp: {
+				type: 'integer',
+				required: true,
+				default: function defaultVal(){
+					return new Date().getTime();
+				}
+			},
+		},
 	});
 
 
@@ -74,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function(){
 			}
 			return fullStr.slice(-len);
 		}
-		
 		return toSize(date.getDate(), ' ', 2) + ' ' + monthNames[date.getMonth()].slice(0, 3) + '. ' + toSize(date.getHours(), '0', 2) + ':' + toSize(date.getMinutes(), '0', 2) + ':' + toSize(date.getSeconds(), '0', 2);
 	}
 	function refreshOldQueries(){
@@ -108,10 +125,9 @@ document.addEventListener('DOMContentLoaded', function(){
 				query: query,
 			}).then(function(oldQuery){
 				if('undefined' === typeof oldQuery){
-					return Queries.insert({
+					return Queries.spawn({
 						query: query,
-						timestamp: new Date().getTime(),
-					});
+					}).persist();
 				} else {
 					oldQuery.timestamp = new Date().getTime();
 					return oldQuery.persist();
@@ -144,8 +160,8 @@ document.addEventListener('DOMContentLoaded', function(){
 	var $reset = $('#resetData');
 	$reset.click(reset);
 	function reset(){
-		PhoneBook.deleteMany({}).then(() => {
-			return PhoneBook.insertMany(data);
+		Drawings.deleteMany({}).then(() => {
+			return Drawings.spawnMulti(window.transformedData.data2).persist();
 		}).then(inserted => Promise.resolve(inserted.value())).then(setAllData);
 	}
 	function setAllData(data){
@@ -159,11 +175,27 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 
+	window.transformedData = {
+		data2: (function(){
+			var acc = [];
+			var sheet = data2["Feuille 1"];
+			for(key in sheet){
+				var row = sheet[key];
+				for(subKey in row){
+					if(!row[subKey]){
+						delete row[subKey];
+					}
+				}
+				acc.push(row);
+			}
+			return acc;
+		}()),
+	}
 	var datatable;
 	var config = {
 		data: [],
-		pageLength: 50,
-		columns: data.reduce(function(acc, val){
+		pageLength: 10,
+		columns: window.transformedData.data2.reduce(function(acc, val){
 			var obj = val;
 			for(key in obj){
 				if(obj.hasOwnProperty(key) && acc.indexOf(key) === -1 && key !== 'idHash'){
@@ -171,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function(){
 				}
 			}
 			return acc;
-		}, ['id']).map(function(key){
+		}, []).map(function(key){
 			return {data:key, defaultContent: '<em>N/A</em>'};
 		}),
 		searching: false,
@@ -186,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function(){
 	} catch(e){
 		console.error(e);
 	}
-	datatable.draw();
 
 	Promise.all([
 		refreshOldQueries(),
@@ -200,5 +231,7 @@ document.addEventListener('DOMContentLoaded', function(){
 		setTimeout(function(){
 			$('.lazyload').removeClass('unloaded');
 		});
-	})
+	}).then(() => {
+		datatable.columns.adjust().draw();
+	});
 });

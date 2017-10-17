@@ -289,5 +289,65 @@ toc: false
 </span><span id="line-286">                <span class="nx">src</span><span class="o">:</span> <span class="p">[</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/jsdoc`</span> <span class="p">],</span>
 </span><span id="line-287">            <span class="p">},</span>
 </span><span id="line-288">            <span class="nx">doc_docco</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-289">                <span class="nx">src</span><span class="o">:</span> <span class="p">[</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si</pre></div></td></tr><tr class="section" id="section-5"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-5">&#182;</a></div><pre><code>'changed:buildDependencies',
-</code></pre></td><td class="code"><div class="highlight"><pre>undefined</pre></div></td></tr></tbody></table></div>
+</span><span id="line-289">                <span class="nx">src</span><span class="o">:</span> <span class="p">[</span> <span class="sb">`</span><span class="si">${</span> <span class="nx">baseDocPath</span> <span class="si">}</span><span class="sb">/docco`</span> <span class="p">],</span>
+</span><span id="line-290">            <span class="p">},</span>
+</span><span id="line-291">        <span class="p">},</span>
+</span><span id="line-292">    <span class="p">});</span>
+</span><span id="line-293">
+</span><span id="line-294">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-jsdoc&#39;</span> <span class="p">);</span>
+</span><span id="line-295">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-docco-husky&#39;</span> <span class="p">);</span>
+</span><span id="line-296">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;gruntify-eslint&#39;</span> <span class="p">);</span>
+</span><span id="line-297">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-changed&#39;</span> <span class="p">);</span>
+</span><span id="line-298">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-browserify&#39;</span> <span class="p">);</span>
+</span><span id="line-299">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-uglify&#39;</span> <span class="p">);</span>
+</span><span id="line-300">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-copy&#39;</span> <span class="p">);</span>
+</span><span id="line-301">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span> <span class="s1">&#39;grunt-contrib-clean&#39;</span> <span class="p">);</span>
+</span><span id="line-302">
+</span><span id="line-303">    <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;load-grunt-tasks&#39;</span> <span class="p">)(</span> <span class="nx">grunt</span> <span class="p">);</span>
+</span><span id="line-304">
+</span><span id="line-305">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;documentate&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-306">        <span class="s1">&#39;lint&#39;</span><span class="p">,</span>
+</span><span id="line-307">        <span class="s1">&#39;clean:doc_jsdoc&#39;</span><span class="p">,</span>
+</span><span id="line-308">        <span class="s1">&#39;clean:doc_docco&#39;</span><span class="p">,</span>
+</span><span id="line-309">        <span class="s1">&#39;jsdoc&#39;</span><span class="p">,</span>
+</span><span id="line-310">        <span class="s1">&#39;docco_husky&#39;</span><span class="p">,</span>
+</span><span id="line-311">    <span class="p">]);</span>
+</span><span id="line-312">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-313">        <span class="s1">&#39;lint&#39;</span><span class="p">,</span>
+</span><span id="line-314">        <span class="s1">&#39;buildStandalone&#39;</span><span class="p">,</span>
+</span><span id="line-315">        <span class="s1">&#39;buildIsolated&#39;</span><span class="p">,</span>
+</span><span id="line-316">    <span class="p">]);</span>
+</span><span id="line-317">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildDependencies&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-318">        <span class="s1">&#39;browserify:deps&#39;</span><span class="p">,</span>
+</span><span id="line-319">        <span class="s1">&#39;babel:deps&#39;</span><span class="p">,</span>
+</span><span id="line-320">        <span class="s1">&#39;uglify:deps&#39;</span><span class="p">,</span>
+</span><span id="line-321">    <span class="p">]);</span>
+</span><span id="line-322">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildStandalone&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-323">
+</span><span id="line-324"></pre></div></td></tr><tr class="section" id="section-5"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-5">&#182;</a></div><pre><code>'changed:buildDependencies',
+</code></pre></td><td class="code"><div class="highlight"><pre></span><span id="line-325">        <span class="s1">&#39;browserify:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-326">        <span class="s1">&#39;babel:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-327">        <span class="s1">&#39;uglify:standalone&#39;</span><span class="p">,</span>
+</span><span id="line-328">        <span class="s1">&#39;copy:diaspora_to_docs_site&#39;</span><span class="p">,</span>
+</span><span id="line-329">        <span class="s1">&#39;copy:build_standalone_to_dist&#39;</span><span class="p">,</span>
+</span><span id="line-330">    <span class="p">]);</span>
+</span><span id="line-331">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;buildIsolated&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-332">        <span class="s1">&#39;browserify:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-333">        <span class="s1">&#39;babel:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-334">        <span class="s1">&#39;uglify:isolated&#39;</span><span class="p">,</span>
+</span><span id="line-335">        <span class="s1">&#39;copy:build_isolated_to_dist&#39;</span><span class="p">,</span>
+</span><span id="line-336">    <span class="p">]);</span>
+</span><span id="line-337">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;lint&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-338">        <span class="s1">&#39;eslint:info&#39;</span><span class="p">,</span>
+</span><span id="line-339">    <span class="p">]);</span>
+</span><span id="line-340">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-341">        <span class="s1">&#39;refreshScripts&#39;</span><span class="p">,</span>
+</span><span id="line-342">        <span class="s1">&#39;documentate&#39;</span><span class="p">,</span>
+</span><span id="line-343">    <span class="p">]);</span>
+</span><span id="line-344">    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span> <span class="s1">&#39;refreshTests&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span><span id="line-345">        <span class="s1">&#39;browserify:test&#39;</span><span class="p">,</span>
+</span><span id="line-346">        <span class="s1">&#39;babel:test&#39;</span><span class="p">,</span>
+</span><span id="line-347">    <span class="p">]);</span>
+</span><span id="line-348"><span class="p">};</span>
+</span>
+</pre></div></td></tr></tbody></table></div>

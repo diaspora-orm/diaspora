@@ -437,18 +437,19 @@ toc: false
 </span><span id="line-414">    <span class="nx">Set</span><span class="o">:</span>    <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./set&#39;</span> <span class="p">),</span>
 </span><span id="line-415">    <span class="nx">Model</span><span class="o">:</span>  <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./model&#39;</span> <span class="p">),</span>
 </span><span id="line-416">    <span class="nx">Errors</span><span class="o">:</span> <span class="p">{</span>
-</span><span id="line-417">        <span class="nx">ValidationError</span><span class="o">:</span>  <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./errors/validationError&#39;</span> <span class="p">),</span>
-</span><span id="line-418">        <span class="nx">EntityStateError</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./errors/entityStateError&#39;</span> <span class="p">),</span>
-</span><span id="line-419">    <span class="p">},</span>
-</span><span id="line-420">    <span class="nx">DiasporaAdapter</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/baseAdapter&#39;</span> <span class="p">),</span>
-</span><span id="line-421">    <span class="nx">DataStoreEntity</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./dataStoreEntities/baseEntity&#39;</span> <span class="p">),</span>
-</span><span id="line-422"><span class="p">};</span>
-</span><span id="line-423">
+</span><span id="line-417">        <span class="nx">EntityValidationError</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./errors/entityValidationError&#39;</span> <span class="p">),</span>
+</span><span id="line-418">        <span class="nx">SetValidationError</span><span class="o">:</span>    <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./errors/setValidationError&#39;</span> <span class="p">),</span>
+</span><span id="line-419">        <span class="nx">EntityStateError</span><span class="o">:</span>      <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./errors/entityStateError&#39;</span> <span class="p">),</span>
+</span><span id="line-420">    <span class="p">},</span>
+</span><span id="line-421">    <span class="nx">DiasporaAdapter</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/baseAdapter&#39;</span> <span class="p">),</span>
+</span><span id="line-422">    <span class="nx">DataStoreEntity</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./dataStoreEntities/baseEntity&#39;</span> <span class="p">),</span>
+</span><span id="line-423"><span class="p">};</span>
 </span><span id="line-424">
-</span><span id="line-425"></pre></div></td></tr><tr class="section" id="section-44"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-44">&#182;</a></div><p>Register available built-in adapters</p></td><td class="code"><div class="highlight"><pre></span><span id="line-426"><span class="nx">Diaspora</span><span class="p">.</span><span class="nx">registerAdapter</span><span class="p">(</span> <span class="s1">&#39;inMemory&#39;</span><span class="p">,</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/inMemoryAdapter&#39;</span> <span class="p">));</span>
-</span><span id="line-427">
-</span><span id="line-428"></pre></div></td></tr><tr class="section" id="section-45"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-45">&#182;</a></div><p>Register browserStorage only if in browser</p></td><td class="code"><div class="highlight"><pre></span><span id="line-429"><span class="k">if</span> <span class="p">(</span> <span class="nx">process</span><span class="p">.</span><span class="nx">browser</span> <span class="p">)</span> <span class="p">{</span>
-</span><span id="line-430">    <span class="nx">Diaspora</span><span class="p">.</span><span class="nx">registerAdapter</span><span class="p">(</span> <span class="s1">&#39;browserStorage&#39;</span><span class="p">,</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/browserStorageAdapter&#39;</span> <span class="p">));</span>
-</span><span id="line-431"><span class="p">}</span>
+</span><span id="line-425">
+</span><span id="line-426"></pre></div></td></tr><tr class="section" id="section-44"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-44">&#182;</a></div><p>Register available built-in adapters</p></td><td class="code"><div class="highlight"><pre></span><span id="line-427"><span class="nx">Diaspora</span><span class="p">.</span><span class="nx">registerAdapter</span><span class="p">(</span> <span class="s1">&#39;inMemory&#39;</span><span class="p">,</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/inMemoryAdapter&#39;</span> <span class="p">));</span>
+</span><span id="line-428">
+</span><span id="line-429"></pre></div></td></tr><tr class="section" id="section-45"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-45">&#182;</a></div><p>Register browserStorage only if in browser</p></td><td class="code"><div class="highlight"><pre></span><span id="line-430"><span class="k">if</span> <span class="p">(</span> <span class="nx">process</span><span class="p">.</span><span class="nx">browser</span> <span class="p">)</span> <span class="p">{</span>
+</span><span id="line-431">    <span class="nx">Diaspora</span><span class="p">.</span><span class="nx">registerAdapter</span><span class="p">(</span> <span class="s1">&#39;browserStorage&#39;</span><span class="p">,</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;./adapters/browserStorageAdapter&#39;</span> <span class="p">));</span>
+</span><span id="line-432"><span class="p">}</span>
 </span>
 </pre></div></td></tr></tbody></table></div>

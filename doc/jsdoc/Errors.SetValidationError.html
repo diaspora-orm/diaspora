@@ -1,6 +1,6 @@
 ---
 layout: docpage
-title: "Class: ExtendableError"
+title: "Class: SetValidationError"
 toc: false
 ---
 
@@ -16,16 +16,18 @@ toc: false
 			<div id="main">
 				
 
-	<h1 class="page-title">Class: ExtendableError</h1>
+	<h1 class="page-title">Class: SetValidationError</h1>
 <section>
 
 <header>
     
         <h2>
-        ExtendableError
+            <span class="ancestors"><a href="Errors.html">Errors</a>.</span>
+        
+        SetValidationError
         </h2>
         
-            <div class="class-description"><p>This class is the base class for custom Diaspora errors</p></div>
+            <div class="class-description"><p>This class represents an error related to validation on a set.</p></div>
         
     
 </header>
@@ -37,7 +39,7 @@ toc: false
         
 <hr>
 <dt>
-    <h4 class="name" id="ExtendableError"><span class="type-signature"></span>new ExtendableError(message, errorArgs)</h4>
+    <h4 class="name" id="SetValidationError"><span class="type-signature"></span>new SetValidationError(message, validationErrors, errorArgs)</h4>
     
     
 </dt>
@@ -45,7 +47,7 @@ toc: false
 
     
     <div class="description">
-        <p>Construct a new extendable error.</p>
+        <p>Construct a new validation error.</p>
     </div>
     
 
@@ -108,6 +110,38 @@ toc: false
             
 
             <td class="description last"><p>Message of this error.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>validationErrors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="Errors.EntityValidationError.html">Errors.EntityValidationError</a>></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Array of validation errors.</p></td>
         </tr>
 
     

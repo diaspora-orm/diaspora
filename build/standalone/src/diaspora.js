@@ -1469,7 +1469,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bluebird":18,"lodash":19,"sequential-event":21}],10:[function(require,module,exports){
+},{"bluebird":19,"lodash":20,"sequential-event":22}],10:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1986,8 +1986,9 @@ Diaspora.components = {
 	Set:    require( './set' ),
 	Model:  require( './model' ),
 	Errors: {
-		ValidationError:  require( './errors/validationError' ),
-		EntityStateError: require( './errors/entityStateError' ),
+		EntityValidationError: require( './errors/entityValidationError' ),
+		SetValidationError:    require( './errors/setValidationError' ),
+		EntityStateError:      require( './errors/entityStateError' ),
 	},
 	DiasporaAdapter: require( './adapters/baseAdapter' ),
 	DataStoreEntity: require( './dataStoreEntities/baseEntity' ),
@@ -2001,7 +2002,7 @@ if ( process.browser ) {
 }
 
 }).call(this,require('_process'))
-},{"./adapters/baseAdapter":3,"./adapters/browserStorageAdapter":4,"./adapters/inMemoryAdapter":5,"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./entityFactory":11,"./errors/entityStateError":12,"./errors/validationError":14,"./model":15,"./set":16,"_process":20,"winston":undefined}],11:[function(require,module,exports){
+},{"./adapters/baseAdapter":3,"./adapters/browserStorageAdapter":4,"./adapters/inMemoryAdapter":5,"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./entityFactory":11,"./errors/entityStateError":12,"./errors/entityValidationError":13,"./errors/setValidationError":15,"./model":16,"./set":17,"_process":21,"winston":undefined}],11:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2009,7 +2010,7 @@ const {
 } = require( './dependencies' );
 const Diaspora = require( './diaspora' );
 const DataStoreEntity = require( './dataStoreEntities/baseEntity' );
-const ValidationError = require( './errors/validationError' );
+const EntityValidationError = require( './errors/entityValidationError' );
 const EntityStateError = require( './errors/entityStateError' );
 const Utils = require( './utils' );
 
@@ -2303,14 +2304,14 @@ function EntityFactory( name, modelDesc, model ) {
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
-				 * @throws ValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
+				 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
 				 * @returns {undefined} This function does not return anything.
 				 * @see Diaspora.check
 				 */
 				validate() {
 					const validationErrors = Diaspora.check( attributes, modelDesc.attributes );
 					if ( !_.isEmpty( validationErrors )) {
-						throw new ValidationError( validationErrors, 'Validation failed' );
+						throw new EntityValidationError( validationErrors, 'Validation failed' );
 					}
 				},
 			};
@@ -2499,7 +2500,7 @@ function EntityFactory( name, modelDesc, model ) {
 
 module.exports = EntityFactory;
 
-},{"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./diaspora":10,"./errors/entityStateError":12,"./errors/validationError":14,"./utils":17}],12:[function(require,module,exports){
+},{"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./diaspora":10,"./errors/entityStateError":12,"./errors/entityValidationError":13,"./utils":18}],12:[function(require,module,exports){
 'use strict';
 
 const ExtendableError = require( './extendableError' );
@@ -2523,7 +2524,49 @@ class EntityStateError extends ExtendableError {
 
 module.exports = EntityStateError;
 
-},{"./extendableError":13}],13:[function(require,module,exports){
+},{"./extendableError":14}],13:[function(require,module,exports){
+'use strict';
+
+const {
+	_,
+} = require( '../dependencies' );
+const ExtendableError = require( './extendableError' );
+
+const stringifyValidationObject = validationErrors => {
+	return _( validationErrors ).mapValues(( error, key ) => {
+		return `${ key } => ${ JSON.stringify( error.value ) }
+* ${ _( error ).omit([ 'value' ]).values().map( _.identity ).value() }`;
+	}).values().join( '\n* ' );
+};
+
+/**
+ * This class represents an error related to validation.
+ *
+ * @extends Error
+ * @memberof Errors
+ */
+class EntityValidationError extends ExtendableError {
+	/**
+	 * Construct a new validation error.
+	 *
+	 * @author gerkin
+	 * @see Diaspora.check
+	 * @memberof Errors
+	 * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
+	 * @param {string} message          - Message of this error.
+	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
+	 */
+	constructor( validationErrors, message, ...errorArgs ) {
+		message += `
+${ stringifyValidationObject( validationErrors ) }`;
+		super( message, ...errorArgs );
+		this.validationErrors = validationErrors;
+	}
+}
+
+module.exports = EntityValidationError;
+
+},{"../dependencies":9,"./extendableError":14}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2555,7 +2598,7 @@ class ExtendableError extends Error {
 
 module.exports = ExtendableError;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2563,39 +2606,40 @@ const {
 } = require( '../dependencies' );
 const ExtendableError = require( './extendableError' );
 
-const stringifyValidationObject = validationErrors => {
-	return _( validationErrors ).mapValues(( error, key ) => {
-		return `${ key } => ${ JSON.stringify( error.value ) }
-* ${ _( error ).omit([ 'value' ]).values().map( _.identity ).value() }`;
-	}).values().join( '\n* ' );
-};
 
 /**
- * This class represents an error related to validation.
+ * This class represents an error related to validation on a set.
+ *
  * @extends Error
+ * @memberof Errors
  */
-class ValidationError extends ExtendableError {
+class SetValidationError extends ExtendableError {
 	/**
 	 * Construct a new validation error.
-	 * 
+	 *
 	 * @author gerkin
 	 * @see Diaspora.check
 	 * @memberof Errors
-	 * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
-	 * @param {string} message          - Message of this error.
-	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
+	 * @param {string}                         message          - Message of this error.
+	 * @param {Errors.EntityValidationError[]} validationErrors - Array of validation errors.
+	 * @param {*}                              errorArgs        - Arguments to transfer to parent Error.
 	 */
-	constructor( validationErrors, message, ...errorArgs ) {
-		message += `
-${ stringifyValidationObject( validationErrors ) }`;
+	constructor( message, validationErrors, ...errorArgs ) {
+		message += `[\n${ _( validationErrors ).map(( error, index ) => {
+			if ( _.isNil( error )) {
+				return false;
+			} else {
+				return `${ index  }: ${  error.message.replace( /\n/g, '\n	' ) }`;
+			}
+		}).filter( _.identity ).join( ',\n' ) }\n]`;
 		super( message, ...errorArgs );
 		this.validationErrors = validationErrors;
 	}
 }
 
-module.exports = ValidationError;
+module.exports = SetValidationError;
 
-},{"../dependencies":9,"./extendableError":13}],15:[function(require,module,exports){
+},{"../dependencies":9,"./extendableError":14}],16:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2888,13 +2932,14 @@ class Model {
 
 module.exports = Model;
 
-},{"./dependencies":9,"./diaspora":10,"./entityFactory":11,"./set":16}],16:[function(require,module,exports){
+},{"./dependencies":9,"./diaspora":10,"./entityFactory":11,"./set":17}],17:[function(require,module,exports){
 'use strict';
 
 const {
 	_, Promise,
 } = require( './dependencies' );
 const Utils = require( './utils' );
+const SetValidationError = require( './errors/setValidationError' );
 
 /**
  * Collections are used to manage multiple entities at the same time. You may try to use this class as an array.
@@ -2902,7 +2947,7 @@ const Utils = require( './utils' );
 class Set {
 	/**
 	 * Create a new set, managing provided `entities` that must be generated from provided `model`.
-	 * 
+	 *
 	 * @param {Model}           model    - Model describing entities managed by this set.
 	 * @param {Entity|Entity[]} entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
 	 */
@@ -2915,7 +2960,7 @@ class Set {
 		const defined = Utils.defineEnumerableProperties( this, {
 			/**
 			 * List entities of this set.
-			 * 
+			 *
 			 * @name entities
 			 * @readonly
 			 * @memberof Set
@@ -2926,7 +2971,7 @@ class Set {
 			entities: entities,
 			/**
 			 * Model that generated this set.
-			 * 
+			 *
 			 * @name model
 			 * @readonly
 			 * @memberof Set
@@ -2937,7 +2982,7 @@ class Set {
 			model:    model,
 			/**
 			 * Number of entities in this set.
-			 * 
+			 *
 			 * @name length
 			 * @readonly
 			 * @memberof Set
@@ -2975,7 +3020,7 @@ class Set {
 
 	/**
 	 * Check if all entities in the first argument are from the expected model.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws {TypeError} Thrown if one of the entity is not from provided `model`.
 	 * @param {Entity[]} entities - Array of entities to check.
@@ -2992,7 +3037,7 @@ class Set {
 
 	/**
 	 * Persist all entities of this collection.
-	 * 
+	 *
 	 * @fires EntityFactory.Entity#beforeUpdate
 	 * @fires EntityFactory.Entity#afterUpdate
 	 * @author gerkin
@@ -3005,7 +3050,21 @@ class Set {
 		return Promise.all( this.entities.map( entity => entity.emit( 'beforePersist' ))).then(() => {
 			return Promise.all( this.entities.map( entity => entity.emit( 'beforeValidate' )));
 		}).then(() => {
-			return this.entities.map( entity => entity.validate());
+			let errors = 0;
+			const validationResults = this.entities.map( entity => {
+				try {
+					entity.validate();
+					return undefined;
+				} catch ( e ) {
+					errors++;
+					return e;
+				}
+			}).value();
+			if ( errors > 0 ) {
+				return Promise.reject( new SetValidationError( `Set validation failed for ${ errors } elements (on ${ this.length }): `, validationResults ));
+			} else {
+				return Promise.resolve();
+			}
 		}).then(() => {
 			return Promise.all( this.entities.map( entity => entity.emit( 'afterValidate' )));
 		}).then(() => {
@@ -3023,7 +3082,7 @@ class Set {
 
 	/**
 	 * Reload all entities of this collection.
-	 * 
+	 *
 	 * @fires EntityFactory.Entity#beforeFind
 	 * @fires EntityFactory.Entity#afterFind
 	 * @author gerkin
@@ -3043,7 +3102,7 @@ class Set {
 
 	/**
 	 * Destroy all entities from this collection.
-	 * 
+	 *
 	 * @fires EntityFactory.Entity#beforeDelete
 	 * @fires EntityFactory.Entity#afterDelete
 	 * @author gerkin
@@ -3063,7 +3122,7 @@ class Set {
 
 	/**
 	 * Update all entities in the set with given object.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object} newData - Attributes to change in each entity of the collection.
 	 * @returns {Collection} `this`.
@@ -3084,7 +3143,7 @@ class Set {
 
 module.exports = Set;
 
-},{"./dependencies":9,"./utils":17}],17:[function(require,module,exports){
+},{"./dependencies":9,"./errors/setValidationError":15,"./utils":18}],18:[function(require,module,exports){
 'use strict';
 
 const {
@@ -3112,7 +3171,7 @@ module.exports = {
 	},
 };
 
-},{"./dependencies":9}],18:[function(require,module,exports){
+},{"./dependencies":9}],19:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)
@@ -8738,7 +8797,7 @@ module.exports = ret;
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":20}],19:[function(require,module,exports){
+},{"_process":21}],20:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -25826,7 +25885,7 @@ module.exports = ret;
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -26012,10 +26071,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = require('./lib/sequential-event.js');
 
-},{"./lib/sequential-event.js":22}],22:[function(require,module,exports){
+},{"./lib/sequential-event.js":23}],23:[function(require,module,exports){
 'use strict';
 
 /**

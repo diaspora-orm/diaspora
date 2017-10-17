@@ -27190,7 +27190,9 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 let testModel;
 const MODEL_NAME = 'validatedModel';
 const SOURCE = 'inMemory';
-const ValidationError = Diaspora.components.ValidationError;
+const {
+	EntityValidationError, SetValidationError,
+} = Diaspora.components.Errors;
 
 
 it( 'Should create a model', () => {
@@ -27217,7 +27219,7 @@ it( 'Should create a model', () => {
 		expect( testModel.constructor.name ).to.be.eql( 'Model' );
 	}
 });
-it( 'Should reject persistance of badly configured entities.', () => {
+it( 'Should reject persistance of badly configured entities (spawn).', () => {
 	const fail1 = testModel.spawn({
 		prop1: 1,
 		prop2: 2,
@@ -27230,14 +27232,44 @@ it( 'Should reject persistance of badly configured entities.', () => {
 	}).persist();
 	const fail4 = testModel.spawn({}).persist();
 	return Promise.all([
-		expect( fail1 ).to.be.rejectedWith( ValidationError ),
-		expect( fail1 ).to.be.rejectedWith( /(\W|^)prop1\W.*\Wstring(\W|$)/m ),
-		expect( fail2 ).to.be.rejectedWith( ValidationError ),
-		expect( fail2 ).to.be.rejectedWith( /(\W|^)prop2\W.*\Wenumerat(ed|ion)(\W|$)/m ),
-		expect( fail3 ).to.be.rejectedWith( ValidationError ),
-		expect( fail3 ).to.be.rejectedWith( /(\W|^)prop2\W.*\Winteger(\W|$)/m ),
-		expect( fail4 ).to.be.rejectedWith( ValidationError ),
-		expect( fail4 ).to.be.rejectedWith( /(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m ),
+		expect( fail1 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop1\W.*\Wstring(\W|$)/m ),
+		expect( fail2 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W.*\Wenumerat(ed|ion)(\W|$)/m ),
+		expect( fail3 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W.*\Winteger(\W|$)/m ),
+		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m ),
+	]);
+});
+it( 'Should reject persistance of badly configured entities (spawnMulti).', () => {
+	const fail1 = testModel.spawnMulti([
+		{
+			prop1: 1,
+			prop2: 2,
+		}, {
+			prop2: 2,
+		},
+	]).persist();
+	const fail2 = testModel.spawnMulti([
+		{
+			prop2: 0,
+		}, {
+			prop2: 'foo',
+		},
+	]).persist();
+	return Promise.all([
+		expect( fail1 ).to.be.rejectedWith( SetValidationError ).and.eventually.satisfy( error => {
+			const validationErrors = error.validationErrors;
+			expect( validationErrors[0]).to.be.instanceof( EntityValidationError );
+			expect( validationErrors[0].message ).to.match( /(\W|^)prop1\W.*\Wstring(\W|$)/m );
+			expect( validationErrors[1]).to.be.undefined;
+			return true;
+		}),
+		expect( fail2 ).to.be.rejectedWith( SetValidationError ).and.eventually.satisfy( error => {
+			const validationErrors = error.validationErrors;
+			expect( validationErrors[0]).to.be.instanceof( EntityValidationError );
+			expect( validationErrors[0].message ).to.match( /(\W|^)prop2\W.*\Wenumerat(ed|ion)(\W|$)/m );
+			expect( validationErrors[1]).to.be.instanceof( EntityValidationError );
+			expect( validationErrors[1].message ).to.match( /(\W|^)prop2\W.*\Winteger(\W|$)/m );
+			return true;
+		}),
 	]);
 });
 it( 'Should define default values on valid items', () => {
@@ -27264,7 +27296,7 @@ it( 'Should define default values on valid items', () => {
 /*it( 'Should be able to create multiple entities.', () => {
 	const objects = [
 		{
-			foo: 'bar', 
+			foo: 'bar',
 		},
 		undefined,
 	];
@@ -27276,7 +27308,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		it( 'Create a single instance', () => {
 			expect( testModel ).to.respondTo( 'insert' );
 			const object = {
-				foo: 'bar', 
+				foo: 'bar',
 			};
 			return testModel.insert( object ).then( newEntity => {
 				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
@@ -27287,14 +27319,14 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'insertMany' );
 			const objects = [
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				undefined,
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 			];
 			return testModel.insertMany( objects ).then( newEntities => {
@@ -27318,13 +27350,13 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'find' );
 			return Promise.mapSeries([
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				{
-					foo: 'bar', 
+					foo: 'bar',
 				},
 			], item => checkFind( item, false ));
 		});
@@ -27333,19 +27365,19 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			return Promise.mapSeries([
 				{
 					query: {
-						foo: undefined, 
+						foo: undefined,
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'baz', 
+						foo: 'baz',
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'bar', 
+						foo: 'bar',
 					},
 					length: 1,
 				},
@@ -27469,7 +27501,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
 	it( 'Persist should change the entity', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );

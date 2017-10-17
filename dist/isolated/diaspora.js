@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-10-17 18:27:56
+* Isolated build compiled on 2017-10-18 01:26:41
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.1
@@ -2297,7 +2297,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					Set: require('./set'),
 					Model: require('./model'),
 					Errors: {
-						ValidationError: require('./errors/validationError'),
+						EntityValidationError: require('./errors/entityValidationError'),
+						SetValidationError: require('./errors/setValidationError'),
 						EntityStateError: require('./errors/entityStateError')
 					},
 					DiasporaAdapter: require('./adapters/baseAdapter'),
@@ -2311,7 +2312,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					Diaspora.registerAdapter('browserStorage', require('./adapters/browserStorageAdapter'));
 				}
 			}).call(this, require('_process'));
-		}, { "./adapters/baseAdapter": 2, "./adapters/browserStorageAdapter": 3, "./adapters/inMemoryAdapter": 4, "./dataStoreEntities/baseEntity": 5, "./dependencies": 8, "./entityFactory": 10, "./errors/entityStateError": 11, "./errors/validationError": 13, "./model": 14, "./set": 15, "_process": 17, "winston": undefined }], 10: [function (require, module, exports) {
+		}, { "./adapters/baseAdapter": 2, "./adapters/browserStorageAdapter": 3, "./adapters/inMemoryAdapter": 4, "./dataStoreEntities/baseEntity": 5, "./dependencies": 8, "./entityFactory": 10, "./errors/entityStateError": 11, "./errors/entityValidationError": 12, "./errors/setValidationError": 14, "./model": 15, "./set": 16, "_process": 18, "winston": undefined }], 10: [function (require, module, exports) {
 			'use strict';
 
 			var _require5 = require('./dependencies'),
@@ -2321,7 +2322,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			var Diaspora = require('./diaspora');
 			var DataStoreEntity = require('./dataStoreEntities/baseEntity');
-			var ValidationError = require('./errors/validationError');
+			var EntityValidationError = require('./errors/entityValidationError');
 			var EntityStateError = require('./errors/entityStateError');
 			var Utils = require('./utils');
 
@@ -2638,14 +2639,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         * @memberof EntityFactory.Entity
         * @instance
         * @author gerkin
-        * @throws ValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
+        * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
         * @returns {undefined} This function does not return anything.
         * @see Diaspora.check
         */
 							validate: function validate() {
 								var validationErrors = Diaspora.check(attributes, modelDesc.attributes);
 								if (!_.isEmpty(validationErrors)) {
-									throw new ValidationError(validationErrors, 'Validation failed');
+									throw new EntityValidationError(validationErrors, 'Validation failed');
 								}
 							}
 						};
@@ -2837,7 +2838,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     */
 
 			module.exports = EntityFactory;
-		}, { "./dataStoreEntities/baseEntity": 5, "./dependencies": 8, "./diaspora": 9, "./errors/entityStateError": 11, "./errors/validationError": 13, "./utils": 16 }], 11: [function (require, module, exports) {
+		}, { "./dataStoreEntities/baseEntity": 5, "./dependencies": 8, "./diaspora": 9, "./errors/entityStateError": 11, "./errors/entityValidationError": 12, "./utils": 17 }], 11: [function (require, module, exports) {
 			'use strict';
 
 			var ExtendableError = require('./extendableError');
@@ -2873,7 +2874,62 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(ExtendableError);
 
 			module.exports = EntityStateError;
-		}, { "./extendableError": 12 }], 12: [function (require, module, exports) {
+		}, { "./extendableError": 13 }], 12: [function (require, module, exports) {
+			'use strict';
+
+			var _require6 = require('../dependencies'),
+			    _ = _require6._;
+
+			var ExtendableError = require('./extendableError');
+
+			var stringifyValidationObject = function stringifyValidationObject(validationErrors) {
+				return _(validationErrors).mapValues(function (error, key) {
+					return key + " => " + JSON.stringify(error.value) + "\n* " + _(error).omit(['value']).values().map(_.identity).value();
+				}).values().join('\n* ');
+			};
+
+			/**
+    * This class represents an error related to validation.
+    *
+    * @extends Error
+    * @memberof Errors
+    */
+
+			var EntityValidationError = function (_ExtendableError2) {
+				_inherits(EntityValidationError, _ExtendableError2);
+
+				/**
+     * Construct a new validation error.
+     *
+     * @author gerkin
+     * @see Diaspora.check
+     * @memberof Errors
+     * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
+     * @param {string} message          - Message of this error.
+     * @param {*}      errorArgs        - Arguments to transfer to parent Error.
+     */
+				function EntityValidationError(validationErrors, message) {
+					var _ref4;
+
+					_classCallCheck(this, EntityValidationError);
+
+					message += "\n" + stringifyValidationObject(validationErrors);
+
+					for (var _len3 = arguments.length, errorArgs = Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
+						errorArgs[_key3 - 2] = arguments[_key3];
+					}
+
+					var _this28 = _possibleConstructorReturn(this, (_ref4 = EntityValidationError.__proto__ || Object.getPrototypeOf(EntityValidationError)).call.apply(_ref4, [this, message].concat(errorArgs)));
+
+					_this28.validationErrors = validationErrors;
+					return _this28;
+				}
+
+				return EntityValidationError;
+			}(ExtendableError);
+
+			module.exports = EntityValidationError;
+		}, { "../dependencies": 8, "./extendableError": 13 }], 13: [function (require, module, exports) {
 			'use strict';
 
 			/**
@@ -2896,88 +2952,90 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @param {*}      errorArgs        - Arguments to transfer to parent Error.
      */
 				function ExtendableError(message) {
-					var _ref4;
+					var _ref5;
 
 					_classCallCheck(this, ExtendableError);
 
-					for (var _len3 = arguments.length, errorArgs = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-						errorArgs[_key3 - 1] = arguments[_key3];
+					for (var _len4 = arguments.length, errorArgs = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
+						errorArgs[_key4 - 1] = arguments[_key4];
 					}
 
-					var _this28 = _possibleConstructorReturn(this, (_ref4 = ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call.apply(_ref4, [this, message].concat(errorArgs)));
+					var _this29 = _possibleConstructorReturn(this, (_ref5 = ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call.apply(_ref5, [this, message].concat(errorArgs)));
 
-					_this28.constructor = _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this28);
+					_this29.constructor = _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this29);
 					if ('function' === typeof Error.captureStackTrace) {
-						Error.captureStackTrace(_this28, _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this28));
+						Error.captureStackTrace(_this29, _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this29));
 					} else {
-						_this28.stack = new Error(message).stack;
+						_this29.stack = new Error(message).stack;
 					}
-					return _this28;
+					return _this29;
 				}
 
 				return ExtendableError;
 			}(Error);
 
 			module.exports = ExtendableError;
-		}, {}], 13: [function (require, module, exports) {
+		}, {}], 14: [function (require, module, exports) {
 			'use strict';
 
-			var _require6 = require('../dependencies'),
-			    _ = _require6._;
+			var _require7 = require('../dependencies'),
+			    _ = _require7._;
 
 			var ExtendableError = require('./extendableError');
 
-			var stringifyValidationObject = function stringifyValidationObject(validationErrors) {
-				return _(validationErrors).mapValues(function (error, key) {
-					return key + " => " + JSON.stringify(error.value) + "\n* " + _(error).omit(['value']).values().map(_.identity).value();
-				}).values().join('\n* ');
-			};
-
 			/**
-    * This class represents an error related to validation.
+    * This class represents an error related to validation on a set.
+    *
     * @extends Error
+    * @memberof Errors
     */
 
-			var ValidationError = function (_ExtendableError2) {
-				_inherits(ValidationError, _ExtendableError2);
+			var SetValidationError = function (_ExtendableError3) {
+				_inherits(SetValidationError, _ExtendableError3);
 
 				/**
      * Construct a new validation error.
-     * 
+     *
      * @author gerkin
      * @see Diaspora.check
      * @memberof Errors
-     * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
-     * @param {string} message          - Message of this error.
-     * @param {*}      errorArgs        - Arguments to transfer to parent Error.
+     * @param {string}                         message          - Message of this error.
+     * @param {Errors.EntityValidationError[]} validationErrors - Array of validation errors.
+     * @param {*}                              errorArgs        - Arguments to transfer to parent Error.
      */
-				function ValidationError(validationErrors, message) {
-					var _ref5;
+				function SetValidationError(message, validationErrors) {
+					var _ref6;
 
-					_classCallCheck(this, ValidationError);
+					_classCallCheck(this, SetValidationError);
 
-					message += "\n" + stringifyValidationObject(validationErrors);
+					message += "[\n" + _(validationErrors).map(function (error, index) {
+						if (_.isNil(error)) {
+							return false;
+						} else {
+							return index + ": " + error.message.replace(/\n/g, '\n	');
+						}
+					}).filter(_.identity).join(',\n') + "\n]";
 
-					for (var _len4 = arguments.length, errorArgs = Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
-						errorArgs[_key4 - 2] = arguments[_key4];
+					for (var _len5 = arguments.length, errorArgs = Array(_len5 > 2 ? _len5 - 2 : 0), _key5 = 2; _key5 < _len5; _key5++) {
+						errorArgs[_key5 - 2] = arguments[_key5];
 					}
 
-					var _this29 = _possibleConstructorReturn(this, (_ref5 = ValidationError.__proto__ || Object.getPrototypeOf(ValidationError)).call.apply(_ref5, [this, message].concat(errorArgs)));
+					var _this30 = _possibleConstructorReturn(this, (_ref6 = SetValidationError.__proto__ || Object.getPrototypeOf(SetValidationError)).call.apply(_ref6, [this, message].concat(errorArgs)));
 
-					_this29.validationErrors = validationErrors;
-					return _this29;
+					_this30.validationErrors = validationErrors;
+					return _this30;
 				}
 
-				return ValidationError;
+				return SetValidationError;
 			}(ExtendableError);
 
-			module.exports = ValidationError;
-		}, { "../dependencies": 8, "./extendableError": 12 }], 14: [function (require, module, exports) {
+			module.exports = SetValidationError;
+		}, { "../dependencies": 8, "./extendableError": 13 }], 15: [function (require, module, exports) {
 			'use strict';
 
-			var _require7 = require('./dependencies'),
-			    _ = _require7._,
-			    Promise = _require7.Promise;
+			var _require8 = require('./dependencies'),
+			    _ = _require8._,
+			    Promise = _require8.Promise;
 
 			var EntityFactory = require('./entityFactory');
 			var Diaspora = require('./diaspora');
@@ -3104,10 +3162,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "spawnMulti",
 					value: function spawnMulti(sources) {
-						var _this30 = this;
+						var _this31 = this;
 
 						return new Set(this, _.map(sources, function (source) {
-							return _this30.spawn(source);
+							return _this31.spawn(source);
 						}));
 					}
 
@@ -3123,11 +3181,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "insert",
 					value: function insert(source, dataSourceName) {
-						var _this31 = this;
+						var _this32 = this;
 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.insertOne(this.name, source).then(function (entity) {
-							return Promise.resolve(new _this31.entityFactory(entity));
+							return Promise.resolve(new _this32.entityFactory(entity));
 						});
 					}
 
@@ -3143,14 +3201,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "insertMany",
 					value: function insertMany(sources, dataSourceName) {
-						var _this32 = this;
+						var _this33 = this;
 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.insertMany(this.name, sources).then(function (entities) {
 							var newEntities = _.map(entities, function (entity) {
-								return new _this32.entityFactory(entity);
+								return new _this33.entityFactory(entity);
 							});
-							var collection = new Set(_this32, newEntities);
+							var collection = new Set(_this33, newEntities);
 							return Promise.resolve(collection);
 						});
 					}
@@ -3170,7 +3228,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function find() {
 						var queryFind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-						var _this33 = this;
+						var _this34 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
@@ -3188,7 +3246,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isNil(dataSourceEntity)) {
 								return Promise.resolve();
 							}
-							var newEntity = new _this33.entityFactory(dataSourceEntity);
+							var newEntity = new _this34.entityFactory(dataSourceEntity);
 							newEntity.dataSources[dataSource.name] = dataSourceEntity;
 							return Promise.resolve(newEntity);
 						});
@@ -3209,7 +3267,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function findMany() {
 						var queryFind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-						var _this34 = this;
+						var _this35 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
@@ -3225,9 +3283,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.findMany(this.name, queryFind, options).then(function (entities) {
 							var newEntities = _.map(entities, function (entity) {
-								return new _this34.entityFactory(entity);
+								return new _this35.entityFactory(entity);
 							});
-							var collection = new Set(_this34, newEntities);
+							var collection = new Set(_this35, newEntities);
 							return Promise.resolve(collection);
 						});
 					}
@@ -3246,7 +3304,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "update",
 					value: function update(queryFind, _update) {
-						var _this35 = this;
+						var _this36 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 						var dataSourceName = arguments[3];
@@ -3260,7 +3318,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isNil(dataSourceEntity)) {
 								return Promise.resolve();
 							}
-							var newEntity = new _this35.entityFactory(dataSourceEntity);
+							var newEntity = new _this36.entityFactory(dataSourceEntity);
 							return Promise.resolve(newEntity);
 						});
 					}
@@ -3279,7 +3337,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "updateMany",
 					value: function updateMany(queryFind, update) {
-						var _this36 = this;
+						var _this37 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 						var dataSourceName = arguments[3];
@@ -3291,9 +3349,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.updateMany(this.name, queryFind, update, options).then(function (entities) {
 							var newEntities = _.map(entities, function (entity) {
-								return new _this36.entityFactory(entity);
+								return new _this37.entityFactory(entity);
 							});
-							var collection = new Set(_this36, newEntities);
+							var collection = new Set(_this37, newEntities);
 							return Promise.resolve(collection);
 						});
 					}
@@ -3353,14 +3411,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = Model;
-		}, { "./dependencies": 8, "./diaspora": 9, "./entityFactory": 10, "./set": 15 }], 15: [function (require, module, exports) {
+		}, { "./dependencies": 8, "./diaspora": 9, "./entityFactory": 10, "./set": 16 }], 16: [function (require, module, exports) {
 			'use strict';
 
-			var _require8 = require('./dependencies'),
-			    _ = _require8._,
-			    Promise = _require8.Promise;
+			var _require9 = require('./dependencies'),
+			    _ = _require9._,
+			    Promise = _require9.Promise;
 
 			var Utils = require('./utils');
+			var SetValidationError = require('./errors/setValidationError');
 
 			/**
     * Collections are used to manage multiple entities at the same time. You may try to use this class as an array.
@@ -3369,13 +3428,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var Set = function () {
 				/**
      * Create a new set, managing provided `entities` that must be generated from provided `model`.
-     * 
+     *
      * @param {Model}           model    - Model describing entities managed by this set.
      * @param {Entity|Entity[]} entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
      */
 				function Set(model) {
-					for (var _len5 = arguments.length, entities = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
-						entities[_key5 - 1] = arguments[_key5];
+					for (var _len6 = arguments.length, entities = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
+						entities[_key6 - 1] = arguments[_key6];
 					}
 
 					_classCallCheck(this, Set);
@@ -3388,7 +3447,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					var defined = Utils.defineEnumerableProperties(this, {
 						/**
        * List entities of this set.
-       * 
+       *
        * @name entities
        * @readonly
        * @memberof Set
@@ -3399,7 +3458,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						entities: entities,
 						/**
        * Model that generated this set.
-       * 
+       *
        * @name model
        * @readonly
        * @memberof Set
@@ -3410,7 +3469,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						model: model,
 						/**
        * Number of entities in this set.
-       * 
+       *
        * @name length
        * @readonly
        * @memberof Set
@@ -3448,7 +3507,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				/**
      * Check if all entities in the first argument are from the expected model.
-     * 
+     *
      * @author gerkin
      * @throws {TypeError} Thrown if one of the entity is not from provided `model`.
      * @param {Entity[]} entities - Array of entities to check.
@@ -3463,7 +3522,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Persist all entities of this collection.
-      * 
+      *
       * @fires EntityFactory.Entity#beforeUpdate
       * @fires EntityFactory.Entity#afterUpdate
       * @author gerkin
@@ -3472,7 +3531,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @see {@link EntityFactory.Entity#persist}
       */
 					value: function persist(sourceName) {
-						var _this37 = this;
+						var _this38 = this;
 
 						var suffixes = this.entities.map(function (entity) {
 							return 'orphan' === entity.state ? 'Create' : 'Update';
@@ -3480,43 +3539,55 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						return Promise.all(this.entities.map(function (entity) {
 							return entity.emit('beforePersist');
 						})).then(function () {
-							return Promise.all(_this37.entities.map(function (entity) {
+							return Promise.all(_this38.entities.map(function (entity) {
 								return entity.emit('beforeValidate');
 							}));
 						}).then(function () {
-							return _this37.entities.map(function (entity) {
-								return entity.validate();
-							});
+							var errors = 0;
+							var validationResults = _this38.entities.map(function (entity) {
+								try {
+									entity.validate();
+									return undefined;
+								} catch (e) {
+									errors++;
+									return e;
+								}
+							}).value();
+							if (errors > 0) {
+								return Promise.reject(new SetValidationError("Set validation failed for " + errors + " elements (on " + _this38.length + "): ", validationResults));
+							} else {
+								return Promise.resolve();
+							}
 						}).then(function () {
-							return Promise.all(_this37.entities.map(function (entity) {
+							return Promise.all(_this38.entities.map(function (entity) {
 								return entity.emit('afterValidate');
 							}));
 						}).then(function () {
-							return Promise.all(_this37.entities.map(function (entity, index) {
+							return Promise.all(_this38.entities.map(function (entity, index) {
 								return entity.emit("beforePersist" + suffixes[index]);
 							}));
 						}).then(function () {
-							return Promise.all(_this37.entities.map(function (entity) {
+							return Promise.all(_this38.entities.map(function (entity) {
 								return entity.persist(sourceName, {
 									skipEvents: true
 								});
 							}));
 						}).then(function () {
-							return Promise.all(_this37.entities.map(function (entity, index) {
+							return Promise.all(_this38.entities.map(function (entity, index) {
 								return entity.emit("afterPersist" + suffixes[index]);
 							}));
 						}).then(function () {
-							return Promise.all(_this37.entities.map(function (entity) {
+							return Promise.all(_this38.entities.map(function (entity) {
 								return entity.emit('afterPersist');
 							}));
 						}).then(function () {
-							return _this37;
+							return _this38;
 						});
 					}
 
 					/**
       * Reload all entities of this collection.
-      * 
+      *
       * @fires EntityFactory.Entity#beforeFind
       * @fires EntityFactory.Entity#afterFind
       * @author gerkin
@@ -3528,28 +3599,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "fetch",
 					value: function fetch(sourceName) {
-						var _this38 = this;
+						var _this39 = this;
 
 						return Promise.all(this.entities.map(function (entity) {
 							return entity.emit('beforeFetch');
 						})).then(function () {
-							return Promise.all(_this38.entities.map(function (entity) {
+							return Promise.all(_this39.entities.map(function (entity) {
 								return entity.fetch(sourceName, {
 									skipEvents: true
 								});
 							}));
 						}).then(function () {
-							return Promise.all(_this38.entities.map(function (entity) {
+							return Promise.all(_this39.entities.map(function (entity) {
 								return entity.emit('afterFetch');
 							}));
 						}).then(function () {
-							return _this38;
+							return _this39;
 						});
 					}
 
 					/**
       * Destroy all entities from this collection.
-      * 
+      *
       * @fires EntityFactory.Entity#beforeDelete
       * @fires EntityFactory.Entity#afterDelete
       * @author gerkin
@@ -3561,28 +3632,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "destroy",
 					value: function destroy(sourceName) {
-						var _this39 = this;
+						var _this40 = this;
 
 						return Promise.all(this.entities.map(function (entity) {
 							return entity.emit('beforeDestroy');
 						})).then(function () {
-							return Promise.all(_this39.entities.map(function (entity) {
+							return Promise.all(_this40.entities.map(function (entity) {
 								return entity.destroy(sourceName, {
 									skipEvents: true
 								});
 							}));
 						}).then(function () {
-							return Promise.all(_this39.entities.map(function (entity) {
+							return Promise.all(_this40.entities.map(function (entity) {
 								return entity.emit('afterDestroy');
 							}));
 						}).then(function () {
-							return _this39;
+							return _this40;
 						});
 					}
 
 					/**
       * Update all entities in the set with given object.
-      * 
+      *
       * @author gerkin
       * @param   {Object} newData - Attributes to change in each entity of the collection.
       * @returns {Collection} `this`.
@@ -3617,11 +3688,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = Set;
-		}, { "./dependencies": 8, "./utils": 16 }], 16: [function (require, module, exports) {
+		}, { "./dependencies": 8, "./errors/setValidationError": 14, "./utils": 17 }], 17: [function (require, module, exports) {
 			'use strict';
 
-			var _require9 = require('./dependencies'),
-			    _ = _require9._;
+			var _require10 = require('./dependencies'),
+			    _ = _require10._;
 
 			module.exports = {
 				defineEnumerableProperties: function defineEnumerableProperties(subject, handlers) {
@@ -3643,7 +3714,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					return Object.defineProperties(subject, remappedHandlers);
 				}
 			};
-		}, { "./dependencies": 8 }], 17: [function (require, module, exports) {
+		}, { "./dependencies": 8 }], 18: [function (require, module, exports) {
 			// shim for using process in browser
 			var process = module.exports = {};
 
