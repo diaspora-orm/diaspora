@@ -1450,6 +1450,13 @@ const {
 	_, Promise,
 } = dependencies;
 
+/**
+ * Event emitter that can execute async handlers in sequence
+ *
+ * @typedef {Object} SequentialEvent
+ * @author Gerkin
+ * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
+ */
 const logger = (() => {
 	if ( !process.browser ) {
 		const winston = require( 'winston' );
@@ -1984,7 +1991,7 @@ const Utils = require( './utils' );
 
 /**
  * This factory function generate a new class constructor, prepared for a specific model.
- * 
+ *
  * @memberof EntityFactory
  * @param   {string}           name       - Name of this model.
  * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
@@ -2004,9 +2011,9 @@ function EntityFactory( name, modelDesc, model ) {
 	class Entity extends SequentialEvent {
 		/**
 		 * Create a new entity.
-		 * 
+		 *
 		 * @author gerkin
-		 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.  
+		 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.
 		 *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
 		 */
 		constructor( source = {}) {
@@ -2020,7 +2027,7 @@ function EntityFactory( name, modelDesc, model ) {
 			const entityPrototype = {
 				/**
 				 * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
-				 * 
+				 *
 				 * @name dataSources
 				 * @readonly
 				 * @type {Object}
@@ -2033,7 +2040,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Returns a copy of this entity attributes.
-				 * 
+				 *
 				 * @method toObject
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2041,11 +2048,11 @@ function EntityFactory( name, modelDesc, model ) {
 				 * @returns {Object} Attributes of this entity.
 				 */
 				toObject: () => {
-					return _.omit( attributes, entityPrototypeProperties ); 
-				}, 
+					return _.omit( attributes, entityPrototypeProperties );
+				},
 				/**
 				 * Save this entity in specified data source.
-				 * 
+				 *
 				 * @method persist
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2110,7 +2117,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Reload this entity from specified data source.
-				 * 
+				 *
 				 * @method fetch
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2156,7 +2163,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Delete this entity from the specified data source.
-				 * 
+				 *
 				 * @method destroy
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2206,7 +2213,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Get entity's current state.
-				 * 
+				 *
 				 * @name dataSources
 				 * @readonly
 				 * @type {Entity.State}
@@ -2216,12 +2223,12 @@ function EntityFactory( name, modelDesc, model ) {
 				 */
 				state: {
 					get() {
-						return state; 
+						return state;
 					},
 				},
 				/**
 				 * Get entity's last data source.
-				 * 
+				 *
 				 * @name dataSources
 				 * @readonly
 				 * @type {null|string}
@@ -2231,12 +2238,12 @@ function EntityFactory( name, modelDesc, model ) {
 				 */
 				lastDataSource: {
 					get() {
-						return lastDataSource; 
+						return lastDataSource;
 					},
 				},
 				/**
 				 * Generate the query to get this unique entity in the desired data source.
-				 * 
+				 *
 				 * @method uidQuery
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2251,7 +2258,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Return the table of this entity in the specified data source.
-				 * 
+				 *
 				 * @method table
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2264,7 +2271,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Check if the entity matches model description.
-				 * 
+				 *
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
@@ -2306,8 +2313,8 @@ function EntityFactory( name, modelDesc, model ) {
 			// Default model attributes with our model desc
 			Diaspora.default( attributes, modelDesc.attributes );
 
-			// Bind events
-			_.forEach( modelDesc.events, ( eventFunctions, eventName ) => {
+			// Bind lifecycle events
+			_.forEach( modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
 				// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
 				_.forEach( _.castArray( eventFunctions ), eventFunction => {
 					this.on( eventName, eventFunction );
@@ -2350,7 +2357,7 @@ function EntityFactory( name, modelDesc, model ) {
 	const EntityWrapped = Object.defineProperties( Entity, {
 		/**
 		 * Name of the class.
-		 * 
+		 *
 		 * @type {string}
 		 * @readonly
 		 * @memberof EntityFactory.Entity
@@ -2360,11 +2367,11 @@ function EntityFactory( name, modelDesc, model ) {
 		name: {
 			value:      `${ name  }Entity`,
 			writable:   false,
-			enumerable: true, 
+			enumerable: true,
 		},
 		/**
 		 * Reference to this entity's model.
-		 * 
+		 *
 		 * @type {Model}
 		 * @readonly
 		 * @memberof EntityFactory.Entity
@@ -2374,7 +2381,7 @@ function EntityFactory( name, modelDesc, model ) {
 		model: {
 			value:      model,
 			writable:   false,
-			enumerable: true, 
+			enumerable: true,
 		},
 	});
 
@@ -2583,11 +2590,11 @@ const {
  * 
  * @typedef  {Object} ModelConfiguration.ModelDescription
  * @author gerkin
- * @property {ModelConfiguration.SourcesDescriptor}    sources       - List of sources to use with this model.
- * @property {ModelConfiguration.AttributesDescriptor} attributes    - Attributes of the model.
- * @property {Object<string, Function>}                methods       - Methods to add to entities prototype.
- * @property {Object<string, Function>}                staticMethods - Static methods to add to entities.
- * @property {Object<string, Function|Function[]>}     events        - Events to bind on entities.
+ * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
+ * @property {ModelConfiguration.AttributesDescriptor} attributes      - Attributes of the model.
+ * @property {Object<string, Function>}                methods         - Methods to add to entities prototype.
+ * @property {Object<string, Function>}                staticMethods   - Static methods to add to entities.
+ * @property {Object<string, Function|Function[]>}     lifecycleEvents - Events to bind on entities.
  */
 
 /**

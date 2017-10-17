@@ -1109,6 +1109,11 @@ $menuHeight: 36px;
 			pointer-events: all;
 			opacity: 1;
 		}
+
+		> p > img{
+			margin: 0 auto;
+			display: block;
+		}
 	}
 	> nav > ul{
 		padding-left: 0;

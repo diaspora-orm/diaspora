@@ -55,7 +55,7 @@ const events = {
 	],
 };
 describe( 'Test entity', () => {
-	describe( 'Check events', () => {
+	describe( 'Check lifecycle events', () => {
 		it( 'before/after persist (create)', () => {
 			const eventCat = 'create';
 			const eventCatList = events[eventCat];
@@ -168,7 +168,7 @@ describe( 'Test entity', () => {
 });
 
 describe( 'Test set', () => {
-	describe( 'Check events', () => {
+	describe( 'Check lifecycle events', () => {
 		it( 'before/after persist (create)', () => {
 			const eventCat = 'create';
 			const eventCatList = events[eventCat];

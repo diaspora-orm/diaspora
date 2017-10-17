@@ -6,25 +6,25 @@
 
 > Below status reflect the last development commit status. Releases require all tests to pass successfully
 
-Fancy badges:  
+Fancy badges:
 [![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
 [![Dependency Status](https://gemnasium.com/badges/github.com/GerkinDev/Diaspora.svg)](https://gemnasium.com/github.com/GerkinDev/Diaspora)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6fdd8d23491248afccb9/maintainability)](https://codeclimate.com/github/GerkinDev/Diaspora/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/6fdd8d23491248afccb9/test_coverage)](https://codeclimate.com/github/GerkinDev/Diaspora/test_coverage)  
+[![Test Coverage](https://api.codeclimate.com/v1/badges/6fdd8d23491248afccb9/test_coverage)](https://codeclimate.com/github/GerkinDev/Diaspora/test_coverage)
 [![npm](https://img.shields.io/npm/dm/diaspora.svg)](https://npmjs.org/package/diaspora)
 [![npm version](https://badge.fury.io/js/diaspora.svg)](https://badge.fury.io/js/diaspora)
 [![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)
-[![license](https://img.shields.io/github/license/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)    
+[![license](https://img.shields.io/github/license/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)
 [![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
 
 ## Documentation & important notes
 
 Welcome on the GitHub repository of Diaspora. Please visit the [Manual website](https://diaspora.ithoughts.io/), the [Quick Code Review](https://diaspora.ithoughts.io/docco/index.html) or the [API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
 
-> ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:  
+> ***Important note***: Diaspora is very young and under heavy development. You are totally free to use it or contribute, but be aware that some important features are incomplete or absent:
 > * *Relations*: Not implemented
 > * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2.
-> * *Registering external adapter*: Soon
+> * *Multi sources*: not tested
 
 ---
 
@@ -159,7 +159,7 @@ Reload entity from specified `source`.
 
 > IndexedDB Adapter (browser)
 
-*Unsure* > IndexedDB technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).  
+*Unsure* > IndexedDB technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 *Note: Plan to show fallback implementations*
 
 > Auto-switch to API server/client

@@ -4,6 +4,6 @@
 
 ## API Documentation
 
-This documentation section is a readable version of the code, for quick review. Please visit the [Manual website](../) or the [Quick Code Review](../docco/index.html)
+This documentation section is a readable version of the code, for quick review. Please visit the [Manual website](../index.html) or the [Quick Code Review](../docco/index.html)
 
 ---

@@ -4,7 +4,7 @@
 
 ## Quick Code Review
 
-This documentation section is a readable version of the code, for quick review. Please visit the [Manual website](../) or the [API Documentation](../jsdoc/index.html)
+This documentation section is a readable version of the code, for quick review. Please visit the [Manual website](../index.html) or the [API Documentation](../jsdoc/index.html)
 
 ---
 

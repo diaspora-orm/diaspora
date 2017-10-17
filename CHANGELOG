@@ -2,12 +2,14 @@
 
 ## v0.2.0 ()
 
-* Upgraded to sequential-event ^0.1.1
+* Upgraded to sequential-event ^0.2.0
 * Added class Set to manage several entities at the same time
-* Added lifecycle events:
-	* beforeUpdate => persist => afterUpdate
-	* beforeFind => fetch => afterFind
-	* beforeDelete => destroy => afterDelete
+* Added lifecycle events (see the [documentation](https://diaspora.ithoughts.io/events-in-diaspora.html#lifecycle-events))
+* Reviewed deploy pipelines
+* Added Winston instance exposed as [`Diaspora.logger`](https://diaspora.ithoughts.io/jsdoc/Diaspora.html#.logger__anchor)
+* More custom errors for better precision.
+* Registering external adapters added with [`Diaspora.registerAdapter`](https://diaspora.ithoughts.io/jsdoc/Diaspora.html#.registerAdapter__anchor)
+* Validation executed before persisting sets or entities
 
 ---
 

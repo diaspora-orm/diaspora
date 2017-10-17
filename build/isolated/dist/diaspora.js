@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-10-17 12:55:43
+* Isolated build compiled on 2017-10-17 18:27:56
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.1
@@ -1779,6 +1779,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				var _ = dependencies._,
 				    Promise = dependencies.Promise;
 
+				/**
+     * Event emitter that can execute async handlers in sequence
+     *
+     * @typedef {Object} SequentialEvent
+     * @author Gerkin
+     * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
+     */
 
 				var logger = function () {
 					if (!process.browser) {
@@ -2324,7 +2331,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			/**
     * This factory function generate a new class constructor, prepared for a specific model.
-    * 
+    *
     * @memberof EntityFactory
     * @param   {string}           name       - Name of this model.
     * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
@@ -2347,9 +2354,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Create a new entity.
-      * 
+      *
       * @author gerkin
-      * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.  
+      * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.
       *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
       */
 					function Entity() {
@@ -2371,7 +2378,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var entityPrototype = {
 							/**
         * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
-        * 
+        *
         * @name dataSources
         * @readonly
         * @type {Object}
@@ -2384,7 +2391,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							},
 							/**
         * Returns a copy of this entity attributes.
-        * 
+        *
         * @method toObject
         * @memberof EntityFactory.Entity
         * @instance
@@ -2396,7 +2403,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							},
 							/**
         * Save this entity in specified data source.
-        * 
+        *
         * @method persist
         * @memberof EntityFactory.Entity
         * @instance
@@ -2463,7 +2470,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							},
 							/**
         * Reload this entity from specified data source.
-        * 
+        *
         * @method fetch
         * @memberof EntityFactory.Entity
         * @instance
@@ -2513,7 +2520,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							},
 							/**
         * Delete this entity from the specified data source.
-        * 
+        *
         * @method destroy
         * @memberof EntityFactory.Entity
         * @instance
@@ -2567,7 +2574,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							},
 							/**
         * Get entity's current state.
-        * 
+        *
         * @name dataSources
         * @readonly
         * @type {Entity.State}
@@ -2582,7 +2589,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							},
 							/**
         * Get entity's last data source.
-        * 
+        *
         * @name dataSources
         * @readonly
         * @type {null|string}
@@ -2597,7 +2604,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							},
 							/**
         * Generate the query to get this unique entity in the desired data source.
-        * 
+        *
         * @method uidQuery
         * @memberof EntityFactory.Entity
         * @instance
@@ -2613,7 +2620,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 							/**
         * Return the table of this entity in the specified data source.
-        * 
+        *
         * @method table
         * @memberof EntityFactory.Entity
         * @instance
@@ -2627,7 +2634,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 							/**
         * Check if the entity matches model description.
-        * 
+        *
         * @memberof EntityFactory.Entity
         * @instance
         * @author gerkin
@@ -2670,8 +2677,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						// Default model attributes with our model desc
 						Diaspora.default(attributes, modelDesc.attributes);
 
-						// Bind events
-						_.forEach(modelDesc.events, function (eventFunctions, eventName) {
+						// Bind lifecycle events
+						_.forEach(modelDesc.lifecycleEvents, function (eventFunctions, eventName) {
 							// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
 							_.forEach(_.castArray(eventFunctions), function (eventFunction) {
 								_this26.on(eventName, eventFunction);
@@ -2717,7 +2724,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				var EntityWrapped = Object.defineProperties(Entity, {
 					/**
       * Name of the class.
-      * 
+      *
       * @type {string}
       * @readonly
       * @memberof EntityFactory.Entity
@@ -2731,7 +2738,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					},
 					/**
       * Reference to this entity's model.
-      * 
+      *
       * @type {Model}
       * @readonly
       * @memberof EntityFactory.Entity
@@ -2987,11 +2994,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * 
     * @typedef  {Object} ModelConfiguration.ModelDescription
     * @author gerkin
-    * @property {ModelConfiguration.SourcesDescriptor}    sources       - List of sources to use with this model.
-    * @property {ModelConfiguration.AttributesDescriptor} attributes    - Attributes of the model.
-    * @property {Object<string, Function>}                methods       - Methods to add to entities prototype.
-    * @property {Object<string, Function>}                staticMethods - Static methods to add to entities.
-    * @property {Object<string, Function|Function[]>}     events        - Events to bind on entities.
+    * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
+    * @property {ModelConfiguration.AttributesDescriptor} attributes      - Attributes of the model.
+    * @property {Object<string, Function>}                methods         - Methods to add to entities prototype.
+    * @property {Object<string, Function>}                staticMethods   - Static methods to add to entities.
+    * @property {Object<string, Function|Function[]>}     lifecycleEvents - Events to bind on entities.
     */
 
 			/**

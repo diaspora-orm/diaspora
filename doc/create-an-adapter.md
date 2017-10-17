@@ -117,3 +117,25 @@ module.exports = MyDiasporaAdapter;
 If you are planning to deploy your adapter on the client side, note that async functions are not really [widely supported](http://caniuse.com/#feat=async-functions), and you probably should either transform your adapter using [Babel](https://babeljs.io/) or use [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) instead.
 
 You are ready to go! Don't hesitate to post your adapters link on this page, or edit the Diaspora's README at the [Adapters section](https://github.com/GerkinDev/Diaspora#available-adapters).
+
+
+## Execute some standard tests
+
+Now that your adapter is ready, you need to test it. Diaspora provides some ways to check that your adapter behave as expected. Here is a basic template:
+
+{% highlight javascript %}
+'use strict';
+
+const AdapterTestUtils = require( 'diaspora/test/adapters/utils' );
+const ADAPTER_LABEL = 'myAdapter';
+const CONFIG_HASH = {/* Configure your adapter here */};
+const ADAPTER_PREFIX_CAPITALIZED = 'MyAdapter';
+const DATA_SOURCE_NAME = 'myDataSource';
+
+const adapter = AdapterTestUtils.createDataSource( ADAPTER_LABEL, CONFIG_HASH);
+AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, ADAPTER_PREFIX_CAPITALIZED );
+AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
+AdapterTestUtils.checkApplications( ADAPTER_LABEL );
+AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, DATA_SOURCE_NAME );
+{% endhighlight %}
+

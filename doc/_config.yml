@@ -23,4 +23,4 @@ github:
   repository_url: https://github.com/GerkinDev/Diaspora
   owner_url: https://github.com/GerkinDev
   clone:
-	ssh: ssh+git://git@github.com:GerkinDev/Diaspora.git
+    ssh: ssh+git://git@github.com:GerkinDev/Diaspora.git

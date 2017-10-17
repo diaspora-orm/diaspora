@@ -1469,7 +1469,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bluebird":18,"lodash":20,"sequential-event":22}],10:[function(require,module,exports){
+},{"bluebird":18,"lodash":19,"sequential-event":21}],10:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1478,6 +1478,13 @@ const {
 	_, Promise,
 } = dependencies;
 
+/**
+ * Event emitter that can execute async handlers in sequence
+ *
+ * @typedef {Object} SequentialEvent
+ * @author Gerkin
+ * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
+ */
 const logger = (() => {
 	if ( !process.browser ) {
 		const winston = require( 'winston' );
@@ -1994,7 +2001,7 @@ if ( process.browser ) {
 }
 
 }).call(this,require('_process'))
-},{"./adapters/baseAdapter":3,"./adapters/browserStorageAdapter":4,"./adapters/inMemoryAdapter":5,"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./entityFactory":11,"./errors/entityStateError":12,"./errors/validationError":14,"./model":15,"./set":16,"_process":21,"winston":undefined}],11:[function(require,module,exports){
+},{"./adapters/baseAdapter":3,"./adapters/browserStorageAdapter":4,"./adapters/inMemoryAdapter":5,"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./entityFactory":11,"./errors/entityStateError":12,"./errors/validationError":14,"./model":15,"./set":16,"_process":20,"winston":undefined}],11:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2012,7 +2019,7 @@ const Utils = require( './utils' );
 
 /**
  * This factory function generate a new class constructor, prepared for a specific model.
- * 
+ *
  * @memberof EntityFactory
  * @param   {string}           name       - Name of this model.
  * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
@@ -2032,9 +2039,9 @@ function EntityFactory( name, modelDesc, model ) {
 	class Entity extends SequentialEvent {
 		/**
 		 * Create a new entity.
-		 * 
+		 *
 		 * @author gerkin
-		 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.  
+		 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.
 		 *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
 		 */
 		constructor( source = {}) {
@@ -2048,7 +2055,7 @@ function EntityFactory( name, modelDesc, model ) {
 			const entityPrototype = {
 				/**
 				 * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
-				 * 
+				 *
 				 * @name dataSources
 				 * @readonly
 				 * @type {Object}
@@ -2061,7 +2068,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Returns a copy of this entity attributes.
-				 * 
+				 *
 				 * @method toObject
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2069,11 +2076,11 @@ function EntityFactory( name, modelDesc, model ) {
 				 * @returns {Object} Attributes of this entity.
 				 */
 				toObject: () => {
-					return _.omit( attributes, entityPrototypeProperties ); 
-				}, 
+					return _.omit( attributes, entityPrototypeProperties );
+				},
 				/**
 				 * Save this entity in specified data source.
-				 * 
+				 *
 				 * @method persist
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2138,7 +2145,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Reload this entity from specified data source.
-				 * 
+				 *
 				 * @method fetch
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2184,7 +2191,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Delete this entity from the specified data source.
-				 * 
+				 *
 				 * @method destroy
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2234,7 +2241,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Get entity's current state.
-				 * 
+				 *
 				 * @name dataSources
 				 * @readonly
 				 * @type {Entity.State}
@@ -2244,12 +2251,12 @@ function EntityFactory( name, modelDesc, model ) {
 				 */
 				state: {
 					get() {
-						return state; 
+						return state;
 					},
 				},
 				/**
 				 * Get entity's last data source.
-				 * 
+				 *
 				 * @name dataSources
 				 * @readonly
 				 * @type {null|string}
@@ -2259,12 +2266,12 @@ function EntityFactory( name, modelDesc, model ) {
 				 */
 				lastDataSource: {
 					get() {
-						return lastDataSource; 
+						return lastDataSource;
 					},
 				},
 				/**
 				 * Generate the query to get this unique entity in the desired data source.
-				 * 
+				 *
 				 * @method uidQuery
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2279,7 +2286,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Return the table of this entity in the specified data source.
-				 * 
+				 *
 				 * @method table
 				 * @memberof EntityFactory.Entity
 				 * @instance
@@ -2292,7 +2299,7 @@ function EntityFactory( name, modelDesc, model ) {
 				},
 				/**
 				 * Check if the entity matches model description.
-				 * 
+				 *
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
@@ -2334,8 +2341,8 @@ function EntityFactory( name, modelDesc, model ) {
 			// Default model attributes with our model desc
 			Diaspora.default( attributes, modelDesc.attributes );
 
-			// Bind events
-			_.forEach( modelDesc.events, ( eventFunctions, eventName ) => {
+			// Bind lifecycle events
+			_.forEach( modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
 				// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
 				_.forEach( _.castArray( eventFunctions ), eventFunction => {
 					this.on( eventName, eventFunction );
@@ -2378,7 +2385,7 @@ function EntityFactory( name, modelDesc, model ) {
 	const EntityWrapped = Object.defineProperties( Entity, {
 		/**
 		 * Name of the class.
-		 * 
+		 *
 		 * @type {string}
 		 * @readonly
 		 * @memberof EntityFactory.Entity
@@ -2388,11 +2395,11 @@ function EntityFactory( name, modelDesc, model ) {
 		name: {
 			value:      `${ name  }Entity`,
 			writable:   false,
-			enumerable: true, 
+			enumerable: true,
 		},
 		/**
 		 * Reference to this entity's model.
-		 * 
+		 *
 		 * @type {Model}
 		 * @readonly
 		 * @memberof EntityFactory.Entity
@@ -2402,7 +2409,7 @@ function EntityFactory( name, modelDesc, model ) {
 		model: {
 			value:      model,
 			writable:   false,
-			enumerable: true, 
+			enumerable: true,
 		},
 	});
 
@@ -2611,11 +2618,11 @@ const {
  * 
  * @typedef  {Object} ModelConfiguration.ModelDescription
  * @author gerkin
- * @property {ModelConfiguration.SourcesDescriptor}    sources       - List of sources to use with this model.
- * @property {ModelConfiguration.AttributesDescriptor} attributes    - Attributes of the model.
- * @property {Object<string, Function>}                methods       - Methods to add to entities prototype.
- * @property {Object<string, Function>}                staticMethods - Static methods to add to entities.
- * @property {Object<string, Function|Function[]>}     events        - Events to bind on entities.
+ * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
+ * @property {ModelConfiguration.AttributesDescriptor} attributes      - Attributes of the model.
+ * @property {Object<string, Function>}                methods         - Methods to add to entities prototype.
+ * @property {Object<string, Function>}                staticMethods   - Static methods to add to entities.
+ * @property {Object<string, Function|Function[]>}     lifecycleEvents - Events to bind on entities.
  */
 
 /**
@@ -8731,311 +8738,7 @@ module.exports = ret;
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":21}],19:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        // At least give some kind of context to the user
-        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-        err.context = er;
-        throw err;
-      }
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],20:[function(require,module,exports){
+},{"_process":20}],19:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -26123,7 +25826,7 @@ function isUndefined(arg) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -26309,11 +26012,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = require('./lib/sequential-event.js');
 
-},{"./lib/sequential-event.js":23}],23:[function(require,module,exports){
-(function (process){
+},{"./lib/sequential-event.js":22}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -26322,20 +26024,18 @@ module.exports = require('./lib/sequential-event.js');
  * @author Gerkin
  */
 
-const EventEmitter = require( 'events' ).EventEmitter;
-
 /**
  * Handle execution of all handlers in sequence.
- * 
+ *
  * @param   {Function|Function[]} handlers - Function(s) to execute. Each function may return a Promise.
  * @param   {EventEmitter}        object   - Objecto call event on.
  * @param   {Any[]}               [args]   - Arguments to pass to each called function.
  * @returns {Promise} Promise resolved once each function is executed.
  * @memberof SequentialEvent
  * @author Gerkin
- * @private
+ * @inner
  */
-function emitHandlers( handlers, object, args ) {
+const emitHandlers = ( handlers, object, args ) => {
 	// Check if the provided handler is a single function or an array of functions
 	if ( 'function' === typeof handlers ) {
 		return emitHandler( handlers, object, args );
@@ -26346,7 +26046,7 @@ function emitHandlers( handlers, object, args ) {
 		const sourcePromise = new Promise(( resolve, reject ) => {
 			/**
 			 * Generate next promise for sequence.
-			 * 
+			 *
 			 * @param   {Any} prevResolve - Event chain resolved value.
 			 * @returns {undefined} *This function does not return anything*.
 			 * @memberof SequentialEvent
@@ -26367,20 +26067,20 @@ function emitHandlers( handlers, object, args ) {
 		});
 		return sourcePromise;
 	}
-}
+};
 
 /**
  * Handle execution of a single handler.
- * 
+ *
  * @param   {Function}     handler - Function to execute. It may return a Promise.
  * @param   {EventEmitter} object  - Object to call event on.
  * @param   {Any[]}        [args]  - Arguments to pass to each called function.
  * @returns {Promise} Promise resolved once this function is done.
  * @memberof SequentialEvent
  * @author Gerkin
- * @private
+ * @inner
  */
-function emitHandler( handler, object, args ) {
+const emitHandler = ( handler, object, args ) => {
 	try {
 		const retVal = handler.apply( object, args );
 		if ( 'object' === typeof retVal && 'function' === typeof retVal.then ) {
@@ -26391,88 +26091,159 @@ function emitHandler( handler, object, args ) {
 	} catch ( e ) {
 		return Promise.reject( e );
 	}
-}
+};
+
+/**
+ * Generate an event handler that deregister itself when executed. This handler will be executed just once.
+ *
+ * @param   {Object}   target    - Event emitter that will use the handler.
+ * @param   {string}   eventName - Name of the event to trigger.
+ * @param   {Function} eventFn   - Handler for the event.
+ * @returns {Function} Function that will be executed only once.
+ * @memberof SequentialEvent
+ * @author Gerkin
+ * @inner
+ */
+const onceify = ( target, eventName, eventFn ) => {
+	let called = false;
+	const fn = ( ...args ) => {
+		if ( !called ) {
+			target.off( eventName, fn );
+			called = true;
+			return eventFn( ...args );
+		}
+	};
+	return fn;
+};
 
 /**
  * Event emitter that guarantees sequential execution of handlers. Each handler may return a **Promise**.
- * 
- * @extends EventEmitter
+ *
  * @see {@link https://nodejs.org/api/events.html Node EventEmitter}.
  */
-class SequentialEvent extends EventEmitter {
+class SequentialEvent {
 	/**
 	 * Constructs a new SequentialEvent.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
 	constructor() {
-		super();
+		this.__events = {};
 	}
 
 	/**
-	 * SequentialEvents each corresponding handlers in sequence.
-	 * 
+	 * Add one or many event handlers.
+	 *
+	 * @param   {string|Object} events     - Event name or hash of events.
+	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
+	 * @returns {SequentialEvent} `this`.
+	 */
+	on( events, callback ) {
+		const _events = this.__events;
+
+		if ( 'object' === typeof events ) {
+			for ( const event in events ) {
+				if ( events.hasOwnProperty( event )) {
+					_events[event] = _events[event] || [];
+					_events[event].push( events[event]);
+				}
+			}
+		} else {
+			events.split( ' ' ).forEach( event => {
+				_events[event] = _events[event] || [];
+				_events[event].push( callback );
+			}, this );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Remove one or many or all event handlers.
+	 *
+	 * @param   {string|Object} [events]   - Event name or hash of events.
+	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
+	 * @returns {SequentialEvent} `this`.
+	 */
+	off( events, callback ) {
+		const _events = this.__events;
+
+		if ( 'object' === typeof events ) {
+			for ( const event in events ) {
+				if ( events.hasOwnProperty( event ) && ( event in _events )) {
+					var index = _events[event].indexOf( events[event]);
+					if ( index !== -1 ) {
+						_events[event].splice( index, 1 );
+					}
+				}
+			}
+		} else if ( events ) {
+			events.split( ' ' ).forEach( event => {
+				if ( event in _events ) {
+					if ( callback ) {
+						var index = _events[event].indexOf( callback );
+						if ( index !== -1 ) {
+							_events[event].splice( index, 1 );
+						}
+					} else {
+						_events[event].length = 0;
+					}
+				}
+			}, this );
+		} else {
+			this.__events = {};
+		}
+
+		return this;
+	}
+
+	/**
+	 * Add one or many event handlers that will be called only once.
+	 *
+	 * @param   {string|Object} events     - Event name or hash of events.
+	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
+	 * @returns {SequentialEvent} `this`.
+	 */
+	once( events, callback ) {
+		const _events = this.__events;
+
+		if ( 'object' === typeof events ) {
+			for ( const event in events ) {
+				if ( events.hasOwnProperty( event )) {
+					_events[event] = _events[event] || [];
+					_events[event].push( onceify( this, event, events[event]));
+				}
+			}
+		} else {
+			events.split( ' ' ).forEach( event => {
+				_events[event] = _events[event] || [];
+				_events[event].push( onceify( this, event, callback ));
+			}, this );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Triggers each corresponding handlers in sequence.
+	 *
 	 * @param   {Any}   type   - Name of the event to sequential-event.
 	 * @param   {Any[]} [args] - Parameters to pass to handlers.
 	 * @returns {Promise} Returns a Promise resolved when then chain is done.
 	 * @author Gerkin
 	 */
 	emit( type, ...args ) {
-		let needDomainExit = false;
-		let doError = ( 'error' === type );
-
-		const events = this._events;
-		if ( events ) {
-			doError = ( doError && null == events.error );
-		} else if ( !doError ) {
-			return false;
-		}
-
-		const domain = this.domain;
-
-		// If there is no 'error' event listener then throw.
-		if ( doError ) {
-			let er;
-			if ( arguments.length > 1 ) {
-				er = arguments[1];
-			}
-			if ( domain ) {
-				if ( !er ) {
-					er = new Error( 'Unhandled "error" event' );
-				}
-				if ( 'object' === typeof er && er !== null ) {
-					er.domainEmitter = this;
-					er.domain = domain;
-					er.domainThrown = false;
-				}
-				domain.emit( 'error', er );
-			} else if ( er instanceof Error ) {
-				throw er; // Unhandled 'error' event
-			} else {
-				// At least give some kind of context to the user
-				const err = new Error( `Unhandled "error" event. (${  er  })` );
-				err.context = er;
-				throw err;
-			}
-			return false;
+		const events = this.__events;
+		if ( !events ) {
+			return Promise.resolve();
 		}
 
 		const handler = events[type];
-
 		if ( !handler ) {
 			return Promise.resolve();
 		}
 
-		if ( 'undefined' !== typeof process && domain && this !== process ) {
-			domain.enter();
-			needDomainExit = true;
-		}
-
 		const retPromise = emitHandlers( handler, this, args );
-
-		if ( needDomainExit ) {
-			domain.exit();
-		}
 
 		return retPromise;
 	}
@@ -26480,6 +26251,5 @@ class SequentialEvent extends EventEmitter {
 
 module.exports = SequentialEvent;
 
-}).call(this,require('_process'))
-},{"_process":21,"events":19}]},{},[2,1])(2)
+},{}]},{},[2,1])(2)
 });
