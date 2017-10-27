@@ -15,6 +15,10 @@ engines:
     enabled: true
     exclude_paths:
     - "!**.md"
+checks:
+  method-complexity:
+    config:
+      threshold: 10
 exclude_paths:
 - "dist/"
 - "build/"

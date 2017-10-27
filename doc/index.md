@@ -55,6 +55,44 @@ Data sources are data stores we interact with through [adapters](). A store is, 
 
 <a href="create-an-adapter.html" class="btn">Learn how to <b>create an adapter</b></a>
 
+## Available adapters
+
+<table style="display:table;">
+	<thead>
+		<tr>
+			<th>Adapter</th>
+			<th>Links</th>
+			<th>Maintainer</th>
+			<th>Platform</th>
+			<th>Other infos</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td style="vertical-align: middle;"><img width="100" alt="In memory" src="https://cdn.rawgit.com/GerkinDev/Diaspora/master/media/inMemory.svg"/></td>
+			<td colspan="2" style="vertical-align: middle;">Built-in</td>
+			<td>Node + Browser</td>
+			<td rowspan="2" style="vertical-align: middle;">QL v2</td>
+		</tr>
+		<tr>
+			<td style="vertical-align: middle;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage"><img width="100" alt="Browser storage" src="https://cdn.rawgit.com/GerkinDev/Diaspora/master/media/webStorage.svg"/></a></td>
+			<td colspan="2" style="vertical-align: middle;">Built-in</td>
+			<td>Browser</td>
+		</tr>
+		<tr>
+			<td style="vertical-align: middle;"><a href="https://www.mongodb.com/"><img width="100" alt="MongoDB" src="https://cdn.rawgit.com/GerkinDev/Diaspora-Mongo/master/media/mongo.svg"/></a></td>
+			<td style="vertical-align: middle;">
+				<a href="https://github.com/GerkinDev/Diaspora-Mongo" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/GerkinDev/Diaspora-Mongo.svg?label=GitHub"/></a>
+				<a href="https://www.npmjs.com/package/diaspora-mongo" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-mongo.svg"/></a>
+				<a href="yarnpkg.com/en/package/diaspora-mongo" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-mongo.svg?label=yarn"/></a>
+			</td>
+			<td style="vertical-align: middle;"><a href="https://github.com/GerkinDev" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev"/></a></td>
+			<td>Node</td>
+			<td style="vertical-align: middle;">QL v2</td>
+		</tr>
+	</tbody>
+</table>
+
 ## Planned or unsure Diaspora behaviors
 
 > Manual change of ID

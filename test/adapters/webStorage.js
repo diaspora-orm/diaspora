@@ -2,7 +2,7 @@
 
 /* globals it: false, require: false, getConfig: false */
 
-const ADAPTER_LABEL = 'browserStorage';
+const ADAPTER_LABEL = 'webStorage';
 const adapterConfig = getConfig( ADAPTER_LABEL );
 
 if ( 'undefined' === typeof window ) {

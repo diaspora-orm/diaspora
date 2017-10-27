@@ -26194,13 +26194,13 @@ class SequentialEvent {
 
 module.exports = SequentialEvent;
 
-},{}],"/test/adapters/browserStorage.js":[function(require,module,exports){
+},{}],"/test/adapters/webStorage.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
 /* globals it: false, require: false, getConfig: false */
 
-const ADAPTER_LABEL = 'browserStorage';
+const ADAPTER_LABEL = 'webStorage';
 const adapterConfig = getConfig( ADAPTER_LABEL );
 
 if ( 'undefined' === typeof window ) {
@@ -26257,7 +26257,7 @@ AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'inMemory' );
 
 importTest( getStyle( 'adapter', 'In Memory' ), `${ __dirname  }/inMemory.js` );
 if ( 'undefined' !== typeof window ) {
-	importTest( getStyle( 'adapter', 'Browser Storage' ), `${ __dirname  }/browserStorage.js` );
+	importTest( getStyle( 'adapter', 'Browser Storage' ), `${ __dirname  }/webStorage.js` );
 }
 
 }).call(this,"/test/adapters")
@@ -27549,4 +27549,4 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 });
 */
 
-},{}]},{},[9,8,"/test/models/components.js","/test/models/index.js","/test/models/simple-remapping.js","/test/models/simple.js","/test/models/validations.js","/test/adapters/index.js","/test/adapters/inMemory.js","/test/adapters/browserStorage.js",7,10,11]);
+},{}]},{},[9,8,"/test/models/components.js","/test/models/index.js","/test/models/simple-remapping.js","/test/models/simple.js","/test/models/validations.js","/test/adapters/index.js","/test/adapters/inMemory.js","/test/adapters/webStorage.js",7,10,11]);

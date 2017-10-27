@@ -1,11 +1,10 @@
 {% for page in include.treeData.children %}
 {% assign subTree=page[1] %}
 <li {% if subTree.children %}class="dropdown"{% endif %}><a href="{% if subTree.page.url %}{{ subTree.page.url | remove_first: "/" | relative_path_to_root }}{% else %}#{% endif %}" {% if page[1].children %}class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"{% endif %}>{{ subTree.page.title }}{% if subTree.children %}<b class="caret"></b>{% endif %}</a>
-	{% if page[1].children %}
-	<!--{{ subTree.children | inspect }}-->
-	<ul class="dropdown-submenu">
-		{% include jsdocNavtree.html treeData=subTree %}
-	</ul>
-	{% endif %}
+    {% if page[1].children %}
+    <ul class="dropdown-submenu">
+        {% include jsdocNavtree.html treeData=subTree %}
+    </ul>
+    {% endif %}
 </li>
 {% endfor %}

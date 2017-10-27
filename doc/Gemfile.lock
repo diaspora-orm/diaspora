@@ -11,11 +11,18 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     colorator (1.1.0)
-    cssminify2 (2.0.1)
+    css_press (0.3.2)
+      csspool-st (= 3.1.2)
+      json
+    csspool-st (3.1.2)
     execjs (2.7.0)
     ffi (1.9.18)
     forwardable-extended (2.6.0)
-    htmlcompressor (0.3.1)
+    html_press (0.8.2)
+      htmlentities
+      multi_css (>= 0.1.0)
+      multi_js (>= 0.1.0)
+    htmlentities (4.3.4)
     jekyll (3.5.2)
       addressable (~> 2.4)
       colorator (~> 1.0)
@@ -27,11 +34,11 @@ GEM
       pathutil (~> 0.9)
       rouge (~> 1.7)
       safe_yaml (~> 1.0)
-    jekyll-minifier (0.1.4)
-      cssminify2 (~> 2.0)
-      htmlcompressor (~> 0.3)
-      jekyll (~> 3.5)
-      uglifier (~> 3.2)
+    jekyll-press (0.2.1)
+      html_press (>= 0.8.2)
+      jekyll
+      multi_css (>= 0.1.0)
+      multi_js (>= 0.1.0)
     jekyll-sass-converter (1.5.0)
       sass (~> 3.4)
     jekyll-seo-tag (2.3.0)
@@ -40,6 +47,7 @@ GEM
       nokogiri (~> 1.6)
     jekyll-watch (1.5.0)
       listen (~> 3.0, < 3.1)
+    json (2.1.0)
     kramdown (1.15.0)
     liquid (4.0.0)
     listen (3.0.8)
@@ -47,6 +55,10 @@ GEM
       rb-inotify (~> 0.9, >= 0.9.7)
     mercenary (0.3.6)
     mini_portile2 (2.2.0)
+    multi_css (0.1.0)
+      css_press
+    multi_js (0.1.0)
+      uglifier (~> 2)
     nokogiri (1.8.0)
       mini_portile2 (~> 2.2.0)
     pathutil (0.14.0)
@@ -63,14 +75,15 @@ GEM
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
-    uglifier (3.2.0)
-      execjs (>= 0.3.0, < 3)
+    uglifier (2.7.2)
+      execjs (>= 0.3.0)
+      json (>= 1.8.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  jekyll-minifier
+  jekyll-press
   jekyll-theme-dinky!
   jekyll-toc
   redcarpet

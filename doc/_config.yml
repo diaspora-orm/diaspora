@@ -10,7 +10,12 @@ port: ""
 baseurl: ""
 plugins:
   - jekyll-toc
-#  - jekyll-minifier
+  - jekyll-press
+jekyll-press:
+  exclude: 'atom.xml' # Exclude files from processing - file name, glob pattern or array of file names and glob patterns
+  js_options: {}      # js minifier options
+  css_options: {}     # css minifier options
+  html_options: {}    # html minifier options
 destination: ../../diaspora-gh-pages
 lsi: true
 incremental: false
