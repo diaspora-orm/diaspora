@@ -91,9 +91,20 @@ This version, much lighter, requires that you load each dependencies before load
 
 ### Create a data source
 
+Data sources are named reference to a single way to get datas. You may then have at least one source for each of your databases, in each of your database software.
+
+Basic syntax to declare a data source is like bellow:
 {% highlight javascript %}
-Diaspora.registerNamedDataSource( 'myDataSource', 'in-memory', {} );
+Diaspora.createNamedDataSource( 'myDataSource', 'in-memory', {} );
 {% endhighlight %}
+
+<div class="note">
+Diaspora.**[createNamedDataSource](jsdoc/Diaspora.html#.createNamedDataSource__anchor)**(*string* `sourceName`, *string* `adapterLabel`, *Object* `configHash`) ► *Adapters.DiasporaAdapter*
+</div>
+
+* Data source names have to be unique. They are identifiers for this adapter that you will use later in your models.
+* Adapter labels are the name that identifies each database type or data sources. You can get a list of adapters by checking the Diaspora's [adapters](jsdoc/Diaspora.html#.adapters__anchor) property.
+* The configuration object depends on your adapter. Check the adapter documentation for infos about what you can set in this object.
 
 ### Working with models
 
@@ -104,13 +115,13 @@ Interactions with your data sources is done through **Models**. Models will allo
 To create a model, use the `declareModel`'s *Diaspora* method.
 
 <div class="note">
-**[declareModel](jsdoc/Diaspora.html#.declareModel__anchor)**(*String* `moduleName`, *String* `name`, *Object* `modelDesc`) ► *[Model](jsdoc/Model.html)*
+Diaspora.**[declareModel](jsdoc/Diaspora.html#.declareModel__anchor)**( *string* `name`, *Object* `modelDesc`) ► *[Model](jsdoc/Model.html)*
 </div>
 
 Let's create a **model** describing a phone book, with a name, a phone, an email and a numeric index.
 
 {% highlight javascript %}
-const PhoneBook = Diaspora.declareModel( NAMESPACE, 'PhoneBook', {
+const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
 	sources:    [ 'myDataSource' ],
 	attributes: {
 		name: {
@@ -176,9 +187,9 @@ Entities are objects with a status, some data sources related informations, and 
 
 You can get Entities from model methods. Query methods `insert`, `find` and `update` will return an [entity](jsdoc/Entity.html) in a *sync* status. You can also create *orphan* entities with `spawn`.
 
-Entities can be saved to a specific data source with **[persist](jsdoc/Entity.html#persist)**([*String* `sourceName`]) ► *Promise*  
-You can reload your entity from a specific data source by using **[fetch](jsdoc/Entity.html#fetch)**([*String* `sourceName`]) ► *Promise*  
-Lastly, you can decide to remove your entity from your data source with **[destroy](jsdoc/Entity.html#destroy)**([*String* `sourceName`]) ► *Promise*
+Entities can be saved to a specific data source with **[persist](jsdoc/Entity.html#persist)**([*string* `sourceName`]) ► *Promise*  
+You can reload your entity from a specific data source by using **[fetch](jsdoc/Entity.html#fetch)**([*string* `sourceName`]) ► *Promise*  
+Lastly, you can decide to remove your entity from your data source with **[destroy](jsdoc/Entity.html#destroy)**([*string* `sourceName`]) ► *Promise*
 
 ##### Sets
 

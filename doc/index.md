@@ -14,6 +14,14 @@ toc: true
 
 ## What is Diaspora
 
+Diaspora is an ORM[^ORM] built to work on both NodeJS & the browser. An ORM[^ORM] is a software component allowing you to perform operations on possibly large sets of data, exactly like a database may do: *Diaspora* can use **adapters** to connect to several data sources (files, memory, webStorage, etc etc) or databases.
+
+One of the main interests of ORMs[^ORM] is that it can allow you to select, update, delete or create elements using a single unique query language, that will be translated later to real queries for each data source. (See the [Query Language](query-language.html) page for more details).
+
+Diaspora can easily be added to your existing application, by loading a script on your webpage or requiring the main module file. You can check the [Getting Started](getting-started.html) page for more infos.
+
+## Why *Diaspora* ?
+
 > A *diaspora* (from Greek διασπορά, "scattering, dispersion") is a scattered population whose origin lies within a smaller geographic locale
 - Wikipedia
 
@@ -120,3 +128,5 @@ Data sources are data stores we interact with through [adapters](). A store is, 
 *Planned* > Wait for at least Mongo & Localstorage adapters.
 
 <div id="disqus_thread"></div>
+
+[^ORM]: Wikipedia: [https://fr.wikipedia.org/wiki/Mapping_objet-relationnel](https://fr.wikipedia.org/wiki/Mapping_objet-relationnel)
