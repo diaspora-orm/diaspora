@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Standalone build compiled on 2017-10-30 01:38:44
+* Standalone build compiled on 2017-10-30 03:01:04
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -831,7 +831,6 @@ var _this26=_possibleConstructorReturn(this,(Entity.__proto__||Object.getPrototy
 				 */dataSources:{value:dataSources},/**
 				 * Returns a copy of this entity attributes.
 				 *
-				 * @method toObject
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
@@ -848,7 +847,6 @@ var _this26=_possibleConstructorReturn(this,(Entity.__proto__||Object.getPrototy
 				 */attributes:{get:function get(){return attributes;}},/**
 				 * Save this entity in specified data source.
 				 *
-				 * @method persist
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @fires EntityFactory.Entity#beforeUpdate
@@ -864,7 +862,6 @@ var suffix='orphan'===beforeState?'Create':'Update';if(options.skipEvents){promi
 if('orphan'===beforeState){return dataSource.insertOne(_this27.table(sourceName),_this27.toObject());}else{return dataSource.updateOne(_this27.table(sourceName),_this27.uidQuery(dataSource),_this27.getDiff(dataSource));}}).then(function(dataStoreEntity){if(options.skipEvents){return Promise.resolve(dataStoreEntity);}else{return _this27.emit.apply(_this27,["afterPersist"+suffix].concat(eventsArgs)).then(function(){return _this27.emit.apply(_this27,['afterPersist'].concat(eventsArgs));}).then(function(){return Promise.resolve(dataStoreEntity);});}}).then(function(dataStoreEntity){state='sync';_this27.dataSources[dataSource.name]=dataStoreEntity;attributes=dataStoreEntity.toObject();return Promise.resolve(_this27);});},/**
 				 * Reload this entity from specified data source.
 				 *
-				 * @method fetch
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @fires EntityFactory.Entity#beforeFind
@@ -878,7 +875,6 @@ if('orphan'===beforeState){return dataSource.insertOne(_this27.table(sourceName)
 if('orphan'===beforeState){return Promise.reject(new EntityStateError('Can\'t fetch an orphan entity.'));}else{lastDataSource=dataSource.name;return dataSource.findOne(_this28.table(sourceName),_this28.uidQuery(dataSource));}}).then(function(dataStoreEntity){state='sync';_this28.dataSources[dataSource.name]=dataStoreEntity;attributes=dataStoreEntity.toObject();if(options.skipEvents){return Promise.resolve(_this28);}else{return _this28.emit('afterFetch',sourceName).then(function(){return Promise.resolve(_this28);});}});},/**
 				 * Delete this entity from the specified data source.
 				 *
-				 * @method destroy
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @fires EntityFactory.Entity#beforeDelete
@@ -910,7 +906,6 @@ if(0===_.without(model.dataSources,dataSource.name).length){state='orphan';}else
 				 */lastDataSource:{get:function get(){return lastDataSource;}},/**
 				 * Generate the query to get this unique entity in the desired data source.
 				 *
-				 * @method uidQuery
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
@@ -919,7 +914,6 @@ if(0===_.without(model.dataSources,dataSource.name).length){state='orphan';}else
 				 */uidQuery:function uidQuery(dataSource){return{id:attributes.idHash[dataSource.name]};},/**
 				 * Return the table of this entity in the specified data source.
 				 *
-				 * @method table
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
@@ -934,9 +928,25 @@ return name;},/**
 				 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
 				 * @returns {undefined} This function does not return anything.
 				 * @see Diaspora.check
-				 */validate:function validate(){var validationErrors=Diaspora.check(attributes,modelDesc.attributes);if(!_.isEmpty(validationErrors)){throw new EntityValidationError(validationErrors,'Validation failed');}},replaceAttributes:function replaceAttributes(){var newContent=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};newContent.idHash=attributes.idHash;attributes=newContent;},getDiff:function getDiff(dataSource){var dataStoreEntity=this.dataSources[dataSource.name];var dataStoreObject=dataStoreEntity.toObject();var keys=_(attributes).keys().concat(_.keys(dataStoreObject)).uniq().difference(['idHash']).value();var values=_(keys).filter(function(key){return attributes[key]!==dataStoreObject[key];}).map(function(key){return attributes[key];}).value();var diff=_.zipObject(keys,values);return diff;}};// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
+				 */validate:function validate(){var validationErrors=Diaspora.check(attributes,modelDesc.attributes);if(!_.isEmpty(validationErrors)){throw new EntityValidationError(validationErrors,'Validation failed');}},/**
+				 * Remove all editable properties & replace them with provided object.
+				 *
+				 * @memberof EntityFactory.Entity
+				 * @instance
+				 * @author gerkin
+				 * @param   {Object} [newContent={}] - Replacement content.
+				 * @returns {EntityFactory.Entity} Returns `this`.
+				 */replaceAttributes:function replaceAttributes(){var newContent=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};newContent.idHash=attributes.idHash;attributes=newContent;return this;},/**
+				 * Generate a diff update query by checking deltas with last source interaction.
+				 *
+				 * @memberof EntityFactory.Entity
+				 * @instance
+				 * @author gerkin
+				 * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
+				 * @returns {Object} Diff query.
+				 */getDiff:function getDiff(dataSource){var dataStoreEntity=this.dataSources[dataSource.name];var dataStoreObject=dataStoreEntity.toObject();var keys=_(attributes).keys().concat(_.keys(dataStoreObject)).uniq().difference(['idHash']).value();var values=_(keys).filter(function(key){return attributes[key]!==dataStoreObject[key];}).map(function(key){return attributes[key];}).value();var diff=_.zipObject(keys,values);return diff;}};// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 if(source instanceof DataStoreEntity){state='sync';lastDataSource=source.dataSource.name;dataSources[lastDataSource]=source;source=_.omit(source.toObject(),['id']);}// Check keys provided in source
-var sourceKeys=_.keys(source);var sourceDModel=_.difference(source,modelAttrsKeys);if(0!==sourceDModel.length){// Later, add a criteria for schemaless models
+var sourceDModel=_.difference(source,modelAttrsKeys);if(0!==sourceDModel.length){// Later, add a criteria for schemaless models
 throw new Error("Source has unknown keys: "+JSON.stringify(sourceDModel)+" in "+JSON.stringify(source));}// Now we know that the source is valid. First, deeply clone to detach object values from entity
 var attributes=_.cloneDeep(source);// Free the source
 source=null;// Default model attributes with our model desc
@@ -1237,7 +1247,12 @@ Set.checkEntitiesFromModel(entities.value(),model);var defined=Utils.defineEnume
 	 * @author gerkin
 	 * @param   {Object} newData - Attributes to change in each entity of the collection.
 	 * @returns {Collection} `this`.
-	 */},{key:"update",value:function update(newData){this.entities.forEach(function(entity){_.forEach(newData,function(val,key){if(_.isUndefined(val)){delete entity[key];}else{entity[key]=val;}});});return this;}},{key:"toObject",value:function toObject(){return this.entities.map(function(entity){return entity.toObject();});}}],[{key:"checkEntitiesFromModel",value:function checkEntitiesFromModel(entities,model){entities.forEach(function(entity,index){if(entity.constructor.model!==model){throw new TypeError("Provided entity n\xB0"+index+" "+entity+" is not from model "+model+" ("+model.modelName+")");}});}}]);return Set;}();module.exports=Set;},{"./dependencies":9,"./errors/setValidationError":15,"./utils":18}],18:[function(require,module,exports){'use strict';var _require10=require('./dependencies'),_=_require10._;module.exports={defineEnumerableProperties:function defineEnumerableProperties(subject,handlers){var remappedHandlers=_.mapValues(handlers,function(handler){if(_.isNil(handler)||'object'!==(typeof handler==="undefined"?"undefined":_typeof(handler))||Object.getPrototypeOf(handler)!==Object.prototype){handler={value:handler};}var defaults={enumerable:true};if(!handler.hasOwnProperty('get')){defaults.writable=false;}_.defaults(handler,defaults);return handler;});return Object.defineProperties(subject,remappedHandlers);}};},{"./dependencies":9}],19:[function(require,module,exports){(function(process,global){/* @preserve
+	 */},{key:"update",value:function update(newData){this.entities.forEach(function(entity){_.forEach(newData,function(val,key){if(_.isUndefined(val)){delete entity[key];}else{entity[key]=val;}});});return this;}/**
+	 * Returns a POJO representation of this set's data.
+	 *
+	 * @author gerkin
+	 * @returns {Object} POJO representation of set & children.
+	 */},{key:"toObject",value:function toObject(){return this.entities.map(function(entity){return entity.toObject();});}}],[{key:"checkEntitiesFromModel",value:function checkEntitiesFromModel(entities,model){entities.forEach(function(entity,index){if(entity.constructor.model!==model){throw new TypeError("Provided entity n\xB0"+index+" "+entity+" is not from model "+model+" ("+model.modelName+")");}});}}]);return Set;}();module.exports=Set;},{"./dependencies":9,"./errors/setValidationError":15,"./utils":18}],18:[function(require,module,exports){'use strict';var _require10=require('./dependencies'),_=_require10._;module.exports={defineEnumerableProperties:function defineEnumerableProperties(subject,handlers){var remappedHandlers=_.mapValues(handlers,function(handler){if(_.isNil(handler)||'object'!==(typeof handler==="undefined"?"undefined":_typeof(handler))||Object.getPrototypeOf(handler)!==Object.prototype){handler={value:handler};}var defaults={enumerable:true};if(!handler.hasOwnProperty('get')){defaults.writable=false;}_.defaults(handler,defaults);return handler;});return Object.defineProperties(subject,remappedHandlers);}};},{"./dependencies":9}],19:[function(require,module,exports){(function(process,global){/* @preserve
  * The MIT License (MIT)
  * 
  * Copyright (c) 2013-2017 Petka Antonov
@@ -10838,16 +10853,16 @@ process.versions={};function noop(){}process.on=noop;process.addListener=noop;pr
  * @memberof SequentialEvent
  * @author Gerkin
  * @inner
- */var _marked=/*#__PURE__*/regeneratorRuntime.mark(getNextPromise);var emitHandlers=function emitHandlers(handlers,object,args){// Check if the provided handler is a single function or an array of functions
-if('function'===typeof handlers){return emitHandler(handlers,object,args);}else{var i=0;var handlersLength=handlers.length;var iterator=getNextPromise(handlers,object,args);var sourcePromise=new Promise(function(resolve,reject){var ret=iterator.next();if(!ret.done){ret.value.then();}console.log({ret:ret});});return sourcePromise;}};/**
- * Generate next promise for sequence.
- *
- * @param   {Any} prevResolve - Event chain resolved value.
- * @returns {undefined} This function does not return anything.
- * @memberof SequentialEvent
- * @author Gerkin
- * @inner
- */function getNextPromise(handlers,object,args){var lastPromiseRet,i,handlersLength,stepArgs,newPromise;return regeneratorRuntime.wrap(function getNextPromise$(_context){while(1){switch(_context.prev=_context.next){case 0:lastPromiseRet=void 0;i=0;handlersLength=handlers.length;case 3:if(!(i<handlersLength)){_context.next=12;break;}console.log("Yielding for i="+i);stepArgs='undefined'!==typeof lastPromiseRet?args.concat([lastPromiseRet]):args.slice(0);newPromise=emitHandler(handlers[i],object,stepArgs);i++;_context.next=10;return newPromise.then(function(ret){lastPromiseRet=ret;});case 10:_context.next=3;break;case 12:return _context.abrupt("return",Promise.resolve(lastPromiseRet));case 13:case"end":return _context.stop();}}},_marked,this);}/**
+ */var emitHandlers=function emitHandlers(handlers,object,args){// Check if the provided handler is a single function or an array of functions
+if('function'===typeof handlers){return emitHandler(handlers,object,args);}else{var i=0;var handlersLength=handlers.length;var sourcePromise=new Promise(function(resolve,reject){/**
+			 * Generate next promise for sequence.
+			 *
+			 * @param   {Any} prevResolve - Event chain resolved value.
+			 * @returns {undefined} This function does not return anything.
+			 * @memberof SequentialEvent
+			 * @author Gerkin
+			 * @inner
+			 */var getNextPromise=function getNextPromise(prevResolve){if(i<handlersLength){var stepArgs='undefined'!==typeof prevResolve?args.concat([prevResolve]):args.slice(0);var newPromise=emitHandler(handlers[i],object,stepArgs);newPromise.then(getNextPromise).catch(reject);i++;}else{return resolve.call(null,prevResolve);}};getNextPromise();});return sourcePromise;}};/**
  * Handle execution of a single handler.
  *
  * @param   {Function}        handler - Function to execute. It may return a Promise.

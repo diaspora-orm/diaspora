@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-10-30 01:39:01
+* Isolated build compiled on 2017-10-30 03:01:21
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -2393,7 +2393,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							/**
         * Returns a copy of this entity attributes.
         *
-        * @method toObject
         * @memberof EntityFactory.Entity
         * @instance
         * @author gerkin
@@ -2420,7 +2419,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							/**
         * Save this entity in specified data source.
         *
-        * @method persist
         * @memberof EntityFactory.Entity
         * @instance
         * @fires EntityFactory.Entity#beforeUpdate
@@ -2490,7 +2488,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							/**
         * Reload this entity from specified data source.
         *
-        * @method fetch
         * @memberof EntityFactory.Entity
         * @instance
         * @fires EntityFactory.Entity#beforeFind
@@ -2543,7 +2540,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							/**
         * Delete this entity from the specified data source.
         *
-        * @method destroy
         * @memberof EntityFactory.Entity
         * @instance
         * @fires EntityFactory.Entity#beforeDelete
@@ -2630,7 +2626,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							/**
         * Generate the query to get this unique entity in the desired data source.
         *
-        * @method uidQuery
         * @memberof EntityFactory.Entity
         * @instance
         * @author gerkin
@@ -2646,7 +2641,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							/**
         * Return the table of this entity in the specified data source.
         *
-        * @method table
         * @memberof EntityFactory.Entity
         * @instance
         * @author gerkin
@@ -2673,12 +2667,33 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 									throw new EntityValidationError(validationErrors, 'Validation failed');
 								}
 							},
+
+							/**
+        * Remove all editable properties & replace them with provided object.
+        *
+        * @memberof EntityFactory.Entity
+        * @instance
+        * @author gerkin
+        * @param   {Object} [newContent={}] - Replacement content.
+        * @returns {EntityFactory.Entity} Returns `this`.
+        */
 							replaceAttributes: function replaceAttributes() {
 								var newContent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 								newContent.idHash = attributes.idHash;
 								attributes = newContent;
+								return this;
 							},
+
+							/**
+        * Generate a diff update query by checking deltas with last source interaction.
+        *
+        * @memberof EntityFactory.Entity
+        * @instance
+        * @author gerkin
+        * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
+        * @returns {Object} Diff query.
+        */
 							getDiff: function getDiff(dataSource) {
 								var dataStoreEntity = this.dataSources[dataSource.name];
 								var dataStoreObject = dataStoreEntity.toObject();
@@ -2702,7 +2717,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							source = _.omit(source.toObject(), ['id']);
 						}
 						// Check keys provided in source
-						var sourceKeys = _.keys(source);
 						var sourceDModel = _.difference(source, modelAttrsKeys);
 						if (0 !== sourceDModel.length) {
 							// Later, add a criteria for schemaless models
@@ -3683,6 +3697,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						});
 						return this;
 					}
+
+					/**
+      * Returns a POJO representation of this set's data.
+      *
+      * @author gerkin
+      * @returns {Object} POJO representation of set & children.
+      */
+
 				}, {
 					key: "toObject",
 					value: function toObject() {

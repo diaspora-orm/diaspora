@@ -2070,7 +2070,6 @@ function EntityFactory( name, modelDesc, model ) {
 				/**
 				 * Returns a copy of this entity attributes.
 				 *
-				 * @method toObject
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
@@ -2097,7 +2096,6 @@ function EntityFactory( name, modelDesc, model ) {
 				/**
 				 * Save this entity in specified data source.
 				 *
-				 * @method persist
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @fires EntityFactory.Entity#beforeUpdate
@@ -2162,7 +2160,6 @@ function EntityFactory( name, modelDesc, model ) {
 				/**
 				 * Reload this entity from specified data source.
 				 *
-				 * @method fetch
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @fires EntityFactory.Entity#beforeFind
@@ -2208,7 +2205,6 @@ function EntityFactory( name, modelDesc, model ) {
 				/**
 				 * Delete this entity from the specified data source.
 				 *
-				 * @method destroy
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @fires EntityFactory.Entity#beforeDelete
@@ -2288,7 +2284,6 @@ function EntityFactory( name, modelDesc, model ) {
 				/**
 				 * Generate the query to get this unique entity in the desired data source.
 				 *
-				 * @method uidQuery
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
@@ -2303,7 +2298,6 @@ function EntityFactory( name, modelDesc, model ) {
 				/**
 				 * Return the table of this entity in the specified data source.
 				 *
-				 * @method table
 				 * @memberof EntityFactory.Entity
 				 * @instance
 				 * @author gerkin
@@ -2329,12 +2323,29 @@ function EntityFactory( name, modelDesc, model ) {
 						throw new EntityValidationError( validationErrors, 'Validation failed' );
 					}
 				},
-
+				/**
+				 * Remove all editable properties & replace them with provided object.
+				 *
+				 * @memberof EntityFactory.Entity
+				 * @instance
+				 * @author gerkin
+				 * @param   {Object} [newContent={}] - Replacement content.
+				 * @returns {EntityFactory.Entity} Returns `this`.
+				 */
 				replaceAttributes( newContent = {}) {
 					newContent.idHash = attributes.idHash;
 					attributes = newContent;
+					return this;
 				},
-
+				/**
+				 * Generate a diff update query by checking deltas with last source interaction.
+				 *
+				 * @memberof EntityFactory.Entity
+				 * @instance
+				 * @author gerkin
+				 * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
+				 * @returns {Object} Diff query.
+				 */
 				getDiff( dataSource ) {
 					const dataStoreEntity = this.dataSources[dataSource.name];
 					const dataStoreObject = dataStoreEntity.toObject();
@@ -2358,7 +2369,6 @@ function EntityFactory( name, modelDesc, model ) {
 				source = _.omit( source.toObject(), [ 'id' ]);
 			}
 			// Check keys provided in source
-			const sourceKeys = _.keys( source );
 			const sourceDModel = _.difference( source, modelAttrsKeys );
 			if ( 0 !== sourceDModel.length ) { // Later, add a criteria for schemaless models
 				throw new Error( `Source has unknown keys: ${ JSON.stringify( sourceDModel ) } in ${ JSON.stringify( source ) }` );
@@ -3141,6 +3151,12 @@ class Set {
 		return this;
 	}
 	
+	/**
+	 * Returns a POJO representation of this set's data.
+	 *
+	 * @author gerkin
+	 * @returns {Object} POJO representation of set & children.
+	 */
 	toObject() {
 		return this.entities.map( entity => entity.toObject());
 	}
@@ -26107,44 +26123,31 @@ const emitHandlers = ( handlers, object, args ) => {
 		let i = 0;
 		const handlersLength = handlers.length;
 
-		const iterator = getNextPromise( handlers, object, args );
 		const sourcePromise = new Promise(( resolve, reject ) => {
-			const ret = iterator.next();
-			if ( !ret.done ) {
-				ret.value.then();
-			}
-			console.log({
-				ret,
-			});
+			/**
+			 * Generate next promise for sequence.
+			 *
+			 * @param   {Any} prevResolve - Event chain resolved value.
+			 * @returns {undefined} This function does not return anything.
+			 * @memberof SequentialEvent
+			 * @author Gerkin
+			 * @inner
+			 */
+			const getNextPromise = prevResolve => {
+				if ( i < handlersLength ) {
+					const stepArgs = 'undefined' !== typeof prevResolve ? args.concat([ prevResolve ]) : args.slice( 0 );
+					const newPromise = emitHandler( handlers[i], object, stepArgs );
+					newPromise.then( getNextPromise ).catch( reject );
+					i++;
+				} else {
+					return resolve.call( null, prevResolve );
+				}
+			};
+			getNextPromise();
 		});
 		return sourcePromise;
 	}
 };
-
-/**
- * Generate next promise for sequence.
- *
- * @param   {Any} prevResolve - Event chain resolved value.
- * @returns {undefined} This function does not return anything.
- * @memberof SequentialEvent
- * @author Gerkin
- * @inner
- */
-function* getNextPromise( handlers, object, args ) {
-	let lastPromiseRet;
-	let i = 0;
-	const handlersLength = handlers.length;
-	while ( i < handlersLength ) {
-		console.log( `Yielding for i=${ i }` );
-		const stepArgs = 'undefined' !== typeof lastPromiseRet ? args.concat([ lastPromiseRet ]) : args.slice( 0 );
-		const newPromise = emitHandler( handlers[i], object, stepArgs );
-		i++;
-		yield newPromise.then( ret => {
-			lastPromiseRet = ret; 
-		});
-	}
-	return Promise.resolve( lastPromiseRet );
-}
 
 /**
  * Handle execution of a single handler.
