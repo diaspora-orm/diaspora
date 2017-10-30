@@ -1,4 +1,5 @@
 ---
+version: "2"
 engines:
   duplication:
     enabled: true
@@ -20,7 +21,15 @@ checks:
   method-complexity:
     config:
       threshold: 10
-exclude_paths:
-- "./*"
-- "!lib/"
-- "!diaspora.js"
+exclude_patterns:
+- "dist/"
+- "build/"
+- "node_modules/"
+- "test/"
+- "doc/"
+- "Gruntfile.js"
+- "LICENSE"
+- "*.md"
+- "*.json"
+- "CHANGELOG"
+- "script/"

@@ -28,7 +28,7 @@
 		"func-names": ["error", "always"],
 		"func-name-matching": ["error", "always"],
 		"keyword-spacing": ["error", { "before": true, "after": true }],
-		"new-parens": "error",	
+		"new-parens": "error",
 		"object-curly-newline": ["error", { "multiline": true, "consistent": true, "minProperties": 2 }],
 		"space-in-parens": ["error", "always", {"exceptions": ["{}", "[]", "()", "empty"]}],
 		"space-before-function-paren": ["error", "never"],
