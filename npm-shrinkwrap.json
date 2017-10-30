@@ -120,7 +120,7 @@
     "ansi-styles": {
       "version": "3.2.0",
       "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-3.2.0.tgz",
-      "integrity": "sha512-NnSOmMEYtVR2JVMIGTzynRkkaxtiq1xnFBcdQD/DnNCYPoEPsVJhM98BDyaoNOQIi7p4okdi3E27eN7GQbsUug==",
+      "integrity": "sha1-wVm41b4PnlpvNG2rlPFs4CIWG4g=",
       "dev": true,
       "requires": {
         "color-convert": "1.9.0"
@@ -7569,9 +7569,9 @@
       "dev": true
     },
     "sequential-event": {
-      "version": "0.2.0",
-      "resolved": "https://registry.npmjs.org/sequential-event/-/sequential-event-0.2.0.tgz",
-      "integrity": "sha1-Vk0Jarcb29tl5tuybk07Fv+gm/8="
+      "version": "0.3.1",
+      "resolved": "https://registry.npmjs.org/sequential-event/-/sequential-event-0.3.1.tgz",
+      "integrity": "sha512-2IGcCpP3VXH5heovX53BgjmI/t7G9MmEjr9AdVSRaLQHdvl5omPvZKqgTUbaBTzcLpk+oYludAZgA8jPk1nHzQ=="
     },
     "set-immediate-shim": {
       "version": "1.0.1",
