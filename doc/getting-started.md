@@ -95,7 +95,7 @@ Data sources are named reference to a single way to get datas. You may then have
 
 Basic syntax to declare a data source is like bellow:
 {% highlight javascript %}
-Diaspora.createNamedDataSource( 'myDataSource', 'in-memory', {} );
+Diaspora.createNamedDataSource( 'myDataSource', 'inMemory', {} );
 {% endhighlight %}
 
 <div class="note">
