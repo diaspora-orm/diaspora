@@ -20,14 +20,6 @@ checks:
     config:
       threshold: 10
 exclude_paths:
-- "dist/"
-- "build/"
-- "node_modules/"
-- "test/"
-- "doc/"
-- "script/"
-- "Gruntfile.js"
-- "LICENSE"
-- "CHANGELOG"
-- "*.md"
-- "*.json"
+- "*"
+- "!lib/"
+- "!diaspora.js"
