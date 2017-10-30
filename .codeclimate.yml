@@ -27,6 +27,7 @@ exclude_patterns:
 - "node_modules/"
 - "test/"
 - "doc/"
+- "!doc/**/*.md"
 - "Gruntfile.js"
 - "LICENSE"
 - "*.md"
