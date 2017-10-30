@@ -51,7 +51,7 @@
 		"babel-preset-env": "^1.6.0",
 		"chai": "^4.1.2",
 		"chai-as-promised": "^7.1.1",
-		"chalk": "^2.1.0",
+		"chalk": "^2.3.0",
 		"check-types": "^7.3.0",
 		"diaspora_doc": "git+https://github.com/GerkinDev/DiasporaDoc.git",
 		"eslint-plugin-jsdoc": "^3.1.3",
