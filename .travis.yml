@@ -25,7 +25,7 @@ matrix:
       env: SAUCE=no
 env: 
   global:
-    - CC_TEST_REPORTER_ID=e00124e8f2903d430a05bc524e8003e8282f00684b3d0040dd12000172834ab9
+    - CC_TEST_REPORTER_ID=564670983f32d7a463933ac3c57feb952d7c5a42cdbb9b22bf2939a7b6dbccd7
     - SAUCE_USERNAME=Gerkin
     - SAUCE_ACCESS_KEY=bcc962ee-af76-4e36-bf15-ce3cbbbb5b8c
 notifications:

@@ -7,14 +7,14 @@
 > Below status reflect the last development commit status. Releases require all tests to pass successfully
 
 Fancy badges:
-[![Build Status](https://travis-ci.org/GerkinDev/Diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/Diaspora)
-[![Dependency Status](https://gemnasium.com/badges/github.com/GerkinDev/Diaspora.svg)](https://gemnasium.com/github.com/GerkinDev/Diaspora)
-[![Maintainability](https://api.codeclimate.com/v1/badges/6fdd8d23491248afccb9/maintainability)](https://codeclimate.com/github/GerkinDev/Diaspora/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/6fdd8d23491248afccb9/test_coverage)](https://codeclimate.com/github/GerkinDev/Diaspora/test_coverage)
+[![Build Status](https://travis-ci.org/GerkinDev/diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/diaspora)
+[![Dependency Status](https://gemnasium.com/badges/github.com/GerkinDev/diaspora.svg)](https://gemnasium.com/github.com/GerkinDev/diaspora)
+[![Maintainability](https://api.codeclimate.com/v1/badges/52711a7a66f99c4b37ce/maintainability)](https://codeclimate.com/github/GerkinDev/diaspora/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/52711a7a66f99c4b37ce/test_coverage)](https://codeclimate.com/github/GerkinDev/diaspora/test_coverage)
 [![npm](https://img.shields.io/npm/dm/diaspora.svg)](https://npmjs.org/package/diaspora)
 [![npm version](https://badge.fury.io/js/diaspora.svg)](https://badge.fury.io/js/diaspora)
-[![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)
-[![license](https://img.shields.io/github/license/GerkinDev/Diaspora.svg)](https://github.com/GerkinDev/Diaspora)
+[![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora)
+[![license](https://img.shields.io/github/license/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora)
 [![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
 
 ## Documentation & important notes
