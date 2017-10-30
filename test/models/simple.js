@@ -40,7 +40,7 @@ it( 'Should be able to create multiple entities.', () => {
 		},
 		undefined,
 	];
-	const entities = testModel.spawnMulti( objects );
+	const entities = testModel.spawnMany( objects );
 	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
 });
 describe( 'Should be able to use model methods to find, update, delete & create', () => {
@@ -258,7 +258,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 		return testModel.find( object ).then( entity => {
 			expect( entity ).to.respondTo( 'fetch' );
 			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
-			entity.foo = 'baz';
+			entity.attributes.foo = 'baz';
 			expect( entity ).to.be.an.entity( testModel, {
 				foo: 'baz',
 			}, SOURCE );

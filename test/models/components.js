@@ -20,7 +20,7 @@ it( 'Should create a model', () => {
 		expect( testModel.constructor.name ).to.be.eql( 'Model' );
 	}
 	testEntity = testModel.spawn({});
-	testSet = testModel.spawnMulti([{}, {}]);
+	testSet = testModel.spawnMany([{}, {}]);
 });
 const randomTimeout = ( time ) => {
 	//return Promise.resolve();

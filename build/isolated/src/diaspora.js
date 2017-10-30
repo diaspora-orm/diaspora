@@ -718,339 +718,6 @@ module.exports = DiasporaAdapter;
 const {
 	_, Promise,
 } = require( '../dependencies' );
-const DiasporaAdapter = require( './baseAdapter.js' );
-const BrowserStorageEntity = require( '../dataStoreEntities/browserStorageEntity.js' );
-
-/**
- * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
- * 
- * @extends Adapters.DiasporaAdapter
- * @memberof Adapters
- */
-class BrowserStorageDiasporaAdapter extends DiasporaAdapter {
-	/**
-	 * Create a new instance of local storage adapter.
-	 * 
-	 * @author gerkin
-	 * @param {Object}  config                 - Configuration object.
-	 * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
-	 */
-	constructor( config ) {
-		/**
-		 * Link to the BrowserStorageEntity.
-		 * 
-		 * @name classEntity
-		 * @type {DataStoreEntities.BrowserStorageEntity}
-		 * @memberof Adapters.BrowserStorageDiasporaAdapter
-		 * @instance
-		 * @author Gerkin
-		 */
-		super( BrowserStorageEntity );
-		_.defaults( config, {
-			session: false,
-		});
-		this.state = 'ready';
-		/**
-		 * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
-		 * 
-		 * @type {Storage}
-		 * @author Gerkin
-		 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
-		 * @see {@link Adapters.BrowserStorageDiasporaAdapter}:config.session parameter.
-		 */
-		this.source = ( true === config.session ? global.sessionStorage : global.localStorage );
-	}
-
-	/**
-	 * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
-	 * 
-	 * @author gerkin
-	 * @param {string} tableName - Name of the table (usually, model name).
-	 * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
-	 * @returns {undefined} This function does not return anything.
-	 */
-	configureCollection( tableName, remaps ) {
-		super.configureCollection( tableName, remaps );
-		this.ensureCollectionExists( tableName );
-	}
-
-	// -----
-	// ### Utils
-
-	/**
-	 * Create a new unique id for this store's entity.
-	 * 
-	 * @author gerkin
-	 * @returns {string} Generated unique id.
-	 */
-	generateUUID() {
-		let d = new Date().getTime();
-		if ( global.performance && 'function' === typeof global.performance.now ) {
-			d += global.performance.now(); //use high-precision timer if available
-		}
-		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
-			const r = ( d + Math.random() * 16 ) % 16 | 0;
-			d = Math.floor( d / 16 );
-			return ( 'x' === c ? r : ( r & 0x3 | 0x8 )).toString( 16 );
-		});
-		return uuid;
-	}
-
-	/**
-	 * Create the table key if it does not exist.
-	 * 
-	 * @author gerkin
-	 * @param   {string} table - Name of the table.
-	 * @returns {string[]} Index of the collection.
-	 */
-	ensureCollectionExists( table ) {
-		let index = this.source.getItem( table );
-		if ( _.isNil( index )) {
-			index = [];
-			this.source.setItem( table, JSON.stringify( index ));
-		} else {
-			index = JSON.parse( index );
-		}
-		return index;
-	}
-
-	/**
-	 * Reduce, offset or sort provided set.
-	 * 
-	 * @author gerkin
-	 * @param   {Object[]} set     - Objects retrieved from memory store.
-	 * @param   {Object}   options - Options to apply to the set.
-	 * @returns {Object[]} Set with options applied.
-	 */
-	static applyOptionsToSet( set, options ) {
-		_.defaults( options, {
-			limit: Infinity,
-			skip:  0,
-		});
-		set = set.slice( options.skip );
-		if ( set.length > options.limit ) {
-			set = set.slice( 0, options.limit );
-		}
-		return set;
-	}
-
-	/**
-	 * Deduce the item name from table name and item ID.
-	 * 
-	 * @author gerkin
-	 * @param   {string} table - Name of the table to construct name for.
-	 * @param   {string} id    - Id of the item to find.
-	 * @returns {string} Name of the item.
-	 */
-	getItemName( table, id ) {
-		return `${ table }.id=${ id }`;
-	}
-
-	// -----
-	// ### Insert
-
-	/**
-	 * Insert a single entity in the local storage.
-	 * 
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string} table  - Name of the table to insert data in.
-	 * @param   {Object} entity - Hash representing the entity to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
-	 */
-	insertOne( table, entity ) {
-		entity = _.cloneDeep( entity || {});
-		entity.id = this.generateUUID();
-		this.setIdHash( entity );
-		try {
-			const tableIndex = this.ensureCollectionExists( table );
-			tableIndex.push( entity.id );
-			this.source.setItem( table, JSON.stringify( tableIndex ));
-			this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
-		} catch ( error ) {
-			return Promise.reject( error );
-		}
-		return Promise.resolve( new this.classEntity( entity, this ));
-	}
-
-	/**
-	 * Insert several entities in the local storage.
-	 * 
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}   table    - Name of the table to insert data in.
-	 * @param   {Object[]} entities - Array of hashes representing entities to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}[]* `entities`).
-	 */
-	insertMany( table, entities ) {
-		entities = _.cloneDeep( entities );
-		try {
-			const tableIndex = this.ensureCollectionExists( table );
-			entities = entities.map(( entity = {}) => {
-				entity.id = this.generateUUID();
-				this.setIdHash( entity );
-				tableIndex.push( entity.id );
-				this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
-				return new this.classEntity( entity, this );
-			});
-			this.source.setItem( table, JSON.stringify( tableIndex ));
-		} catch ( error ) {
-			return Promise.reject( error );
-		}
-		return Promise.resolve( entities );
-	}
-
-	// -----
-	// ### Find
-
-	/**
-	 * Find a single local storage entity using its id.
-	 * 
-	 * @author gerkin
-	 * @param   {string} table - Name of the collection to search entity in.
-	 * @param   {string} id    - Id of the entity to search.
-	 * @returns {DataStoreEntities.BrowserStorageEntity|undefined} Found entity, or undefined if not found.
-	 */
-	findOneById( table, id ) {
-		const item = this.source.getItem( this.getItemName( table, id ));
-		if ( !_.isNil( item )) {
-			return Promise.resolve( new this.classEntity( JSON.parse( item ), this ));
-		}
-		return Promise.resolve();
-	}
-
-	/**
-	 * Retrieve a single entity from the local storage.
-	 * 
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the model to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
-	 */
-	findOne( table, queryFind, options = {}) {
-		_.defaults( options, {
-			skip: 0,
-		});
-		if ( !_.isObject( queryFind )) {
-			return this.findOneById( table, queryFind );
-		} else if ( _.isEqual( _.keys( queryFind ), [ 'id' ]) && _.isEqual( _.keys( queryFind.id ), [ '$equal' ])) {
-			return this.findOneById( table, queryFind.id.$equal );
-		}
-		const items = this.ensureCollectionExists( table );
-		let returnedItem;
-		let matched = 0;
-		_.each( items, itemId => {
-			const item = JSON.parse( this.source.getItem( this.getItemName( table, itemId )));
-			if ( this.matchEntity( queryFind, item )) {
-				matched++;
-				// If we matched enough items
-				if ( matched > options.skip ) {
-					returnedItem = item;
-					return false;
-				}
-			}
-		});
-		return Promise.resolve( !_.isNil( returnedItem ) ? new this.classEntity( returnedItem, this ) : undefined );
-	}
-
-	// -----
-	// ### Update
-
-	/**
-	 * Update a single entity in the memory.
-	 * 
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to update data in.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {Object}                               update       - Object properties to set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
-	 */
-	updateOne( table, queryFind, update, options ) {
-		_.defaults( options, {
-			skip: 0,
-		});
-		return this.findOne( table, queryFind, options ).then( entity => {
-			if ( _.isNil( entity )) {
-				return Promise.resolve();
-			}
-			this.applyUpdateEntity( update, entity );
-			try {
-				this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
-				return Promise.resolve( entity );
-			} catch ( error ) {
-				return Promise.reject( error );
-			}
-		});
-	}
-
-	// -----
-	// ### Delete
-
-	/**
-	 * Delete a single entity from the local storage.
-	 * 
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*).
-	 */
-	deleteOne( table, queryFind, options = {}) {
-		return this.findOne( table, queryFind, options ).then( entityToDelete => {
-			try {
-				const tableIndex = this.ensureCollectionExists( table );
-				_.pull( tableIndex, entityToDelete.id );
-				this.source.setItem( table, JSON.stringify( tableIndex ));
-				this.source.removeItem( this.getItemName( table, entityToDelete.id ));
-			} catch ( error ) {
-				return Promise.reject( error );
-			}
-			return Promise.resolve();
-		});
-	}
-
-	/**
-	 * Delete several entities from the local storage.
-	 * 
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
-	 */
-	deleteMany( table, queryFind, options = {}) {
-		try {
-			return this.findMany( table, queryFind, options ).then( entitiesToDelete => {
-				const tableIndex = this.ensureCollectionExists( table );
-				_.pullAll( tableIndex, _.map( entitiesToDelete, 'id' ));
-				this.source.setItem( table, JSON.stringify( tableIndex ));
-				_.forEach( entitiesToDelete, entityToDelete => {
-					this.source.removeItem( this.getItemName( table, entityToDelete.id ));
-				});
-				return Promise.resolve();
-			});
-		} catch ( error ) {
-			return Promise.reject( error );
-		}
-	}
-}
-
-module.exports = BrowserStorageDiasporaAdapter;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../dataStoreEntities/browserStorageEntity.js":6,"../dependencies":8,"./baseAdapter.js":2}],4:[function(require,module,exports){
-(function (global){
-'use strict';
-
-const {
-	_, Promise,
-} = require( '../dependencies' );
 
 const DiasporaAdapter = require( './baseAdapter.js' );
 const InMemoryEntity = require( '../dataStoreEntities/inMemoryEntity.js' );
@@ -1320,7 +987,340 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 module.exports = InMemoryDiasporaAdapter;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../dataStoreEntities/inMemoryEntity.js":7,"../dependencies":8,"./baseAdapter.js":2}],5:[function(require,module,exports){
+},{"../dataStoreEntities/inMemoryEntity.js":6,"../dependencies":8,"./baseAdapter.js":2}],4:[function(require,module,exports){
+(function (global){
+'use strict';
+
+const {
+	_, Promise,
+} = require( '../dependencies' );
+const DiasporaAdapter = require( './baseAdapter.js' );
+const WebStorageEntity = require( '../dataStoreEntities/webStorageEntity.js' );
+
+/**
+ * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
+ * 
+ * @extends Adapters.DiasporaAdapter
+ * @memberof Adapters
+ */
+class WebStorageDiasporaAdapter extends DiasporaAdapter {
+	/**
+	 * Create a new instance of local storage adapter.
+	 * 
+	 * @author gerkin
+	 * @param {Object}  config                 - Configuration object.
+	 * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
+	 */
+	constructor( config ) {
+		/**
+		 * Link to the WebStorageEntity.
+		 * 
+		 * @name classEntity
+		 * @type {DataStoreEntities.WebStorageEntity}
+		 * @memberof Adapters.WebStorageDiasporaAdapter
+		 * @instance
+		 * @author Gerkin
+		 */
+		super( WebStorageEntity );
+		_.defaults( config, {
+			session: false,
+		});
+		this.state = 'ready';
+		/**
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
+		 * 
+		 * @type {Storage}
+		 * @author Gerkin
+		 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
+		 * @see {@link Adapters.WebStorageDiasporaAdapter}:config.session parameter.
+		 */
+		this.source = ( true === config.session ? global.sessionStorage : global.localStorage );
+	}
+
+	/**
+	 * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
+	 * 
+	 * @author gerkin
+	 * @param {string} tableName - Name of the table (usually, model name).
+	 * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
+	 * @returns {undefined} This function does not return anything.
+	 */
+	configureCollection( tableName, remaps ) {
+		super.configureCollection( tableName, remaps );
+		this.ensureCollectionExists( tableName );
+	}
+
+	// -----
+	// ### Utils
+
+	/**
+	 * Create a new unique id for this store's entity.
+	 * 
+	 * @author gerkin
+	 * @returns {string} Generated unique id.
+	 */
+	generateUUID() {
+		let d = new Date().getTime();
+		if ( global.performance && 'function' === typeof global.performance.now ) {
+			d += global.performance.now(); //use high-precision timer if available
+		}
+		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
+			const r = ( d + Math.random() * 16 ) % 16 | 0;
+			d = Math.floor( d / 16 );
+			return ( 'x' === c ? r : ( r & 0x3 | 0x8 )).toString( 16 );
+		});
+		return uuid;
+	}
+
+	/**
+	 * Create the table key if it does not exist.
+	 * 
+	 * @author gerkin
+	 * @param   {string} table - Name of the table.
+	 * @returns {string[]} Index of the collection.
+	 */
+	ensureCollectionExists( table ) {
+		let index = this.source.getItem( table );
+		if ( _.isNil( index )) {
+			index = [];
+			this.source.setItem( table, JSON.stringify( index ));
+		} else {
+			index = JSON.parse( index );
+		}
+		return index;
+	}
+
+	/**
+	 * Reduce, offset or sort provided set.
+	 * 
+	 * @author gerkin
+	 * @param   {Object[]} set     - Objects retrieved from memory store.
+	 * @param   {Object}   options - Options to apply to the set.
+	 * @returns {Object[]} Set with options applied.
+	 */
+	static applyOptionsToSet( set, options ) {
+		_.defaults( options, {
+			limit: Infinity,
+			skip:  0,
+		});
+		set = set.slice( options.skip );
+		if ( set.length > options.limit ) {
+			set = set.slice( 0, options.limit );
+		}
+		return set;
+	}
+
+	/**
+	 * Deduce the item name from table name and item ID.
+	 * 
+	 * @author gerkin
+	 * @param   {string} table - Name of the table to construct name for.
+	 * @param   {string} id    - Id of the item to find.
+	 * @returns {string} Name of the item.
+	 */
+	getItemName( table, id ) {
+		return `${ table }.id=${ id }`;
+	}
+
+	// -----
+	// ### Insert
+
+	/**
+	 * Insert a single entity in the local storage.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
+	 * @author gerkin
+	 * @param   {string} table  - Name of the table to insert data in.
+	 * @param   {Object} entity - Hash representing the entity to insert.
+	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
+	 */
+	insertOne( table, entity ) {
+		entity = _.cloneDeep( entity || {});
+		entity.id = this.generateUUID();
+		this.setIdHash( entity );
+		try {
+			const tableIndex = this.ensureCollectionExists( table );
+			tableIndex.push( entity.id );
+			this.source.setItem( table, JSON.stringify( tableIndex ));
+			this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
+		} catch ( error ) {
+			return Promise.reject( error );
+		}
+		return Promise.resolve( new this.classEntity( entity, this ));
+	}
+
+	/**
+	 * Insert several entities in the local storage.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
+	 * @author gerkin
+	 * @param   {string}   table    - Name of the table to insert data in.
+	 * @param   {Object[]} entities - Array of hashes representing entities to insert.
+	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.WebStorageEntity}[]* `entities`).
+	 */
+	insertMany( table, entities ) {
+		entities = _.cloneDeep( entities );
+		try {
+			const tableIndex = this.ensureCollectionExists( table );
+			entities = entities.map(( entity = {}) => {
+				entity.id = this.generateUUID();
+				this.setIdHash( entity );
+				tableIndex.push( entity.id );
+				this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
+				return new this.classEntity( entity, this );
+			});
+			this.source.setItem( table, JSON.stringify( tableIndex ));
+		} catch ( error ) {
+			return Promise.reject( error );
+		}
+		return Promise.resolve( entities );
+	}
+
+	// -----
+	// ### Find
+
+	/**
+	 * Find a single local storage entity using its id.
+	 * 
+	 * @author gerkin
+	 * @param   {string} table - Name of the collection to search entity in.
+	 * @param   {string} id    - Id of the entity to search.
+	 * @returns {DataStoreEntities.WebStorageEntity|undefined} Found entity, or undefined if not found.
+	 */
+	findOneById( table, id ) {
+		const item = this.source.getItem( this.getItemName( table, id ));
+		if ( !_.isNil( item )) {
+			return Promise.resolve( new this.classEntity( JSON.parse( item ), this ));
+		}
+		return Promise.resolve();
+	}
+
+	/**
+	 * Retrieve a single entity from the local storage.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the model to retrieve data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
+	 */
+	findOne( table, queryFind, options = {}) {
+		_.defaults( options, {
+			skip: 0,
+		});
+		if ( !_.isObject( queryFind )) {
+			return this.findOneById( table, queryFind );
+		} else if ( _.isEqual( _.keys( queryFind ), [ 'id' ]) && _.isEqual( _.keys( queryFind.id ), [ '$equal' ])) {
+			return this.findOneById( table, queryFind.id.$equal );
+		}
+		const items = this.ensureCollectionExists( table );
+		let returnedItem;
+		let matched = 0;
+		_.each( items, itemId => {
+			const item = JSON.parse( this.source.getItem( this.getItemName( table, itemId )));
+			if ( this.matchEntity( queryFind, item )) {
+				matched++;
+				// If we matched enough items
+				if ( matched > options.skip ) {
+					returnedItem = item;
+					return false;
+				}
+			}
+		});
+		return Promise.resolve( !_.isNil( returnedItem ) ? new this.classEntity( returnedItem, this ) : undefined );
+	}
+
+	// -----
+	// ### Update
+
+	/**
+	 * Update a single entity in the memory.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to update data in.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {Object}                               update       - Object properties to set.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
+	 */
+	updateOne( table, queryFind, update, options ) {
+		_.defaults( options, {
+			skip: 0,
+		});
+		return this.findOne( table, queryFind, options ).then( entity => {
+			if ( _.isNil( entity )) {
+				return Promise.resolve();
+			}
+			this.applyUpdateEntity( update, entity );
+			try {
+				this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
+				return Promise.resolve( entity );
+			} catch ( error ) {
+				return Promise.reject( error );
+			}
+		});
+	}
+
+	// -----
+	// ### Delete
+
+	/**
+	 * Delete a single entity from the local storage.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to delete data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*).
+	 */
+	deleteOne( table, queryFind, options = {}) {
+		return this.findOne( table, queryFind, options ).then( entityToDelete => {
+			try {
+				const tableIndex = this.ensureCollectionExists( table );
+				_.pull( tableIndex, entityToDelete.id );
+				this.source.setItem( table, JSON.stringify( tableIndex ));
+				this.source.removeItem( this.getItemName( table, entityToDelete.id ));
+			} catch ( error ) {
+				return Promise.reject( error );
+			}
+			return Promise.resolve();
+		});
+	}
+
+	/**
+	 * Delete several entities from the local storage.
+	 * 
+	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
+	 * @author gerkin
+	 * @param   {string}                               table        - Name of the table to delete data from.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
+	 */
+	deleteMany( table, queryFind, options = {}) {
+		try {
+			return this.findMany( table, queryFind, options ).then( entitiesToDelete => {
+				const tableIndex = this.ensureCollectionExists( table );
+				_.pullAll( tableIndex, _.map( entitiesToDelete, 'id' ));
+				this.source.setItem( table, JSON.stringify( tableIndex ));
+				_.forEach( entitiesToDelete, entityToDelete => {
+					this.source.removeItem( this.getItemName( table, entityToDelete.id ));
+				});
+				return Promise.resolve();
+			});
+		} catch ( error ) {
+			return Promise.reject( error );
+		}
+	}
+}
+
+module.exports = WebStorageDiasporaAdapter;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../dataStoreEntities/webStorageEntity.js":7,"../dependencies":8,"./baseAdapter.js":2}],5:[function(require,module,exports){
 'use strict';
 
 const {
@@ -1379,32 +1379,6 @@ module.exports = DataStoreEntity;
 const DataStoreEntity = require( './baseEntity.js' );
 
 /**
- * Entity stored in {@link Adapters.BrowserStorageDiasporaAdapter the local storage adapter}.
- * 
- * @extends DataStoreEntities.DataStoreEntity
- * @memberof DataStoreEntities
- */
-class BrowserStorageEntity extends DataStoreEntity {
-	/**
-	 * Construct a local storage entity with specified content & parent.
-	 * 
-	 * @author gerkin
-	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-	 */
-	constructor( entity, dataSource ) {
-		super( entity, dataSource );
-	}
-}
-
-module.exports = BrowserStorageEntity;
-
-},{"./baseEntity.js":5}],7:[function(require,module,exports){
-'use strict';
-
-const DataStoreEntity = require( './baseEntity.js' );
-
-/**
  * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
  * @extends DataStoreEntities.DataStoreEntity
  * @memberof DataStoreEntities
@@ -1423,6 +1397,32 @@ class InMemoryEntity extends DataStoreEntity {
 }
 
 module.exports = InMemoryEntity;
+
+},{"./baseEntity.js":5}],7:[function(require,module,exports){
+'use strict';
+
+const DataStoreEntity = require( './baseEntity.js' );
+
+/**
+ * Entity stored in {@link Adapters.WebStorageDiasporaAdapter the local storage adapter}.
+ * 
+ * @extends DataStoreEntities.DataStoreEntity
+ * @memberof DataStoreEntities
+ */
+class WebStorageEntity extends DataStoreEntity {
+	/**
+	 * Construct a local storage entity with specified content & parent.
+	 * 
+	 * @author gerkin
+	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
+	 */
+	constructor( entity, dataSource ) {
+		super( entity, dataSource );
+	}
+}
+
+module.exports = WebStorageEntity;
 
 },{"./baseEntity.js":5}],8:[function(require,module,exports){
 (function (global){
@@ -1831,14 +1831,14 @@ const Diaspora = {
 	 *
 	 * @author gerkin
 	 * @throws  {Error} Thrown if provided `adapter` label does not correspond to any adapter registered.
-	 * @param   {string} name         - Name associated with this datasource.
+	 * @param   {string} sourceName   - Name associated with this datasource.
 	 * @param   {string} adapterLabel - Label of the adapter used to create the data source.
-	 * @param   {Object} config       - Configuration hash. This configuration hash depends on the adapter we want to use.
+	 * @param   {Object} configHash   - Configuration hash. This configuration hash depends on the adapter we want to use.
 	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
 	 */
-	createNamedDataSource( name, adapterLabel, config ) {
-		const dataSource = Diaspora.createDataSource( adapterLabel, config );
-		Diaspora.registerDataSource( name, dataSource );
+	createNamedDataSource( sourceName, adapterLabel, configHash ) {
+		const dataSource = Diaspora.createDataSource( adapterLabel, configHash );
+		Diaspora.registerDataSource( sourceName, dataSource );
 	},
 
 	/**
@@ -1968,13 +1968,13 @@ Diaspora.components = {
 
 // Register available built-in adapters
 Diaspora.registerAdapter( 'inMemory', require( './adapters/inMemoryAdapter' ));
-// Register browserStorage only if in browser
+// Register webStorage only if in browser
 if ( process.browser ) {
-	Diaspora.registerAdapter( 'browserStorage', require( './adapters/browserStorageAdapter' ));
+	Diaspora.registerAdapter( 'webStorage', require( './adapters/webStorageAdapter' ));
 }
 
 }).call(this,require('_process'))
-},{"./adapters/baseAdapter":2,"./adapters/browserStorageAdapter":3,"./adapters/inMemoryAdapter":4,"./dataStoreEntities/baseEntity":5,"./dependencies":8,"./entityFactory":10,"./errors/entityStateError":11,"./errors/entityValidationError":12,"./errors/setValidationError":14,"./model":15,"./set":16,"_process":18,"winston":undefined}],10:[function(require,module,exports){
+},{"./adapters/baseAdapter":2,"./adapters/inMemoryAdapter":3,"./adapters/webStorageAdapter":4,"./dataStoreEntities/baseEntity":5,"./dependencies":8,"./entityFactory":10,"./errors/entityStateError":11,"./errors/entityValidationError":12,"./errors/setValidationError":14,"./model":15,"./set":16,"_process":18,"winston":undefined}],10:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2049,7 +2049,22 @@ function EntityFactory( name, modelDesc, model ) {
 				 * @returns {Object} Attributes of this entity.
 				 */
 				toObject: () => {
-					return _.omit( attributes, entityPrototypeProperties );
+					return attributes;
+				},
+				/**
+				 * TODO.
+				 *
+				 * @name dataSources
+				 * @readonly
+				 * @type {TODO}
+				 * @memberof EntityFactory.Entity
+				 * @instance
+				 * @author gerkin
+				 */
+				attributes: {
+					get() {
+						return attributes;
+					},
 				},
 				/**
 				 * Save this entity in specified data source.
@@ -2065,7 +2080,7 @@ function EntityFactory( name, modelDesc, model ) {
 				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
 				 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
 				 */
-				persist: ( sourceName, options = {}) => {
+				persist( sourceName, options = {}) {
 					_.defaults( options, {
 						skipEvents: false,
 					});
@@ -2097,7 +2112,7 @@ function EntityFactory( name, modelDesc, model ) {
 						if ( 'orphan' === beforeState ) {
 							return dataSource.insertOne( this.table( sourceName ), this.toObject());
 						} else {
-							return dataSource.updateOne( this.table( sourceName ), this.uidQuery( dataSource ), this.toObject());
+							return dataSource.updateOne( this.table( sourceName ), this.uidQuery( dataSource ), this.getDiff( dataSource ));
 						}
 					}).then( dataStoreEntity => {
 						if ( options.skipEvents ) {
@@ -2111,9 +2126,9 @@ function EntityFactory( name, modelDesc, model ) {
 						}
 					}).then( dataStoreEntity => {
 						state = 'sync';
-						entityDefined.dataSources[dataSource.name] = dataStoreEntity;
+						this.dataSources[dataSource.name] = dataStoreEntity;
 						attributes = dataStoreEntity.toObject();
-						return  Promise.resolve( entityProxied );
+						return  Promise.resolve( this );
 					});
 				},
 				/**
@@ -2130,7 +2145,7 @@ function EntityFactory( name, modelDesc, model ) {
 				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeFind` and `afterFind`.
 				 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
 				 */
-				fetch: ( sourceName, options = {}) => {
+				fetch( sourceName, options = {}) {
 					_.defaults( options, {
 						skipEvents: false,
 					});
@@ -2153,12 +2168,12 @@ function EntityFactory( name, modelDesc, model ) {
 						}
 					}).then( dataStoreEntity => {
 						state = 'sync';
-						entityDefined.dataSources[dataSource.name] = dataStoreEntity;
+						this.dataSources[dataSource.name] = dataStoreEntity;
 						attributes = dataStoreEntity.toObject();
 						if ( options.skipEvents ) {
-							return  Promise.resolve( entityProxied );
+							return  Promise.resolve( this );
 						} else {
-							return this.emit( 'afterFetch', sourceName ).then(() => Promise.resolve( entityProxied ));
+							return this.emit( 'afterFetch', sourceName ).then(() => Promise.resolve( this ));
 						}
 					});
 				},
@@ -2176,7 +2191,7 @@ function EntityFactory( name, modelDesc, model ) {
 				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeDelete` and `afterDelete`.
 				 * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`.
 				 */
-				destroy: ( sourceName, options = {}) => {
+				destroy( sourceName, options = {}) {
 					_.defaults( options, {
 						skipEvents: false,
 					});
@@ -2204,11 +2219,11 @@ function EntityFactory( name, modelDesc, model ) {
 							state = 'sync';
 							delete attributes.idHash[dataSource.name];
 						}
-						entityDefined.dataSources[dataSource.name] = undefined;
+						this.dataSources[dataSource.name] = undefined;
 						if ( options.skipEvents ) {
-							return  Promise.resolve( entityProxied );
+							return  Promise.resolve( this );
 						} else {
-							return this.emit( 'afterDestroy', sourceName ).then(() => Promise.resolve( entityProxied ));
+							return this.emit( 'afterDestroy', sourceName ).then(() => Promise.resolve( this ));
 						}
 					});
 				},
@@ -2286,8 +2301,26 @@ function EntityFactory( name, modelDesc, model ) {
 						throw new EntityValidationError( validationErrors, 'Validation failed' );
 					}
 				},
+
+				replaceAttributes( newContent = {}) {
+					newContent.idHash = attributes.idHash;
+					attributes = newContent;
+				},
+
+				getDiff( dataSource ) {
+					const dataStoreEntity = this.dataSources[dataSource.name];
+					const dataStoreObject = dataStoreEntity.toObject();
+					
+					const keys = _( attributes ).keys().concat( _.keys( dataStoreObject )).uniq().difference([ 'idHash' ]).value();
+					const values = _( keys ).filter( key => {
+						return attributes[key] !== dataStoreObject[key];
+					}).map( key => {
+						return attributes[key];
+					}).value();
+					const diff = _.zipObject( keys, values );
+					return diff;
+				},
 			};
-			const entityPrototypeProperties = _.keys( entityPrototype );
 
 			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 			if ( source instanceof DataStoreEntity ) {
@@ -2298,11 +2331,6 @@ function EntityFactory( name, modelDesc, model ) {
 			}
 			// Check keys provided in source
 			const sourceKeys = _.keys( source );
-			// Check if there is an intersection with reserved, and have differences with model attributes
-			const sourceUReserved = _.intersection( sourceKeys, entityPrototypeProperties );
-			if ( 0 !== sourceUReserved.length ) {
-				throw new Error( `Source has reserved keys: ${ JSON.stringify( sourceUReserved ) } in ${ JSON.stringify( source ) }` );
-			}
 			const sourceDModel = _.difference( source, modelAttrsKeys );
 			if ( 0 !== sourceDModel.length ) { // Later, add a criteria for schemaless models
 				throw new Error( `Source has unknown keys: ${ JSON.stringify( sourceDModel ) } in ${ JSON.stringify( source ) }` );
@@ -2324,35 +2352,8 @@ function EntityFactory( name, modelDesc, model ) {
 
 			// Define getters & setters
 			const entityDefined = Utils.defineEnumerableProperties( this, entityPrototype );
-			const entityProxied = new Proxy( entityDefined, {
-				get: ( obj, key ) => {
-					if ( 'constructor' === key ) {
-						return entityDefined[key];
-					}
-					if ( key in entityDefined ) {
-						return entityDefined[key];
-					}
-					return attributes[key];
-				},
-				set: ( obj, key, value ) => {
-					if ( key in entityDefined && !super.hasOwnProperty( key )) {
-						console.warn( `Trying to define read-only key ${ key }.` );
-						return value;
-					}
-					return attributes[key] = value;
-				},
-				enumerate: () => {
-					return _.keys( attributes );
-				},
-				ownKeys: () => {
-					return _( attributes ).keys().concat( entityPrototypeProperties ).value();
-				},
-				has: ( obj, key ) => {
-					return attributes.hasOwnProperty( key );
-				},
-			});
 
-			return entityProxied;
+			return entityDefined;
 		}
 	}
 	const EntityWrapped = Object.defineProperties( Entity, {
@@ -2726,7 +2727,7 @@ class Model {
 	 * @param   {Object[]} sources - Array of objects to copy attributes from.
 	 * @returns {Set} Set with new *orphan* entities.
 	 */
-	spawnMulti( sources ) {
+	spawnMany( sources ) {
 		return new Set( this, _.map( sources, source => this.spawn( source )));
 	}
 
@@ -3110,6 +3111,10 @@ class Set {
 			});
 		});
 		return this;
+	}
+	
+	toObject() {
+		return this.entities.map( entity => entity.toObject());
 	}
 }
 

@@ -25352,8 +25352,8 @@ chai.use( function chaiUse( _chai, utils ) {
 			}
 			if ( orphan ) {
 				expect( entity.lastDataSource, 'Orphans should not have a last data source' ).to.be.eql( null );
-				expect( entity, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
-				expect( entity, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
+				expect( entity.attributes, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
+				expect( entity.attributes, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
 			} else if ( null !== orphan ) {
 				if ( dataSource ) {
 					expect( entity.lastDataSource ).to.be.eql( dataSource );
@@ -25363,10 +25363,12 @@ chai.use( function chaiUse( _chai, utils ) {
 				const lds = entity.lastDataSource;
 				expect( entity.dataSources[lds], 'id should be a defined value on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'id' );
 				expect( entity.dataSources[lds], 'idHash should be a hash on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-				expect( entity, 'id should not be copied in model\'s value' ).to.be.an( 'object' ).that.have.not.property( 'id' );
-				expect( entity, 'idHash should be a hash on non-orphan model' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
+				expect( entity.attributes, 'id should not be copied in model\'s value' ).to.be.an( 'object' ).that.have.not.property( 'id' );
+				expect( entity.attributes, 'idHash should be a hash on non-orphan model' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
 			}
 			expect( entity ).to.respondTo( 'persist' );
+			expect( entity ).to.respondTo( 'fetch' );
+			expect( entity ).to.respondTo( 'destroy' );
 			expect( entity ).to.respondTo( 'toObject' );
 			const toObj = entity.toObject();
 			l.forEach( props, ( val, key ) => {
@@ -25971,7 +25973,7 @@ module.exports = require('./lib/sequential-event.js');
  * Handle execution of all handlers in sequence.
  *
  * @param   {Function|Function[]} handlers - Function(s) to execute. Each function may return a Promise.
- * @param   {EventEmitter}        object   - Objecto call event on.
+ * @param   {SequentialEvent}     object   - Objecto call event on.
  * @param   {Any[]}               [args]   - Arguments to pass to each called function.
  * @returns {Promise} Promise resolved once each function is executed.
  * @memberof SequentialEvent
@@ -25991,12 +25993,12 @@ const emitHandlers = ( handlers, object, args ) => {
 			 * Generate next promise for sequence.
 			 *
 			 * @param   {Any} prevResolve - Event chain resolved value.
-			 * @returns {undefined} *This function does not return anything*.
+			 * @returns {undefined} This function does not return anything.
 			 * @memberof SequentialEvent
 			 * @author Gerkin
 			 * @inner
 			 */
-			function getNextPromise( prevResolve ) {
+			const getNextPromise = prevResolve => {
 				if ( i < handlersLength ) {
 					const stepArgs = 'undefined' !== typeof prevResolve ? args.concat([ prevResolve ]) : args.slice( 0 );
 					const newPromise = emitHandler( handlers[i], object, stepArgs );
@@ -26005,7 +26007,7 @@ const emitHandlers = ( handlers, object, args ) => {
 				} else {
 					return resolve.call( null, prevResolve );
 				}
-			}
+			};
 			getNextPromise();
 		});
 		return sourcePromise;
@@ -26015,9 +26017,9 @@ const emitHandlers = ( handlers, object, args ) => {
 /**
  * Handle execution of a single handler.
  *
- * @param   {Function}     handler - Function to execute. It may return a Promise.
- * @param   {EventEmitter} object  - Object to call event on.
- * @param   {Any[]}        [args]  - Arguments to pass to each called function.
+ * @param   {Function}        handler - Function to execute. It may return a Promise.
+ * @param   {SequentialEvent} object  - Object to call event on.
+ * @param   {Any[]}           [args]  - Arguments to pass to each called function.
  * @returns {Promise} Promise resolved once this function is done.
  * @memberof SequentialEvent
  * @author Gerkin
@@ -26060,6 +26062,62 @@ const onceify = ( target, eventName, eventFn ) => {
 };
 
 /**
+ * Remove provided `callback` from listeners of event `eventCat`.
+ *
+ * @param   {Function[]} eventCat   - Array of listeners to remove callback from.
+ * @param   {Function}   [callback] - Callback to remove.
+ * @returns {undefined} This function does not returns anything.
+ * @memberof SequentialEvent
+ * @author Gerkin
+ * @inner
+ */
+const removeEventListener = ( eventCat, callback ) => {
+	const index = eventCat.indexOf( callback );
+	if ( index !== -1 ) {
+		eventCat.splice( index, 1 );
+	}
+};
+
+
+/**
+ * Add an event listener to the provided event hash.
+ *
+ * @param   {Object}   eventHash  - Hash of events of the object. It is usually retrieved from `object.__events`.
+ * @param   {string}   eventName  - Name of the event to add listener on.
+ * @param   {Function} [callback] - Callback to add.
+ * @returns {undefined} This function does not returns anything.
+ * @memberof SequentialEvent
+ * @author Gerkin
+ * @inner
+ */
+const addEventListener = ( eventHash, eventName, callback ) => {
+	eventHash[eventName] = eventHash[eventName] || [];
+	eventHash[eventName].push( callback );
+};
+
+/**
+ * Ensure that event & callback are on the associative hash format
+ *
+ * @param   {Object<string, Function>|string} events   - Events to cast in hash form.
+ * @param   {Function}                        callback - Function to associate with those events.
+ * @returns {Object<string, Function>} Events in hash format.
+ * @memberof SequentialEvent
+ * @author Gerkin
+ * @inner
+ */
+const castToEventObject = ( events, callback ) => {
+	if ( 'object' !== typeof events ) {
+		const eventsObj = {};
+		events.split( ' ' ).forEach( event => {
+			eventsObj[event] = callback;
+		});
+		return eventsObj;
+	} else {
+		return events;
+	}
+};
+
+/**
  * Event emitter that guarantees sequential execution of handlers. Each handler may return a **Promise**.
  *
  * @see {@link https://nodejs.org/api/events.html Node EventEmitter}.
@@ -26072,99 +26130,6 @@ class SequentialEvent {
 	 */
 	constructor() {
 		this.__events = {};
-	}
-
-	/**
-	 * Add one or many event handlers.
-	 *
-	 * @param   {string|Object} events     - Event name or hash of events.
-	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
-	 * @returns {SequentialEvent} `this`.
-	 */
-	on( events, callback ) {
-		const _events = this.__events;
-
-		if ( 'object' === typeof events ) {
-			for ( const event in events ) {
-				if ( events.hasOwnProperty( event )) {
-					_events[event] = _events[event] || [];
-					_events[event].push( events[event]);
-				}
-			}
-		} else {
-			events.split( ' ' ).forEach( event => {
-				_events[event] = _events[event] || [];
-				_events[event].push( callback );
-			}, this );
-		}
-
-		return this;
-	}
-
-	/**
-	 * Remove one or many or all event handlers.
-	 *
-	 * @param   {string|Object} [events]   - Event name or hash of events.
-	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
-	 * @returns {SequentialEvent} `this`.
-	 */
-	off( events, callback ) {
-		const _events = this.__events;
-
-		if ( 'object' === typeof events ) {
-			for ( const event in events ) {
-				if ( events.hasOwnProperty( event ) && ( event in _events )) {
-					var index = _events[event].indexOf( events[event]);
-					if ( index !== -1 ) {
-						_events[event].splice( index, 1 );
-					}
-				}
-			}
-		} else if ( events ) {
-			events.split( ' ' ).forEach( event => {
-				if ( event in _events ) {
-					if ( callback ) {
-						var index = _events[event].indexOf( callback );
-						if ( index !== -1 ) {
-							_events[event].splice( index, 1 );
-						}
-					} else {
-						_events[event].length = 0;
-					}
-				}
-			}, this );
-		} else {
-			this.__events = {};
-		}
-
-		return this;
-	}
-
-	/**
-	 * Add one or many event handlers that will be called only once.
-	 *
-	 * @param   {string|Object} events     - Event name or hash of events.
-	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
-	 * @returns {SequentialEvent} `this`.
-	 */
-	once( events, callback ) {
-		const _events = this.__events;
-
-		if ( 'object' === typeof events ) {
-			for ( const event in events ) {
-				if ( events.hasOwnProperty( event )) {
-					_events[event] = _events[event] || [];
-					_events[event].push( onceify( this, event, events[event]));
-				}
-			}
-		} else {
-			events.split( ' ' ).forEach( event => {
-				_events[event] = _events[event] || [];
-				_events[event].push( onceify( this, event, callback ));
-			}, this );
-		}
-
-		return this;
 	}
 
 	/**
@@ -26190,10 +26155,103 @@ class SequentialEvent {
 
 		return retPromise;
 	}
+
+	/**
+	 * Remove one or many or all event handlers.
+	 *
+	 * @param   {string|Object} [events]   - Event name or hash of events.
+	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
+	 * @returns {SequentialEvent} Returns `this`.
+	 */
+	off( events, callback ) {
+		const _events = this.__events;
+
+		if ( !events ) {
+			this.__events = {};
+			return this;
+		}
+
+		const eventsObj = castToEventObject( events, callback );
+		for ( const event in eventsObj ) {
+			if ( !eventsObj.hasOwnProperty( event )) {
+				continue;
+			}
+			if ( eventsObj[event]) {
+				removeEventListener( _events[event], eventsObj[event]);
+			} else {
+				_events[event] = [];
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Add one or many event handlers that will be called only once.
+	 *
+	 * @param   {string|Object} events     - Event name or hash of events.
+	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
+	 * @returns {SequentialEvent} Returns `this`.
+	 */
+	once( events, callback ) {
+		const _events = this.__events;
+
+		const eventsObj = castToEventObject( events, callback );
+		for ( const event in eventsObj ) {
+			if ( eventsObj.hasOwnProperty( event )) {
+				addEventListener( _events, event, onceify( this, event, eventsObj[event]));
+			}
+		}
+
+		return this;
+	}
+
+	/**
+	 * Add one or many event handlers.
+	 *
+	 * @param   {string|Object} events     - Event name or hash of events.
+	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
+	 * @returns {SequentialEvent} Returns `this`.
+	 */
+	on( events, callback ) {
+		const _events = this.__events;
+
+		const eventsObj = castToEventObject( events, callback );
+		for ( const event in eventsObj ) {
+			if ( eventsObj.hasOwnProperty( event )) {
+				addEventListener( _events, event, eventsObj[event]);
+			}
+		}
+
+		return this;
+	}
 }
 
 module.exports = SequentialEvent;
 
+},{}],"/test/adapters/inMemory.js":[function(require,module,exports){
+'use strict';
+
+const AdapterTestUtils = require( './utils' );
+const ADAPTER_LABEL = 'inMemory';
+
+AdapterTestUtils.createDataSource( ADAPTER_LABEL, {});
+AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'InMemory' );
+AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
+AdapterTestUtils.checkApplications( ADAPTER_LABEL );
+AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'inMemory' );
+
+},{"./utils":7}],"/test/adapters/index.js":[function(require,module,exports){
+(function (__dirname){
+'use strict';
+
+/* globals importTest: false, getStyle: false */
+
+importTest( getStyle( 'adapter', 'In Memory' ), `${ __dirname  }/inMemory.js` );
+if ( 'undefined' !== typeof window ) {
+	importTest( getStyle( 'adapter', 'Browser Storage' ), `${ __dirname  }/webStorage.js` );
+}
+
+}).call(this,"/test/adapters")
 },{}],"/test/adapters/webStorage.js":[function(require,module,exports){
 (function (global){
 'use strict';
@@ -26237,31 +26295,7 @@ if ( 'undefined' !== typeof window ) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./utils":7,"node-localstorage":undefined}],"/test/adapters/inMemory.js":[function(require,module,exports){
-'use strict';
-
-const AdapterTestUtils = require( './utils' );
-const ADAPTER_LABEL = 'inMemory';
-
-AdapterTestUtils.createDataSource( ADAPTER_LABEL, {});
-AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL, 'InMemory' );
-AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
-AdapterTestUtils.checkApplications( ADAPTER_LABEL );
-AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'inMemory' );
-
-},{"./utils":7}],"/test/adapters/index.js":[function(require,module,exports){
-(function (__dirname){
-'use strict';
-
-/* globals importTest: false, getStyle: false */
-
-importTest( getStyle( 'adapter', 'In Memory' ), `${ __dirname  }/inMemory.js` );
-if ( 'undefined' !== typeof window ) {
-	importTest( getStyle( 'adapter', 'Browser Storage' ), `${ __dirname  }/webStorage.js` );
-}
-
-}).call(this,"/test/adapters")
-},{}],"/test/models/components.js":[function(require,module,exports){
+},{"./utils":7,"node-localstorage":undefined}],"/test/models/components.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -26285,7 +26319,7 @@ it( 'Should create a model', () => {
 		expect( testModel.constructor.name ).to.be.eql( 'Model' );
 	}
 	testEntity = testModel.spawn({});
-	testSet = testModel.spawnMulti([{}, {}]);
+	testSet = testModel.spawnMany([{}, {}]);
 });
 const randomTimeout = ( time ) => {
 	//return Promise.resolve();
@@ -26639,7 +26673,7 @@ it( 'Should be able to create multiple entities.', () => {
 		},
 		undefined,
 	];
-	const entities = testModel.spawnMulti( objects );
+	const entities = testModel.spawnMany( objects );
 	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
 });
 describe( 'Should be able to use model methods to find, update, delete & create', () => {
@@ -26863,7 +26897,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 		return testModel.find( object ).then( entity => {
 			expect( entity ).to.respondTo( 'fetch' );
 			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
-			entity.foo = 'baz';
+			entity.attributes.foo = 'baz';
 			expect( entity ).to.be.an.entity( testModel, {
 				foo: 'baz',
 			}, SOURCE );
@@ -26935,7 +26969,7 @@ it( 'Should be able to create multiple entities.', () => {
 		},
 		undefined,
 	];
-	const entities = testModel.spawnMulti( objects );
+	const entities = testModel.spawnMany( objects );
 	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
 });
 describe( 'Should be able to use model methods to find, update, delete & create', () => {
@@ -27153,7 +27187,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 		return testModel.find( object ).then( entity => {
 			expect( entity ).to.respondTo( 'fetch' );
 			expect( entity ).to.be.an.entity( testModel, object, SOURCE );
-			entity.foo = 'baz';
+			entity.attributes.foo = 'baz';
 			expect( entity ).to.be.an.entity( testModel, {
 				foo: 'baz',
 			}, SOURCE );
@@ -27238,8 +27272,8 @@ it( 'Should reject persistance of badly configured entities (spawn).', () => {
 		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m ),
 	]);
 });
-it( 'Should reject persistance of badly configured entities (spawnMulti).', () => {
-	const fail1 = testModel.spawnMulti([
+it( 'Should reject persistance of badly configured entities (spawnMany).', () => {
+	const fail1 = testModel.spawnMany([
 		{
 			prop1: 1,
 			prop2: 2,
@@ -27247,7 +27281,7 @@ it( 'Should reject persistance of badly configured entities (spawnMulti).', () =
 			prop2: 2,
 		},
 	]).persist();
-	const fail2 = testModel.spawnMulti([
+	const fail2 = testModel.spawnMany([
 		{
 			prop2: 0,
 		}, {
@@ -27300,7 +27334,7 @@ it( 'Should define default values on valid items', () => {
 		},
 		undefined,
 	];
-	const entities = testModel.spawnMulti( objects );
+	const entities = testModel.spawnMany( objects );
 	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
 });
 describe( 'Should be able to use model methods to find, update, delete & create', () => {

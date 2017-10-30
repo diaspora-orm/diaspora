@@ -2,10 +2,10 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-10-18 01:38:51
+* Isolated build compiled on 2017-10-30 01:39:01
 *
 * @license GPL-3.0
-* @version 0.2.0-rc.2
+* @version 0.2.0-rc.3
 * @author Gerkin
 */
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -890,405 +890,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				    Promise = _require2.Promise;
 
 				var DiasporaAdapter = require('./baseAdapter.js');
-				var BrowserStorageEntity = require('../dataStoreEntities/browserStorageEntity.js');
-
-				/**
-     * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
-     * 
-     * @extends Adapters.DiasporaAdapter
-     * @memberof Adapters
-     */
-
-				var BrowserStorageDiasporaAdapter = function (_DiasporaAdapter) {
-					_inherits(BrowserStorageDiasporaAdapter, _DiasporaAdapter);
-
-					/**
-      * Create a new instance of local storage adapter.
-      * 
-      * @author gerkin
-      * @param {Object}  config                 - Configuration object.
-      * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
-      */
-					function BrowserStorageDiasporaAdapter(config) {
-						_classCallCheck(this, BrowserStorageDiasporaAdapter);
-
-						var _this9 = _possibleConstructorReturn(this, (BrowserStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(BrowserStorageDiasporaAdapter)).call(this, BrowserStorageEntity));
-						/**
-       * Link to the BrowserStorageEntity.
-       * 
-       * @name classEntity
-       * @type {DataStoreEntities.BrowserStorageEntity}
-       * @memberof Adapters.BrowserStorageDiasporaAdapter
-       * @instance
-       * @author Gerkin
-       */
-
-
-						_.defaults(config, {
-							session: false
-						});
-						_this9.state = 'ready';
-						/**
-       * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
-       * 
-       * @type {Storage}
-       * @author Gerkin
-       * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
-       * @see {@link Adapters.BrowserStorageDiasporaAdapter}:config.session parameter.
-       */
-						_this9.source = true === config.session ? global.sessionStorage : global.localStorage;
-						return _this9;
-					}
-
-					/**
-      * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
-      * 
-      * @author gerkin
-      * @param {string} tableName - Name of the table (usually, model name).
-      * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
-      * @returns {undefined} This function does not return anything.
-      */
-
-
-					_createClass(BrowserStorageDiasporaAdapter, [{
-						key: "configureCollection",
-						value: function configureCollection(tableName, remaps) {
-							_get(BrowserStorageDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(BrowserStorageDiasporaAdapter.prototype), "configureCollection", this).call(this, tableName, remaps);
-							this.ensureCollectionExists(tableName);
-						}
-
-						// -----
-						// ### Utils
-
-						/**
-       * Create a new unique id for this store's entity.
-       * 
-       * @author gerkin
-       * @returns {string} Generated unique id.
-       */
-
-					}, {
-						key: "generateUUID",
-						value: function generateUUID() {
-							var d = new Date().getTime();
-							if (global.performance && 'function' === typeof global.performance.now) {
-								d += global.performance.now(); //use high-precision timer if available
-							}
-							var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-								var r = (d + Math.random() * 16) % 16 | 0;
-								d = Math.floor(d / 16);
-								return ('x' === c ? r : r & 0x3 | 0x8).toString(16);
-							});
-							return uuid;
-						}
-
-						/**
-       * Create the table key if it does not exist.
-       * 
-       * @author gerkin
-       * @param   {string} table - Name of the table.
-       * @returns {string[]} Index of the collection.
-       */
-
-					}, {
-						key: "ensureCollectionExists",
-						value: function ensureCollectionExists(table) {
-							var index = this.source.getItem(table);
-							if (_.isNil(index)) {
-								index = [];
-								this.source.setItem(table, JSON.stringify(index));
-							} else {
-								index = JSON.parse(index);
-							}
-							return index;
-						}
-
-						/**
-       * Reduce, offset or sort provided set.
-       * 
-       * @author gerkin
-       * @param   {Object[]} set     - Objects retrieved from memory store.
-       * @param   {Object}   options - Options to apply to the set.
-       * @returns {Object[]} Set with options applied.
-       */
-
-					}, {
-						key: "getItemName",
-
-
-						/**
-       * Deduce the item name from table name and item ID.
-       * 
-       * @author gerkin
-       * @param   {string} table - Name of the table to construct name for.
-       * @param   {string} id    - Id of the item to find.
-       * @returns {string} Name of the item.
-       */
-						value: function getItemName(table, id) {
-							return table + ".id=" + id;
-						}
-
-						// -----
-						// ### Insert
-
-						/**
-       * Insert a single entity in the local storage.
-       * 
-       * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
-       * @author gerkin
-       * @param   {string} table  - Name of the table to insert data in.
-       * @param   {Object} entity - Hash representing the entity to insert.
-       * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
-       */
-
-					}, {
-						key: "insertOne",
-						value: function insertOne(table, entity) {
-							entity = _.cloneDeep(entity || {});
-							entity.id = this.generateUUID();
-							this.setIdHash(entity);
-							try {
-								var tableIndex = this.ensureCollectionExists(table);
-								tableIndex.push(entity.id);
-								this.source.setItem(table, JSON.stringify(tableIndex));
-								this.source.setItem(this.getItemName(table, entity.id), JSON.stringify(entity));
-							} catch (error) {
-								return Promise.reject(error);
-							}
-							return Promise.resolve(new this.classEntity(entity, this));
-						}
-
-						/**
-       * Insert several entities in the local storage.
-       * 
-       * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
-       * @author gerkin
-       * @param   {string}   table    - Name of the table to insert data in.
-       * @param   {Object[]} entities - Array of hashes representing entities to insert.
-       * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}[]* `entities`).
-       */
-
-					}, {
-						key: "insertMany",
-						value: function insertMany(table, entities) {
-							var _this10 = this;
-
-							entities = _.cloneDeep(entities);
-							try {
-								var tableIndex = this.ensureCollectionExists(table);
-								entities = entities.map(function () {
-									var entity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-									entity.id = _this10.generateUUID();
-									_this10.setIdHash(entity);
-									tableIndex.push(entity.id);
-									_this10.source.setItem(_this10.getItemName(table, entity.id), JSON.stringify(entity));
-									return new _this10.classEntity(entity, _this10);
-								});
-								this.source.setItem(table, JSON.stringify(tableIndex));
-							} catch (error) {
-								return Promise.reject(error);
-							}
-							return Promise.resolve(entities);
-						}
-
-						// -----
-						// ### Find
-
-						/**
-       * Find a single local storage entity using its id.
-       * 
-       * @author gerkin
-       * @param   {string} table - Name of the collection to search entity in.
-       * @param   {string} id    - Id of the entity to search.
-       * @returns {DataStoreEntities.BrowserStorageEntity|undefined} Found entity, or undefined if not found.
-       */
-
-					}, {
-						key: "findOneById",
-						value: function findOneById(table, id) {
-							var item = this.source.getItem(this.getItemName(table, id));
-							if (!_.isNil(item)) {
-								return Promise.resolve(new this.classEntity(JSON.parse(item), this));
-							}
-							return Promise.resolve();
-						}
-
-						/**
-       * Retrieve a single entity from the local storage.
-       * 
-       * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
-       * @author gerkin
-       * @param   {string}                               table        - Name of the model to retrieve data from.
-       * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-       * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-       * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
-       */
-
-					}, {
-						key: "findOne",
-						value: function findOne(table, queryFind) {
-							var _this11 = this;
-
-							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-							_.defaults(options, {
-								skip: 0
-							});
-							if (!_.isObject(queryFind)) {
-								return this.findOneById(table, queryFind);
-							} else if (_.isEqual(_.keys(queryFind), ['id']) && _.isEqual(_.keys(queryFind.id), ['$equal'])) {
-								return this.findOneById(table, queryFind.id.$equal);
-							}
-							var items = this.ensureCollectionExists(table);
-							var returnedItem = void 0;
-							var matched = 0;
-							_.each(items, function (itemId) {
-								var item = JSON.parse(_this11.source.getItem(_this11.getItemName(table, itemId)));
-								if (_this11.matchEntity(queryFind, item)) {
-									matched++;
-									// If we matched enough items
-									if (matched > options.skip) {
-										returnedItem = item;
-										return false;
-									}
-								}
-							});
-							return Promise.resolve(!_.isNil(returnedItem) ? new this.classEntity(returnedItem, this) : undefined);
-						}
-
-						// -----
-						// ### Update
-
-						/**
-       * Update a single entity in the memory.
-       * 
-       * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
-       * @author gerkin
-       * @param   {string}                               table        - Name of the table to update data in.
-       * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-       * @param   {Object}                               update       - Object properties to set.
-       * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-       * @returns {Promise} Promise resolved once update is done. Called with (*{@link DataStoreEntities.BrowserStorageEntity}* `entity`).
-       */
-
-					}, {
-						key: "updateOne",
-						value: function updateOne(table, queryFind, update, options) {
-							var _this12 = this;
-
-							_.defaults(options, {
-								skip: 0
-							});
-							return this.findOne(table, queryFind, options).then(function (entity) {
-								if (_.isNil(entity)) {
-									return Promise.resolve();
-								}
-								_this12.applyUpdateEntity(update, entity);
-								try {
-									_this12.source.setItem(_this12.getItemName(table, entity.id), JSON.stringify(entity));
-									return Promise.resolve(entity);
-								} catch (error) {
-									return Promise.reject(error);
-								}
-							});
-						}
-
-						// -----
-						// ### Delete
-
-						/**
-       * Delete a single entity from the local storage.
-       * 
-       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
-       * @author gerkin
-       * @param   {string}                               table        - Name of the table to delete data from.
-       * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-       * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-       * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*).
-       */
-
-					}, {
-						key: "deleteOne",
-						value: function deleteOne(table, queryFind) {
-							var _this13 = this;
-
-							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-							return this.findOne(table, queryFind, options).then(function (entityToDelete) {
-								try {
-									var tableIndex = _this13.ensureCollectionExists(table);
-									_.pull(tableIndex, entityToDelete.id);
-									_this13.source.setItem(table, JSON.stringify(tableIndex));
-									_this13.source.removeItem(_this13.getItemName(table, entityToDelete.id));
-								} catch (error) {
-									return Promise.reject(error);
-								}
-								return Promise.resolve();
-							});
-						}
-
-						/**
-       * Delete several entities from the local storage.
-       * 
-       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
-       * @author gerkin
-       * @param   {string}                               table        - Name of the table to delete data from.
-       * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-       * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-       * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
-       */
-
-					}, {
-						key: "deleteMany",
-						value: function deleteMany(table, queryFind) {
-							var _this14 = this;
-
-							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-							try {
-								return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
-									var tableIndex = _this14.ensureCollectionExists(table);
-									_.pullAll(tableIndex, _.map(entitiesToDelete, 'id'));
-									_this14.source.setItem(table, JSON.stringify(tableIndex));
-									_.forEach(entitiesToDelete, function (entityToDelete) {
-										_this14.source.removeItem(_this14.getItemName(table, entityToDelete.id));
-									});
-									return Promise.resolve();
-								});
-							} catch (error) {
-								return Promise.reject(error);
-							}
-						}
-					}], [{
-						key: "applyOptionsToSet",
-						value: function applyOptionsToSet(set, options) {
-							_.defaults(options, {
-								limit: Infinity,
-								skip: 0
-							});
-							set = set.slice(options.skip);
-							if (set.length > options.limit) {
-								set = set.slice(0, options.limit);
-							}
-							return set;
-						}
-					}]);
-
-					return BrowserStorageDiasporaAdapter;
-				}(DiasporaAdapter);
-
-				module.exports = BrowserStorageDiasporaAdapter;
-			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
-		}, { "../dataStoreEntities/browserStorageEntity.js": 6, "../dependencies": 8, "./baseAdapter.js": 2 }], 4: [function (require, module, exports) {
-			(function (global) {
-				'use strict';
-
-				var _require3 = require('../dependencies'),
-				    _ = _require3._,
-				    Promise = _require3.Promise;
-
-				var DiasporaAdapter = require('./baseAdapter.js');
 				var InMemoryEntity = require('../dataStoreEntities/inMemoryEntity.js');
 
 				/**
@@ -1298,8 +899,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @memberof Adapters
      */
 
-				var InMemoryDiasporaAdapter = function (_DiasporaAdapter2) {
-					_inherits(InMemoryDiasporaAdapter, _DiasporaAdapter2);
+				var InMemoryDiasporaAdapter = function (_DiasporaAdapter) {
+					_inherits(InMemoryDiasporaAdapter, _DiasporaAdapter);
 
 					/**
       * Create a new instance of in memory adapter.
@@ -1309,7 +910,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					function InMemoryDiasporaAdapter() {
 						_classCallCheck(this, InMemoryDiasporaAdapter);
 
-						var _this15 = _possibleConstructorReturn(this, (InMemoryDiasporaAdapter.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this, InMemoryEntity));
+						var _this9 = _possibleConstructorReturn(this, (InMemoryDiasporaAdapter.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this, InMemoryEntity));
 						/**
        * Link to the InMemoryEntity.
        * 
@@ -1321,14 +922,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        */
 
 
-						_this15.state = 'ready';
+						_this9.state = 'ready';
 						/**
        * Plain old javascript object used as data store.
        * 
        * @author Gerkin
        */
-						_this15.store = {};
-						return _this15;
+						_this9.store = {};
+						return _this9;
 					}
 
 					/**
@@ -1467,7 +1068,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "findMany",
 						value: function findMany(table, queryFind) {
-							var _this16 = this;
+							var _this10 = this;
 
 							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -1475,7 +1076,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							var matches = _.filter(storeTable.items, _.partial(this.matchEntity, queryFind));
 							var reducedMatches = this.constructor.applyOptionsToSet(matches, options);
 							return Promise.resolve(_.map(reducedMatches, function (entity) {
-								return new _this16.classEntity(entity, _this16);
+								return new _this10.classEntity(entity, _this10);
 							}));
 						}
 
@@ -1497,18 +1098,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "updateOne",
 						value: function updateOne(table, queryFind, update) {
-							var _this17 = this;
+							var _this11 = this;
 
 							var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
 							return this.findOne(table, queryFind, options).then(function (found) {
 								if (!_.isNil(found)) {
-									var storeTable = _this17.ensureCollectionExists(table);
+									var storeTable = _this11.ensureCollectionExists(table);
 									var match = _.find(storeTable.items, {
 										id: found.id
 									});
-									_this17.applyUpdateEntity(update, match);
-									return Promise.resolve(new _this17.classEntity(match, _this17));
+									_this11.applyUpdateEntity(update, match);
+									return Promise.resolve(new _this11.classEntity(match, _this11));
 								} else {
 									return Promise.resolve();
 								}
@@ -1530,20 +1131,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "updateMany",
 						value: function updateMany(table, queryFind, update) {
-							var _this18 = this;
+							var _this12 = this;
 
 							var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
 							return this.findMany(table, queryFind, options).then(function (found) {
 								if (!_.isNil(found) && found.length > 0) {
-									var storeTable = _this18.ensureCollectionExists(table);
+									var storeTable = _this12.ensureCollectionExists(table);
 									var foundIds = _.map(found, 'id');
 									var matches = _.filter(storeTable.items, function (item) {
 										return -1 !== foundIds.indexOf(item.id);
 									});
 									return Promise.resolve(_.map(matches, function (item) {
-										_this18.applyUpdateEntity(update, item);
-										return new _this18.classEntity(item, _this18);
+										_this12.applyUpdateEntity(update, item);
+										return new _this12.classEntity(item, _this12);
 									}));
 								} else {
 									return Promise.resolve();
@@ -1568,14 +1169,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "deleteOne",
 						value: function deleteOne(table, queryFind) {
-							var _this19 = this;
+							var _this13 = this;
 
 							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 							var storeTable = this.ensureCollectionExists(table);
 							return this.findOne(table, queryFind, options).then(function (entityToDelete) {
 								storeTable.items = _.reject(storeTable.items, function (entity) {
-									return entity.id === entityToDelete.idHash[_this19.name];
+									return entity.id === entityToDelete.idHash[_this13.name];
 								});
 								return Promise.resolve();
 							});
@@ -1595,14 +1196,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "deleteMany",
 						value: function deleteMany(table, queryFind) {
-							var _this20 = this;
+							var _this14 = this;
 
 							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 							var storeTable = this.ensureCollectionExists(table);
 							return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
 								var entitiesIds = _.map(entitiesToDelete, function (entity) {
-									return _.get(entity, "idHash." + _this20.name);
+									return _.get(entity, "idHash." + _this14.name);
 								});
 								storeTable.items = _.reject(storeTable.items, function (entity) {
 									return _.includes(entitiesIds, entity.id);
@@ -1630,7 +1231,406 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				module.exports = InMemoryDiasporaAdapter;
 			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
-		}, { "../dataStoreEntities/inMemoryEntity.js": 7, "../dependencies": 8, "./baseAdapter.js": 2 }], 5: [function (require, module, exports) {
+		}, { "../dataStoreEntities/inMemoryEntity.js": 6, "../dependencies": 8, "./baseAdapter.js": 2 }], 4: [function (require, module, exports) {
+			(function (global) {
+				'use strict';
+
+				var _require3 = require('../dependencies'),
+				    _ = _require3._,
+				    Promise = _require3.Promise;
+
+				var DiasporaAdapter = require('./baseAdapter.js');
+				var WebStorageEntity = require('../dataStoreEntities/webStorageEntity.js');
+
+				/**
+     * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
+     * 
+     * @extends Adapters.DiasporaAdapter
+     * @memberof Adapters
+     */
+
+				var WebStorageDiasporaAdapter = function (_DiasporaAdapter2) {
+					_inherits(WebStorageDiasporaAdapter, _DiasporaAdapter2);
+
+					/**
+      * Create a new instance of local storage adapter.
+      * 
+      * @author gerkin
+      * @param {Object}  config                 - Configuration object.
+      * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
+      */
+					function WebStorageDiasporaAdapter(config) {
+						_classCallCheck(this, WebStorageDiasporaAdapter);
+
+						var _this15 = _possibleConstructorReturn(this, (WebStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(WebStorageDiasporaAdapter)).call(this, WebStorageEntity));
+						/**
+       * Link to the WebStorageEntity.
+       * 
+       * @name classEntity
+       * @type {DataStoreEntities.WebStorageEntity}
+       * @memberof Adapters.WebStorageDiasporaAdapter
+       * @instance
+       * @author Gerkin
+       */
+
+
+						_.defaults(config, {
+							session: false
+						});
+						_this15.state = 'ready';
+						/**
+       * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
+       * 
+       * @type {Storage}
+       * @author Gerkin
+       * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
+       * @see {@link Adapters.WebStorageDiasporaAdapter}:config.session parameter.
+       */
+						_this15.source = true === config.session ? global.sessionStorage : global.localStorage;
+						return _this15;
+					}
+
+					/**
+      * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
+      * 
+      * @author gerkin
+      * @param {string} tableName - Name of the table (usually, model name).
+      * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
+      * @returns {undefined} This function does not return anything.
+      */
+
+
+					_createClass(WebStorageDiasporaAdapter, [{
+						key: "configureCollection",
+						value: function configureCollection(tableName, remaps) {
+							_get(WebStorageDiasporaAdapter.prototype.__proto__ || Object.getPrototypeOf(WebStorageDiasporaAdapter.prototype), "configureCollection", this).call(this, tableName, remaps);
+							this.ensureCollectionExists(tableName);
+						}
+
+						// -----
+						// ### Utils
+
+						/**
+       * Create a new unique id for this store's entity.
+       * 
+       * @author gerkin
+       * @returns {string} Generated unique id.
+       */
+
+					}, {
+						key: "generateUUID",
+						value: function generateUUID() {
+							var d = new Date().getTime();
+							if (global.performance && 'function' === typeof global.performance.now) {
+								d += global.performance.now(); //use high-precision timer if available
+							}
+							var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+								var r = (d + Math.random() * 16) % 16 | 0;
+								d = Math.floor(d / 16);
+								return ('x' === c ? r : r & 0x3 | 0x8).toString(16);
+							});
+							return uuid;
+						}
+
+						/**
+       * Create the table key if it does not exist.
+       * 
+       * @author gerkin
+       * @param   {string} table - Name of the table.
+       * @returns {string[]} Index of the collection.
+       */
+
+					}, {
+						key: "ensureCollectionExists",
+						value: function ensureCollectionExists(table) {
+							var index = this.source.getItem(table);
+							if (_.isNil(index)) {
+								index = [];
+								this.source.setItem(table, JSON.stringify(index));
+							} else {
+								index = JSON.parse(index);
+							}
+							return index;
+						}
+
+						/**
+       * Reduce, offset or sort provided set.
+       * 
+       * @author gerkin
+       * @param   {Object[]} set     - Objects retrieved from memory store.
+       * @param   {Object}   options - Options to apply to the set.
+       * @returns {Object[]} Set with options applied.
+       */
+
+					}, {
+						key: "getItemName",
+
+
+						/**
+       * Deduce the item name from table name and item ID.
+       * 
+       * @author gerkin
+       * @param   {string} table - Name of the table to construct name for.
+       * @param   {string} id    - Id of the item to find.
+       * @returns {string} Name of the item.
+       */
+						value: function getItemName(table, id) {
+							return table + ".id=" + id;
+						}
+
+						// -----
+						// ### Insert
+
+						/**
+       * Insert a single entity in the local storage.
+       * 
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
+       * @author gerkin
+       * @param   {string} table  - Name of the table to insert data in.
+       * @param   {Object} entity - Hash representing the entity to insert.
+       * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
+       */
+
+					}, {
+						key: "insertOne",
+						value: function insertOne(table, entity) {
+							entity = _.cloneDeep(entity || {});
+							entity.id = this.generateUUID();
+							this.setIdHash(entity);
+							try {
+								var tableIndex = this.ensureCollectionExists(table);
+								tableIndex.push(entity.id);
+								this.source.setItem(table, JSON.stringify(tableIndex));
+								this.source.setItem(this.getItemName(table, entity.id), JSON.stringify(entity));
+							} catch (error) {
+								return Promise.reject(error);
+							}
+							return Promise.resolve(new this.classEntity(entity, this));
+						}
+
+						/**
+       * Insert several entities in the local storage.
+       * 
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
+       * @author gerkin
+       * @param   {string}   table    - Name of the table to insert data in.
+       * @param   {Object[]} entities - Array of hashes representing entities to insert.
+       * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.WebStorageEntity}[]* `entities`).
+       */
+
+					}, {
+						key: "insertMany",
+						value: function insertMany(table, entities) {
+							var _this16 = this;
+
+							entities = _.cloneDeep(entities);
+							try {
+								var tableIndex = this.ensureCollectionExists(table);
+								entities = entities.map(function () {
+									var entity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+									entity.id = _this16.generateUUID();
+									_this16.setIdHash(entity);
+									tableIndex.push(entity.id);
+									_this16.source.setItem(_this16.getItemName(table, entity.id), JSON.stringify(entity));
+									return new _this16.classEntity(entity, _this16);
+								});
+								this.source.setItem(table, JSON.stringify(tableIndex));
+							} catch (error) {
+								return Promise.reject(error);
+							}
+							return Promise.resolve(entities);
+						}
+
+						// -----
+						// ### Find
+
+						/**
+       * Find a single local storage entity using its id.
+       * 
+       * @author gerkin
+       * @param   {string} table - Name of the collection to search entity in.
+       * @param   {string} id    - Id of the entity to search.
+       * @returns {DataStoreEntities.WebStorageEntity|undefined} Found entity, or undefined if not found.
+       */
+
+					}, {
+						key: "findOneById",
+						value: function findOneById(table, id) {
+							var item = this.source.getItem(this.getItemName(table, id));
+							if (!_.isNil(item)) {
+								return Promise.resolve(new this.classEntity(JSON.parse(item), this));
+							}
+							return Promise.resolve();
+						}
+
+						/**
+       * Retrieve a single entity from the local storage.
+       * 
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
+       * @author gerkin
+       * @param   {string}                               table        - Name of the model to retrieve data from.
+       * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+       * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+       * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
+       */
+
+					}, {
+						key: "findOne",
+						value: function findOne(table, queryFind) {
+							var _this17 = this;
+
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							_.defaults(options, {
+								skip: 0
+							});
+							if (!_.isObject(queryFind)) {
+								return this.findOneById(table, queryFind);
+							} else if (_.isEqual(_.keys(queryFind), ['id']) && _.isEqual(_.keys(queryFind.id), ['$equal'])) {
+								return this.findOneById(table, queryFind.id.$equal);
+							}
+							var items = this.ensureCollectionExists(table);
+							var returnedItem = void 0;
+							var matched = 0;
+							_.each(items, function (itemId) {
+								var item = JSON.parse(_this17.source.getItem(_this17.getItemName(table, itemId)));
+								if (_this17.matchEntity(queryFind, item)) {
+									matched++;
+									// If we matched enough items
+									if (matched > options.skip) {
+										returnedItem = item;
+										return false;
+									}
+								}
+							});
+							return Promise.resolve(!_.isNil(returnedItem) ? new this.classEntity(returnedItem, this) : undefined);
+						}
+
+						// -----
+						// ### Update
+
+						/**
+       * Update a single entity in the memory.
+       * 
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
+       * @author gerkin
+       * @param   {string}                               table        - Name of the table to update data in.
+       * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+       * @param   {Object}                               update       - Object properties to set.
+       * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+       * @returns {Promise} Promise resolved once update is done. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
+       */
+
+					}, {
+						key: "updateOne",
+						value: function updateOne(table, queryFind, update, options) {
+							var _this18 = this;
+
+							_.defaults(options, {
+								skip: 0
+							});
+							return this.findOne(table, queryFind, options).then(function (entity) {
+								if (_.isNil(entity)) {
+									return Promise.resolve();
+								}
+								_this18.applyUpdateEntity(update, entity);
+								try {
+									_this18.source.setItem(_this18.getItemName(table, entity.id), JSON.stringify(entity));
+									return Promise.resolve(entity);
+								} catch (error) {
+									return Promise.reject(error);
+								}
+							});
+						}
+
+						// -----
+						// ### Delete
+
+						/**
+       * Delete a single entity from the local storage.
+       * 
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
+       * @author gerkin
+       * @param   {string}                               table        - Name of the table to delete data from.
+       * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+       * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+       * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*).
+       */
+
+					}, {
+						key: "deleteOne",
+						value: function deleteOne(table, queryFind) {
+							var _this19 = this;
+
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							return this.findOne(table, queryFind, options).then(function (entityToDelete) {
+								try {
+									var tableIndex = _this19.ensureCollectionExists(table);
+									_.pull(tableIndex, entityToDelete.id);
+									_this19.source.setItem(table, JSON.stringify(tableIndex));
+									_this19.source.removeItem(_this19.getItemName(table, entityToDelete.id));
+								} catch (error) {
+									return Promise.reject(error);
+								}
+								return Promise.resolve();
+							});
+						}
+
+						/**
+       * Delete several entities from the local storage.
+       * 
+       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
+       * @author gerkin
+       * @param   {string}                               table        - Name of the table to delete data from.
+       * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+       * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+       * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
+       */
+
+					}, {
+						key: "deleteMany",
+						value: function deleteMany(table, queryFind) {
+							var _this20 = this;
+
+							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+							try {
+								return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
+									var tableIndex = _this20.ensureCollectionExists(table);
+									_.pullAll(tableIndex, _.map(entitiesToDelete, 'id'));
+									_this20.source.setItem(table, JSON.stringify(tableIndex));
+									_.forEach(entitiesToDelete, function (entityToDelete) {
+										_this20.source.removeItem(_this20.getItemName(table, entityToDelete.id));
+									});
+									return Promise.resolve();
+								});
+							} catch (error) {
+								return Promise.reject(error);
+							}
+						}
+					}], [{
+						key: "applyOptionsToSet",
+						value: function applyOptionsToSet(set, options) {
+							_.defaults(options, {
+								limit: Infinity,
+								skip: 0
+							});
+							set = set.slice(options.skip);
+							if (set.length > options.limit) {
+								set = set.slice(0, options.limit);
+							}
+							return set;
+						}
+					}]);
+
+					return WebStorageDiasporaAdapter;
+				}(DiasporaAdapter);
+
+				module.exports = WebStorageDiasporaAdapter;
+			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+		}, { "../dataStoreEntities/webStorageEntity.js": 7, "../dependencies": 8, "./baseAdapter.js": 2 }], 5: [function (require, module, exports) {
 			'use strict';
 
 			var _require4 = require('../dependencies'),
@@ -1698,45 +1698,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var DataStoreEntity = require('./baseEntity.js');
 
 			/**
-    * Entity stored in {@link Adapters.BrowserStorageDiasporaAdapter the local storage adapter}.
-    * 
-    * @extends DataStoreEntities.DataStoreEntity
-    * @memberof DataStoreEntities
-    */
-
-			var BrowserStorageEntity = function (_DataStoreEntity) {
-				_inherits(BrowserStorageEntity, _DataStoreEntity);
-
-				/**
-     * Construct a local storage entity with specified content & parent.
-     * 
-     * @author gerkin
-     * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-     * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-     */
-				function BrowserStorageEntity(entity, dataSource) {
-					_classCallCheck(this, BrowserStorageEntity);
-
-					return _possibleConstructorReturn(this, (BrowserStorageEntity.__proto__ || Object.getPrototypeOf(BrowserStorageEntity)).call(this, entity, dataSource));
-				}
-
-				return BrowserStorageEntity;
-			}(DataStoreEntity);
-
-			module.exports = BrowserStorageEntity;
-		}, { "./baseEntity.js": 5 }], 7: [function (require, module, exports) {
-			'use strict';
-
-			var DataStoreEntity = require('./baseEntity.js');
-
-			/**
     * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
     * @extends DataStoreEntities.DataStoreEntity
     * @memberof DataStoreEntities
     */
 
-			var InMemoryEntity = function (_DataStoreEntity2) {
-				_inherits(InMemoryEntity, _DataStoreEntity2);
+			var InMemoryEntity = function (_DataStoreEntity) {
+				_inherits(InMemoryEntity, _DataStoreEntity);
 
 				/**
      * Construct a in memory entity with specified content & parent.
@@ -1755,6 +1723,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DataStoreEntity);
 
 			module.exports = InMemoryEntity;
+		}, { "./baseEntity.js": 5 }], 7: [function (require, module, exports) {
+			'use strict';
+
+			var DataStoreEntity = require('./baseEntity.js');
+
+			/**
+    * Entity stored in {@link Adapters.WebStorageDiasporaAdapter the local storage adapter}.
+    * 
+    * @extends DataStoreEntities.DataStoreEntity
+    * @memberof DataStoreEntities
+    */
+
+			var WebStorageEntity = function (_DataStoreEntity2) {
+				_inherits(WebStorageEntity, _DataStoreEntity2);
+
+				/**
+     * Construct a local storage entity with specified content & parent.
+     * 
+     * @author gerkin
+     * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+     * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
+     */
+				function WebStorageEntity(entity, dataSource) {
+					_classCallCheck(this, WebStorageEntity);
+
+					return _possibleConstructorReturn(this, (WebStorageEntity.__proto__ || Object.getPrototypeOf(WebStorageEntity)).call(this, entity, dataSource));
+				}
+
+				return WebStorageEntity;
+			}(DataStoreEntity);
+
+			module.exports = WebStorageEntity;
 		}, { "./baseEntity.js": 5 }], 8: [function (require, module, exports) {
 			(function (global) {
 				'use strict';
@@ -2169,14 +2169,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       *
       * @author gerkin
       * @throws  {Error} Thrown if provided `adapter` label does not correspond to any adapter registered.
-      * @param   {string} name         - Name associated with this datasource.
+      * @param   {string} sourceName   - Name associated with this datasource.
       * @param   {string} adapterLabel - Label of the adapter used to create the data source.
-      * @param   {Object} config       - Configuration hash. This configuration hash depends on the adapter we want to use.
+      * @param   {Object} configHash   - Configuration hash. This configuration hash depends on the adapter we want to use.
       * @returns {Adapters.DiasporaAdapter} New adapter spawned.
       */
-					createNamedDataSource: function createNamedDataSource(name, adapterLabel, config) {
-						var dataSource = Diaspora.createDataSource(adapterLabel, config);
-						Diaspora.registerDataSource(name, dataSource);
+					createNamedDataSource: function createNamedDataSource(sourceName, adapterLabel, configHash) {
+						var dataSource = Diaspora.createDataSource(adapterLabel, configHash);
+						Diaspora.registerDataSource(sourceName, dataSource);
 					},
 
 
@@ -2307,12 +2307,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				// Register available built-in adapters
 				Diaspora.registerAdapter('inMemory', require('./adapters/inMemoryAdapter'));
-				// Register browserStorage only if in browser
+				// Register webStorage only if in browser
 				if (process.browser) {
-					Diaspora.registerAdapter('browserStorage', require('./adapters/browserStorageAdapter'));
+					Diaspora.registerAdapter('webStorage', require('./adapters/webStorageAdapter'));
 				}
 			}).call(this, require('_process'));
-		}, { "./adapters/baseAdapter": 2, "./adapters/browserStorageAdapter": 3, "./adapters/inMemoryAdapter": 4, "./dataStoreEntities/baseEntity": 5, "./dependencies": 8, "./entityFactory": 10, "./errors/entityStateError": 11, "./errors/entityValidationError": 12, "./errors/setValidationError": 14, "./model": 15, "./set": 16, "_process": 18, "winston": undefined }], 10: [function (require, module, exports) {
+		}, { "./adapters/baseAdapter": 2, "./adapters/inMemoryAdapter": 3, "./adapters/webStorageAdapter": 4, "./dataStoreEntities/baseEntity": 5, "./dependencies": 8, "./entityFactory": 10, "./errors/entityStateError": 11, "./errors/entityValidationError": 12, "./errors/setValidationError": 14, "./model": 15, "./set": 16, "_process": 18, "winston": undefined }], 10: [function (require, module, exports) {
 			'use strict';
 
 			var _require5 = require('./dependencies'),
@@ -2400,7 +2400,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         * @returns {Object} Attributes of this entity.
         */
 							toObject: function toObject() {
-								return _.omit(attributes, entityPrototypeProperties);
+								return attributes;
+							},
+							/**
+        * TODO.
+        *
+        * @name dataSources
+        * @readonly
+        * @type {TODO}
+        * @memberof EntityFactory.Entity
+        * @instance
+        * @author gerkin
+        */
+							attributes: {
+								get: function get() {
+									return attributes;
+								}
 							},
 							/**
         * Save this entity in specified data source.
@@ -2417,12 +2432,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
         */
 							persist: function persist(sourceName) {
+								var _this27 = this;
+
 								var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 								_.defaults(options, {
 									skipEvents: false
 								});
-								var dataSource = _this26.constructor.model.getDataSource(sourceName);
+								var dataSource = this.constructor.model.getDataSource(sourceName);
 								var beforeState = state;
 								state = 'syncing';
 
@@ -2435,40 +2452,41 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								if (options.skipEvents) {
 									promise = Promise.resolve();
 								} else {
-									promise = _this26.emit.apply(_this26, ['beforePersist'].concat(eventsArgs)).then(function () {
-										return _this26.emit.apply(_this26, ['beforeValidate'].concat(eventsArgs));
+									promise = this.emit.apply(this, ['beforePersist'].concat(eventsArgs)).then(function () {
+										return _this27.emit.apply(_this27, ['beforeValidate'].concat(eventsArgs));
 									}).then(function () {
-										_this26.validate();
-										return _this26.emit.apply(_this26, ['afterValidate'].concat(eventsArgs));
+										_this27.validate();
+										return _this27.emit.apply(_this27, ['afterValidate'].concat(eventsArgs));
 									}).then(function () {
-										return _this26.emit.apply(_this26, ["beforePersist" + suffix].concat(eventsArgs));
+										return _this27.emit.apply(_this27, ["beforePersist" + suffix].concat(eventsArgs));
 									});
 								}
 								return promise.then(function () {
 									lastDataSource = dataSource.name;
 									// Depending on state, we are going to perform a different operation
 									if ('orphan' === beforeState) {
-										return dataSource.insertOne(_this26.table(sourceName), _this26.toObject());
+										return dataSource.insertOne(_this27.table(sourceName), _this27.toObject());
 									} else {
-										return dataSource.updateOne(_this26.table(sourceName), _this26.uidQuery(dataSource), _this26.toObject());
+										return dataSource.updateOne(_this27.table(sourceName), _this27.uidQuery(dataSource), _this27.getDiff(dataSource));
 									}
 								}).then(function (dataStoreEntity) {
 									if (options.skipEvents) {
 										return Promise.resolve(dataStoreEntity);
 									} else {
-										return _this26.emit.apply(_this26, ["afterPersist" + suffix].concat(eventsArgs)).then(function () {
-											return _this26.emit.apply(_this26, ['afterPersist'].concat(eventsArgs));
+										return _this27.emit.apply(_this27, ["afterPersist" + suffix].concat(eventsArgs)).then(function () {
+											return _this27.emit.apply(_this27, ['afterPersist'].concat(eventsArgs));
 										}).then(function () {
 											return Promise.resolve(dataStoreEntity);
 										});
 									}
 								}).then(function (dataStoreEntity) {
 									state = 'sync';
-									entityDefined.dataSources[dataSource.name] = dataStoreEntity;
+									_this27.dataSources[dataSource.name] = dataStoreEntity;
 									attributes = dataStoreEntity.toObject();
-									return Promise.resolve(entityProxied);
+									return Promise.resolve(_this27);
 								});
 							},
+
 							/**
         * Reload this entity from specified data source.
         *
@@ -2484,19 +2502,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
         */
 							fetch: function fetch(sourceName) {
+								var _this28 = this;
+
 								var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 								_.defaults(options, {
 									skipEvents: false
 								});
-								var dataSource = _this26.constructor.model.getDataSource(sourceName);
+								var dataSource = this.constructor.model.getDataSource(sourceName);
 								var beforeState = state;
 								state = 'syncing';
 								var promise = void 0;
 								if (options.skipEvents) {
 									promise = Promise.resolve();
 								} else {
-									promise = _this26.emit('beforeFetch', sourceName);
+									promise = this.emit('beforeFetch', sourceName);
 								}
 								return promise.then(function () {
 									// Depending on state, we are going to perform a different operation
@@ -2504,21 +2524,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 										return Promise.reject(new EntityStateError('Can\'t fetch an orphan entity.'));
 									} else {
 										lastDataSource = dataSource.name;
-										return dataSource.findOne(_this26.table(sourceName), _this26.uidQuery(dataSource));
+										return dataSource.findOne(_this28.table(sourceName), _this28.uidQuery(dataSource));
 									}
 								}).then(function (dataStoreEntity) {
 									state = 'sync';
-									entityDefined.dataSources[dataSource.name] = dataStoreEntity;
+									_this28.dataSources[dataSource.name] = dataStoreEntity;
 									attributes = dataStoreEntity.toObject();
 									if (options.skipEvents) {
-										return Promise.resolve(entityProxied);
+										return Promise.resolve(_this28);
 									} else {
-										return _this26.emit('afterFetch', sourceName).then(function () {
-											return Promise.resolve(entityProxied);
+										return _this28.emit('afterFetch', sourceName).then(function () {
+											return Promise.resolve(_this28);
 										});
 									}
 								});
 							},
+
 							/**
         * Delete this entity from the specified data source.
         *
@@ -2534,26 +2555,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`.
         */
 							destroy: function destroy(sourceName) {
+								var _this29 = this;
+
 								var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 								_.defaults(options, {
 									skipEvents: false
 								});
-								var dataSource = _this26.constructor.model.getDataSource(sourceName);
+								var dataSource = this.constructor.model.getDataSource(sourceName);
 								var beforeState = state;
 								state = 'syncing';
 								var promise = void 0;
 								if (options.skipEvents) {
 									promise = Promise.resolve();
 								} else {
-									promise = _this26.emit('beforeDestroy', sourceName);
+									promise = this.emit('beforeDestroy', sourceName);
 								}
 								return promise.then(function () {
 									if ('orphan' === beforeState) {
 										return Promise.reject(new EntityStateError('Can\'t fetch an orphan entity.'));
 									} else {
 										lastDataSource = dataSource.name;
-										return dataSource.deleteOne(_this26.table(sourceName), _this26.uidQuery(dataSource));
+										return dataSource.deleteOne(_this29.table(sourceName), _this29.uidQuery(dataSource));
 									}
 								}).then(function () {
 									// If this was our only data source, then go back to orphan state
@@ -2563,16 +2586,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 										state = 'sync';
 										delete attributes.idHash[dataSource.name];
 									}
-									entityDefined.dataSources[dataSource.name] = undefined;
+									_this29.dataSources[dataSource.name] = undefined;
 									if (options.skipEvents) {
-										return Promise.resolve(entityProxied);
+										return Promise.resolve(_this29);
 									} else {
-										return _this26.emit('afterDestroy', sourceName).then(function () {
-											return Promise.resolve(entityProxied);
+										return _this29.emit('afterDestroy', sourceName).then(function () {
+											return Promise.resolve(_this29);
 										});
 									}
 								});
 							},
+
 							/**
         * Get entity's current state.
         *
@@ -2648,9 +2672,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								if (!_.isEmpty(validationErrors)) {
 									throw new EntityValidationError(validationErrors, 'Validation failed');
 								}
+							},
+							replaceAttributes: function replaceAttributes() {
+								var newContent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+								newContent.idHash = attributes.idHash;
+								attributes = newContent;
+							},
+							getDiff: function getDiff(dataSource) {
+								var dataStoreEntity = this.dataSources[dataSource.name];
+								var dataStoreObject = dataStoreEntity.toObject();
+
+								var keys = _(attributes).keys().concat(_.keys(dataStoreObject)).uniq().difference(['idHash']).value();
+								var values = _(keys).filter(function (key) {
+									return attributes[key] !== dataStoreObject[key];
+								}).map(function (key) {
+									return attributes[key];
+								}).value();
+								var diff = _.zipObject(keys, values);
+								return diff;
 							}
 						};
-						var entityPrototypeProperties = _.keys(entityPrototype);
 
 						// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 						if (source instanceof DataStoreEntity) {
@@ -2661,11 +2703,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						}
 						// Check keys provided in source
 						var sourceKeys = _.keys(source);
-						// Check if there is an intersection with reserved, and have differences with model attributes
-						var sourceUReserved = _.intersection(sourceKeys, entityPrototypeProperties);
-						if (0 !== sourceUReserved.length) {
-							throw new Error("Source has reserved keys: " + JSON.stringify(sourceUReserved) + " in " + JSON.stringify(source));
-						}
 						var sourceDModel = _.difference(source, modelAttrsKeys);
 						if (0 !== sourceDModel.length) {
 							// Later, add a criteria for schemaless models
@@ -2688,35 +2725,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						// Define getters & setters
 						var entityDefined = Utils.defineEnumerableProperties(_this26, entityPrototype);
-						var entityProxied = new Proxy(entityDefined, {
-							get: function get(obj, key) {
-								if ('constructor' === key) {
-									return entityDefined[key];
-								}
-								if (key in entityDefined) {
-									return entityDefined[key];
-								}
-								return attributes[key];
-							},
-							set: function set(obj, key, value) {
-								if (key in entityDefined && !_get(Entity.prototype.__proto__ || Object.getPrototypeOf(Entity.prototype), "hasOwnProperty", _this26).call(_this26, key)) {
-									console.warn("Trying to define read-only key " + key + ".");
-									return value;
-								}
-								return attributes[key] = value;
-							},
-							enumerate: function enumerate() {
-								return _.keys(attributes);
-							},
-							ownKeys: function ownKeys() {
-								return _(attributes).keys().concat(entityPrototypeProperties).value();
-							},
-							has: function has(obj, key) {
-								return attributes.hasOwnProperty(key);
-							}
-						});
 
-						return _ret = entityProxied, _possibleConstructorReturn(_this26, _ret);
+						return _ret = entityDefined, _possibleConstructorReturn(_this26, _ret);
 					}
 
 					return Entity;
@@ -2919,10 +2929,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						errorArgs[_key3 - 2] = arguments[_key3];
 					}
 
-					var _this28 = _possibleConstructorReturn(this, (_ref4 = EntityValidationError.__proto__ || Object.getPrototypeOf(EntityValidationError)).call.apply(_ref4, [this, message].concat(errorArgs)));
+					var _this31 = _possibleConstructorReturn(this, (_ref4 = EntityValidationError.__proto__ || Object.getPrototypeOf(EntityValidationError)).call.apply(_ref4, [this, message].concat(errorArgs)));
 
-					_this28.validationErrors = validationErrors;
-					return _this28;
+					_this31.validationErrors = validationErrors;
+					return _this31;
 				}
 
 				return EntityValidationError;
@@ -2960,15 +2970,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						errorArgs[_key4 - 1] = arguments[_key4];
 					}
 
-					var _this29 = _possibleConstructorReturn(this, (_ref5 = ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call.apply(_ref5, [this, message].concat(errorArgs)));
+					var _this32 = _possibleConstructorReturn(this, (_ref5 = ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call.apply(_ref5, [this, message].concat(errorArgs)));
 
-					_this29.constructor = _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this29);
+					_this32.constructor = _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this32);
 					if ('function' === typeof Error.captureStackTrace) {
-						Error.captureStackTrace(_this29, _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this29));
+						Error.captureStackTrace(_this32, _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this32));
 					} else {
-						_this29.stack = new Error(message).stack;
+						_this32.stack = new Error(message).stack;
 					}
-					return _this29;
+					return _this32;
 				}
 
 				return ExtendableError;
@@ -3020,10 +3030,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						errorArgs[_key5 - 2] = arguments[_key5];
 					}
 
-					var _this30 = _possibleConstructorReturn(this, (_ref6 = SetValidationError.__proto__ || Object.getPrototypeOf(SetValidationError)).call.apply(_ref6, [this, message].concat(errorArgs)));
+					var _this33 = _possibleConstructorReturn(this, (_ref6 = SetValidationError.__proto__ || Object.getPrototypeOf(SetValidationError)).call.apply(_ref6, [this, message].concat(errorArgs)));
 
-					_this30.validationErrors = validationErrors;
-					return _this30;
+					_this33.validationErrors = validationErrors;
+					return _this33;
 				}
 
 				return SetValidationError;
@@ -3160,12 +3170,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       */
 
 				}, {
-					key: "spawnMulti",
-					value: function spawnMulti(sources) {
-						var _this31 = this;
+					key: "spawnMany",
+					value: function spawnMany(sources) {
+						var _this34 = this;
 
 						return new Set(this, _.map(sources, function (source) {
-							return _this31.spawn(source);
+							return _this34.spawn(source);
 						}));
 					}
 
@@ -3181,11 +3191,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "insert",
 					value: function insert(source, dataSourceName) {
-						var _this32 = this;
+						var _this35 = this;
 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.insertOne(this.name, source).then(function (entity) {
-							return Promise.resolve(new _this32.entityFactory(entity));
+							return Promise.resolve(new _this35.entityFactory(entity));
 						});
 					}
 
@@ -3201,14 +3211,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "insertMany",
 					value: function insertMany(sources, dataSourceName) {
-						var _this33 = this;
+						var _this36 = this;
 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.insertMany(this.name, sources).then(function (entities) {
 							var newEntities = _.map(entities, function (entity) {
-								return new _this33.entityFactory(entity);
+								return new _this36.entityFactory(entity);
 							});
-							var collection = new Set(_this33, newEntities);
+							var collection = new Set(_this36, newEntities);
 							return Promise.resolve(collection);
 						});
 					}
@@ -3228,7 +3238,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function find() {
 						var queryFind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-						var _this34 = this;
+						var _this37 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
@@ -3246,7 +3256,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isNil(dataSourceEntity)) {
 								return Promise.resolve();
 							}
-							var newEntity = new _this34.entityFactory(dataSourceEntity);
+							var newEntity = new _this37.entityFactory(dataSourceEntity);
 							newEntity.dataSources[dataSource.name] = dataSourceEntity;
 							return Promise.resolve(newEntity);
 						});
@@ -3267,7 +3277,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function findMany() {
 						var queryFind = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-						var _this35 = this;
+						var _this38 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 						var dataSourceName = arguments[2];
@@ -3283,9 +3293,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.findMany(this.name, queryFind, options).then(function (entities) {
 							var newEntities = _.map(entities, function (entity) {
-								return new _this35.entityFactory(entity);
+								return new _this38.entityFactory(entity);
 							});
-							var collection = new Set(_this35, newEntities);
+							var collection = new Set(_this38, newEntities);
 							return Promise.resolve(collection);
 						});
 					}
@@ -3304,7 +3314,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "update",
 					value: function update(queryFind, _update) {
-						var _this36 = this;
+						var _this39 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 						var dataSourceName = arguments[3];
@@ -3318,7 +3328,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							if (_.isNil(dataSourceEntity)) {
 								return Promise.resolve();
 							}
-							var newEntity = new _this36.entityFactory(dataSourceEntity);
+							var newEntity = new _this39.entityFactory(dataSourceEntity);
 							return Promise.resolve(newEntity);
 						});
 					}
@@ -3337,7 +3347,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "updateMany",
 					value: function updateMany(queryFind, update) {
-						var _this37 = this;
+						var _this40 = this;
 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 						var dataSourceName = arguments[3];
@@ -3349,9 +3359,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.updateMany(this.name, queryFind, update, options).then(function (entities) {
 							var newEntities = _.map(entities, function (entity) {
-								return new _this37.entityFactory(entity);
+								return new _this40.entityFactory(entity);
 							});
-							var collection = new Set(_this37, newEntities);
+							var collection = new Set(_this40, newEntities);
 							return Promise.resolve(collection);
 						});
 					}
@@ -3531,7 +3541,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @see {@link EntityFactory.Entity#persist}
       */
 					value: function persist(sourceName) {
-						var _this38 = this;
+						var _this41 = this;
 
 						var suffixes = this.entities.map(function (entity) {
 							return 'orphan' === entity.state ? 'Create' : 'Update';
@@ -3539,12 +3549,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						return Promise.all(this.entities.map(function (entity) {
 							return entity.emit('beforePersist');
 						})).then(function () {
-							return Promise.all(_this38.entities.map(function (entity) {
+							return Promise.all(_this41.entities.map(function (entity) {
 								return entity.emit('beforeValidate');
 							}));
 						}).then(function () {
 							var errors = 0;
-							var validationResults = _this38.entities.map(function (entity) {
+							var validationResults = _this41.entities.map(function (entity) {
 								try {
 									entity.validate();
 									return undefined;
@@ -3554,34 +3564,34 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								}
 							}).value();
 							if (errors > 0) {
-								return Promise.reject(new SetValidationError("Set validation failed for " + errors + " elements (on " + _this38.length + "): ", validationResults));
+								return Promise.reject(new SetValidationError("Set validation failed for " + errors + " elements (on " + _this41.length + "): ", validationResults));
 							} else {
 								return Promise.resolve();
 							}
 						}).then(function () {
-							return Promise.all(_this38.entities.map(function (entity) {
+							return Promise.all(_this41.entities.map(function (entity) {
 								return entity.emit('afterValidate');
 							}));
 						}).then(function () {
-							return Promise.all(_this38.entities.map(function (entity, index) {
+							return Promise.all(_this41.entities.map(function (entity, index) {
 								return entity.emit("beforePersist" + suffixes[index]);
 							}));
 						}).then(function () {
-							return Promise.all(_this38.entities.map(function (entity) {
+							return Promise.all(_this41.entities.map(function (entity) {
 								return entity.persist(sourceName, {
 									skipEvents: true
 								});
 							}));
 						}).then(function () {
-							return Promise.all(_this38.entities.map(function (entity, index) {
+							return Promise.all(_this41.entities.map(function (entity, index) {
 								return entity.emit("afterPersist" + suffixes[index]);
 							}));
 						}).then(function () {
-							return Promise.all(_this38.entities.map(function (entity) {
+							return Promise.all(_this41.entities.map(function (entity) {
 								return entity.emit('afterPersist');
 							}));
 						}).then(function () {
-							return _this38;
+							return _this41;
 						});
 					}
 
@@ -3599,22 +3609,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "fetch",
 					value: function fetch(sourceName) {
-						var _this39 = this;
+						var _this42 = this;
 
 						return Promise.all(this.entities.map(function (entity) {
 							return entity.emit('beforeFetch');
 						})).then(function () {
-							return Promise.all(_this39.entities.map(function (entity) {
+							return Promise.all(_this42.entities.map(function (entity) {
 								return entity.fetch(sourceName, {
 									skipEvents: true
 								});
 							}));
 						}).then(function () {
-							return Promise.all(_this39.entities.map(function (entity) {
+							return Promise.all(_this42.entities.map(function (entity) {
 								return entity.emit('afterFetch');
 							}));
 						}).then(function () {
-							return _this39;
+							return _this42;
 						});
 					}
 
@@ -3632,22 +3642,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "destroy",
 					value: function destroy(sourceName) {
-						var _this40 = this;
+						var _this43 = this;
 
 						return Promise.all(this.entities.map(function (entity) {
 							return entity.emit('beforeDestroy');
 						})).then(function () {
-							return Promise.all(_this40.entities.map(function (entity) {
+							return Promise.all(_this43.entities.map(function (entity) {
 								return entity.destroy(sourceName, {
 									skipEvents: true
 								});
 							}));
 						}).then(function () {
-							return Promise.all(_this40.entities.map(function (entity) {
+							return Promise.all(_this43.entities.map(function (entity) {
 								return entity.emit('afterDestroy');
 							}));
 						}).then(function () {
-							return _this40;
+							return _this43;
 						});
 					}
 
@@ -3672,6 +3682,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							});
 						});
 						return this;
+					}
+				}, {
+					key: "toObject",
+					value: function toObject() {
+						return this.entities.map(function (entity) {
+							return entity.toObject();
+						});
 					}
 				}], [{
 					key: "checkEntitiesFromModel",

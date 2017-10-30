@@ -53,8 +53,8 @@ it( 'Should reject persistance of badly configured entities (spawn).', () => {
 		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(?=.*\Winteger(\W|$))(?=.*\Wrequired(\W|$))/m ),
 	]);
 });
-it( 'Should reject persistance of badly configured entities (spawnMulti).', () => {
-	const fail1 = testModel.spawnMulti([
+it( 'Should reject persistance of badly configured entities (spawnMany).', () => {
+	const fail1 = testModel.spawnMany([
 		{
 			prop1: 1,
 			prop2: 2,
@@ -62,7 +62,7 @@ it( 'Should reject persistance of badly configured entities (spawnMulti).', () =
 			prop2: 2,
 		},
 	]).persist();
-	const fail2 = testModel.spawnMulti([
+	const fail2 = testModel.spawnMany([
 		{
 			prop2: 0,
 		}, {
@@ -115,7 +115,7 @@ it( 'Should define default values on valid items', () => {
 		},
 		undefined,
 	];
-	const entities = testModel.spawnMulti( objects );
+	const entities = testModel.spawnMany( objects );
 	expect( entities ).to.be.a.set.of.entity( testModel, objects, true ).that.have.lengthOf( 2 );
 });
 describe( 'Should be able to use model methods to find, update, delete & create', () => {

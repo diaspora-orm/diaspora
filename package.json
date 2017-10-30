@@ -1,6 +1,6 @@
 {
 	"name": "diaspora",
-	"version": "0.2.0-rc.2",
+	"version": "0.2.0-rc.3",
 	"description": "Multi-Layer ORM for Javascript Client+Server",
 	"main": "diaspora.js",
 	"files": [
@@ -76,6 +76,7 @@
 	},
 	"dependencies": {
 		"bluebird": "^3.5.1",
+		"dox": "^0.9.0",
 		"lodash": "^4.17.4",
 		"sequential-event": "^0.2.0",
 		"winston": "^3.0.0-rc0"

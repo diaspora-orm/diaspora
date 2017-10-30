@@ -116,7 +116,7 @@ module.exports = function gruntInit( grunt ) {
 					alias: {
 						'/test/adapters/index.js':          './test/adapters/index.js',
 						'/test/adapters/inMemory.js':       './test/adapters/inMemory.js',
-						'/test/adapters/webStorage.js': './test/adapters/webStorage.js',
+						'/test/adapters/webStorage.js':     './test/adapters/webStorage.js',
 						'/test/models/index.js':            './test/models/index.js',
 						'/test/models/simple.js':           './test/models/simple.js',
 						'/test/models/simple-remapping.js': './test/models/simple-remapping.js',
