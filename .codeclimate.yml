@@ -24,3 +24,7 @@ exclude_paths:
 - "*/"
 - "!lib/"
 - "!diaspora.js"
+exclude_patterns:
+- "*"
+- "!lib/"
+- "!diaspora.js"
