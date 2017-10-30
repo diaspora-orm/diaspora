@@ -21,10 +21,6 @@ checks:
     config:
       threshold: 10
 exclude_paths:
-- "*/"
-- "!lib/"
-- "!diaspora.js"
-exclude_patterns:
-- "*"
+- "./*"
 - "!lib/"
 - "!diaspora.js"
