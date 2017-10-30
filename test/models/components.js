@@ -299,6 +299,9 @@ describe( 'Test set', () => {
 describe( 'Test errors', () => {
 	it( 'Extendable error', () => {
 		const ExtendableError = Diaspora.components.Errors.ExtendableError;
+		/**
+		 * @ignore
+		 */
 		class subError extends ExtendableError {}
 		const saveCST = Error.captureStackTrace;
 		
