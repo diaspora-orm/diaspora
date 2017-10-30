@@ -295,3 +295,17 @@ describe( 'Test set', () => {
 		});
 	});
 });
+
+describe('Test errors', () => {
+	it('Extendable error', () => {
+		const ExtendableError = Diaspora.components.Errors.ExtendableError;
+		class subError extends ExtendableError{};
+		const saveCST = Error.captureStackTrace;
+		
+		Error.captureStackTrace = undefined;
+		expect(new subError()).to.be.an('Error');
+		Error.captureStackTrace = saveCST;
+//		console.log([Error.__proto__.captureStackTrace, Error.captureStackTrace, Error.prototype.captureStackTrace])
+//		subError.captureStackTrace = Error.captureStackTrace;
+	});
+})

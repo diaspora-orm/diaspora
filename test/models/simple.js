@@ -238,6 +238,28 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 	});
 });
 describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
+	it( 'Fetch should be rejected with an error on orphan items', () => {
+		const object = {
+			foo: 'bar', 
+		};
+		testedEntity = testModel.spawn( object );
+		expect( testedEntity ).to.be.an.entity( testModel, object, true );
+		const retPromise = testedEntity.fetch();
+		expect( testedEntity.state ).to.be.eql( 'syncing' );
+		expect( testedEntity ).to.be.an.entity( testModel, object, null );
+		expect( retPromise ).to.be.rejectedWith( Diaspora.components.Errors.EntityStateError );
+	});
+	it( 'Destroy should be rejected with an error on orphan items', () => {
+		const object = {
+			foo: 'bar', 
+		};
+		testedEntity = testModel.spawn( object );
+		expect( testedEntity ).to.be.an.entity( testModel, object, true );
+		const retPromise = testedEntity.destroy();
+		expect( testedEntity.state ).to.be.eql( 'syncing' );
+		expect( testedEntity ).to.be.an.entity( testModel, object, null );
+		expect( retPromise ).to.be.rejectedWith( Diaspora.components.Errors.EntityStateError );
+	});
 	it( 'Persist should change the entity', () => {
 		const object = {
 			foo: 'bar', 
