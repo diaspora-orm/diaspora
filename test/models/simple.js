@@ -52,7 +52,6 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			};
 			return testModel.insert( object ).then( newEntity => {
 				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
-				return Promise.resolve();
 			});
 		});
 		it( 'Create multiple instances', () => {
@@ -71,7 +70,6 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			];
 			return testModel.insertMany( objects ).then( newEntities => {
 				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
-				return Promise.resolve();
 			});
 		});
 	});
