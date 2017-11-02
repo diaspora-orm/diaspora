@@ -5,7 +5,75 @@ const Diaspora = require( './lib/diaspora' );
 
 module.exports = Diaspora;
 
-},{"./lib/diaspora":9}],2:[function(require,module,exports){
+},{"./lib/diaspora":10}],2:[function(require,module,exports){
+'use strict';
+
+const {_} = require( '../dependencies' );
+
+module.exports = {
+	OPERATORS: {
+		$exists:       ( entityVal, targetVal ) => targetVal === !_.isUndefined( entityVal ),
+		$equal:        ( entityVal, targetVal ) => !_.isUndefined( entityVal ) && entityVal === targetVal,
+		$diff:         ( entityVal, targetVal ) => !_.isUndefined( entityVal ) && entityVal !== targetVal,
+		$less:         ( entityVal, targetVal ) => !_.isUndefined( entityVal ) && entityVal < targetVal,
+		$lessEqual:    ( entityVal, targetVal ) => !_.isUndefined( entityVal ) && entityVal <= targetVal,
+		$greater:      ( entityVal, targetVal ) => !_.isUndefined( entityVal ) && entityVal > targetVal,
+		$greaterEqual: ( entityVal, targetVal ) => !_.isUndefined( entityVal ) && entityVal >= targetVal,
+	},
+	CANONICAL_OPERATORS: {
+		'~':  '$exists',
+		'==': '$equal',
+		'!=': '$diff',
+		'<':  '$less',
+		'<=': '$lessEqual',
+		'>':  '$greater',
+		'>=': '$greaterEqual',
+	},
+	QUERY_OPTIONS_TRANSFORMS: {
+		limit( opts ) {
+			let limitOpt = opts.limit;
+			if ( _.isString( limitOpt )) {
+				limitOpt = parseInt( limitOpt );
+			}
+			if ( !( _.isInteger( limitOpt ) || Infinity === limitOpt ) || limitOpt < 0 ) {
+				throw new TypeError( `Expect "options.limit" to be an integer equal to or above 0, have ${ limitOpt }` );
+			}
+			opts.limit = limitOpt;
+		},
+		skip( opts ) {
+			let skipOpt = opts.skip;
+			if ( _.isString( skipOpt )) {
+				skipOpt = parseInt( skipOpt );
+			}
+			if ( !_.isInteger( skipOpt ) || skipOpt < 0 || !isFinite( skipOpt )) {
+				throw new TypeError( `Expect "options.skip" to be a finite integer equal to or above 0, have ${ skipOpt }` );
+			}
+			opts.skip = skipOpt;
+		},
+		page( opts ) {
+			if ( !opts.hasOwnProperty( 'limit' )) {
+				throw new ReferenceError( 'Usage of "options.page" requires "options.limit" to be defined.' );
+			}
+			if ( !isFinite( opts.limit )) {
+				throw new ReferenceError( 'Usage of "options.page" requires "options.limit" to not be infinite' );
+			}
+			if ( opts.hasOwnProperty( 'skip' )) {
+				throw new Error( 'Use either "options.page" or "options.skip"' );
+			}
+			let pageOpt = opts.page;
+			if ( _.isString( pageOpt )) {
+				pageOpt = parseInt( pageOpt );
+			}
+			if ( !_.isInteger( pageOpt ) || pageOpt < 0 ) {
+				throw new TypeError( `Expect "options.page" to be an integer equal to or above 0, have ${ pageOpt }` );
+			}
+			opts.skip = pageOpt * opts.limit;
+			delete opts.page;
+		},
+	},
+};
+
+},{"../dependencies":9}],3:[function(require,module,exports){
 'use strict';
 
 const {
@@ -100,6 +168,37 @@ const {
 /**
  * @namespace Adapters
  */
+
+const iterateLimit = ( options, query ) => {
+	const foundEntities = [];
+	let foundCount = 0;
+	let origSkip = options.skip;
+
+	// We are going to loop until we find enough items
+	const loopFind = found => {
+		// If the search returned nothing, then just finish the findMany
+		if ( _.isNil( found )) {
+			return Promise.resolve( foundEntities );
+			// Else, if this is a value and not the initial `true`, add it to the list
+		} else if ( found !== true ) {
+			foundEntities.push( found );
+		}
+		// If we found enough items, return them
+		if ( foundCount === options.limit ) {
+			return Promise.resolve( foundEntities );
+		}
+		options.skip = origSkip + foundCount;
+		// Next time we'll skip 1 more item
+		foundCount++;
+		// Do the query & loop
+		return query( options ).then( loopFind );
+	};
+	return loopFind;
+};
+
+const {
+	OPERATORS, CANONICAL_OPERATORS, QUERY_OPTIONS_TRANSFORMS,
+} = require( './baseAdapter-utils' );
 
 /**
  * DiasporaAdapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
@@ -242,7 +341,7 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @author gerkin
 	 * @param   {string}  tableName      - Name of the table we are remapping for.
 	 * @param   {Object}  query          - Hash representing the raw query to remap.
-	 * @param   {boolean} [invert=false] - `false` to cast to `table` field names, `true` to cast to `entity` field name.
+	 * @param   {boolean} [invert=false] - Set to `false` to cast to `table` field names, `true` to cast to `entity` field name.
 	 * @returns {Object} Remapped object.
 	 */
 	remapFields( tableName, query, invert = false ) {
@@ -263,27 +362,13 @@ class DiasporaAdapter extends SequentialEvent {
 	 *
 	 * @author gerkin
 	 * @see TODO remapping.
+	 * @see {@link Adapters.DiasporaAdapter#remapIO remapIO}
 	 * @param   {string} tableName - Name of the table for which we remap.
 	 * @param   {Object} query     - Hash representing the entity to remap.
 	 * @returns {Object} Remapped object.
 	 */
 	remapInput( tableName, query ) {
-		if ( _.isNil( query )) {
-			return query;
-		}
-		const filtered = _.mapValues( query, ( value, key ) => {
-			if ( _.isObject( _.get( this, 'filters.input' )) && this.filters.input.hasOwnProperty( key )) {
-				return this.filters.input[key]( value );
-			}
-			return value;
-		});
-		const remaped = _.mapKeys( filtered, ( value, key ) => {
-			if ( this.remaps.hasOwnProperty( key )) {
-				return this.remaps[key];
-			}
-			return key;
-		});
-		return remaped;
+		return this.remapIO( tableName, query, true );
 	}
 
 	/**
@@ -291,23 +376,40 @@ class DiasporaAdapter extends SequentialEvent {
 	 *
 	 * @author gerkin
 	 * @see TODO remapping.
+	 * @see {@link Adapters.DiasporaAdapter#remapIO remapIO}
 	 * @param   {string} tableName - Name of the table for which we remap.
 	 * @param   {Object} query     - Hash representing the entity to remap.
 	 * @returns {Object} Remapped object.
 	 */
 	remapOutput( tableName, query ) {
+		return this.remapIO( tableName, query, false );
+	}
+
+	/**
+	 * TODO.
+	 *
+	 * @author gerkin
+	 * @see TODO remapping.
+	 * @param   {string}  tableName - Name of the table for which we remap.
+	 * @param   {Object}  query     - Hash representing the entity to remap.
+	 * @param   {boolean} input     - Set to `true` if handling input, `false`to output.
+	 * @returns {Object} Remapped object.
+	 */
+	remapIO( tableName, query, input ) {
 		if ( _.isNil( query )) {
 			return query;
 		}
+		const direction = true === input ? 'input' : 'output';
 		const filtered = _.mapValues( query, ( value, key ) => {
-			if ( _.isObject( _.get( this, 'filters.output' )) && this.filters.output.hasOwnProperty( key )) {
+			if ( _.isObject( _.get( this, [ 'filters', direction ])) && this.filters[direction].hasOwnProperty( key )) {
 				return this.filters.output[key]( value );
 			}
 			return value;
 		});
+		const remaps = true === input ? this.remaps : this.remapsInverted;
 		const remaped = _.mapKeys( filtered, ( value, key ) => {
-			if ( this.remapsInverted.hasOwnProperty( key )) {
-				return this.remapsInverted[key];
+			if ( remaps.hasOwnProperty( key )) {
+				return remaps[key];
 			}
 			return key;
 		});
@@ -335,67 +437,23 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQuery} query  - Query to match against.
 	 * @param   {Object}                    entity - Entity to test.
-	 * @returns {boolean} `true` if query matches, `false` otherwise.
+	 * @returns {boolean} Returns `true` if query matches, `false` otherwise.
 	 */
 	matchEntity( query, entity ) {
 		const matchResult = _.every( _.toPairs( query ), ([ key, desc ]) => {
 			if ( _.isObject( desc )) {
 				const entityVal = entity[key];
 				return _.every( desc, ( val, operation ) => {
-					switch ( operation ) {
-						case '$exists': {
-							return val === !_.isUndefined( entityVal );
-						}
-
-						case '$equal': {
-							return !_.isUndefined( entityVal ) && entityVal === val;
-						}
-
-						case '$diff': {
-							return !_.isUndefined( entityVal ) && entityVal !== val;
-						}
-
-						case '$less': {
-							return !_.isUndefined( entityVal ) && entityVal < val;
-						}
-
-						case '$lessEqual': {
-							return !_.isUndefined( entityVal ) && entityVal <= val;
-						}
-
-						case '$greater': {
-							return !_.isUndefined( entityVal ) && entityVal > val;
-						}
-
-						case '$greaterEqual': {
-							return !_.isUndefined( entityVal ) && entityVal >= val;
-						}
+					if ( OPERATORS.hasOwnProperty( operation )) {
+						return OPERATORS[operation]( entityVal, val );
+					} else {
+						return false;
 					}
-					return false;
 				});
 			}
 			return false;
 		});
 		return matchResult;
-	}
-
-	/**
-	 * Merge update query with the entity. This operation allows to delete fields.
-	 *
-	 * @author gerkin
-	 * @param   {Object} update - Hash representing modified values. A field with an `undefined` value deletes this field from the entity.
-	 * @param   {Object} entity - Entity to update.
-	 * @returns {Object} Entity modified.
-	 */
-	applyUpdateEntity( update, entity ) {
-		_.forEach( update, ( val, key ) => {
-			if ( _.isUndefined( val )) {
-				delete entity[key];
-			} else {
-				entity[key] = val;
-			}
-		});
-		return entity;
 	}
 
 	/**
@@ -410,46 +468,13 @@ class DiasporaAdapter extends SequentialEvent {
 	 */
 	normalizeOptions( opts = {}) {
 		opts = _.cloneDeep( opts );
-		if ( opts.hasOwnProperty( 'limit' )) {
-			let limitOpt = opts.limit;
-			if ( _.isString( limitOpt )) {
-				limitOpt = parseInt( limitOpt );
+
+		_.forEach( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
+			if ( opts.hasOwnProperty( optionName )) {
+				QUERY_OPTIONS_TRANSFORMS[optionName]( opts );
 			}
-			if ( !( _.isInteger( limitOpt ) || Infinity === limitOpt ) || limitOpt < 0 ) {
-				throw new TypeError( `Expect "options.limit" to be an integer equal to or above 0, have ${ limitOpt }` );
-			}
-			opts.limit = limitOpt;
-		}
-		if ( opts.hasOwnProperty( 'skip' )) {
-			let skipOpt = opts.skip;
-			if ( _.isString( skipOpt )) {
-				skipOpt = parseInt( skipOpt );
-			}
-			if ( !_.isInteger( skipOpt ) || skipOpt < 0 || !isFinite( skipOpt )) {
-				throw new TypeError( `Expect "options.skip" to be a finite integer equal to or above 0, have ${ skipOpt }` );
-			}
-			opts.skip = skipOpt;
-		}
-		if ( opts.hasOwnProperty( 'page' )) {
-			if ( !opts.hasOwnProperty( 'limit' )) {
-				throw new ReferenceError( 'Usage of "options.page" requires "options.limit" to be defined.' );
-			}
-			if ( !isFinite( opts.limit )) {
-				throw new ReferenceError( 'Usage of "options.page" requires "options.limit" to not be infinite' );
-			}
-			if ( opts.hasOwnProperty( 'skip' )) {
-				throw new Error( 'Use either "options.page" or "options.skip"' );
-			}
-			let pageOpt = opts.page;
-			if ( _.isString( pageOpt )) {
-				pageOpt = parseInt( pageOpt );
-			}
-			if ( !_.isInteger( pageOpt ) || pageOpt < 0 ) {
-				throw new TypeError( `Expect "options.page" to be an integer equal to or above 0, have ${ pageOpt }` );
-			}
-			opts.skip = pageOpt * opts.limit;
-			delete opts.page;
-		}
+		});
+		
 		_.defaults( opts, {
 			skip:        0,
 			remapInput:  true,
@@ -467,40 +492,22 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @returns {QueryLanguage#SelectQueryOrCondition} Query in its canonical form.
 	 */
 	normalizeQuery( originalQuery, options ) {
-		const canonicalOperations = {
-			'~':  '$exists',
-			'==': '$equal',
-			'!=': '$diff',
-			'<':  '$less',
-			'<=': '$lessEqual',
-			'>':  '$greater',
-			'>=': '$greaterEqual',
-		};
 		const normalizedQuery = true === options.remapInput ? _( _.cloneDeep( originalQuery )).mapValues( attrSearch => {
-			if ( !( !_.isNil( attrSearch ) && attrSearch instanceof Object )) {
-				if ( !_.isNil( attrSearch )) {
-					return {
-						$equal: attrSearch,
-					};
-				} else {
-					return {
-						$exists: false,
-					};
-				}
+			if ( _.isUndefined( attrSearch )) {
+				return { $exists: false };
+			} else if ( !( attrSearch instanceof Object )) {
+				return { $equal: attrSearch };
 			} else {
 				// Replace operations alias by canonical expressions
-				_.forEach( canonicalOperations, ( canon, alias ) => {
-					// If the currently checked alias is in the search hash...
-					if ( attrSearch.hasOwnProperty( alias )) {
+				attrSearch = _.mapKeys( attrSearch, ( val, operator, obj ) => {
+					if ( CANONICAL_OPERATORS.hasOwnProperty( operator )) {
 						// ... check for conflict with canonical operation name...
-						if ( attrSearch.hasOwnProperty( canon )) {
-							throw new Error( `Search can't have both "${ alias }" and "${ canon }" keys, as they are synonyms` );
-						} else {
-							// ... and replace alias by canonical
-							attrSearch[canon] = attrSearch[alias];
-							delete attrSearch[alias];
+						if ( obj.hasOwnProperty( CANONICAL_OPERATORS[operator])) {
+							throw new Error( `Search can't have both "${ operator }" and "${ CANONICAL_OPERATORS[operator] }" keys, as they are synonyms` );
 						}
-					}
+						return CANONICAL_OPERATORS[operator];
+					} 
+					return operator;
 				});
 				// For arithmetic comparison, check if values are numeric (TODO later: support date)
 				_.forEach([ '$less', '$lessEqual', '$greater', '$greaterEqual' ], operation => {
@@ -572,31 +579,8 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
 	findMany( table, queryFind, options = {}) {
-		const foundEntities = [];
 		options = this.normalizeOptions( options );
-		let foundCount = 0;
-		let origSkip = options.skip;
-
-		// We are going to loop until we find enough items
-		const loopFind = found => {
-			// If the search returned nothing, then just finish the findMany
-			if ( _.isNil( found )) {
-				return Promise.resolve( foundEntities );
-				// Else, if this is a value and not the initial `true`, add it to the list
-			} else if ( found !== true ) {
-				foundEntities.push( found );
-			}
-			// If we found enough items, return them
-			if ( foundCount === options.limit ) {
-				return Promise.resolve( foundEntities );
-			}
-			options.skip = origSkip + foundCount;
-			// Next time we'll skip 1 more item
-			foundCount++;
-			// Do the query & loop
-			return this.findOne( table, queryFind, options ).then( loopFind );
-		};
-		return loopFind( true );
+		return iterateLimit( options, _.partial( this.findOne, table, queryFind, _ ))( true );
 	}
 
 	// -----
@@ -614,6 +598,7 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`).
 	 */
 	updateOne( table, queryFind, update, options = {}) {
+		options = this.normalizeOptions( options );
 		options.limit = 1;
 		return this.updateMany( table, queryFind, update, options ).then( entities => Promise.resolve( _.first( entities )));
 	}
@@ -630,29 +615,8 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
 	updateMany( table, queryFind, update, options = {}) {
-		const foundEntities = [];
-		let skip = 0;
-
-		// We are going to loop until we find enough items
-		const loopFind = found => {
-			// If the search returned nothing, then just finish the findMany
-			if ( _.isNil( found )) {
-				return Promise.resolve( foundEntities );
-				// Else, if this is a value and not the initial `true`, add it to the list
-			} else if ( found !== true ) {
-				foundEntities.push( found );
-			}
-			// If we found enough items, return them
-			if ( skip === options.limit ) {
-				return Promise.resolve( foundEntities );
-			}
-			options.skip = skip;
-			// Next time we'll skip 1 more item
-			skip++;
-			// Do the query & loop
-			return this.updateOne( table, queryFind, update, options ).then( loopFind );
-		};
-		return loopFind( true );
+		options = this.normalizeOptions( options );
+		return iterateLimit( options, _.partial( this.updateOne, table, queryFind, update, _ ))( true );
 	}
 
 	// -----
@@ -711,13 +675,13 @@ class DiasporaAdapter extends SequentialEvent {
 
 module.exports = DiasporaAdapter;
 
-},{"../dependencies":8}],3:[function(require,module,exports){
-(function (global){
+},{"../dependencies":9,"./baseAdapter-utils":2}],4:[function(require,module,exports){
 'use strict';
 
 const {
 	_, Promise,
 } = require( '../dependencies' );
+const Utils = require( '../utils' );
 
 const DiasporaAdapter = require( './baseAdapter.js' );
 const InMemoryEntity = require( '../dataStoreEntities/inMemoryEntity.js' );
@@ -771,26 +735,6 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	// ### Utils
 
 	/**
-	 * Create a new unique id for this store's entity.
-	 * 
-	 * @author gerkin
-	 * @returns {string} Generated unique id.
-	 */
-	generateUUID() {
-		let d = new Date().getTime();
-		// Use high-precision timer if available
-		if ( global.performance && 'function' === typeof global.performance.now ) {
-			d += global.performance.now();
-		}
-		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
-			const r = ( d + Math.random() * 16 ) % 16 | 0;
-			d = Math.floor( d / 16 );
-			return ( 'x' === c ? r : ( r & 0x3 | 0x8 )).toString( 16 );
-		});
-		return uuid;
-	}
-
-	/**
 	 * Get or create the store hash.
 	 * 
 	 * @author gerkin
@@ -805,26 +749,6 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 				items: [],
 			};
 		} 
-	}
-
-	/**
-	 * Reduce, offset or sort provided set.
-	 * 
-	 * @author gerkin
-	 * @param   {Object[]} set     - Objects retrieved from memory store.
-	 * @param   {Object}   options - Options to apply to the set.
-	 * @returns {Object[]} Set with options applied.
-	 */
-	static applyOptionsToSet( set, options ) {
-		_.defaults( options, {
-			limit: Infinity,
-			skip:  0,
-		});
-		set = set.slice( options.skip );
-		if ( set.length > options.limit ) {
-			set = set.slice( 0, options.limit );
-		}
-		return set;
 	}
 
 	// -----
@@ -842,7 +766,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	insertOne( table, entity ) {
 		entity = _.cloneDeep( entity );
 		const storeTable = this.ensureCollectionExists( table );
-		entity.id = this.generateUUID();
+		entity.id = Utils.generateUUID();
 		this.setIdHash( entity );
 		storeTable.items.push( entity );
 		return Promise.resolve( new this.classEntity( entity, this ));
@@ -864,7 +788,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	findOne( table, queryFind, options = {}) {
 		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
+		const reducedMatches = Utils.applyOptionsToSet( matches, options );
 		return Promise.resolve( reducedMatches.length > 0 ? new this.classEntity( _.first( reducedMatches ), this ) : undefined );
 	}
 
@@ -881,7 +805,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	findMany( table, queryFind, options = {}) {
 		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, _.partial( this.matchEntity, queryFind ));
-		const reducedMatches = this.constructor.applyOptionsToSet( matches, options );
+		const reducedMatches = Utils.applyOptionsToSet( matches, options );
 		return Promise.resolve( _.map( reducedMatches, entity => new this.classEntity( entity, this )));
 	}
 
@@ -906,7 +830,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 				const match = _.find( storeTable.items, {
 					id: found.id,
 				});
-				this.applyUpdateEntity( update, match );
+				Utils.applyUpdateEntity( update, match );
 				return Promise.resolve( new this.classEntity( match, this ));
 			} else {
 				return Promise.resolve();
@@ -932,7 +856,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 				const foundIds = _.map( found, 'id' );
 				const matches = _.filter( storeTable.items, item => -1 !== foundIds.indexOf( item.id ));
 				return Promise.resolve( _.map( matches, item => {
-					this.applyUpdateEntity( update, item );
+					Utils.applyUpdateEntity( update, item );
 					return new this.classEntity( item, this );
 				}));
 			} else {
@@ -986,14 +910,15 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 module.exports = InMemoryDiasporaAdapter;
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../dataStoreEntities/inMemoryEntity.js":6,"../dependencies":8,"./baseAdapter.js":2}],4:[function(require,module,exports){
+},{"../dataStoreEntities/inMemoryEntity.js":7,"../dependencies":9,"../utils":18,"./baseAdapter.js":3}],5:[function(require,module,exports){
 (function (global){
 'use strict';
 
 const {
 	_, Promise,
 } = require( '../dependencies' );
+const Utils = require( '../utils' );
+
 const DiasporaAdapter = require( './baseAdapter.js' );
 const WebStorageEntity = require( '../dataStoreEntities/webStorageEntity.js' );
 
@@ -1054,25 +979,6 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 	// ### Utils
 
 	/**
-	 * Create a new unique id for this store's entity.
-	 * 
-	 * @author gerkin
-	 * @returns {string} Generated unique id.
-	 */
-	generateUUID() {
-		let d = new Date().getTime();
-		if ( global.performance && 'function' === typeof global.performance.now ) {
-			d += global.performance.now(); //use high-precision timer if available
-		}
-		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
-			const r = ( d + Math.random() * 16 ) % 16 | 0;
-			d = Math.floor( d / 16 );
-			return ( 'x' === c ? r : ( r & 0x3 | 0x8 )).toString( 16 );
-		});
-		return uuid;
-	}
-
-	/**
 	 * Create the table key if it does not exist.
 	 * 
 	 * @author gerkin
@@ -1088,26 +994,6 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 			index = JSON.parse( index );
 		}
 		return index;
-	}
-
-	/**
-	 * Reduce, offset or sort provided set.
-	 * 
-	 * @author gerkin
-	 * @param   {Object[]} set     - Objects retrieved from memory store.
-	 * @param   {Object}   options - Options to apply to the set.
-	 * @returns {Object[]} Set with options applied.
-	 */
-	static applyOptionsToSet( set, options ) {
-		_.defaults( options, {
-			limit: Infinity,
-			skip:  0,
-		});
-		set = set.slice( options.skip );
-		if ( set.length > options.limit ) {
-			set = set.slice( 0, options.limit );
-		}
-		return set;
 	}
 
 	/**
@@ -1136,7 +1022,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 	 */
 	insertOne( table, entity ) {
 		entity = _.cloneDeep( entity || {});
-		entity.id = this.generateUUID();
+		entity.id = Utils.generateUUID();
 		this.setIdHash( entity );
 		try {
 			const tableIndex = this.ensureCollectionExists( table );
@@ -1163,7 +1049,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 		try {
 			const tableIndex = this.ensureCollectionExists( table );
 			entities = entities.map(( entity = {}) => {
-				entity.id = this.generateUUID();
+				entity.id = Utils.generateUUID();
 				this.setIdHash( entity );
 				tableIndex.push( entity.id );
 				this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
@@ -1253,7 +1139,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 			if ( _.isNil( entity )) {
 				return Promise.resolve();
 			}
-			this.applyUpdateEntity( update, entity );
+			Utils.applyUpdateEntity( update, entity );
 			try {
 				this.source.setItem( this.getItemName( table, entity.id ), JSON.stringify( entity ));
 				return Promise.resolve( entity );
@@ -1320,7 +1206,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 module.exports = WebStorageDiasporaAdapter;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../dataStoreEntities/webStorageEntity.js":7,"../dependencies":8,"./baseAdapter.js":2}],5:[function(require,module,exports){
+},{"../dataStoreEntities/webStorageEntity.js":8,"../dependencies":9,"../utils":18,"./baseAdapter.js":3}],6:[function(require,module,exports){
 'use strict';
 
 const {
@@ -1373,7 +1259,7 @@ class DataStoreEntity {
 
 module.exports = DataStoreEntity;
 
-},{"../dependencies":8}],6:[function(require,module,exports){
+},{"../dependencies":9}],7:[function(require,module,exports){
 'use strict';
 
 const DataStoreEntity = require( './baseEntity.js' );
@@ -1398,7 +1284,7 @@ class InMemoryEntity extends DataStoreEntity {
 
 module.exports = InMemoryEntity;
 
-},{"./baseEntity.js":5}],7:[function(require,module,exports){
+},{"./baseEntity.js":6}],8:[function(require,module,exports){
 'use strict';
 
 const DataStoreEntity = require( './baseEntity.js' );
@@ -1424,7 +1310,7 @@ class WebStorageEntity extends DataStoreEntity {
 
 module.exports = WebStorageEntity;
 
-},{"./baseEntity.js":5}],8:[function(require,module,exports){
+},{"./baseEntity.js":6}],9:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1441,7 +1327,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bluebird":undefined,"lodash":undefined,"sequential-event":undefined}],9:[function(require,module,exports){
+},{"bluebird":undefined,"lodash":undefined,"sequential-event":undefined}],10:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1558,6 +1444,75 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 	};
 };
 
+const VALIDATE_WRONG_TYPE = tester => {
+	return ( keys, fieldDesc, value ) => {
+		if ( !tester( value )) {
+			return {type: `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`};
+		}
+	};
+};
+const VALIDATIONS = {
+	TYPE: {
+		string:  VALIDATE_WRONG_TYPE( _.isString ),
+		integer: VALIDATE_WRONG_TYPE( _.isInteger ),
+		float:   VALIDATE_WRONG_TYPE( _.isNumber ),
+		date:    VALIDATE_WRONG_TYPE( _.isDate ),
+		object( keys, fieldDesc, value ) {
+			if ( !_.isObject( value )) {
+				return {type: `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`};
+			} else {
+				const deepTest = _.isObject(
+					fieldDesc.attributes
+				) ? _( value ).mapValues(
+						( propVal, propName ) => Diaspora.checkField(
+							propVal,
+							fieldDesc.attributes[propName],
+							_.concat( keys, [ propName ])
+						)
+					)
+						.omitBy( _.isEmpty )
+						.value() : {};
+				if ( !_.isEmpty( deepTest )) {
+					return {children: deepTest};
+				}
+			}
+		},
+		array( keys, fieldDesc, value ) {
+			if ( !_.isArray( value )) {
+				return {type: `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`};
+			} else {
+				const deepTest = _.isObject(
+					fieldDesc.of
+				) ? _( value ).map(
+						( propVal, propName ) => {
+							if ( _.isArrayLike( fieldDesc.of )) {
+								const subErrors = _( fieldDesc.of ).map( desc => Diaspora.checkField( propVal, desc, _.concat( keys, [ propName ])));
+								if ( !_.find( subErrors, v => 0 === v.length )) {
+									return subErrors;
+								}
+							} else {
+								return Diaspora.checkField( propVal, fieldDesc.of, _.concat( keys, [ propName ]));
+							}
+						}
+					)
+						.omitBy( _.isEmpty )
+						.value() : {};
+				if ( !_.isEmpty( deepTest )) {
+					return {children: deepTest};
+				}
+			}
+		},
+		any( keys, fieldDesc, value ) {
+			if ( !_.stubTrue( value )) {
+				return {type: `${ keys.join( '.' ) } expected to be assigned with any type`};
+			}
+		},
+		_( keys, fieldDesc ) {
+			return {type: `${ keys.join( '.' ) } requires to be unhandled type "${ fieldDesc.type }"`};
+		},
+	},
+};
+
 /**
  * Diaspora main namespace
  * @namespace Diaspora
@@ -1616,88 +1571,8 @@ const Diaspora = {
 			error.required = `${ keys.join( '.' ) } is a required property of type "${ fieldDesc.type }"`;
 		} else if ( !_.isNil( value )) {
 			if ( _.isString( fieldDesc.type )) {
-				switch ( fieldDesc.type ) {
-					case 'string': {
-						if ( !_.isString( value )) {
-							error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
-						}
-					} break;
-
-					case 'integer': {
-						if ( !_.isInteger( value )) {
-							error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
-						}
-					} break;
-
-					case 'float': {
-						if ( !_.isNumber( value )) {
-							error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
-						}
-					} break;
-
-					case 'date': {
-						if ( !_.isDate( value )) {
-							error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
-						}
-					} break;
-
-					case 'object': {
-						if ( !_.isObject( value )) {
-							error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
-						} else {
-							const deepTest = _.isObject(
-								fieldDesc.attributes
-							) ? _( value ).mapValues(
-									( propVal, propName ) => this.checkField(
-										propVal,
-										fieldDesc.attributes[propName],
-										_.concat( keys, [ propName ])
-									)
-								)
-									.omitBy( _.isEmpty )
-									.value() : {};
-							if ( !_.isEmpty( deepTest )) {
-								error.children = deepTest;
-							}
-						}
-					} break;
-
-					case 'array': {
-						if ( !_.isArray( value )) {
-							error.type =  `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`;
-						} else {
-							const deepTest = _.isObject(
-								fieldDesc.of
-							) ? _( value ).map(
-									( propVal, propName ) => {
-										if ( _.isArrayLike( fieldDesc.of )) {
-											const subErrors = _( fieldDesc.of ).map( desc => this.checkField( propVal, desc, _.concat( keys, [ propName ])));
-											if ( !_.find( subErrors, v => 0 === v.length )) {
-												return subErrors;
-											}
-										} else {
-											return this.checkField( propVal, fieldDesc.of, _.concat( keys, [ propName ]));
-										}
-									}
-								)
-									.omitBy( _.isEmpty )
-									.value() : {};
-							if ( !_.isEmpty( deepTest )) {
-								error.children = deepTest;
-							}
-						}
-					} break;
-
-					case 'any': {
-						if ( !_.stubTrue( value )) {
-							error.type =  `${ keys.join( '.' ) } expected to be assigned with any type`;
-						}
-					} break;
-
-					default: {
-						error.type =  `${ keys.join( '.' ) } requires to be unhandled type "${ fieldDesc.type }"`;
-					} break;
-				}
+				const tester = _.get( VALIDATIONS, [ 'TYPE', fieldDesc.type ], fieldDesc.type._ );
+				_.assign( error, tester( keys, fieldDesc, value ));
 			} else {
 				error.spec =  `${ keys.join( '.' ) } spec "type" must be a string`;
 			}
@@ -1954,10 +1829,12 @@ module.exports = Diaspora;
  * @author gerkin
  */
 Diaspora.components = {
-	Entity: require( './entityFactory' )( null, {}, null ),
-	Set:    require( './set' ),
-	Model:  require( './model' ),
-	Errors: {
+	EntityFactory: require( './entityFactory' ),
+	Entity:        require( './entityFactory' ).Entity,
+	Set:           require( './set' ),
+	Model:         require( './model' ),
+	Errors:        {
+		ExtendableError:       require( './errors/extendableError' ),
 		EntityValidationError: require( './errors/entityValidationError' ),
 		SetValidationError:    require( './errors/setValidationError' ),
 		EntityStateError:      require( './errors/entityStateError' ),
@@ -1974,7 +1851,7 @@ if ( process.browser ) {
 }
 
 }).call(this,require('_process'))
-},{"./adapters/baseAdapter":2,"./adapters/inMemoryAdapter":3,"./adapters/webStorageAdapter":4,"./dataStoreEntities/baseEntity":5,"./dependencies":8,"./entityFactory":10,"./errors/entityStateError":11,"./errors/entityValidationError":12,"./errors/setValidationError":14,"./model":15,"./set":16,"_process":18,"winston":undefined}],10:[function(require,module,exports){
+},{"./adapters/baseAdapter":3,"./adapters/inMemoryAdapter":4,"./adapters/webStorageAdapter":5,"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./entityFactory":11,"./errors/entityStateError":12,"./errors/entityValidationError":13,"./errors/extendableError":14,"./errors/setValidationError":15,"./model":16,"./set":17,"_process":19,"winston":undefined}],11:[function(require,module,exports){
 'use strict';
 
 const {
@@ -1984,431 +1861,428 @@ const Diaspora = require( './diaspora' );
 const DataStoreEntity = require( './dataStoreEntities/baseEntity' );
 const EntityValidationError = require( './errors/entityValidationError' );
 const EntityStateError = require( './errors/entityStateError' );
-const Utils = require( './utils' );
+
+const DEFAULT_OPTIONS = { skipEvents: false };
+const PRIVATE = Symbol( 'PRIVATE' );
+
+const maybeEmit = ( entity, options, eventsArgs, events ) => {
+	events = _.castArray( events );
+	if ( options.skipEvents ) {
+		return Promise.resolve( entity );
+	} else {
+		return entity.emit( events[0], ...eventsArgs ).then(() => {
+			if ( events.length > 1 ) {
+				return maybeEmit( entity, options, eventsArgs, _.slice( events, 1 ));
+			} else {
+				return Promise.resolve( entity );
+			}
+		});
+	}
+};
+const maybeThrowInvalidEntityState = ( entity, beforeState, dataSource, method ) => {
+	return () => {
+		// Depending on state, we are going to perform a different operation
+		if ( 'orphan' === beforeState ) {
+			return Promise.reject( new EntityStateError( 'Can\'t fetch an orphan entity.' ));
+		} else {
+			entity[PRIVATE].lastDataSource = dataSource.name;
+			return dataSource[method]( entity.table( dataSource.name ), entity.uidQuery( dataSource ));
+		}
+	};
+};
+
+const entityCtrSteps = {
+	bindLifecycleEvents( entity, modelDesc ) {
+		// Bind lifecycle events
+		_.forEach( modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
+			// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
+			_.forEach( _.castArray( eventFunctions ), eventFunction => {
+				entity.on( eventName, eventFunction );
+			});
+		});
+	},
+	loadSource( _entity, source ) {
+		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
+		if ( source instanceof DataStoreEntity ) {
+			_.assign( _entity, {
+				state:          'sync',
+				lastDataSource: source.dataSource.name, 
+			});
+			_entity.dataSources[_entity.lastDataSource] = source;
+			source = _.omit( source.toObject(), [ 'id' ]);
+		}
+		return source;
+	},
+};
 
 /**
- * @namespace EntityFactory
+ * The entity is the class you use to manage a single document in all data sources managed by your model.
+ * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
+ * 
+ * @summary An entity is a document in the population of all your datas of the same type
+ * @extends SequentialEvent
+ * @memberof EntityFactory
  */
+class Entity extends SequentialEvent {
+	/**
+	 * Create a new entity.
+	 *
+	 * @author gerkin
+	 * @param {string}                                   name        - Name of this model.
+	 * @param {ModelDescription}                         modelDesc   - Model configuration that generated the associated `model`.
+	 * @param {Model}                                    model       - Model that will spawn entities.
+	 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.
+	 *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
+	 */
+	constructor( name, modelDesc, model, source = {}) {
+		const modelAttrsKeys = _.keys( modelDesc.attributes );
+		super();
+
+		// ### Init defaults
+		const dataSources = Object.seal( _.mapValues( model.dataSources, () => undefined ));
+		const _this = {
+			state:          'orphan',
+			lastDataSource: null,
+			dataSources,
+			name,
+			modelDesc,
+			model, 
+		};
+		this[PRIVATE] = _this;
+		// ### Load datas from source
+		source = entityCtrSteps.loadSource( _this, source );
+		// ### Final validation
+		// Check keys provided in source
+		const sourceDModel = _.difference( source, modelAttrsKeys );
+		if ( 0 !== sourceDModel.length ) { // Later, add a criteria for schemaless models
+			throw new Error( `Source has unknown keys: ${ JSON.stringify( sourceDModel ) } in ${ JSON.stringify( source ) }` );
+		}
+		// ### Generate prototype & attributes
+		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
+		_this.attributes = Diaspora.default( _.cloneDeep( source ), modelDesc.attributes );
+		source = null;
+
+		// ### Load events
+		entityCtrSteps.bindLifecycleEvents( this, modelDesc );
+	}
+
+	/**
+	 * Generate the query to get this unique entity in the desired data source.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 * @param   {Adapters.DiasporaAdapter} dataSource - Name of the data source to get query for.
+	 * @returns {Object} Query to find this entity.
+	 */
+	uidQuery( dataSource ) {
+		return {
+			id: this[PRIVATE].attributes.idHash[dataSource.name],
+		};
+	}
+
+	/**
+	 * Return the table of this entity in the specified data source.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 * @returns {string} Name of the table.
+	 */
+	table( /*sourceName*/ ) {
+		// Will be used later
+		return this[PRIVATE].name;
+	}
+
+	/**
+	 * Check if the entity matches model description.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
+	 * @returns {undefined} This function does not return anything.
+	 * @see Diaspora.check
+	 */
+	validate() {
+		const validationErrors = Diaspora.check( this[PRIVATE].attributes, this[PRIVATE].modelDesc.attributes );
+		if ( !_.isEmpty( validationErrors )) {
+			throw new EntityValidationError( validationErrors, 'Validation failed' );
+		}
+	}
+
+	/**
+	 * Remove all editable properties & replace them with provided object.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 * @param   {Object} [newContent={}] - Replacement content.
+	 * @returns {Entity} Returns `this`.
+	 */
+	replaceAttributes( newContent = {}) {
+		newContent.idHash = this[PRIVATE].attributes.idHash;
+		this[PRIVATE].attributes = newContent;
+		return this;
+	}
+
+	/**
+	 * Generate a diff update query by checking deltas with last source interaction.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
+	 * @returns {Object} Diff query.
+	 */
+	getDiff( dataSource ) {
+		const dataStoreEntity = this[PRIVATE].dataSources[dataSource.name];
+		const dataStoreObject = dataStoreEntity.toObject();
+
+		const keys = _( this[PRIVATE].attributes ).keys().concat( _.keys( dataStoreObject )).uniq().difference([ 'idHash' ]).value();
+		const values = _( keys ).filter( key => {
+			return this[PRIVATE].attributes[key] !== dataStoreObject[key];
+		}).map( key => {
+			return this[PRIVATE].attributes[key];
+		}).value();
+		const diff = _.zipObject( keys, values );
+		return diff;
+	}
+
+	/**
+	 * Returns a copy of this entity attributes.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 * @returns {Object} Attributes of this entity.
+	 */
+	toObject() {
+		return this[PRIVATE].attributes;
+	}
+
+	/**
+	 * Save this entity in specified data source.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @fires Entity#beforeUpdate
+	 * @fires Entity#afterUpdate
+	 * @author gerkin
+	 * @param   {string}  sourceName                 - Name of the data source to persist entity in.
+	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
+	 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
+		 */
+	persist( sourceName, options = {}) {
+		_.defaults( options, DEFAULT_OPTIONS );
+		// Change the state of the entity
+		const beforeState = this[PRIVATE].state;
+		this[PRIVATE].state = 'syncing';
+		// Generate events args
+		const dataSource = this.constructor.model.getDataSource( sourceName );
+		const eventsArgs = [ dataSource.name ];
+		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
+
+		// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
+		const suffix = 'orphan' === beforeState ? 'Create' : 'Update';
+		return _maybeEmit([ 'beforePersist', 'beforeValidate' ])
+			.then(() => this.validate())
+			.then(() => _maybeEmit([ 'afterValidate', `beforePersist${ suffix }` ]))
+			.then(() => {
+				this[PRIVATE].lastDataSource = dataSource.name;
+				// Depending on state, we are going to perform a different operation
+				if ( 'orphan' === beforeState ) {
+					return dataSource.insertOne( this.table( sourceName ), this.toObject());
+				} else {
+					return dataSource.updateOne( this.table( sourceName ), this.uidQuery( dataSource ), this.getDiff( dataSource ));
+				}
+			})
+			.then( dataStoreEntity => {
+				this[PRIVATE].state = 'sync';
+				this[PRIVATE].attributes = dataStoreEntity.toObject();
+				this[PRIVATE].dataSources[dataSource.name] = dataStoreEntity;
+
+				return _maybeEmit([ `afterPersist${ suffix }`, 'afterPersist' ]);
+			});
+	}
+
+	/**
+	 * Reload this entity from specified data source.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @fires Entity#beforeFind
+	 * @fires Entity#afterFind
+	 * @author gerkin
+	 * @param   {string}  sourceName                 - Name of the data source to fetch entity from.
+	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeFind` and `afterFind`.
+	 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
+	 */
+	fetch( sourceName, options = {}) {
+		_.defaults( options, DEFAULT_OPTIONS );
+		// Change the state of the entity
+		const beforeState = this[PRIVATE].state;
+		this[PRIVATE].state = 'syncing';
+		// Generate events args
+		const dataSource = this.constructor.model.getDataSource( sourceName );
+		const eventsArgs = [ dataSource.name ];
+		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
+		return _maybeEmit( 'beforeFetch' )
+			.then( maybeThrowInvalidEntityState( this, beforeState, dataSource, 'findOne' ))
+			.then( dataStoreEntity => {
+				this[PRIVATE].state = 'sync';
+				this[PRIVATE].attributes = dataStoreEntity.toObject();
+				this[PRIVATE].dataSources[dataSource.name] = dataStoreEntity;
+
+				return _maybeEmit( 'afterFetch' );
+			});
+	}
+
+	/**
+	 * Delete this entity from the specified data source.
+	 *
+	 * @memberof Entity
+	 * @instance
+	 * @fires Entity#beforeDelete
+	 * @fires Entity#afterDelete
+	 * @author gerkin
+	 * @param   {string}  sourceName                 - Name of the data source to delete entity from.
+	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeDelete` and `afterDelete`.
+	 * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`.
+	 */
+	destroy( sourceName, options = {}) {
+		_.defaults( options, DEFAULT_OPTIONS );
+		// Change the state of the entity
+		const beforeState = this[PRIVATE].state;
+		this[PRIVATE].state = 'syncing';
+		// Generate events args
+		const dataSource = this.constructor.model.getDataSource( sourceName );
+		const eventsArgs = [ dataSource.name ];
+		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
+		return _maybeEmit( 'beforeDestroy' )
+			.then( maybeThrowInvalidEntityState( this, beforeState, dataSource, 'deleteOne' ))
+			.then(() => {
+			// If this was our only data source, then go back to orphan state
+				if ( 0 === _.without( this[PRIVATE].model.dataSources, dataSource.name ).length ) {
+					this[PRIVATE].state = 'orphan';
+				} else {
+					this[PRIVATE].state = 'sync';
+					delete this[PRIVATE].attributes.idHash[dataSource.name];
+				}
+				this[PRIVATE].dataSources[dataSource.name] = undefined;
+				return _maybeEmit( 'afterDestroy' );
+			});
+	}
+
+	/**
+	 * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
+	 *
+	 * @name dataSources
+	 * @readonly
+	 * @type {Object}
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 */
+	get dataSources() {
+		return this[PRIVATE].dataSources;
+	}
+
+	/**
+	 * TODO.
+	 *
+	 * @name dataSources
+	 * @readonly
+	 * @type {TODO}
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 */
+	get attributes() {
+		return this[PRIVATE].attributes;
+	}
+
+	/**
+	 * Get entity's current state.
+	 *
+	 * @name dataSources
+	 * @readonly
+	 * @type {Entity.State}
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 */
+	get state() {
+		return this[PRIVATE].state;
+	}
+
+	/**
+	 * Get entity's last data source.
+	 *
+	 * @name lastDataSources
+	 * @readonly
+	 * @type {null|string}
+	 * @memberof Entity
+	 * @instance
+	 * @author gerkin
+	 */
+	get lastDataSource() {
+		return this[PRIVATE].lastDataSource;
+	}
+}
 
 /**
  * This factory function generate a new class constructor, prepared for a specific model.
  *
- * @memberof EntityFactory
  * @param   {string}           name       - Name of this model.
  * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
  * @param   {Model}            model      - Model that will spawn entities.
  * @returns {Entity} Entity constructor to use with this model.
  */
-function EntityFactory( name, modelDesc, model ) {
-	const modelAttrsKeys = _.keys( modelDesc.attributes );
-
+const EntityFactory = ( name, modelDesc, model ) => {
 	/**
-	 * The entity is the class you use to manage a single document in all data sources managed by your model.
-	 * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
-	 * @summary An entity is a document in the population of all your datas of the same type
-	 * @extends SequentialEvent
-	 * @memberof EntityFactory
+	 * @ignore
 	 */
-	class Entity extends SequentialEvent {
-		/**
-		 * Create a new entity.
-		 *
-		 * @author gerkin
-		 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.
-		 *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
-		 */
-		constructor( source = {}) {
-			super();
-
-			// Stores the object state
-			let state = 'orphan';
-			let lastDataSource = null;
-			const dataSources = Object.seal( _.mapValues( model.dataSources, () => undefined ));
-
-			const entityPrototype = {
-				/**
-				 * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
-				 *
-				 * @name dataSources
-				 * @readonly
-				 * @type {Object}
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 */
-				dataSources: {
-					value: dataSources,
-				},
-				/**
-				 * Returns a copy of this entity attributes.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 * @returns {Object} Attributes of this entity.
-				 */
-				toObject: () => {
-					return attributes;
-				},
-				/**
-				 * TODO.
-				 *
-				 * @name dataSources
-				 * @readonly
-				 * @type {TODO}
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 */
-				attributes: {
-					get() {
-						return attributes;
-					},
-				},
-				/**
-				 * Save this entity in specified data source.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @fires EntityFactory.Entity#beforeUpdate
-				 * @fires EntityFactory.Entity#afterUpdate
-				 * @author gerkin
-				 * @param   {string}  sourceName                 - Name of the data source to persist entity in.
-				 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
-				 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
-				 */
-				persist( sourceName, options = {}) {
-					_.defaults( options, {
-						skipEvents: false,
-					});
-					const dataSource = this.constructor.model.getDataSource( sourceName );
-					const beforeState = state;
-					state = 'syncing';
-
-					// Args are always the same.
-					const eventsArgs = [ sourceName ];
-					let promise;
-
-					// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
-					const suffix = 'orphan' === beforeState ? 'Create' : 'Update';
-					if ( options.skipEvents ) {
-						promise = Promise.resolve();
-					} else {
-						promise = this.emit( 'beforePersist', ...eventsArgs ).then(() => {
-							return this.emit( 'beforeValidate', ...eventsArgs );
-						}).then(() => {
-							this.validate();
-							return this.emit( 'afterValidate', ...eventsArgs );
-						}).then(() => {
-							return this.emit( `beforePersist${  suffix }`, ...eventsArgs );
-						});
-					}
-					return promise.then(() => {
-						lastDataSource = dataSource.name;
-						// Depending on state, we are going to perform a different operation
-						if ( 'orphan' === beforeState ) {
-							return dataSource.insertOne( this.table( sourceName ), this.toObject());
-						} else {
-							return dataSource.updateOne( this.table( sourceName ), this.uidQuery( dataSource ), this.getDiff( dataSource ));
-						}
-					}).then( dataStoreEntity => {
-						if ( options.skipEvents ) {
-							return Promise.resolve( dataStoreEntity );
-						} else {
-							return this.emit( `afterPersist${  suffix }`, ...eventsArgs ).then(() => {
-								return this.emit( 'afterPersist', ...eventsArgs );
-							}).then(() => {
-								return Promise.resolve( dataStoreEntity );
-							});
-						}
-					}).then( dataStoreEntity => {
-						state = 'sync';
-						this.dataSources[dataSource.name] = dataStoreEntity;
-						attributes = dataStoreEntity.toObject();
-						return  Promise.resolve( this );
-					});
-				},
-				/**
-				 * Reload this entity from specified data source.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @fires EntityFactory.Entity#beforeFind
-				 * @fires EntityFactory.Entity#afterFind
-				 * @author gerkin
-				 * @param   {string}  sourceName                 - Name of the data source to fetch entity from.
-				 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeFind` and `afterFind`.
-				 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
-				 */
-				fetch( sourceName, options = {}) {
-					_.defaults( options, {
-						skipEvents: false,
-					});
-					const dataSource = this.constructor.model.getDataSource( sourceName );
-					const beforeState = state;
-					state = 'syncing';
-					let promise;
-					if ( options.skipEvents ) {
-						promise = Promise.resolve();
-					} else {
-						promise = this.emit( 'beforeFetch', sourceName );
-					}
-					return promise.then(() => {
-						// Depending on state, we are going to perform a different operation
-						if ( 'orphan' === beforeState ) {
-							return Promise.reject( new EntityStateError( 'Can\'t fetch an orphan entity.' ));
-						} else {
-							lastDataSource = dataSource.name;
-							return dataSource.findOne( this.table( sourceName ), this.uidQuery( dataSource ));
-						}
-					}).then( dataStoreEntity => {
-						state = 'sync';
-						this.dataSources[dataSource.name] = dataStoreEntity;
-						attributes = dataStoreEntity.toObject();
-						if ( options.skipEvents ) {
-							return  Promise.resolve( this );
-						} else {
-							return this.emit( 'afterFetch', sourceName ).then(() => Promise.resolve( this ));
-						}
-					});
-				},
-				/**
-				 * Delete this entity from the specified data source.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @fires EntityFactory.Entity#beforeDelete
-				 * @fires EntityFactory.Entity#afterDelete
-				 * @author gerkin
-				 * @param   {string}  sourceName                 - Name of the data source to delete entity from.
-				 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-				 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeDelete` and `afterDelete`.
-				 * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`.
-				 */
-				destroy( sourceName, options = {}) {
-					_.defaults( options, {
-						skipEvents: false,
-					});
-					const dataSource = this.constructor.model.getDataSource( sourceName );
-					const beforeState = state;
-					state = 'syncing';
-					let promise;
-					if ( options.skipEvents ) {
-						promise = Promise.resolve();
-					} else {
-						promise = this.emit( 'beforeDestroy', sourceName );
-					}
-					return promise.then(() => {
-						if ( 'orphan' === beforeState ) {
-							return Promise.reject( new EntityStateError( 'Can\'t fetch an orphan entity.' ));
-						} else {
-							lastDataSource = dataSource.name;
-							return dataSource.deleteOne( this.table( sourceName ), this.uidQuery( dataSource ));
-						}
-					}).then(() => {
-						// If this was our only data source, then go back to orphan state
-						if ( 0 === _.without( model.dataSources, dataSource.name ).length ) {
-							state = 'orphan';
-						} else {
-							state = 'sync';
-							delete attributes.idHash[dataSource.name];
-						}
-						this.dataSources[dataSource.name] = undefined;
-						if ( options.skipEvents ) {
-							return  Promise.resolve( this );
-						} else {
-							return this.emit( 'afterDestroy', sourceName ).then(() => Promise.resolve( this ));
-						}
-					});
-				},
-				/**
-				 * Get entity's current state.
-				 *
-				 * @name dataSources
-				 * @readonly
-				 * @type {Entity.State}
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 */
-				state: {
-					get() {
-						return state;
-					},
-				},
-				/**
-				 * Get entity's last data source.
-				 *
-				 * @name dataSources
-				 * @readonly
-				 * @type {null|string}
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 */
-				lastDataSource: {
-					get() {
-						return lastDataSource;
-					},
-				},
-				/**
-				 * Generate the query to get this unique entity in the desired data source.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 * @param   {Adapters.DiasporaAdapter} dataSource - Name of the data source to get query for.
-				 * @returns {Object} Query to find this entity.
-				 */
-				uidQuery( dataSource ) {
-					return {
-						id: attributes.idHash[dataSource.name],
-					};
-				},
-				/**
-				 * Return the table of this entity in the specified data source.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 * @returns {string} Name of the table.
-				 */
-				table( /*sourceName*/ ) {
-					// Will be used later
-					return name;
-				},
-				/**
-				 * Check if the entity matches model description.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
-				 * @returns {undefined} This function does not return anything.
-				 * @see Diaspora.check
-				 */
-				validate() {
-					const validationErrors = Diaspora.check( attributes, modelDesc.attributes );
-					if ( !_.isEmpty( validationErrors )) {
-						throw new EntityValidationError( validationErrors, 'Validation failed' );
-					}
-				},
-				/**
-				 * Remove all editable properties & replace them with provided object.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 * @param   {Object} [newContent={}] - Replacement content.
-				 * @returns {EntityFactory.Entity} Returns `this`.
-				 */
-				replaceAttributes( newContent = {}) {
-					newContent.idHash = attributes.idHash;
-					attributes = newContent;
-					return this;
-				},
-				/**
-				 * Generate a diff update query by checking deltas with last source interaction.
-				 *
-				 * @memberof EntityFactory.Entity
-				 * @instance
-				 * @author gerkin
-				 * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
-				 * @returns {Object} Diff query.
-				 */
-				getDiff( dataSource ) {
-					const dataStoreEntity = this.dataSources[dataSource.name];
-					const dataStoreObject = dataStoreEntity.toObject();
-					
-					const keys = _( attributes ).keys().concat( _.keys( dataStoreObject )).uniq().difference([ 'idHash' ]).value();
-					const values = _( keys ).filter( key => {
-						return attributes[key] !== dataStoreObject[key];
-					}).map( key => {
-						return attributes[key];
-					}).value();
-					const diff = _.zipObject( keys, values );
-					return diff;
-				},
-			};
-
-			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
-			if ( source instanceof DataStoreEntity ) {
-				state = 'sync';
-				lastDataSource = source.dataSource.name;
-				dataSources[lastDataSource] = source;
-				source = _.omit( source.toObject(), [ 'id' ]);
-			}
-			// Check keys provided in source
-			const sourceDModel = _.difference( source, modelAttrsKeys );
-			if ( 0 !== sourceDModel.length ) { // Later, add a criteria for schemaless models
-				throw new Error( `Source has unknown keys: ${ JSON.stringify( sourceDModel ) } in ${ JSON.stringify( source ) }` );
-			}
-			// Now we know that the source is valid. First, deeply clone to detach object values from entity
-			let attributes = _.cloneDeep( source );
-			// Free the source
-			source = null;
-			// Default model attributes with our model desc
-			Diaspora.default( attributes, modelDesc.attributes );
-
-			// Bind lifecycle events
-			_.forEach( modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
-				// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
-				_.forEach( _.castArray( eventFunctions ), eventFunction => {
-					this.on( eventName, eventFunction );
-				});
-			});
-
-			// Define getters & setters
-			const entityDefined = Utils.defineEnumerableProperties( this, entityPrototype );
-
-			return entityDefined;
-		}
-	}
-	const EntityWrapped = Object.defineProperties( Entity, {
+	class SubEntity extends Entity {
 		/**
 		 * Name of the class.
 		 *
 		 * @type {string}
 		 * @readonly
-		 * @memberof EntityFactory.Entity
+		 * @memberof Entity
 		 * @static
 		 * @author gerkin
 		 */
-		name: {
-			value:      `${ name  }Entity`,
-			writable:   false,
-			enumerable: true,
-		},
+		static get name() {
+			return `${ name  }Entity`;
+		}
 		/**
 		 * Reference to this entity's model.
 		 *
 		 * @type {Model}
 		 * @readonly
-		 * @memberof EntityFactory.Entity
+		 * @memberof Entity
 		 * @static
 		 * @author gerkin
 		 */
-		model: {
-			value:      model,
-			writable:   false,
-			enumerable: true,
-		},
-	});
-
+		static get model() {
+			return model;
+		}
+	}
 	// We use keys `methods` and not `functions` as explained in this [StackOverflow thread](https://stackoverflow.com/a/155655/4839162).
 	// Extend prototype with methods in our model description
 	_.forEach( modelDesc.methods, ( methodName, method ) => {
-		Entity.prototype[methodName] = method;
+		SubEntity.__proto__[methodName] = method;
 	});
 	// Add static methods
 	_.forEach( modelDesc.staticMethods, ( staticMethodName, staticMethod ) => {
-		Entity[staticMethodName] = staticMethod;
+		SubEntity[staticMethodName] = staticMethod;
 	});
-	return EntityWrapped;
-}
-
+	return SubEntity.bind( Entity, name, modelDesc, model );
+};
 // =====
 // ## Lifecycle Events
 
@@ -2416,42 +2290,42 @@ function EntityFactory( name, modelDesc, model ) {
 // ### Persist
 
 /**
- * @event EntityFactory.Entity#beforePersist
+ * @event Entity#beforePersist
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#beforeValidate
+ * @event Entity#beforeValidate
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#afterValidate
+ * @event Entity#afterValidate
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#beforePersistCreate
+ * @event Entity#beforePersistCreate
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#beforePersistUpdate
+ * @event Entity#beforePersistUpdate
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#afterPersistCreate
+ * @event Entity#afterPersistCreate
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#afterPersistUpdate
+ * @event Entity#afterPersistUpdate
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#afterPersist
+ * @event Entity#afterPersist
  * @type {String}
  */
 
@@ -2459,12 +2333,12 @@ function EntityFactory( name, modelDesc, model ) {
 // ### Find
 
 /**
- * @event EntityFactory.Entity#beforeFind
+ * @event Entity#beforeFind
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#afterFind
+ * @event Entity#afterFind
  * @type {String}
  */
 
@@ -2472,18 +2346,18 @@ function EntityFactory( name, modelDesc, model ) {
 // ### Destroy
 
 /**
- * @event EntityFactory.Entity#beforeDestroy
+ * @event Entity#beforeDestroy
  * @type {String}
  */
 
 /**
- * @event EntityFactory.Entity#afterDestroy
+ * @event Entity#afterDestroy
  * @type {String}
  */
 
 module.exports = EntityFactory;
 
-},{"./dataStoreEntities/baseEntity":5,"./dependencies":8,"./diaspora":9,"./errors/entityStateError":11,"./errors/entityValidationError":12,"./utils":17}],11:[function(require,module,exports){
+},{"./dataStoreEntities/baseEntity":6,"./dependencies":9,"./diaspora":10,"./errors/entityStateError":12,"./errors/entityValidationError":13}],12:[function(require,module,exports){
 'use strict';
 
 const ExtendableError = require( './extendableError' );
@@ -2507,7 +2381,7 @@ class EntityStateError extends ExtendableError {
 
 module.exports = EntityStateError;
 
-},{"./extendableError":13}],12:[function(require,module,exports){
+},{"./extendableError":14}],13:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2549,7 +2423,7 @@ ${ stringifyValidationObject( validationErrors ) }`;
 
 module.exports = EntityValidationError;
 
-},{"../dependencies":8,"./extendableError":13}],13:[function(require,module,exports){
+},{"../dependencies":9,"./extendableError":14}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2581,7 +2455,7 @@ class ExtendableError extends Error {
 
 module.exports = ExtendableError;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2622,7 +2496,7 @@ class SetValidationError extends ExtendableError {
 
 module.exports = SetValidationError;
 
-},{"../dependencies":8,"./extendableError":13}],15:[function(require,module,exports){
+},{"../dependencies":9,"./extendableError":14}],16:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2652,6 +2526,71 @@ const {
  * @property {Object<string, Function|Function[]>}     lifecycleEvents - Events to bind on entities.
  */
 
+const findArgs = ( model, queryFind = {}, options = {}, dataSourceName ) => {
+	let ret;
+	if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
+		ret = {
+			dataSourceName: options,
+			options:        {},
+		};
+	} else if ( _.isString( queryFind ) && !!_.isNil( options ) && !!_.isNil( dataSourceName )) {
+		ret = {
+			dataSourceName: queryFind,
+			queryFind:      {},
+			options:        {},
+		};
+	} else {
+		ret = {
+			queryFind,
+			options,
+			dataSourceName,
+		};
+	}
+	ret.dataSource = model.getDataSource( ret.dataSourceName );
+	return ret;
+};
+
+const makeSet = model => {
+	return dataSourceEntities => {
+		const newEntities = _.map( dataSourceEntities, dataSourceEntity => new model.entityFactory( dataSourceEntity ));
+		const set = new Set( model, newEntities );
+		return Promise.resolve( set );
+	};
+};
+const makeEntity = model => {
+	return dataSourceEntity => {
+		if ( _.isNil( dataSourceEntity )) {
+			return Promise.resolve();
+		}
+		const newEntity = new model.entityFactory( dataSourceEntity );
+		return Promise.resolve( newEntity );
+	};
+};
+
+const doDelete = ( methodName, model ) => {
+	return ( queryFind = {}, options = {}, dataSourceName ) => {
+		const args = findArgs( model, queryFind, options, dataSourceName );
+		return args.dataSource[methodName]( model.name, args.queryFind, args.options );
+	};
+};
+
+const doFindUpdate = ( model, plural, queryFind, options, dataSourceName, update ) => {
+	const queryComponents = findArgs( model, queryFind, options, dataSourceName );
+	const args = _([ model.name, queryComponents.queryFind ]).push( update ).push( queryComponents.options ).compact().value();
+	return queryComponents.dataSource[( update ? 'update' : 'find' ) + ( plural ? 'Many' : 'One' )]( ...args )
+		.then(( plural ? makeSet : makeEntity )( model ));
+};
+
+const normalizeRemaps = ( remap, dataSourceName ) => {
+	if ( true === remap ) {
+		return {};
+	} else if ( _.isObject( remap )) {
+		return remap;
+	} else {
+		throw new TypeError( `Datasource "${ dataSourceName }" value is invalid: expect \`true\` or a remap hash, but have ${ JSON.stringify( remap ) }` );
+	}
+};
+
 /**
  * The model class is used to interact with the population of all data of the same type.
  */
@@ -2664,26 +2603,17 @@ class Model {
 	 * @param {ModelConfiguration.ModelDescription} modelDesc - Hash representing the configuration of the model.
 	 */
 	constructor( name, modelDesc ) {
+		// Check model configuration
 		const reservedPropIntersect = _.intersection( entityPrototypeProperties, _.keys( modelDesc.attributes ));
 		if ( 0 !== reservedPropIntersect.length ) {
 			throw new Error( `${ JSON.stringify( reservedPropIntersect ) } is/are reserved property names. To match those column names in data source, please use the data source mapper property` );
-		}
-		if ( !modelDesc.hasOwnProperty( 'sources' ) || !( _.isArrayLike( modelDesc.sources ) || _.isObject( modelDesc.sources ))) {
+		} else if ( !modelDesc.hasOwnProperty( 'sources' ) || !( _.isArrayLike( modelDesc.sources ) || _.isObject( modelDesc.sources ))) {
 			throw new TypeError( `Expect model sources to be either an array or an object, had ${ JSON.stringify( modelDesc.sources ) }.` );
 		}
 		// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
-		const sourcesNormalized = _.isArrayLike( modelDesc.sources ) ? _.zipObject( modelDesc.sources, _.times( modelDesc.sources.length, _.constant({}))) : _.mapValues( modelDesc.sources, ( remap, dataSourceName ) => {
-			if ( true === remap ) {
-				return {};
-			} else if ( _.isObject( remap )) {
-				return remap;
-			} else {
-				throw new TypeError( `Datasource "${ dataSourceName }" value is invalid: expect \`true\` or a remap hash, but have ${ JSON.stringify( remap ) }` );
-			}
-		});
+		const sourcesNormalized = _.isArrayLike( modelDesc.sources ) ? _.zipObject( modelDesc.sources, _.times( modelDesc.sources.length, _.constant({}))) : _.mapValues( modelDesc.sources, normalizeRemaps );
 		// List sources required by this model
-		const sourceNames = _.keys( sourcesNormalized );
-		const scopeAvailableSources = Diaspora.dataSources;
+		const [ sourceNames, scopeAvailableSources ] = [ _.keys( sourcesNormalized ), Diaspora.dataSources ];
 		const modelSources = _.pick( scopeAvailableSources, sourceNames );
 		const missingSources = _.difference( sourceNames, _.keys( modelSources ));
 		if ( 0 !== missingSources.length ) {
@@ -2695,10 +2625,12 @@ class Model {
 			const sourceConfiguring = modelSources[sourceName];
 			sourceConfiguring.configureCollection( name, remap );
 		});
-		this.dataSources = modelSources;
-		this.defaultDataSource = sourceNames[0];
-		this.name = name;
-		this.entityFactory = EntityFactory( name, modelDesc, this );
+		_.assign( this, {
+			dataSources:       modelSources,
+			defaultDataSource: sourceNames[0],
+			name,
+			entityFactory:     EntityFactory( name, modelDesc, this ),
+		});
 	}
 
 	/**
@@ -2766,11 +2698,7 @@ class Model {
 	 */
 	insertMany( sources, dataSourceName ) {
 		const dataSource = this.getDataSource( dataSourceName );
-		return dataSource.insertMany( this.name, sources ).then( entities => {
-			const newEntities = _.map( entities, entity => new this.entityFactory( entity ));
-			const collection = new Set( this, newEntities );
-			return Promise.resolve( collection );
-		});
+		return dataSource.insertMany( this.name, sources ).then( makeSet( this ));
 	}
 
 	/**
@@ -2782,24 +2710,8 @@ class Model {
 	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entity from.
 	 * @returns {Promise} Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */
-	find( queryFind = {}, options = {}, dataSourceName ) {
-		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
-			dataSourceName = options;
-			options = {};
-		} else if ( _.isString( queryFind ) && !!_.isNil( options ) && !!_.isNil( dataSourceName )) {
-			dataSourceName = queryFind;
-			queryFind = {};
-			options = {};
-		}
-		const dataSource = this.getDataSource( dataSourceName );
-		return dataSource.findOne( this.name, queryFind, options ).then( dataSourceEntity => {
-			if ( _.isNil( dataSourceEntity )) {
-				return Promise.resolve();
-			}
-			const newEntity = new this.entityFactory( dataSourceEntity );
-			newEntity.dataSources[dataSource.name] = dataSourceEntity;
-			return Promise.resolve( newEntity );
-		});
+	find( queryFind, options, dataSourceName ) {
+		return doFindUpdate( this, false, queryFind, options, dataSourceName );
 	}
 
 	/**
@@ -2811,21 +2723,8 @@ class Model {
 	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entities from.
 	 * @returns {Promise} Promise resolved with a {@link Set set} of found entities in *sync* state.
 	 */
-	findMany( queryFind = {}, options = {}, dataSourceName ) {
-		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
-			dataSourceName = options;
-			options = {};
-		} else if ( _.isString( queryFind ) && !!_.isNil( options ) && !!_.isNil( dataSourceName )) {
-			dataSourceName = queryFind;
-			queryFind = {};
-			options = {};
-		}
-		const dataSource = this.getDataSource( dataSourceName );
-		return dataSource.findMany( this.name, queryFind, options ).then( entities => {
-			const newEntities = _.map( entities, entity => new this.entityFactory( entity ));
-			const collection = new Set( this, newEntities );
-			return Promise.resolve( collection );
-		});
+	findMany( queryFind, options, dataSourceName ) {
+		return doFindUpdate( this, true, queryFind, options, dataSourceName );
 	}
 
 	/**
@@ -2839,18 +2738,7 @@ class Model {
 	 * @returns {Promise} Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */
 	update( queryFind, update, options = {}, dataSourceName ) {
-		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
-			dataSourceName = options;
-			options = {};
-		}
-		const dataSource = this.getDataSource( dataSourceName );
-		return dataSource.updateOne( this.name, queryFind, update, options ).then( dataSourceEntity => {
-			if ( _.isNil( dataSourceEntity )) {
-				return Promise.resolve();
-			}
-			const newEntity = new this.entityFactory( dataSourceEntity );
-			return Promise.resolve( newEntity );
-		});
+		return doFindUpdate( this, false, queryFind, options, dataSourceName, update );
 	}
 
 	/**
@@ -2864,34 +2752,20 @@ class Model {
 	 * @returns {Promise} Promise resolved with the {@link Set set} of found entities in *sync* state.
 	 */
 	updateMany( queryFind, update, options = {}, dataSourceName ) {
-		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
-			dataSourceName = options;
-			options = {};
-		}
-		const dataSource = this.getDataSource( dataSourceName );
-		return dataSource.updateMany( this.name, queryFind, update, options ).then( entities => {
-			const newEntities = _.map( entities, entity => new this.entityFactory( entity ));
-			const collection = new Set( this, newEntities );
-			return Promise.resolve( collection );
-		});
+		return doFindUpdate( this, true, queryFind, options, dataSourceName, update );
 	}
 
 	/**
 	 * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
 	 * 
 	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
+	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind]                           - Query to get desired entity.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
 	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entity from.
 	 * @returns {Promise} Promise resolved with `undefined`.
 	 */
-	delete( queryFind = {}, options = {}, dataSourceName ) {
-		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
-			dataSourceName = options;
-			options = {};
-		}
-		const dataSource = this.getDataSource( dataSourceName );
-		return dataSource.deleteOne( this.name, queryFind, options );
+	delete( queryFind, options = {}, dataSourceName ) {
+		return doDelete( 'deleteOne', this )( queryFind, options, dataSourceName );
 	}
 
 	/**
@@ -2904,18 +2778,13 @@ class Model {
 	 * @returns {Promise} Promise resolved with `undefined`.
 	 */
 	deleteMany( queryFind = {}, options = {}, dataSourceName ) {
-		if ( _.isString( options ) && !!_.isNil( dataSourceName )) {
-			dataSourceName = options;
-			options = {};
-		}
-		const dataSource = this.getDataSource( dataSourceName );
-		return dataSource.deleteMany( this.name, queryFind, options );
+		return doDelete( 'deleteMany', this )( queryFind, options, dataSourceName );
 	}
 }
 
 module.exports = Model;
 
-},{"./dependencies":8,"./diaspora":9,"./entityFactory":10,"./set":16}],16:[function(require,module,exports){
+},{"./dependencies":9,"./diaspora":10,"./entityFactory":11,"./set":17}],17:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2923,6 +2792,69 @@ const {
 } = require( './dependencies' );
 const Utils = require( './utils' );
 const SetValidationError = require( './errors/setValidationError' );
+
+/**
+ * Get the verb of the action (either the `verb` param or the string at the `index` position in `verb` array).
+ * 
+ * @author Gerkin
+ * @inner
+ * @param   {string|string[]} verb - Verbs to get item from.
+ * @param   {integer} index        - Index of the verb to pick.
+ * @returns {string} Verb for this index's item.
+ */
+const getVerb = ( verb, index ) => _.isArray( verb ) ? verb[index] : verb;
+
+/**
+ * Emit events on each entities.
+ * 
+ * @author Gerkin
+ * @inner
+ * @param   {SequentialEvent[]} entities - Items to iterate over.
+ * @param   {string|string[]}   verb     - Verb of the action to emit.
+ * @param   {string}            prefix   - Prefix to prepend to the verb.
+ * @returns {Promise} Promise resolved once all promises are done.
+ */
+const allEmit = ( entities, verb, prefix ) => Promise.all( entities.map(( entity, index ) => entity.emit( `${ prefix }${ getVerb( verb, index ) }` )));
+
+/**
+ * Emit `before` & `after` events around the entity action. `this` must be bound to the calling {@link Set}.
+ * 
+ * @author Gerkin
+ * @inner
+ * @this Set
+ * @param   {string} sourceName    - Name of the data source to interact with.
+ * @param   {string} action        - Name of the entity function to apply.
+ * @param   {string|string[]} verb - String or array of strings to map for events suffix.
+ * @returns {Promise} Promise resolved once events are finished.
+ */
+function wrapEventsAction( sourceName, action, verb ) {
+	const _allEmit = _.partial( allEmit, this.entities, verb );
+	return _allEmit( 'before' ).then(() => {
+		return Promise.all( this.entities.map( entity => entity[action]( sourceName, {
+			skipEvents: true,
+		})));
+	}).then(() => _allEmit( 'after' ));
+}
+
+const setProxyProps = {
+	get( target, prop ) {
+		if ( prop in target ) {
+			return target[prop];
+		} else if ( prop in target.entities ) {
+			return target.entities[prop];
+		} else if ( 'string' === typeof prop && prop.match( /^-?\d+$/ ) && target.entities.nth( parseInt( prop ))) {
+			return target.entities.nth( parseInt( prop ));
+		}
+	},
+	set( target, prop, val ) {
+		if ( 'model' === prop ) {
+			return new Error( 'Can\'t assign to read-only property "model".' );
+		} else if ( 'entities' === prop ) {
+			Set.checkEntitiesFromModel( val, target.model );
+			target.entities = _( val );
+		}
+	},
+};
 
 /**
  * Collections are used to manage multiple entities at the same time. You may try to use this class as an array.
@@ -2980,25 +2912,7 @@ class Set {
 			},
 		});
 
-		return new Proxy( defined, {
-			get( target, prop ) {
-				if ( prop in target ) {
-					return target[prop];
-				} else if ( prop in target.entities ) {
-					return target.entities[prop];
-				} else if ( 'string' === typeof prop && prop.match( /^-?\d+$/ ) && target.entities.nth( parseInt( prop ))) {
-					return target.entities.nth( parseInt( prop ));
-				}
-			},
-			set( target, prop, val ) {
-				if ( 'model' === prop ) {
-					return new Error( 'Can\'t assign to read-only property "model".' );
-				} else if ( 'entities' === prop ) {
-					Set.checkEntitiesFromModel( val, target.model );
-					target.entities = _( val );
-				}
-			},
-		});
+		return new Proxy( defined, setProxyProps );
 	}
 
 	/**
@@ -3030,37 +2944,29 @@ class Set {
 	 */
 	persist( sourceName ) {
 		const suffixes = this.entities.map( entity => 'orphan' === entity.state ? 'Create' : 'Update' ).value();
-		return Promise.all( this.entities.map( entity => entity.emit( 'beforePersist' ))).then(() => {
-			return Promise.all( this.entities.map( entity => entity.emit( 'beforeValidate' )));
-		}).then(() => {
-			let errors = 0;
-			const validationResults = this.entities.map( entity => {
-				try {
-					entity.validate();
-					return undefined;
-				} catch ( e ) {
-					errors++;
-					return e;
+		const _allEmit = _.partial( allEmit, this.entities );
+		return _allEmit( 'Persist', 'before' )
+			.then(() => _allEmit( 'Validate', 'before' ))
+			.then(() => {
+				let errors = 0;
+				const validationResults = this.entities.map( entity => {
+					try {
+						entity.validate();
+						return undefined;
+					} catch ( e ) {
+						errors++;
+						return e;
+					}
+				}).value();
+				if ( errors > 0 ) {
+					return Promise.reject( new SetValidationError( `Set validation failed for ${ errors } elements (on ${ this.length }): `, validationResults ));
+				} else {
+					return Promise.resolve();
 				}
-			}).value();
-			if ( errors > 0 ) {
-				return Promise.reject( new SetValidationError( `Set validation failed for ${ errors } elements (on ${ this.length }): `, validationResults ));
-			} else {
-				return Promise.resolve();
-			}
-		}).then(() => {
-			return Promise.all( this.entities.map( entity => entity.emit( 'afterValidate' )));
-		}).then(() => {
-			return Promise.all( this.entities.map(( entity, index ) => entity.emit( `beforePersist${  suffixes[index] }` )));
-		}).then(() => {
-			return Promise.all( this.entities.map( entity => entity.persist( sourceName, {
-				skipEvents: true,
-			})));
-		}).then(() => {
-			return Promise.all( this.entities.map(( entity, index ) => entity.emit( `afterPersist${  suffixes[index] }` )));
-		}).then(() => {
-			return Promise.all( this.entities.map( entity => entity.emit( 'afterPersist' )));
-		}).then(() => this );
+			})
+			.then(() => _allEmit( 'Validate', 'after' ))
+			.then(() => wrapEventsAction.call( this, sourceName, 'persist', _.map( suffixes, suffix => `Persist${ suffix }` )))
+			.then(() => _allEmit( 'Persist', 'after' )).then(() => this );
 	}
 
 	/**
@@ -3074,13 +2980,7 @@ class Set {
 	 * @see {@link EntityFactory.Entity#fetch}
 	 */
 	fetch( sourceName ) {
-		return Promise.all( this.entities.map( entity => entity.emit( 'beforeFetch' ))).then(() => {
-			return Promise.all( this.entities.map( entity => entity.fetch( sourceName, {
-				skipEvents: true,
-			})));
-		}).then(() => {
-			return Promise.all( this.entities.map( entity => entity.emit( 'afterFetch' )));
-		}).then(() => this );
+		return wrapEventsAction.call( this, sourceName, 'fetch', 'Fetch' ).then(() => this );
 	}
 
 	/**
@@ -3094,13 +2994,7 @@ class Set {
 	 * @see {@link EntityFactory.Entity#destroy}
 	 */
 	destroy( sourceName ) {
-		return Promise.all( this.entities.map( entity => entity.emit( 'beforeDestroy' ))).then(() => {
-			return Promise.all( this.entities.map( entity => entity.destroy( sourceName, {
-				skipEvents: true,
-			})));
-		}).then(() => {
-			return Promise.all( this.entities.map( entity => entity.emit( 'afterDestroy' )));
-		}).then(() => this );
+		return wrapEventsAction.call( this, sourceName, 'destroy', 'Destroy' ).then(() => this );
 	}
 
 	/**
@@ -3112,17 +3006,11 @@ class Set {
 	 */
 	update( newData ) {
 		this.entities.forEach( entity => {
-			_.forEach( newData, ( val, key ) => {
-				if ( _.isUndefined( val )) {
-					delete entity[key];
-				} else {
-					entity[key] = val;
-				}
-			});
+			Utils.applyUpdateEntity( newData, entity );
 		});
 		return this;
 	}
-	
+
 	/**
 	 * Returns a POJO representation of this set's data.
 	 *
@@ -3136,7 +3024,8 @@ class Set {
 
 module.exports = Set;
 
-},{"./dependencies":8,"./errors/setValidationError":14,"./utils":17}],17:[function(require,module,exports){
+},{"./dependencies":9,"./errors/setValidationError":15,"./utils":18}],18:[function(require,module,exports){
+(function (global){
 'use strict';
 
 const {
@@ -3162,9 +3051,68 @@ module.exports = {
 		});
 		return Object.defineProperties( subject, remappedHandlers );
 	},
+	/**
+	 * Merge update query with the entity. This operation allows to delete fields.
+	 *
+	 * @author gerkin
+	 * @param   {Object} update - Hash representing modified values. A field with an `undefined` value deletes this field from the entity.
+	 * @param   {Object} entity - Entity to update.
+	 * @returns {Object} Entity modified.
+	 */
+	applyUpdateEntity( update, entity ) {
+		_.forEach( update, ( val, key ) => {
+			if ( _.isUndefined( val )) {
+				delete entity[key];
+			} else {
+				entity[key] = val;
+			}
+		});
+		return entity;
+	},
+
+	/**
+	 * Create a new unique id for this store's entity.
+	 * 
+	 * @author gerkin
+	 * @returns {string} Generated unique id.
+	 */
+	generateUUID() {
+		let d = new Date().getTime();
+		// Use high-precision timer if available
+		if ( global.performance && 'function' === typeof global.performance.now ) {
+			d += global.performance.now();
+		}
+		const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
+			const r = ( d + Math.random() * 16 ) % 16 | 0;
+			d = Math.floor( d / 16 );
+			return ( 'x' === c ? r : ( r & 0x3 | 0x8 )).toString( 16 );
+		});
+		return uuid;
+	},
+
+	/**
+	 * Reduce, offset or sort provided set.
+	 * 
+	 * @author gerkin
+	 * @param   {Object[]} set     - Objects retrieved from memory store.
+	 * @param   {Object}   options - Options to apply to the set.
+	 * @returns {Object[]} Set with options applied.
+	 */
+	applyOptionsToSet( set, options ) {
+		_.defaults( options, {
+			limit: Infinity,
+			skip:  0,
+		});
+		set = set.slice( options.skip );
+		if ( set.length > options.limit ) {
+			set = set.slice( 0, options.limit );
+		}
+		return set;
+	},
 };
 
-},{"./dependencies":8}],18:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./dependencies":9}],19:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
