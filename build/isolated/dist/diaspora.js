@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-11-02 05:05:55
+* Isolated build compiled on 2017-11-04 17:47:00
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -64,7 +64,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 		}, { "./lib/diaspora": 10 }], 2: [function (require, module, exports) {
 			'use strict';
 
-			var _require = require('../dependencies'),
+			var _require = require('../../dependencies'),
 			    _ = _require._;
 
 			module.exports = {
@@ -143,10 +143,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}
 				}
 			};
-		}, { "../dependencies": 9 }], 3: [function (require, module, exports) {
+		}, { "../../dependencies": 9 }], 3: [function (require, module, exports) {
 			'use strict';
 
-			var _require2 = require('../dependencies'),
+			var _require2 = require('../../dependencies'),
 			    _ = _require2._,
 			    Promise = _require2.Promise,
 			    SequentialEvent = _require2.SequentialEvent;
@@ -267,7 +267,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				return loopFind;
 			};
 
-			var _require3 = require('./baseAdapter-utils'),
+			var _require3 = require('./adapter-utils'),
 			    OPERATORS = _require3.OPERATORS,
 			    CANONICAL_OPERATORS = _require3.CANONICAL_OPERATORS,
 			    QUERY_OPTIONS_TRANSFORMS = _require3.QUERY_OPTIONS_TRANSFORMS;
@@ -849,17 +849,79 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(SequentialEvent);
 
 			module.exports = DiasporaAdapter;
-		}, { "../dependencies": 9, "./baseAdapter-utils": 2 }], 4: [function (require, module, exports) {
+		}, { "../../dependencies": 9, "./adapter-utils": 2 }], 4: [function (require, module, exports) {
 			'use strict';
 
-			var _require4 = require('../dependencies'),
-			    _ = _require4._,
-			    Promise = _require4.Promise;
+			var _require4 = require('../../dependencies'),
+			    _ = _require4._;
 
-			var Utils = require('../utils');
+			/**
+    * @namespace DataStoreEntities
+    */
 
-			var DiasporaAdapter = require('./baseAdapter.js');
-			var InMemoryEntity = require('../dataStoreEntities/inMemoryEntity.js');
+			/**
+    * DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
+    * @memberof DataStoreEntities
+    */
+
+
+			var DataStoreEntity = function () {
+				/**
+     * Construct a new data source entity with specified content & parent.
+     * 
+     * @author gerkin
+     * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+     * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
+     */
+				function DataStoreEntity(entity, dataSource) {
+					_classCallCheck(this, DataStoreEntity);
+
+					if (_.isNil(entity)) {
+						return undefined;
+					}
+					if (_.isNil(dataSource)) {
+						throw new TypeError("Expect 2nd argument to be the parent of this entity, have \"" + dataSource + "\"");
+					}
+					Object.defineProperties(this, {
+						dataSource: {
+							value: dataSource,
+							enumerable: false,
+							configurable: false
+						}
+					});
+					_.assign(this, entity);
+				}
+
+				/**
+     * Returns a plain object corresponding to this entity attributes.
+     * 
+     * @author gerkin
+     * @returns {Object} Plain object representing this entity.
+     */
+
+
+				_createClass(DataStoreEntity, [{
+					key: "toObject",
+					value: function toObject() {
+						return _.omit(this, ['dataSource', 'id']);
+					}
+				}]);
+
+				return DataStoreEntity;
+			}();
+
+			module.exports = DataStoreEntity;
+		}, { "../../dependencies": 9 }], 5: [function (require, module, exports) {
+			'use strict';
+
+			var _require5 = require('../../dependencies'),
+			    _ = _require5._,
+			    Promise = _require5.Promise;
+
+			var Utils = require('../../utils');
+
+			var DiasporaAdapter = require('../base/adapter');
+			var InMemoryEntity = require('./entity.js');
 
 			/**
     * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
@@ -1153,18 +1215,49 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DiasporaAdapter);
 
 			module.exports = InMemoryDiasporaAdapter;
-		}, { "../dataStoreEntities/inMemoryEntity.js": 7, "../dependencies": 9, "../utils": 18, "./baseAdapter.js": 3 }], 5: [function (require, module, exports) {
+		}, { "../../dependencies": 9, "../../utils": 18, "../base/adapter": 3, "./entity.js": 6 }], 6: [function (require, module, exports) {
+			'use strict';
+
+			var DataStoreEntity = require('../base/entity.js');
+
+			/**
+    * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
+    * @extends DataStoreEntities.DataStoreEntity
+    * @memberof DataStoreEntities
+    */
+
+			var InMemoryEntity = function (_DataStoreEntity) {
+				_inherits(InMemoryEntity, _DataStoreEntity);
+
+				/**
+     * Construct a in memory entity with specified content & parent.
+     * 
+     * @author gerkin
+     * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+     * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
+     */
+				function InMemoryEntity(entity, dataSource) {
+					_classCallCheck(this, InMemoryEntity);
+
+					return _possibleConstructorReturn(this, (InMemoryEntity.__proto__ || Object.getPrototypeOf(InMemoryEntity)).call(this, entity, dataSource));
+				}
+
+				return InMemoryEntity;
+			}(DataStoreEntity);
+
+			module.exports = InMemoryEntity;
+		}, { "../base/entity.js": 4 }], 7: [function (require, module, exports) {
 			(function (global) {
 				'use strict';
 
-				var _require5 = require('../dependencies'),
-				    _ = _require5._,
-				    Promise = _require5.Promise;
+				var _require6 = require('../../dependencies'),
+				    _ = _require6._,
+				    Promise = _require6.Promise;
 
-				var Utils = require('../utils');
+				var Utils = require('../../utils');
 
-				var DiasporaAdapter = require('./baseAdapter.js');
-				var WebStorageEntity = require('../dataStoreEntities/webStorageEntity.js');
+				var DiasporaAdapter = require('../base/adapter');
+				var WebStorageEntity = require('./entity');
 
 				/**
      * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
@@ -1186,7 +1279,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					function WebStorageDiasporaAdapter(config) {
 						_classCallCheck(this, WebStorageDiasporaAdapter);
 
-						var _this13 = _possibleConstructorReturn(this, (WebStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(WebStorageDiasporaAdapter)).call(this, WebStorageEntity));
+						var _this14 = _possibleConstructorReturn(this, (WebStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(WebStorageDiasporaAdapter)).call(this, WebStorageEntity));
 						/**
        * Link to the WebStorageEntity.
        * 
@@ -1201,7 +1294,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						_.defaults(config, {
 							session: false
 						});
-						_this13.state = 'ready';
+						_this14.state = 'ready';
 						/**
        * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
        * 
@@ -1210,8 +1303,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
        * @see {@link Adapters.WebStorageDiasporaAdapter}:config.session parameter.
        */
-						_this13.source = true === config.session ? global.sessionStorage : global.localStorage;
-						return _this13;
+						_this14.source = true === config.session ? global.sessionStorage : global.localStorage;
+						return _this14;
 					}
 
 					/**
@@ -1313,7 +1406,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "insertMany",
 						value: function insertMany(table, entities) {
-							var _this14 = this;
+							var _this15 = this;
 
 							entities = _.cloneDeep(entities);
 							try {
@@ -1322,10 +1415,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 									var entity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 									entity.id = Utils.generateUUID();
-									_this14.setIdHash(entity);
+									_this15.setIdHash(entity);
 									tableIndex.push(entity.id);
-									_this14.source.setItem(_this14.getItemName(table, entity.id), JSON.stringify(entity));
-									return new _this14.classEntity(entity, _this14);
+									_this15.source.setItem(_this15.getItemName(table, entity.id), JSON.stringify(entity));
+									return new _this15.classEntity(entity, _this15);
 								});
 								this.source.setItem(table, JSON.stringify(tableIndex));
 							} catch (error) {
@@ -1370,7 +1463,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "findOne",
 						value: function findOne(table, queryFind) {
-							var _this15 = this;
+							var _this16 = this;
 
 							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -1386,8 +1479,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							var returnedItem = void 0;
 							var matched = 0;
 							_.each(items, function (itemId) {
-								var item = JSON.parse(_this15.source.getItem(_this15.getItemName(table, itemId)));
-								if (_this15.matchEntity(queryFind, item)) {
+								var item = JSON.parse(_this16.source.getItem(_this16.getItemName(table, itemId)));
+								if (_this16.matchEntity(queryFind, item)) {
 									matched++;
 									// If we matched enough items
 									if (matched > options.skip) {
@@ -1417,7 +1510,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "updateOne",
 						value: function updateOne(table, queryFind, update, options) {
-							var _this16 = this;
+							var _this17 = this;
 
 							_.defaults(options, {
 								skip: 0
@@ -1428,7 +1521,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								}
 								Utils.applyUpdateEntity(update, entity);
 								try {
-									_this16.source.setItem(_this16.getItemName(table, entity.id), JSON.stringify(entity));
+									_this17.source.setItem(_this17.getItemName(table, entity.id), JSON.stringify(entity));
 									return Promise.resolve(entity);
 								} catch (error) {
 									return Promise.reject(error);
@@ -1453,16 +1546,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "deleteOne",
 						value: function deleteOne(table, queryFind) {
-							var _this17 = this;
+							var _this18 = this;
 
 							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 							return this.findOne(table, queryFind, options).then(function (entityToDelete) {
 								try {
-									var tableIndex = _this17.ensureCollectionExists(table);
+									var tableIndex = _this18.ensureCollectionExists(table);
 									_.pull(tableIndex, entityToDelete.id);
-									_this17.source.setItem(table, JSON.stringify(tableIndex));
-									_this17.source.removeItem(_this17.getItemName(table, entityToDelete.id));
+									_this18.source.setItem(table, JSON.stringify(tableIndex));
+									_this18.source.removeItem(_this18.getItemName(table, entityToDelete.id));
 								} catch (error) {
 									return Promise.reject(error);
 								}
@@ -1484,17 +1577,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}, {
 						key: "deleteMany",
 						value: function deleteMany(table, queryFind) {
-							var _this18 = this;
+							var _this19 = this;
 
 							var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 							try {
 								return this.findMany(table, queryFind, options).then(function (entitiesToDelete) {
-									var tableIndex = _this18.ensureCollectionExists(table);
+									var tableIndex = _this19.ensureCollectionExists(table);
 									_.pullAll(tableIndex, _.map(entitiesToDelete, 'id'));
-									_this18.source.setItem(table, JSON.stringify(tableIndex));
+									_this19.source.setItem(table, JSON.stringify(tableIndex));
 									_.forEach(entitiesToDelete, function (entityToDelete) {
-										_this18.source.removeItem(_this18.getItemName(table, entityToDelete.id));
+										_this19.source.removeItem(_this19.getItemName(table, entityToDelete.id));
 									});
 									return Promise.resolve();
 								});
@@ -1509,103 +1602,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				module.exports = WebStorageDiasporaAdapter;
 			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
-		}, { "../dataStoreEntities/webStorageEntity.js": 8, "../dependencies": 9, "../utils": 18, "./baseAdapter.js": 3 }], 6: [function (require, module, exports) {
+		}, { "../../dependencies": 9, "../../utils": 18, "../base/adapter": 3, "./entity": 8 }], 8: [function (require, module, exports) {
 			'use strict';
 
-			var _require6 = require('../dependencies'),
-			    _ = _require6._;
-
-			/**
-    * @namespace DataStoreEntities
-    */
-
-			/**
-    * DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
-    * @memberof DataStoreEntities
-    */
-
-
-			var DataStoreEntity = function () {
-				/**
-     * Construct a new data source entity with specified content & parent.
-     * 
-     * @author gerkin
-     * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-     * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-     */
-				function DataStoreEntity(entity, dataSource) {
-					_classCallCheck(this, DataStoreEntity);
-
-					if (_.isNil(entity)) {
-						return undefined;
-					}
-					if (_.isNil(dataSource)) {
-						throw new TypeError("Expect 2nd argument to be the parent of this entity, have \"" + dataSource + "\"");
-					}
-					Object.defineProperties(this, {
-						dataSource: {
-							value: dataSource,
-							enumerable: false,
-							configurable: false
-						}
-					});
-					_.assign(this, entity);
-				}
-
-				/**
-     * Returns a plain object corresponding to this entity attributes.
-     * 
-     * @author gerkin
-     * @returns {Object} Plain object representing this entity.
-     */
-
-
-				_createClass(DataStoreEntity, [{
-					key: "toObject",
-					value: function toObject() {
-						return _.omit(this, ['dataSource', 'id']);
-					}
-				}]);
-
-				return DataStoreEntity;
-			}();
-
-			module.exports = DataStoreEntity;
-		}, { "../dependencies": 9 }], 7: [function (require, module, exports) {
-			'use strict';
-
-			var DataStoreEntity = require('./baseEntity.js');
-
-			/**
-    * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
-    * @extends DataStoreEntities.DataStoreEntity
-    * @memberof DataStoreEntities
-    */
-
-			var InMemoryEntity = function (_DataStoreEntity) {
-				_inherits(InMemoryEntity, _DataStoreEntity);
-
-				/**
-     * Construct a in memory entity with specified content & parent.
-     * 
-     * @author gerkin
-     * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-     * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-     */
-				function InMemoryEntity(entity, dataSource) {
-					_classCallCheck(this, InMemoryEntity);
-
-					return _possibleConstructorReturn(this, (InMemoryEntity.__proto__ || Object.getPrototypeOf(InMemoryEntity)).call(this, entity, dataSource));
-				}
-
-				return InMemoryEntity;
-			}(DataStoreEntity);
-
-			module.exports = InMemoryEntity;
-		}, { "./baseEntity.js": 6 }], 8: [function (require, module, exports) {
-			'use strict';
-
-			var DataStoreEntity = require('./baseEntity.js');
+			var DataStoreEntity = require('../base/entity.js');
 
 			/**
     * Entity stored in {@link Adapters.WebStorageDiasporaAdapter the local storage adapter}.
@@ -1634,7 +1634,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DataStoreEntity);
 
 			module.exports = WebStorageEntity;
-		}, { "./baseEntity.js": 6 }], 9: [function (require, module, exports) {
+		}, { "../base/entity.js": 4 }], 9: [function (require, module, exports) {
 			(function (global) {
 				'use strict';
 
@@ -1664,6 +1664,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @typedef {Object} SequentialEvent
      * @author Gerkin
      * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
+     */
+
+				/**
+     * @module Diaspora
      */
 
 				var logger = function () {
@@ -1699,22 +1703,63 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				var dataSources = {};
 				var models = {};
 
+				var ensureAllEntities = function ensureAllEntities(adapter, table) {
+					// Filter our results
+					var filterResults = function filterResults(entity) {
+						// Remap fields
+						entity = adapter.remapFields(table, entity, true);
+						// Force results to be class instances
+						if (!(entity instanceof adapter.classEntity) && !_.isNil(entity)) {
+							return new adapter.classEntity(entity, adapter);
+						}
+						return entity;
+					};
+
+					return function (results) {
+						if (_.isArrayLike(results)) {
+							return Promise.resolve(_.map(results, filterResults));
+						} else {
+							return Promise.resolve(filterResults(results));
+						}
+					};
+				};
+
+				var remapArgs = function remapArgs(args, optIndex, update, queryType, remapFunction) {
+					if (false !== optIndex) {
+						// Remap input objects
+						if (true === args[optIndex].remapInput) {
+							args[0] = remapFunction(args[0]);
+
+							if (true === update) {
+								args[1] = remapFunction(args[1]);
+							}
+						}
+						args[optIndex].remapInput = false;
+					} else if ('insert' === queryType.query) {
+						// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
+						if ('many' === queryType.number) {
+							// If inserting *several* entities, map the array to remap each entity objects...
+							args[0] = _.map(args[0], function (insertion) {
+								return remapFunction(insertion);
+							});
+						} else {
+							// ... or we are inserting a *single* one. We still need to remap entity.
+							args[0] = remapFunction(args[0]);
+						}
+					}
+				};
+
+				var getRemapFunction = function getRemapFunction(adapter, table) {
+					return function (entity) {
+						return adapter.remapFields(table, entity, false);
+					};
+				};
+
 				var wrapDataSourceAction = function wrapDataSourceAction(callback, queryType, adapter) {
 					return function (table) {
 						for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 							args[_key - 1] = arguments[_key];
 						}
-
-						// Filter our results
-						var filterResults = function filterResults(entity) {
-							// Remap fields
-							entity = adapter.remapFields(table, entity, true);
-							// Force results to be class instances
-							if (!(entity instanceof adapter.classEntity) && !_.isNil(entity)) {
-								return new adapter.classEntity(entity, adapter);
-							}
-							return entity;
-						};
 
 						// Transform arguments for find, update & delete
 						var optIndex = false;
@@ -1728,107 +1773,33 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							upd = true;
 						}
 						try {
-							//console.log('Before query transformed', args[0]);
 							if (false !== optIndex) {
 								// Options to canonical
 								args[optIndex] = adapter.normalizeOptions(args[optIndex]);
-								// Remap input objects
-								if (true === args[optIndex].remapInput) {
-									args[0] = adapter.remapFields(table, args[0], false);
-
-									if (true === upd) {
-										args[1] = adapter.remapFields(table, args[1], false);
-									}
-								}
 								// Query search to cannonical
 								args[0] = adapter.normalizeQuery(args[0], args[optIndex]);
-								args[optIndex].remapInput = false;
-							} else if ('insert' === queryType.query) {
-								// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
-								if ('many' === queryType.number) {
-									// If inserting *several* entities, map the array to remap each entity objects...
-									args[0] = _.map(args[0], function (insertion) {
-										return adapter.remapFields(table, insertion, false);
-									});
-								} else {
-									// ... or we are inserting a *single* one. We still need to remap entity.
-									args[0] = adapter.remapFields(table, args[0], false);
-								}
 							}
-							//console.log('Query transformed:', args[0]);
+							remapArgs(args, optIndex, upd, queryType, getRemapFunction(adapter, table));
 						} catch (err) {
 							return Promise.reject(err);
 						}
 
 						// Hook after promise resolution
-						var queryPromise = callback.call.apply(callback, [adapter, table].concat(args));
-						return queryPromise.then(function (results) {
-							if (_.isArrayLike(results)) {
-								results = _.map(results, filterResults);
-							} else if (!_.isNil(results)) {
-								results = filterResults(results);
-							}
-							return Promise.resolve(results);
-						});
+						return callback.call.apply(callback, [adapter, table].concat(args)).then(ensureAllEntities(adapter, table));
 					};
 				};
 
-				var VALIDATE_WRONG_TYPE = function VALIDATE_WRONG_TYPE(tester) {
-					return function (keys, fieldDesc, value) {
-						if (!tester(value)) {
-							return { type: keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"" };
-						}
-					};
+				var ERRORS = {
+					NON_EMPTY_STR: _.template('<%= c %> <%= p %> must be a non empty string, had "<%= v %>"')
 				};
-				var VALIDATIONS = {
-					TYPE: {
-						string: VALIDATE_WRONG_TYPE(_.isString),
-						integer: VALIDATE_WRONG_TYPE(_.isInteger),
-						float: VALIDATE_WRONG_TYPE(_.isNumber),
-						date: VALIDATE_WRONG_TYPE(_.isDate),
-						object: function object(keys, fieldDesc, value) {
-							if (!_.isObject(value)) {
-								return { type: keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"" };
-							} else {
-								var deepTest = _.isObject(fieldDesc.attributes) ? _(value).mapValues(function (propVal, propName) {
-									return Diaspora.checkField(propVal, fieldDesc.attributes[propName], _.concat(keys, [propName]));
-								}).omitBy(_.isEmpty).value() : {};
-								if (!_.isEmpty(deepTest)) {
-									return { children: deepTest };
-								}
-							}
-						},
-						array: function array(keys, fieldDesc, value) {
-							if (!_.isArray(value)) {
-								return { type: keys.join('.') + " expected to be a \"" + fieldDesc.type + "\"" };
-							} else {
-								var deepTest = _.isObject(fieldDesc.of) ? _(value).map(function (propVal, propName) {
-									if (_.isArrayLike(fieldDesc.of)) {
-										var subErrors = _(fieldDesc.of).map(function (desc) {
-											return Diaspora.checkField(propVal, desc, _.concat(keys, [propName]));
-										});
-										if (!_.find(subErrors, function (v) {
-											return 0 === v.length;
-										})) {
-											return subErrors;
-										}
-									} else {
-										return Diaspora.checkField(propVal, fieldDesc.of, _.concat(keys, [propName]));
-									}
-								}).omitBy(_.isEmpty).value() : {};
-								if (!_.isEmpty(deepTest)) {
-									return { children: deepTest };
-								}
-							}
-						},
-						any: function any(keys, fieldDesc, value) {
-							if (!_.stubTrue(value)) {
-								return { type: keys.join('.') + " expected to be assigned with any type" };
-							}
-						},
-						_: function _(keys, fieldDesc) {
-							return { type: keys.join('.') + " requires to be unhandled type \"" + fieldDesc.type + "\"" };
-						}
+
+				var requireName = function requireName(classname, value) {
+					if (!_.isString(value) && value.length > 0) {
+						throw new Error(ERRORS.NON_EMPTY_STR({
+							c: classname,
+							p: 'name',
+							v: value
+						}));
 					}
 				};
 
@@ -1840,90 +1811,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      */
 				var Diaspora = {
 					/**
-      * Check if the value matches the field description provided, thus verify if it is valid.
-      *
-      * @author gerkin
-      * @param   {Object}                               entity    - Entity to check.
-      * @param   {module:ModelExtension.ModelPrototype} modelDesc - Model description.
-      * @returns {Error[]} Array of errors.
-      */
-					check: function check(entity) {
-						var _this21 = this;
-
-						var modelDesc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-						// Apply method `checkField` on each field described
-						var checkResults = _(modelDesc).mapValues(function (fieldDesc, field) {
-							return _this21.checkField.call(_this21, entity[field], fieldDesc, _.concat([], [field]));
-						}).omitBy(_.isEmpty).value();
-						return checkResults;
-					},
-
-
-					/**
-      * Check if the value matches the field description provided, thus verify if it is valid.
-      *
-      * @author gerkin
-      * @param   {Any}                                   value     - Value to check.
-      * @param   {module:ModelExtension.FieldDescriptor} fieldDesc - Description of the field to check with.
-      * @param   {String[]}                              keys      - Array of keys from highest ancestor to this property.
-      * @returns {Object} Hash describing errors.
-      */
-					checkField: function checkField(value, fieldDesc, keys) {
-						if (!_.isObject(fieldDesc)) {
-							return;
-						}
-						_.defaults(fieldDesc, {
-							required: false
-						});
-
-						var error = {};
-
-						// It the field has a `validate` property, try to use it
-						if (fieldDesc.validate) {
-							if (!fieldDesc.validate.call(this, value, fieldDesc)) {
-								error.validate = keys.join('.') + " custom validation failed";
-							}
-						}
-
-						// Check the type and the required status
-						if (!_.isNil(fieldDesc.type) && !_.isNil(fieldDesc.model)) {
-							error.spec = keys.join('.') + " spec can't have both a type and a model";
-							// Apply the `required` modifier
-						} else if (true === fieldDesc.required && _.isNil(value)) {
-							error.required = keys.join('.') + " is a required property of type \"" + fieldDesc.type + "\"";
-						} else if (!_.isNil(value)) {
-							if (_.isString(fieldDesc.type)) {
-								var tester = _.get(VALIDATIONS, ['TYPE', fieldDesc.type], fieldDesc.type._);
-								_.assign(error, tester(keys, fieldDesc, value));
-							} else {
-								error.spec = keys.join('.') + " spec \"type\" must be a string";
-							}
-						}
-
-						// Check enum values
-						if (!_.isNil(fieldDesc.enum)) {
-							var result = _.some(fieldDesc.enum, function (enumVal) {
-								if (enumVal instanceof RegExp) {
-									return null !== value.match(enumVal);
-								} else {
-									return value === enumVal;
-								}
-							});
-							if (false === result) {
-								error.enum = keys.join('.') + " expected to have one of enumerated values \"" + JSON.stringify(fieldDesc.enum) + "\"";
-							}
-						}
-						if (!_.isEmpty(error)) {
-							error.value = value;
-							return error;
-						} else {
-							return undefined;
-						}
-					},
-
-
-					/**
       * Set default values if required.
       *
       * @author gerkin
@@ -1932,11 +1819,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @returns {Object} Entity merged with default values.
       */
 					default: function _default(entity, modelDesc) {
-						var _this22 = this;
+						var _this21 = this;
 
 						// Apply method `defaultField` on each field described
 						return _.defaults(entity, _.mapValues(modelDesc, function (fieldDesc, field) {
-							return _this22.defaultField(entity[field], fieldDesc);
+							return _this21.defaultField(entity[field], fieldDesc);
 						}));
 					},
 
@@ -2008,13 +1895,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @returns {undefined} This function does not return anything.
       */
 					registerDataSource: function registerDataSource(name, dataSource) {
-						if (!_.isString(name) && name.length > 0) {
-							throw new Error("DataSource name must be a non empty string, had \"" + name + "\"");
-						}
+						requireName('DataSource', name);
 						if (dataSources.hasOwnProperty(name)) {
 							throw new Error("DataSource name already used, had \"" + name + "\"");
 						}
-						if (!(dataSource instanceof Diaspora.components.DiasporaAdapter)) {
+						if (!(dataSource instanceof Diaspora.components.Adapters.Adapter)) {
 							throw new Error('DataSource must be an instance inheriting "DiasporaAdapter"');
 						}
 						dataSource.name = name;
@@ -2049,7 +1934,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       */
 					declareModel: function declareModel(name, modelDesc) {
 						if (!_.isString(name) && name.length > 0) {
-							throw new Error("DataSource name must be a non empty string, had \"" + name + "\"");
+							requireName('Model', name);
 						}
 						if (!_.isObject(modelDesc)) {
 							throw new Error('"modelDesc" must be an object');
@@ -2075,7 +1960,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							throw new Error("Adapter with label \"" + label + "\" already exists.");
 						}
 						// Check inheritance of adapter
-						if (!(adapter.prototype instanceof Diaspora.components.DiasporaAdapter)) {
+						if (!(adapter.prototype instanceof Diaspora.components.Adapters.Adapter)) {
 							throw new TypeError("Trying to register an adapter with label \"" + label + "\", but it does not extends DiasporaAdapter.");
 						}
 						adapters[label] = adapter;
@@ -2093,6 +1978,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @see Use {@link Diaspora.declareModel} to add models.
       */
 					models: models,
+
 					/**
       * Hash containing all available data sources.
       *
@@ -2104,6 +1990,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @see Use {@link Diaspora.createNamedDataSource} or {@link Diaspora.registerDataSource} to make data sources available for models.
       */
 					dataSources: dataSources,
+
 					/**
       * Hash containing all available adapters. The only universal adapter is `inMemory`.
       *
@@ -2116,6 +2003,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @see Use {@link Diaspora.registerAdapter} to add adapters.
       */
 					adapters: adapters,
+
 					/**
       * Dependencies of Diaspora.
       *
@@ -2128,6 +2016,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @author gerkin
       */
 					dependencies: dependencies,
+
 					/**
       * Logger used by Diaspora and its adapters. You can use this property to configure winston. On brower environment, this is replaced by a reference to global {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/console Console}.
       *
@@ -2155,24 +2044,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					Entity: require('./entityFactory').Entity,
 					Set: require('./set'),
 					Model: require('./model'),
+					Validator: require('./validator'),
 					Errors: {
 						ExtendableError: require('./errors/extendableError'),
 						EntityValidationError: require('./errors/entityValidationError'),
 						SetValidationError: require('./errors/setValidationError'),
 						EntityStateError: require('./errors/entityStateError')
 					},
-					DiasporaAdapter: require('./adapters/baseAdapter'),
-					DataStoreEntity: require('./dataStoreEntities/baseEntity')
+					Adapters: {
+						Adapter: require('./adapters/base/adapter'),
+						Entity: require('./adapters/base/entity')
+					}
 				};
 
 				// Register available built-in adapters
-				Diaspora.registerAdapter('inMemory', require('./adapters/inMemoryAdapter'));
+				Diaspora.registerAdapter('inMemory', require('./adapters/inMemory/adapter'));
 				// Register webStorage only if in browser
 				if (process.browser) {
-					Diaspora.registerAdapter('webStorage', require('./adapters/webStorageAdapter'));
+					Diaspora.registerAdapter('webStorage', require('./adapters/webStorage/adapter'));
 				}
 			}).call(this, require('_process'));
-		}, { "./adapters/baseAdapter": 3, "./adapters/inMemoryAdapter": 4, "./adapters/webStorageAdapter": 5, "./dataStoreEntities/baseEntity": 6, "./dependencies": 9, "./entityFactory": 11, "./errors/entityStateError": 12, "./errors/entityValidationError": 13, "./errors/extendableError": 14, "./errors/setValidationError": 15, "./model": 16, "./set": 17, "_process": 19, "winston": undefined }], 11: [function (require, module, exports) {
+		}, { "./adapters/base/adapter": 3, "./adapters/base/entity": 4, "./adapters/inMemory/adapter": 5, "./adapters/webStorage/adapter": 7, "./dependencies": 9, "./entityFactory": 11, "./errors/entityStateError": 12, "./errors/entityValidationError": 13, "./errors/extendableError": 14, "./errors/setValidationError": 15, "./model": 16, "./set": 17, "./validator": 19, "_process": 20, "winston": undefined }], 11: [function (require, module, exports) {
 			'use strict';
 
 			var _require7 = require('./dependencies'),
@@ -2181,9 +2073,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			    SequentialEvent = _require7.SequentialEvent;
 
 			var Diaspora = require('./diaspora');
-			var DataStoreEntity = require('./dataStoreEntities/baseEntity');
-			var EntityValidationError = require('./errors/entityValidationError');
+			var DataStoreEntity = require('./adapters/base/entity');
 			var EntityStateError = require('./errors/entityStateError');
+
+			/**
+    * @module EntityFactory
+    */
 
 			var DEFAULT_OPTIONS = { skipEvents: false };
 			var PRIVATE = Symbol('PRIVATE');
@@ -2242,9 +2137,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * The entity is the class you use to manage a single document in all data sources managed by your model.
     * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
     * 
-    * @summary An entity is a document in the population of all your datas of the same type
     * @extends SequentialEvent
-    * @memberof EntityFactory
     */
 
 			var Entity = function (_SequentialEvent2) {
@@ -2268,7 +2161,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					var modelAttrsKeys = _.keys(modelDesc.attributes);
 
 					// ### Init defaults
-					var _this23 = _possibleConstructorReturn(this, (Entity.__proto__ || Object.getPrototypeOf(Entity)).call(this));
+					var _this22 = _possibleConstructorReturn(this, (Entity.__proto__ || Object.getPrototypeOf(Entity)).call(this));
 
 					var dataSources = Object.seal(_.mapValues(model.dataSources, function () {
 						return undefined;
@@ -2281,7 +2174,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						modelDesc: modelDesc,
 						model: model
 					};
-					_this23[PRIVATE] = _this;
+					_this22[PRIVATE] = _this;
 					// ### Load datas from source
 					source = entityCtrSteps.loadSource(_this, source);
 					// ### Final validation
@@ -2297,15 +2190,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					source = null;
 
 					// ### Load events
-					entityCtrSteps.bindLifecycleEvents(_this23, modelDesc);
-					return _this23;
+					entityCtrSteps.bindLifecycleEvents(_this22, modelDesc);
+					return _this22;
 				}
 
 				/**
      * Generate the query to get this unique entity in the desired data source.
      *
-     * @memberof Entity
-     * @instance
      * @author gerkin
      * @param   {Adapters.DiasporaAdapter} dataSource - Name of the data source to get query for.
      * @returns {Object} Query to find this entity.
@@ -2323,8 +2214,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Return the table of this entity in the specified data source.
       *
-      * @memberof Entity
-      * @instance
       * @author gerkin
       * @returns {string} Name of the table.
       */
@@ -2339,31 +2228,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Check if the entity matches model description.
       *
-      * @memberof Entity
-      * @instance
       * @author gerkin
       * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
       * @returns {undefined} This function does not return anything.
-      * @see Diaspora.check
+      * @see Validator.Validator#validate
       */
 
 				}, {
 					key: "validate",
 					value: function validate() {
-						var validationErrors = Diaspora.check(this[PRIVATE].attributes, this[PRIVATE].modelDesc.attributes);
-						if (!_.isEmpty(validationErrors)) {
-							throw new EntityValidationError(validationErrors, 'Validation failed');
-						}
+						this.constructor.model.validator.validate(this[PRIVATE].attributes);
 					}
 
 					/**
       * Remove all editable properties & replace them with provided object.
       *
-      * @memberof Entity
-      * @instance
       * @author gerkin
       * @param   {Object} [newContent={}] - Replacement content.
-      * @returns {Entity} Returns `this`.
+      * @returns {module:EntityFactory~Entity} Returns `this`.
       */
 
 				}, {
@@ -2379,8 +2261,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Generate a diff update query by checking deltas with last source interaction.
       *
-      * @memberof Entity
-      * @instance
       * @author gerkin
       * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
       * @returns {Object} Diff query.
@@ -2389,16 +2269,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "getDiff",
 					value: function getDiff(dataSource) {
-						var _this24 = this;
+						var _this23 = this;
 
 						var dataStoreEntity = this[PRIVATE].dataSources[dataSource.name];
 						var dataStoreObject = dataStoreEntity.toObject();
 
 						var keys = _(this[PRIVATE].attributes).keys().concat(_.keys(dataStoreObject)).uniq().difference(['idHash']).value();
 						var values = _(keys).filter(function (key) {
-							return _this24[PRIVATE].attributes[key] !== dataStoreObject[key];
+							return _this23[PRIVATE].attributes[key] !== dataStoreObject[key];
 						}).map(function (key) {
-							return _this24[PRIVATE].attributes[key];
+							return _this23[PRIVATE].attributes[key];
 						}).value();
 						var diff = _.zipObject(keys, values);
 						return diff;
@@ -2407,8 +2287,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Returns a copy of this entity attributes.
       *
-      * @memberof Entity
-      * @instance
       * @author gerkin
       * @returns {Object} Attributes of this entity.
       */
@@ -2422,21 +2300,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Save this entity in specified data source.
       *
-      * @memberof Entity
-      * @instance
-      * @fires Entity#beforeUpdate
-      * @fires Entity#afterUpdate
+      * @fires EntityFactory.Entity#beforeUpdate
+      * @fires EntityFactory.Entity#afterUpdate
       * @author gerkin
       * @param   {string}  sourceName                 - Name of the data source to persist entity in.
       * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
       * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
       * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
-     	 */
+      */
 
 				}, {
 					key: "persist",
 					value: function persist(sourceName) {
-						var _this25 = this;
+						var _this24 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -2452,21 +2328,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
 						var suffix = 'orphan' === beforeState ? 'Create' : 'Update';
 						return _maybeEmit(['beforePersist', 'beforeValidate']).then(function () {
-							return _this25.validate();
+							return _this24.validate();
 						}).then(function () {
 							return _maybeEmit(['afterValidate', "beforePersist" + suffix]);
 						}).then(function () {
-							_this25[PRIVATE].lastDataSource = dataSource.name;
+							_this24[PRIVATE].lastDataSource = dataSource.name;
 							// Depending on state, we are going to perform a different operation
 							if ('orphan' === beforeState) {
-								return dataSource.insertOne(_this25.table(sourceName), _this25.toObject());
+								return dataSource.insertOne(_this24.table(sourceName), _this24.toObject());
 							} else {
-								return dataSource.updateOne(_this25.table(sourceName), _this25.uidQuery(dataSource), _this25.getDiff(dataSource));
+								return dataSource.updateOne(_this24.table(sourceName), _this24.uidQuery(dataSource), _this24.getDiff(dataSource));
 							}
 						}).then(function (dataStoreEntity) {
-							_this25[PRIVATE].state = 'sync';
-							_this25[PRIVATE].attributes = dataStoreEntity.toObject();
-							_this25[PRIVATE].dataSources[dataSource.name] = dataStoreEntity;
+							_this24[PRIVATE].state = 'sync';
+							_this24[PRIVATE].attributes = dataStoreEntity.toObject();
+							_this24[PRIVATE].dataSources[dataSource.name] = dataStoreEntity;
 
 							return _maybeEmit(["afterPersist" + suffix, 'afterPersist']);
 						});
@@ -2475,10 +2351,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Reload this entity from specified data source.
       *
-      * @memberof Entity
-      * @instance
-      * @fires Entity#beforeFind
-      * @fires Entity#afterFind
+      * @fires EntityFactory.Entity#beforeFind
+      * @fires EntityFactory.Entity#afterFind
       * @author gerkin
       * @param   {string}  sourceName                 - Name of the data source to fetch entity from.
       * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
@@ -2489,7 +2363,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "fetch",
 					value: function fetch(sourceName) {
-						var _this26 = this;
+						var _this25 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -2502,9 +2376,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var eventsArgs = [dataSource.name];
 						var _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 						return _maybeEmit('beforeFetch').then(maybeThrowInvalidEntityState(this, beforeState, dataSource, 'findOne')).then(function (dataStoreEntity) {
-							_this26[PRIVATE].state = 'sync';
-							_this26[PRIVATE].attributes = dataStoreEntity.toObject();
-							_this26[PRIVATE].dataSources[dataSource.name] = dataStoreEntity;
+							_this25[PRIVATE].state = 'sync';
+							_this25[PRIVATE].attributes = dataStoreEntity.toObject();
+							_this25[PRIVATE].dataSources[dataSource.name] = dataStoreEntity;
 
 							return _maybeEmit('afterFetch');
 						});
@@ -2513,10 +2387,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Delete this entity from the specified data source.
       *
-      * @memberof Entity
-      * @instance
-      * @fires Entity#beforeDelete
-      * @fires Entity#afterDelete
+      * @fires EntityFactory.Entity#beforeDelete
+      * @fires EntityFactory.Entity#afterDelete
       * @author gerkin
       * @param   {string}  sourceName                 - Name of the data source to delete entity from.
       * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
@@ -2527,7 +2399,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "destroy",
 					value: function destroy(sourceName) {
-						var _this27 = this;
+						var _this26 = this;
 
 						var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -2541,13 +2413,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 						return _maybeEmit('beforeDestroy').then(maybeThrowInvalidEntityState(this, beforeState, dataSource, 'deleteOne')).then(function () {
 							// If this was our only data source, then go back to orphan state
-							if (0 === _.without(_this27[PRIVATE].model.dataSources, dataSource.name).length) {
-								_this27[PRIVATE].state = 'orphan';
+							if (0 === _.without(_this26[PRIVATE].model.dataSources, dataSource.name).length) {
+								_this26[PRIVATE].state = 'orphan';
 							} else {
-								_this27[PRIVATE].state = 'sync';
-								delete _this27[PRIVATE].attributes.idHash[dataSource.name];
+								_this26[PRIVATE].state = 'sync';
+								delete _this26[PRIVATE].attributes.idHash[dataSource.name];
 							}
-							_this27[PRIVATE].dataSources[dataSource.name] = undefined;
+							_this26[PRIVATE].dataSources[dataSource.name] = undefined;
 							return _maybeEmit('afterDestroy');
 						});
 					}
@@ -2555,11 +2427,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
       *
-      * @name dataSources
-      * @readonly
       * @type {Object}
-      * @memberof Entity
-      * @instance
       * @author gerkin
       */
 
@@ -2572,11 +2440,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * TODO.
       *
-      * @name dataSources
-      * @readonly
       * @type {TODO}
-      * @memberof Entity
-      * @instance
       * @author gerkin
       */
 
@@ -2589,11 +2453,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Get entity's current state.
       *
-      * @name dataSources
-      * @readonly
       * @type {Entity.State}
-      * @memberof Entity
-      * @instance
       * @author gerkin
       */
 
@@ -2606,11 +2466,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					/**
       * Get entity's last data source.
       *
-      * @name lastDataSources
-      * @readonly
       * @type {null|string}
-      * @memberof Entity
-      * @instance
       * @author gerkin
       */
 
@@ -2627,10 +2483,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			/**
     * This factory function generate a new class constructor, prepared for a specific model.
     *
+    * @method EntityFactory
+    * @public
+    * @static
     * @param   {string}           name       - Name of this model.
     * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
     * @param   {Model}            model      - Model that will spawn entities.
-    * @returns {Entity} Entity constructor to use with this model.
+    * @returns {module:EntityFactory~Entity} Entity constructor to use with this model.
+    * @property {module:EntityFactory~Entity} Entity Entity constructor
     */
 
 
@@ -2654,9 +2514,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        * Name of the class.
        *
        * @type {string}
-       * @readonly
-       * @memberof Entity
-       * @static
        * @author gerkin
        */
 						get: function get() {
@@ -2666,9 +2523,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        * Reference to this entity's model.
        *
        * @type {Model}
-       * @readonly
-       * @memberof Entity
-       * @static
        * @author gerkin
        */
 
@@ -2694,6 +2548,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				});
 				return SubEntity.bind(Entity, name, modelDesc, model);
 			};
+			EntityFactory.Entity = Entity;
 			// =====
 			// ## Lifecycle Events
 
@@ -2701,42 +2556,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			// ### Persist
 
 			/**
-    * @event Entity#beforePersist
+    * @event EntityFactory.Entity#beforePersist
     * @type {String}
     */
 
 			/**
-    * @event Entity#beforeValidate
+    * @event EntityFactory.Entity#beforeValidate
     * @type {String}
     */
 
 			/**
-    * @event Entity#afterValidate
+    * @event EntityFactory.Entity#afterValidate
     * @type {String}
     */
 
 			/**
-    * @event Entity#beforePersistCreate
+    * @event EntityFactory.Entity#beforePersistCreate
     * @type {String}
     */
 
 			/**
-    * @event Entity#beforePersistUpdate
+    * @event EntityFactory.Entity#beforePersistUpdate
     * @type {String}
     */
 
 			/**
-    * @event Entity#afterPersistCreate
+    * @event EntityFactory.Entity#afterPersistCreate
     * @type {String}
     */
 
 			/**
-    * @event Entity#afterPersistUpdate
+    * @event EntityFactory.Entity#afterPersistUpdate
     * @type {String}
     */
 
 			/**
-    * @event Entity#afterPersist
+    * @event EntityFactory.Entity#afterPersist
     * @type {String}
     */
 
@@ -2744,12 +2599,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			// ### Find
 
 			/**
-    * @event Entity#beforeFind
+    * @event EntityFactory.Entity#beforeFind
     * @type {String}
     */
 
 			/**
-    * @event Entity#afterFind
+    * @event EntityFactory.Entity#afterFind
     * @type {String}
     */
 
@@ -2757,24 +2612,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			// ### Destroy
 
 			/**
-    * @event Entity#beforeDestroy
+    * @event EntityFactory.Entity#beforeDestroy
     * @type {String}
     */
 
 			/**
-    * @event Entity#afterDestroy
+    * @event EntityFactory.Entity#afterDestroy
     * @type {String}
     */
 
 			module.exports = EntityFactory;
-		}, { "./dataStoreEntities/baseEntity": 6, "./dependencies": 9, "./diaspora": 10, "./errors/entityStateError": 12, "./errors/entityValidationError": 13 }], 12: [function (require, module, exports) {
+		}, { "./adapters/base/entity": 4, "./dependencies": 9, "./diaspora": 10, "./errors/entityStateError": 12 }], 12: [function (require, module, exports) {
 			'use strict';
 
 			var ExtendableError = require('./extendableError');
 
 			/**
+    * @module Errors/EntityStateError
+    */
+
+			/**
     * This class represents an error related to validation.
-    * @extends Error
+    * @extends module:Errors/ExtendableError~ExtendableError
     */
 
 			var EntityStateError = function (_ExtendableError) {
@@ -2784,7 +2643,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * Construct a new error related to an invalide state of the entity.
      * 
      * @author gerkin
-     * @memberof Errors
      * @param {*}      errorArgs        - Arguments to transfer to parent Error.
      */
 				function EntityStateError() {
@@ -2818,10 +2676,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			};
 
 			/**
+    * @module Errors/EntityValidationError
+    */
+
+			/**
     * This class represents an error related to validation.
     *
-    * @extends Error
-    * @memberof Errors
+    * @extends module:Errors/ExtendableError~ExtendableError
     */
 
 			var EntityValidationError = function (_ExtendableError2) {
@@ -2831,8 +2692,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * Construct a new validation error.
      *
      * @author gerkin
-     * @see Diaspora.check
-     * @memberof Errors
      * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
      * @param {string} message          - Message of this error.
      * @param {*}      errorArgs        - Arguments to transfer to parent Error.
@@ -2848,10 +2707,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						errorArgs[_key3 - 2] = arguments[_key3];
 					}
 
-					var _this30 = _possibleConstructorReturn(this, (_ref4 = EntityValidationError.__proto__ || Object.getPrototypeOf(EntityValidationError)).call.apply(_ref4, [this, message].concat(errorArgs)));
+					var _this29 = _possibleConstructorReturn(this, (_ref4 = EntityValidationError.__proto__ || Object.getPrototypeOf(EntityValidationError)).call.apply(_ref4, [this, message].concat(errorArgs)));
 
-					_this30.validationErrors = validationErrors;
-					return _this30;
+					_this29.validationErrors = validationErrors;
+					return _this29;
 				}
 
 				return EntityValidationError;
@@ -2862,11 +2721,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			'use strict';
 
 			/**
-    * @namespace Errors
+    * @module Errors/ExtendableError
     */
 
 			/**
     * This class is the base class for custom Diaspora errors
+    * 
     * @extends Error
     */
 
@@ -2889,15 +2749,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						errorArgs[_key4 - 1] = arguments[_key4];
 					}
 
-					var _this31 = _possibleConstructorReturn(this, (_ref5 = ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call.apply(_ref5, [this, message].concat(errorArgs)));
+					var _this30 = _possibleConstructorReturn(this, (_ref5 = ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call.apply(_ref5, [this, message].concat(errorArgs)));
 
-					_this31.constructor = _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this31);
+					_this30.constructor = _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this30);
 					if ('function' === typeof Error.captureStackTrace) {
-						Error.captureStackTrace(_this31, _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this31));
+						Error.captureStackTrace(_this30, _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this30));
 					} else {
-						_this31.stack = new Error(message).stack;
+						_this30.stack = new Error(message).stack;
 					}
-					return _this31;
+					return _this30;
 				}
 
 				return ExtendableError;
@@ -2913,10 +2773,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var ExtendableError = require('./extendableError');
 
 			/**
+    * @module Errors/SetValidationError
+    */
+
+			/**
     * This class represents an error related to validation on a set.
     *
-    * @extends Error
-    * @memberof Errors
+    * @extends module:Errors/ExtendableError~ExtendableError
     */
 
 			var SetValidationError = function (_ExtendableError3) {
@@ -2927,10 +2790,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      *
      * @author gerkin
      * @see Diaspora.check
-     * @memberof Errors
-     * @param {string}                         message          - Message of this error.
-     * @param {Errors.EntityValidationError[]} validationErrors - Array of validation errors.
-     * @param {*}                              errorArgs        - Arguments to transfer to parent Error.
+     * @param {string}                                                      message          - Message of this error.
+     * @param {module:Errors/EntityValidationError~EntityValidationError[]} validationErrors - Array of validation errors.
+     * @param {*}                                                           errorArgs        - Arguments to transfer to parent Error.
      */
 				function SetValidationError(message, validationErrors) {
 					var _ref6;
@@ -2949,10 +2811,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						errorArgs[_key5 - 2] = arguments[_key5];
 					}
 
-					var _this32 = _possibleConstructorReturn(this, (_ref6 = SetValidationError.__proto__ || Object.getPrototypeOf(SetValidationError)).call.apply(_ref6, [this, message].concat(errorArgs)));
+					var _this31 = _possibleConstructorReturn(this, (_ref6 = SetValidationError.__proto__ || Object.getPrototypeOf(SetValidationError)).call.apply(_ref6, [this, message].concat(errorArgs)));
 
-					_this32.validationErrors = validationErrors;
-					return _this32;
+					_this31.validationErrors = validationErrors;
+					return _this31;
 				}
 
 				return SetValidationError;
@@ -2969,11 +2831,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var EntityFactory = require('./entityFactory');
 			var Diaspora = require('./diaspora');
 			var Set = require('./set');
+			var Validator = require('./validator');
 
 			var entityPrototypeProperties = EntityFactory.entityPrototypeProperties;
 
 			/**
-    * @namespace ModelConfiguration
+    * @module Model
     */
 
 			/**
@@ -3110,7 +2973,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						dataSources: modelSources,
 						defaultDataSource: sourceNames[0],
 						name: name,
-						entityFactory: EntityFactory(name, modelDesc, this)
+						entityFactory: EntityFactory(name, modelDesc, this),
+						validator: new Validator(modelDesc.attributes)
 					});
 				}
 
@@ -3163,10 +3027,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "spawnMany",
 					value: function spawnMany(sources) {
-						var _this33 = this;
+						var _this32 = this;
 
 						return new Set(this, _.map(sources, function (source) {
-							return _this33.spawn(source);
+							return _this32.spawn(source);
 						}));
 					}
 
@@ -3182,11 +3046,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "insert",
 					value: function insert(source, dataSourceName) {
-						var _this34 = this;
+						var _this33 = this;
 
 						var dataSource = this.getDataSource(dataSourceName);
 						return dataSource.insertOne(this.name, source).then(function (entity) {
-							return Promise.resolve(new _this34.entityFactory(entity));
+							return Promise.resolve(new _this33.entityFactory(entity));
 						});
 					}
 
@@ -3322,7 +3186,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = Model;
-		}, { "./dependencies": 9, "./diaspora": 10, "./entityFactory": 11, "./set": 17 }], 17: [function (require, module, exports) {
+		}, { "./dependencies": 9, "./diaspora": 10, "./entityFactory": 11, "./set": 17, "./validator": 19 }], 17: [function (require, module, exports) {
 			'use strict';
 
 			var _require11 = require('./dependencies'),
@@ -3331,6 +3195,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			var Utils = require('./utils');
 			var SetValidationError = require('./errors/setValidationError');
+
+			/**
+    * @module Set
+    */
 
 			/**
     * Get the verb of the action (either the `verb` param or the string at the `index` position in `verb` array).
@@ -3373,11 +3241,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * @returns {Promise} Promise resolved once events are finished.
     */
 			function wrapEventsAction(sourceName, action, verb) {
-				var _this35 = this;
+				var _this34 = this;
 
 				var _allEmit = _.partial(allEmit, this.entities, verb);
 				return _allEmit('before').then(function () {
-					return Promise.all(_this35.entities.map(function (entity) {
+					return Promise.all(_this34.entities.map(function (entity) {
 						return entity[action](sourceName, {
 							skipEvents: true
 						});
@@ -3499,7 +3367,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @see {@link EntityFactory.Entity#persist}
       */
 					value: function persist(sourceName) {
-						var _this36 = this;
+						var _this35 = this;
 
 						var suffixes = this.entities.map(function (entity) {
 							return 'orphan' === entity.state ? 'Create' : 'Update';
@@ -3509,7 +3377,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							return _allEmit('Validate', 'before');
 						}).then(function () {
 							var errors = 0;
-							var validationResults = _this36.entities.map(function (entity) {
+							var validationResults = _this35.entities.map(function (entity) {
 								try {
 									entity.validate();
 									return undefined;
@@ -3519,20 +3387,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 								}
 							}).value();
 							if (errors > 0) {
-								return Promise.reject(new SetValidationError("Set validation failed for " + errors + " elements (on " + _this36.length + "): ", validationResults));
+								return Promise.reject(new SetValidationError("Set validation failed for " + errors + " elements (on " + _this35.length + "): ", validationResults));
 							} else {
 								return Promise.resolve();
 							}
 						}).then(function () {
 							return _allEmit('Validate', 'after');
 						}).then(function () {
-							return wrapEventsAction.call(_this36, sourceName, 'persist', _.map(suffixes, function (suffix) {
+							return wrapEventsAction.call(_this35, sourceName, 'persist', _.map(suffixes, function (suffix) {
 								return "Persist" + suffix;
 							}));
 						}).then(function () {
 							return _allEmit('Persist', 'after');
 						}).then(function () {
-							return _this36;
+							return _this35;
 						});
 					}
 
@@ -3550,10 +3418,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "fetch",
 					value: function fetch(sourceName) {
-						var _this37 = this;
+						var _this36 = this;
 
 						return wrapEventsAction.call(this, sourceName, 'fetch', 'Fetch').then(function () {
-							return _this37;
+							return _this36;
 						});
 					}
 
@@ -3571,10 +3439,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "destroy",
 					value: function destroy(sourceName) {
-						var _this38 = this;
+						var _this37 = this;
 
 						return wrapEventsAction.call(this, sourceName, 'destroy', 'Destroy').then(function () {
-							return _this38;
+							return _this37;
 						});
 					}
 
@@ -3630,6 +3498,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				var _require12 = require('./dependencies'),
 				    _ = _require12._;
+
+				/**
+     * @module Utils
+     */
 
 				module.exports = {
 					defineEnumerableProperties: function defineEnumerableProperties(subject, handlers) {
@@ -3714,6 +3586,476 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				};
 			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
 		}, { "./dependencies": 9 }], 19: [function (require, module, exports) {
+			'use strict';
+
+			var dependencies = require('./dependencies');
+			var EntityValidationError = require('./errors/entityValidationError');
+			var _ = dependencies._;
+
+			/**
+    * @module Validator
+    */
+
+			/**
+    * Execute the simple tester and return an error component if it returns falsey.
+    *
+    * @param   {Function} tester - The test function to invoke.
+    * @returns {module:Validator~Checker} Function to execute to validate the type.
+    */
+
+			var validateWrongType = function validateWrongType(tester) {
+				return function (keys, fieldDesc, value) {
+					if (!tester(value)) {
+						return { type: keys.toValidatePath() + " expected to be a \"" + fieldDesc.type + "\"" };
+					}
+				};
+			};
+
+			/**
+    * Prepare the check of each items in the array.
+    *
+    * @param   {module:Validator~Validator} validator - Validator instance that do this call.
+    * @param   {Object}                     fieldDesc - Description of the field to check.
+    * @param   {module:Validator~PathStack} keys      - Keys so far.
+    * @returns {Function} Function to execute to validate array items.
+    */
+			var validateArrayItems = function validateArrayItems(validator, fieldDesc, keys) {
+				return function (propVal, index) {
+					if (fieldDesc.hasOwnProperty('of')) {
+						var ofArray = _.castArray(fieldDesc.of);
+						var subErrors = _(ofArray).map(function (desc, subIndex) {
+							return validator.check(propVal, keys.clone().pushValidationProp('of', _.isArray(fieldDesc.of) ? subIndex : undefined).pushEntityProp(index), { getProps: false });
+						});
+						if (!_.isArray(fieldDesc.of)) {
+							return subErrors.get(0);
+						} else if (subErrors.compact().value().length === ofArray.length) {
+							return subErrors.toPlainObject().omitBy(_.isNil).value();
+						}
+					}
+					return {};
+				};
+			};
+
+			/**
+    * A checker is a function that can return an error component with provided standard args.
+    *
+    * @callback Checker
+    * @param   {module:Validator~PathStack} keys      - Pathstack so far.
+    * @param   {Object}                     fieldDesc - Description of the field.
+    * @param   {Any}                        value     - Value to check.
+    * @returns {Object} Error component.
+    */
+
+			/**
+    * Store for validation functions.
+    *
+    * @type {object}
+    * @property {object<string, module:Validator~Checker>} TYPE - Type checkers.
+    * @property {module:Validator~Checker} TYPE.string - String type checker.
+    * @property {module:Validator~Checker} TYPE.integer - Integer type checker.
+    * @property {module:Validator~Checker} TYPE.float - Float type checker.
+    * @property {module:Validator~Checker} TYPE.date - Date type checker.
+    * @property {module:Validator~Checker} TYPE.object - Object type checker.
+    * @property {module:Validator~Checker} TYPE.array - Array type checker.
+    * @property {module:Validator~Checker} TYPE.any - Type checker for type 'any'.
+    * @property {module:Validator~Checker} TYPE._ - Default function for unhandled type.
+    */
+			var VALIDATIONS = {
+				TYPE: {
+					string: validateWrongType(_.isString),
+					integer: validateWrongType(_.isInteger),
+					float: validateWrongType(_.isNumber),
+					date: validateWrongType(_.isDate),
+					object: function object(keys, fieldDesc, value) {
+						var _this38 = this;
+
+						if (!_.isObject(value)) {
+							return { type: keys.toValidatePath() + " expected to be a \"" + fieldDesc.type + "\"" };
+						} else {
+							var deepTest = _.isObject(fieldDesc.attributes) ? _(_.assign({}, fieldDesc.attributes, value)).mapValues(function (pv, propName) {
+								var propVal = value[propName];
+								return _this38.check(propVal, keys.clone().pushValidationProp('attributes').pushProp(propName), { getProps: false });
+							}).omitBy(_.isEmpty).value() : {};
+							if (!_.isEmpty(deepTest)) {
+								return { children: deepTest };
+							}
+						}
+					},
+					array: function array(keys, fieldDesc, value) {
+						if (!_.isArray(value)) {
+							return { type: keys.toValidatePath() + " expected to be a \"" + fieldDesc.type + "\"" };
+						} else {
+							var deepTest = _.isObject(fieldDesc.of) ? _(value).map(validateArrayItems(this, fieldDesc, keys)).omitBy(_.isEmpty).value() : {};
+							if (!_.isEmpty(deepTest)) {
+								return { children: deepTest };
+							}
+						}
+					},
+					any: function any(keys, fieldDesc, value) {
+						if (!_.stubTrue(value)) {
+							return { type: keys.toValidatePath() + " expected to be assigned with any type" };
+						}
+					},
+					_: function _(keys, fieldDesc) {
+						return { type: keys.toValidatePath() + " requires to be unhandled type \"" + fieldDesc.type + "\"" };
+					}
+				}
+			};
+
+			/**
+    * Standard function that can be used to add steps to the validation process..
+    *
+    * @callback ValidationStep
+    * @param   {module:Validator~ValidationStepsArgs} validationArgs - Object of arguments.
+    * @returns {undefined} This function returns nothing.
+    */
+
+			/**
+    * This object can be passed through each validation steps.
+    *
+    * @typedef  {Object} ValidationStepsArgs
+    * @property {Object}                     error     - Error object to extend.
+    * @property {Object}                     fieldDesc - Description of the field.
+    * @property {module:Validator~PathStack} keys      - Pathstack representing keys so far.
+    * @property {*}                          value     - Value to check.
+    */
+
+			var VALIDATION_STEPS = [
+			/**
+    * Apply the custom `validate` function or function array, if it exists.
+    *
+    * @function module:Validator~checkCustoms
+    * @type {module:Validator~ValidationStep}
+    * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
+    * @returns {undefined} This function returns nothing.
+    */
+			function checkCustoms(validationArgs) {
+				var _this39 = this;
+
+				var error = validationArgs.error,
+				    fieldDesc = validationArgs.fieldDesc,
+				    keys = validationArgs.keys,
+				    value = validationArgs.value;
+				// It the field has a `validate` property, try to use it
+
+				var validateFcts = _(fieldDesc.validate).castArray().compact();
+				validateFcts.forEach(function (validateFct) {
+					if (!validateFct.call(_this39, value, fieldDesc)) {
+						error.validate = keys.toValidatePath() + " custom validation failed";
+					}
+				});
+			},
+			/**
+    * Check if the type & the existence matches the `type` & `required` specifications.
+    *
+    * @function module:Validator~checkTypeRequired
+    * @type {module:Validator~ValidationStep}
+    * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
+    * @returns {undefined} This function returns nothing.
+    */
+			function checkTypeRequired(validationArgs) {
+				var error = validationArgs.error,
+				    fieldDesc = validationArgs.fieldDesc,
+				    keys = validationArgs.keys,
+				    value = validationArgs.value;
+				// Check the type and the required status
+
+				if (!_.isNil(fieldDesc.type) && !_.isNil(fieldDesc.model)) {
+					error.spec = keys.toValidatePath() + " spec can't have both a type and a model";
+					// Apply the `required` modifier
+				} else if (true === fieldDesc.required && _.isNil(value)) {
+					error.required = keys.toValidatePath() + " is a required property of type \"" + fieldDesc.type + "\"";
+				} else if (!_.isNil(value)) {
+					if (_.isString(fieldDesc.type)) {
+						var tester = _.get(VALIDATIONS, ['TYPE', fieldDesc.type], fieldDesc.type._);
+						_.assign(error, tester.call(this, keys, fieldDesc, value));
+					} else {
+						error.spec = keys.toValidatePath() + " spec \"type\" must be a string";
+					}
+				}
+			},
+			/**
+    * Verify if the value correspond to a value in the `enum` property.
+    *
+    * @function module:Validator~checkEnum
+    * @type {module:Validator~ValidationStep}
+    * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
+    * @returns {undefined} This function returns nothing.
+    */
+			function checkEnum(validationArgs) {
+				var error = validationArgs.error,
+				    fieldDesc = validationArgs.fieldDesc,
+				    keys = validationArgs.keys,
+				    value = validationArgs.value;
+				// Check enum values
+
+				if (!_.isNil(value) && !_.isNil(fieldDesc.enum)) {
+					var result = _.some(fieldDesc.enum, function (enumVal) {
+						if (enumVal instanceof RegExp) {
+							return null !== value.match(enumVal);
+						} else {
+							return value === enumVal;
+						}
+					});
+					if (false === result) {
+						error.enum = keys.toValidatePath() + " expected to have one of enumerated values \"" + JSON.stringify(fieldDesc.enum) + "\"";
+					}
+				}
+			}];
+			/**
+    * Those validation steps are called one after one during the validation of a single field.
+    *
+    * @const VALIDATION_STEPS
+    * @type {module:Validator~ValidationStep[]}
+    * @property {module:Validator~checkCustoms}      '0' - Check for `validate` field.
+    * @property {module:Validator~checkTypeRequired} '1' - Check for `type` & `required` fields.
+    * @property {module:Validator~checkEnum}         '2' - Check for `enum` field.
+    */
+
+			var PRIVATE = Symbol('PRIVATE');
+
+			/**
+    * The PathStack class allows model validation to follow different paths in model description & entity.
+    */
+
+			var PathStack = function () {
+				/**
+     * Constructs a pathstack.
+     *
+     * @author gerkin
+     * @param {string[]} [segmentsEntity=[]]     - Keys to follow in entity.
+     * @param {string[]} [segmentsValidation=[]] - Keys to follow in model description.
+     */
+				function PathStack() {
+					var segmentsEntity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+					var segmentsValidation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+					_classCallCheck(this, PathStack);
+
+					_.assign(this, {
+						segmentsEntity: segmentsEntity,
+						segmentsValidation: segmentsValidation
+					});
+				}
+
+				/**
+     * Add a path segment for entity navigation.
+     *
+     * @param   {...string} prop - Properties to add.
+     * @returns {module:Validator~PathStack} Returns `this`.
+     */
+
+
+				_createClass(PathStack, [{
+					key: "pushEntityProp",
+					value: function pushEntityProp() {
+						for (var _len7 = arguments.length, prop = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+							prop[_key7] = arguments[_key7];
+						}
+
+						this.segmentsEntity = _(this.segmentsEntity).concat(prop).filter(_.isNil).value();
+						return this;
+					}
+
+					/**
+      * Add a path segment for model description navigation.
+      *
+      * @param   {...string} prop - Properties to add.
+      * @returns {module:Validator~PathStack} Returns `this`.
+      */
+
+				}, {
+					key: "pushValidationProp",
+					value: function pushValidationProp() {
+						for (var _len8 = arguments.length, prop = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+							prop[_key8] = arguments[_key8];
+						}
+
+						this.segmentsValidation = _(this.segmentsValidation).concat(prop).filter(function (val) {
+							return !_.isNil(val);
+						}).value();
+						return this;
+					}
+
+					/**
+      * Add a path segment for both entity & model description navigation.
+      *
+      * @param   {...string} prop - Properties to add.
+      * @returns {module:Validator~PathStack} Returns `this`.
+      */
+
+				}, {
+					key: "pushProp",
+					value: function pushProp() {
+						var _pushEntityProp;
+
+						return (_pushEntityProp = this.pushEntityProp.apply(this, arguments)).pushValidationProp.apply(_pushEntityProp, arguments);
+					}
+
+					/**
+      * Get a string version of entity segments.
+      *
+      * @returns {string} String representation of path in entity.
+      */
+
+				}, {
+					key: "toValidatePath",
+					value: function toValidatePath() {
+						return this.segmentsEntity.join('.');
+					}
+
+					/**
+      * Cast this PathStack to its representing arrays.
+      *
+      * @returns {Array<Array<string>>} Array of paths. The first path represents the entity segments, second represents model description segments.
+      */
+
+				}, {
+					key: "toArray",
+					value: function toArray() {
+						return [this.segmentsEntity.slice(), this.segmentsValidation.slice()];
+					}
+
+					/**
+      * Duplicate this PathStack, detaching its state from the new.
+      *
+      * @returns {module:Validator~PathStack} Clone of caller PathStack.
+      */
+
+				}, {
+					key: "clone",
+					value: function clone() {
+						return new (Function.prototype.bind.apply(PathStack, [null].concat(_toConsumableArray(this.toArray()))))();
+					}
+				}]);
+
+				return PathStack;
+			}();
+
+			/**
+    * The Validator class is used to check an entity or its fields against a model description.
+    */
+
+
+			var Validator = function () {
+				/**
+     * Construct a Validator configured for the provided model.
+     *
+     * @param {ModelConfiguration.AttributesDescriptor} modelDesc - Model description to validate.
+     */
+				function Validator(modelDesc) {
+					_classCallCheck(this, Validator);
+
+					var _this = { modelDesc: modelDesc };
+					this[PRIVATE] = _this;
+				}
+
+				/**
+     * Check if the value matches the field description provided, thus verify if it is valid.
+     *
+     * @author gerkin
+     * @param   {Object} entity - Entity to check.
+     * @returns {Error[]} Array of errors.
+     */
+
+
+				_createClass(Validator, [{
+					key: "validate",
+					value: function validate(entity) {
+						var _this40 = this;
+
+						// Apply method `checkField` on each field described
+						var checkResults = _(this[PRIVATE].modelDesc).mapValues(function (fieldDesc, field) {
+							return _this40.check(entity[field], new PathStack().pushProp(field), { getProps: false });
+						}).omitBy(_.isEmpty).value();
+						if (!_.isNil(checkResults) && !_.isEmpty(checkResults)) {
+							throw new EntityValidationError(checkResults, 'Validation failed');
+						}
+					}
+
+					/**
+      * Check if the value matches the field description provided, thus verify if it is valid.
+      *
+      * @author gerkin
+      * @param   {Any}                        value                  - Value to check.
+      * @param   {module:Validator~PathStack} keys                   - Pathstack representing path to this validation.
+      * @param   {Object}                     [options=(})]          - Hash of options.
+      * @param   {boolean}                    options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
+      * @returns {Object} Hash describing errors.
+      */
+
+				}, {
+					key: "check",
+					value: function check(value, keys) {
+						var _this41 = this;
+
+						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+						_.defaults(options, { getProps: true });
+						if (!(keys instanceof PathStack)) {
+							keys = new PathStack(keys);
+						}
+
+						var val = options.getProps ? _.get(value, keys.segmentsEntity) : value;
+						var fieldDesc = _.get(this[PRIVATE].modelDesc, keys.segmentsValidation);
+						if (!_.isObject(fieldDesc)) {
+							return;
+						}
+						_.defaults(fieldDesc, { required: false });
+
+						var error = {};
+
+						var stepsArgs = {
+							error: error,
+							fieldDesc: fieldDesc,
+							keys: keys,
+							value: val
+						};
+
+						_.forEach(VALIDATION_STEPS, function (validationStep) {
+							validationStep.call(_this41, stepsArgs);
+						});
+
+						if (!_.isEmpty(error)) {
+							error.value = value;
+							return error;
+						} else {
+							return null;
+						}
+					}
+
+					/**
+      * Get the model description provided in constructor.
+      *
+      * @readonly
+      * @type {ModelConfiguration.AttributesDescriptor}
+      */
+
+				}, {
+					key: "modelDesc",
+					get: function get() {
+						return _.cloneDeep(this[PRIVATE].modelDesc);
+					}
+
+					/**
+      * Get the PathStack constructor.
+      *
+      * @readonly
+      * @type {module:Validator~PathStack}
+      */
+
+				}], [{
+					key: "PathStack",
+					get: function get() {
+						return PathStack;
+					}
+				}]);
+
+				return Validator;
+			}();
+
+			module.exports = Validator;
+		}, { "./dependencies": 9, "./errors/entityValidationError": 13 }], 20: [function (require, module, exports) {
 			// shim for using process in browser
 			var process = module.exports = {};
 

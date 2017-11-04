@@ -18,22 +18,24 @@ toc: false
 </span><span id="line-13"><span class="p">};</span>
 </span><span id="line-14">
 </span><span id="line-15">
-</span><span id="line-16"></pre></div></td></tr><tr class="section" id="section-2"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-2">&#182;</a></div><div class="dox"><div class="details"><div class="dox_tag_title">Inherits from:</div><div class="dox_tag_detail"><p>Error</p></div><div class="dox_tag_title">In: <em>Errors</em></div></div><div class="body"></div></div></td><td class="code"><div class="highlight"><pre></span><span id="line-17"><span class="kr">class</span> <span class="nx">EntityValidationError</span> <span class="kr">extends</span> <span class="nx">ExtendableError</span> <span class="p">{</span>
+</span><span id="line-16"></pre></div></td></tr><tr class="section" id="section-2"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-2">&#182;</a></div><div class="dox"><div class="details"><div class="dox_tag_title">module</div><div class="dox_tag_detail">{&quot;type&quot;:&quot;module&quot;,&quot;string&quot;:&quot;Errors/EntityValidationError&quot;,&quot;html&quot;:&quot;&lt;p&gt;Errors/EntityValidationError&lt;/p&gt;&quot;}</div></div><div class="body"></div></div></td><td class="code"><div class="highlight"><pre></span><span id="line-17">
 </span><span id="line-18">
-</span><span id="line-19"></pre></div></td></tr><tr class="section" id="section-3"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-3">&#182;</a></div><div class="dox"><div class="details"><div class="dox_tag_title">See</div><div class="dox_tag_detail"><span class="dox_type">Diaspora.check</span></div><div class="dox_tag_title">In: <em>Errors</em></div><div class="dox_tag_title">Params</div><div class="dox_tag_detail"><span>validationErrors</span><span class="dox_type">Object</span><span>- <ul>
+</span><span id="line-19"></pre></div></td></tr><tr class="section" id="section-3"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-3">&#182;</a></div><div class="dox"><div class="details"><div class="dox_tag_title">Inherits from:</div><div class="dox_tag_detail"><p>module:Errors/ExtendableError~ExtendableError</p></div></div><div class="body"></div></div></td><td class="code"><div class="highlight"><pre></span><span id="line-20"><span class="kr">class</span> <span class="nx">EntityValidationError</span> <span class="kr">extends</span> <span class="nx">ExtendableError</span> <span class="p">{</span>
+</span><span id="line-21">
+</span><span id="line-22"></pre></div></td></tr><tr class="section" id="section-4"><td class="docs"><div class="pilwrap"><a class="pilcrow" href="#section-4">&#182;</a></div><div class="dox"><div class="details"><div class="dox_tag_title">Params</div><div class="dox_tag_detail"><span>validationErrors</span><span class="dox_type">Object</span><span>- <ul>
 <li>Object describing validation errors, usually returned by {@link Diaspora.check}.</li>
 </ul></span></div><div class="dox_tag_detail"><span>message</span><span class="dox_type">string</span><span>- <ul>
 <li>Message of this error.</li>
 </ul></span></div><div class="dox_tag_detail"><span>errorArgs</span><span>- <ul>
 <li>Arguments to transfer to parent Error.</li>
-</ul></span></div><div class="dox_tag_title">Author</div><div class="dox_tag_detail"><gerkin></gerkin></div></div><div class="body"></div></div></td><td class="code"><div class="highlight"><pre></span><span id="line-20">    <span class="nx">constructor</span><span class="p">(</span> <span class="nx">validationErrors</span><span class="p">,</span> <span class="nx">message</span><span class="p">,</span> <span class="p">...</span><span class="nx">errorArgs</span> <span class="p">)</span> <span class="p">{</span>
-</span><span id="line-21">        <span class="nx">message</span> <span class="o">+=</span> <span class="sb">`</span>
-</span><span id="line-22"><span class="si">${</span> <span class="nx">stringifyValidationObject</span><span class="p">(</span> <span class="nx">validationErrors</span> <span class="p">)</span> <span class="si">}</span><span class="sb">`</span><span class="p">;</span>
-</span><span id="line-23">        <span class="kr">super</span><span class="p">(</span> <span class="nx">message</span><span class="p">,</span> <span class="p">...</span><span class="nx">errorArgs</span> <span class="p">);</span>
-</span><span id="line-24">        <span class="k">this</span><span class="p">.</span><span class="nx">validationErrors</span> <span class="o">=</span> <span class="nx">validationErrors</span><span class="p">;</span>
-</span><span id="line-25">    <span class="p">}</span>
-</span><span id="line-26"><span class="p">}</span>
-</span><span id="line-27">
-</span><span id="line-28"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">EntityValidationError</span><span class="p">;</span>
+</ul></span></div><div class="dox_tag_title">Author</div><div class="dox_tag_detail"><gerkin></gerkin></div></div><div class="body"></div></div></td><td class="code"><div class="highlight"><pre></span><span id="line-23">    <span class="nx">constructor</span><span class="p">(</span> <span class="nx">validationErrors</span><span class="p">,</span> <span class="nx">message</span><span class="p">,</span> <span class="p">...</span><span class="nx">errorArgs</span> <span class="p">)</span> <span class="p">{</span>
+</span><span id="line-24">        <span class="nx">message</span> <span class="o">+=</span> <span class="sb">`</span>
+</span><span id="line-25"><span class="si">${</span> <span class="nx">stringifyValidationObject</span><span class="p">(</span> <span class="nx">validationErrors</span> <span class="p">)</span> <span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</span><span id="line-26">        <span class="kr">super</span><span class="p">(</span> <span class="nx">message</span><span class="p">,</span> <span class="p">...</span><span class="nx">errorArgs</span> <span class="p">);</span>
+</span><span id="line-27">        <span class="k">this</span><span class="p">.</span><span class="nx">validationErrors</span> <span class="o">=</span> <span class="nx">validationErrors</span><span class="p">;</span>
+</span><span id="line-28">    <span class="p">}</span>
+</span><span id="line-29"><span class="p">}</span>
+</span><span id="line-30">
+</span><span id="line-31"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">EntityValidationError</span><span class="p">;</span>
 </span>
 </pre></div></td></tr></tbody></table></div>

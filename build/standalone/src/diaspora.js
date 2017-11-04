@@ -36,7 +36,7 @@ module.exports = Diaspora;
 },{"./lib/diaspora":11}],3:[function(require,module,exports){
 'use strict';
 
-const {_} = require( '../dependencies' );
+const {_} = require( '../../dependencies' );
 
 module.exports = {
 	OPERATORS: {
@@ -101,12 +101,12 @@ module.exports = {
 	},
 };
 
-},{"../dependencies":10}],4:[function(require,module,exports){
+},{"../../dependencies":10}],4:[function(require,module,exports){
 'use strict';
 
 const {
 	_, Promise, SequentialEvent,
-} = require( '../dependencies' );
+} = require( '../../dependencies' );
 
 /**
  * @namespace ConstrainedTypes
@@ -226,7 +226,7 @@ const iterateLimit = ( options, query ) => {
 
 const {
 	OPERATORS, CANONICAL_OPERATORS, QUERY_OPTIONS_TRANSFORMS,
-} = require( './baseAdapter-utils' );
+} = require( './adapter-utils' );
 
 /**
  * DiasporaAdapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
@@ -502,7 +502,7 @@ class DiasporaAdapter extends SequentialEvent {
 				QUERY_OPTIONS_TRANSFORMS[optionName]( opts );
 			}
 		});
-		
+
 		_.defaults( opts, {
 			skip:        0,
 			remapInput:  true,
@@ -534,7 +534,7 @@ class DiasporaAdapter extends SequentialEvent {
 							throw new Error( `Search can't have both "${ operator }" and "${ CANONICAL_OPERATORS[operator] }" keys, as they are synonyms` );
 						}
 						return CANONICAL_OPERATORS[operator];
-					} 
+					}
 					return operator;
 				});
 				// For arithmetic comparison, check if values are numeric (TODO later: support date)
@@ -703,16 +703,69 @@ class DiasporaAdapter extends SequentialEvent {
 
 module.exports = DiasporaAdapter;
 
-},{"../dependencies":10,"./baseAdapter-utils":3}],5:[function(require,module,exports){
+},{"../../dependencies":10,"./adapter-utils":3}],5:[function(require,module,exports){
+'use strict';
+
+const {
+	_,
+} = require( '../../dependencies' );
+
+/**
+ * @namespace DataStoreEntities
+ */
+
+/**
+ * DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
+ * @memberof DataStoreEntities
+ */
+class DataStoreEntity {
+	/**
+	 * Construct a new data source entity with specified content & parent.
+	 * 
+	 * @author gerkin
+	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
+	 */
+	constructor( entity, dataSource ) {
+		if ( _.isNil( entity )) {
+			return undefined;
+		}
+		if ( _.isNil( dataSource )) {
+			throw new TypeError( `Expect 2nd argument to be the parent of this entity, have "${ dataSource }"` );
+		}
+		Object.defineProperties( this, {
+			dataSource: {
+				value:        dataSource,
+				enumerable:   false,
+				configurable: false,
+			},
+		});
+		_.assign( this, entity );
+	}
+	
+	/**
+	 * Returns a plain object corresponding to this entity attributes.
+	 * 
+	 * @author gerkin
+	 * @returns {Object} Plain object representing this entity.
+	 */
+	toObject() {
+		return _.omit( this, [ 'dataSource', 'id' ]);
+	}
+}
+
+module.exports = DataStoreEntity;
+
+},{"../../dependencies":10}],6:[function(require,module,exports){
 'use strict';
 
 const {
 	_, Promise,
-} = require( '../dependencies' );
-const Utils = require( '../utils' );
+} = require( '../../dependencies' );
+const Utils = require( '../../utils' );
 
-const DiasporaAdapter = require( './baseAdapter.js' );
-const InMemoryEntity = require( '../dataStoreEntities/inMemoryEntity.js' );
+const DiasporaAdapter = require( '../base/adapter' );
+const InMemoryEntity = require( './entity.js' );
 
 /**
  * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
@@ -938,17 +991,42 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 module.exports = InMemoryDiasporaAdapter;
 
-},{"../dataStoreEntities/inMemoryEntity.js":8,"../dependencies":10,"../utils":19,"./baseAdapter.js":4}],6:[function(require,module,exports){
+},{"../../dependencies":10,"../../utils":19,"../base/adapter":4,"./entity.js":7}],7:[function(require,module,exports){
+'use strict';
+
+const DataStoreEntity = require( '../base/entity.js' );
+
+/**
+ * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
+ * @extends DataStoreEntities.DataStoreEntity
+ * @memberof DataStoreEntities
+ */
+class InMemoryEntity extends DataStoreEntity {
+	/**
+	 * Construct a in memory entity with specified content & parent.
+	 * 
+	 * @author gerkin
+	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
+	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
+	 */
+	constructor( entity, dataSource ) {
+		super( entity, dataSource );
+	}
+}
+
+module.exports = InMemoryEntity;
+
+},{"../base/entity.js":5}],8:[function(require,module,exports){
 (function (global){
 'use strict';
 
 const {
 	_, Promise,
-} = require( '../dependencies' );
-const Utils = require( '../utils' );
+} = require( '../../dependencies' );
+const Utils = require( '../../utils' );
 
-const DiasporaAdapter = require( './baseAdapter.js' );
-const WebStorageEntity = require( '../dataStoreEntities/webStorageEntity.js' );
+const DiasporaAdapter = require( '../base/adapter' );
+const WebStorageEntity = require( './entity' );
 
 /**
  * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
@@ -1234,88 +1312,10 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 module.exports = WebStorageDiasporaAdapter;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../dataStoreEntities/webStorageEntity.js":9,"../dependencies":10,"../utils":19,"./baseAdapter.js":4}],7:[function(require,module,exports){
+},{"../../dependencies":10,"../../utils":19,"../base/adapter":4,"./entity":9}],9:[function(require,module,exports){
 'use strict';
 
-const {
-	_,
-} = require( '../dependencies' );
-
-/**
- * @namespace DataStoreEntities
- */
-
-/**
- * DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
- * @memberof DataStoreEntities
- */
-class DataStoreEntity {
-	/**
-	 * Construct a new data source entity with specified content & parent.
-	 * 
-	 * @author gerkin
-	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-	 */
-	constructor( entity, dataSource ) {
-		if ( _.isNil( entity )) {
-			return undefined;
-		}
-		if ( _.isNil( dataSource )) {
-			throw new TypeError( `Expect 2nd argument to be the parent of this entity, have "${ dataSource }"` );
-		}
-		Object.defineProperties( this, {
-			dataSource: {
-				value:        dataSource,
-				enumerable:   false,
-				configurable: false,
-			},
-		});
-		_.assign( this, entity );
-	}
-	
-	/**
-	 * Returns a plain object corresponding to this entity attributes.
-	 * 
-	 * @author gerkin
-	 * @returns {Object} Plain object representing this entity.
-	 */
-	toObject() {
-		return _.omit( this, [ 'dataSource', 'id' ]);
-	}
-}
-
-module.exports = DataStoreEntity;
-
-},{"../dependencies":10}],8:[function(require,module,exports){
-'use strict';
-
-const DataStoreEntity = require( './baseEntity.js' );
-
-/**
- * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
- * @extends DataStoreEntities.DataStoreEntity
- * @memberof DataStoreEntities
- */
-class InMemoryEntity extends DataStoreEntity {
-	/**
-	 * Construct a in memory entity with specified content & parent.
-	 * 
-	 * @author gerkin
-	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-	 */
-	constructor( entity, dataSource ) {
-		super( entity, dataSource );
-	}
-}
-
-module.exports = InMemoryEntity;
-
-},{"./baseEntity.js":7}],9:[function(require,module,exports){
-'use strict';
-
-const DataStoreEntity = require( './baseEntity.js' );
+const DataStoreEntity = require( '../base/entity.js' );
 
 /**
  * Entity stored in {@link Adapters.WebStorageDiasporaAdapter the local storage adapter}.
@@ -1338,7 +1338,7 @@ class WebStorageEntity extends DataStoreEntity {
 
 module.exports = WebStorageEntity;
 
-},{"./baseEntity.js":7}],10:[function(require,module,exports){
+},{"../base/entity.js":5}],10:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1355,7 +1355,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bluebird":20,"lodash":21,"sequential-event":23}],11:[function(require,module,exports){
+},{"bluebird":21,"lodash":22,"sequential-event":24}],11:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1371,6 +1371,11 @@ const {
  * @author Gerkin
  * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
  */
+
+/**
+ * @module Diaspora
+ */
+
 const logger = (() => {
 	if ( !process.browser ) {
 		const winston = require( 'winston' );
@@ -1404,18 +1409,58 @@ const adapters = {};
 const dataSources = {};
 const models = {};
 
+const ensureAllEntities = ( adapter, table ) => {
+	// Filter our results
+	const filterResults = entity => {
+		// Remap fields
+		entity = adapter.remapFields( table, entity, true );
+		// Force results to be class instances
+		if ( !( entity instanceof adapter.classEntity ) && !_.isNil( entity )) {
+			return new adapter.classEntity( entity, adapter );
+		}
+		return entity;
+	};
+
+	return results => {
+		if ( _.isArrayLike( results )) {
+			return Promise.resolve( _.map( results, filterResults ));
+		} else {
+			return Promise.resolve( filterResults( results ));
+		}
+	};
+};
+
+const remapArgs = ( args, optIndex, update, queryType, remapFunction ) => {
+	if ( false !== optIndex ) {
+		// Remap input objects
+		if ( true === args[optIndex].remapInput ) {
+			args[0] = remapFunction( args[0]);
+
+			if ( true === update ) {
+				args[1] = remapFunction( args[1]);
+			}
+		}
+		args[optIndex].remapInput = false;
+	} else if ( 'insert' === queryType.query ) {
+		// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
+		if ( 'many' === queryType.number ) {
+			// If inserting *several* entities, map the array to remap each entity objects...
+			args[0] = _.map( args[0], insertion => remapFunction( insertion ));
+		} else {
+			// ... or we are inserting a *single* one. We still need to remap entity.
+			args[0] = remapFunction( args[0]);
+		}
+	}
+};
+
+const getRemapFunction = ( adapter, table ) => {
+	return entity => {
+		return adapter.remapFields( table, entity, false );
+	};
+};
+
 const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 	return ( table, ...args ) => {
-		// Filter our results
-		const filterResults = entity => {
-			// Remap fields
-			entity = adapter.remapFields( table, entity, true );
-			// Force results to be class instances
-			if ( !( entity instanceof adapter.classEntity ) && !_.isNil( entity )) {
-				return new adapter.classEntity( entity, adapter );
-			}
-			return entity;
-		};
 
 		// Transform arguments for find, update & delete
 		let optIndex = false;
@@ -1429,116 +1474,34 @@ const wrapDataSourceAction = ( callback, queryType, adapter ) => {
 			upd = true;
 		}
 		try {
-			//console.log('Before query transformed', args[0]);
 			if ( false !== optIndex ) {
 				// Options to canonical
 				args[optIndex] = adapter.normalizeOptions( args[optIndex]);
-				// Remap input objects
-				if ( true === args[optIndex].remapInput ) {
-					args[0] = adapter.remapFields( table, args[0], false );
-
-					if ( true === upd ) {
-						args[1] = adapter.remapFields( table, args[1], false );
-					}
-				}
 				// Query search to cannonical
 				args[0] = adapter.normalizeQuery( args[0], args[optIndex]);
-				args[optIndex].remapInput = false;
-			} else if ( 'insert' === queryType.query ) {
-				// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
-				if ( 'many' === queryType.number ) {
-					// If inserting *several* entities, map the array to remap each entity objects...
-					args[0] = _.map( args[0], insertion => adapter.remapFields( table, insertion, false ));
-				} else {
-					// ... or we are inserting a *single* one. We still need to remap entity.
-					args[0] = adapter.remapFields( table, args[0], false );
-				}
 			}
-			//console.log('Query transformed:', args[0]);
+			remapArgs( args, optIndex, upd, queryType, getRemapFunction( adapter, table ));
 		} catch ( err ) {
 			return Promise.reject( err );
 		}
 
 		// Hook after promise resolution
-		const queryPromise = callback.call( adapter, table, ...args );
-		return queryPromise.then( results => {
-			if ( _.isArrayLike( results )) {
-				results = _.map( results, filterResults );
-			} else if ( !_.isNil( results )) {
-				results = filterResults( results );
-			}
-			return Promise.resolve( results );
-		});
+		return callback.call( adapter, table, ...args ).then( ensureAllEntities( adapter, table ));
 	};
 };
 
-const VALIDATE_WRONG_TYPE = tester => {
-	return ( keys, fieldDesc, value ) => {
-		if ( !tester( value )) {
-			return {type: `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`};
-		}
-	};
+const ERRORS = {
+	NON_EMPTY_STR: _.template( '<%= c %> <%= p %> must be a non empty string, had "<%= v %>"' ),
 };
-const VALIDATIONS = {
-	TYPE: {
-		string:  VALIDATE_WRONG_TYPE( _.isString ),
-		integer: VALIDATE_WRONG_TYPE( _.isInteger ),
-		float:   VALIDATE_WRONG_TYPE( _.isNumber ),
-		date:    VALIDATE_WRONG_TYPE( _.isDate ),
-		object( keys, fieldDesc, value ) {
-			if ( !_.isObject( value )) {
-				return {type: `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`};
-			} else {
-				const deepTest = _.isObject(
-					fieldDesc.attributes
-				) ? _( value ).mapValues(
-						( propVal, propName ) => Diaspora.checkField(
-							propVal,
-							fieldDesc.attributes[propName],
-							_.concat( keys, [ propName ])
-						)
-					)
-						.omitBy( _.isEmpty )
-						.value() : {};
-				if ( !_.isEmpty( deepTest )) {
-					return {children: deepTest};
-				}
-			}
-		},
-		array( keys, fieldDesc, value ) {
-			if ( !_.isArray( value )) {
-				return {type: `${ keys.join( '.' ) } expected to be a "${ fieldDesc.type }"`};
-			} else {
-				const deepTest = _.isObject(
-					fieldDesc.of
-				) ? _( value ).map(
-						( propVal, propName ) => {
-							if ( _.isArrayLike( fieldDesc.of )) {
-								const subErrors = _( fieldDesc.of ).map( desc => Diaspora.checkField( propVal, desc, _.concat( keys, [ propName ])));
-								if ( !_.find( subErrors, v => 0 === v.length )) {
-									return subErrors;
-								}
-							} else {
-								return Diaspora.checkField( propVal, fieldDesc.of, _.concat( keys, [ propName ]));
-							}
-						}
-					)
-						.omitBy( _.isEmpty )
-						.value() : {};
-				if ( !_.isEmpty( deepTest )) {
-					return {children: deepTest};
-				}
-			}
-		},
-		any( keys, fieldDesc, value ) {
-			if ( !_.stubTrue( value )) {
-				return {type: `${ keys.join( '.' ) } expected to be assigned with any type`};
-			}
-		},
-		_( keys, fieldDesc ) {
-			return {type: `${ keys.join( '.' ) } requires to be unhandled type "${ fieldDesc.type }"`};
-		},
-	},
+
+const requireName = ( classname, value ) => {
+	if ( !_.isString( value ) && value.length > 0 ) {
+		throw new Error( ERRORS.NON_EMPTY_STR({
+			c: classname,
+			p: 'name',
+			v: value,
+		}));
+	}
 };
 
 /**
@@ -1548,85 +1511,6 @@ const VALIDATIONS = {
  * @author gerkin
  */
 const Diaspora = {
-	/**
-	 * Check if the value matches the field description provided, thus verify if it is valid.
-	 *
-	 * @author gerkin
-	 * @param   {Object}                               entity    - Entity to check.
-	 * @param   {module:ModelExtension.ModelPrototype} modelDesc - Model description.
-	 * @returns {Error[]} Array of errors.
-	 */
-	check( entity, modelDesc = {}) {
-		// Apply method `checkField` on each field described
-		const checkResults = _( modelDesc )
-			.mapValues(( fieldDesc, field ) => this.checkField.call( this, entity[field], fieldDesc, _.concat([], [ field ])))
-			.omitBy( _.isEmpty )
-			.value();
-		return checkResults;
-	},
-
-	/**
-	 * Check if the value matches the field description provided, thus verify if it is valid.
-	 *
-	 * @author gerkin
-	 * @param   {Any}                                   value     - Value to check.
-	 * @param   {module:ModelExtension.FieldDescriptor} fieldDesc - Description of the field to check with.
-	 * @param   {String[]}                              keys      - Array of keys from highest ancestor to this property.
-	 * @returns {Object} Hash describing errors.
-	 */
-	checkField( value, fieldDesc, keys ) {
-		if ( !_.isObject( fieldDesc )) {
-			return;
-		}
-		_.defaults( fieldDesc, {
-			required: false,
-		});
-
-		const error = {};
-
-		// It the field has a `validate` property, try to use it
-		if ( fieldDesc.validate ) {
-			if ( !fieldDesc.validate.call( this, value, fieldDesc )) {
-				error.validate = `${ keys.join( '.' ) } custom validation failed`;
-			}
-		}
-
-		// Check the type and the required status
-		if ( !_.isNil( fieldDesc.type ) && !_.isNil( fieldDesc.model )) {
-			error.spec =  `${ keys.join( '.' ) } spec can't have both a type and a model`;
-			// Apply the `required` modifier
-		} else if ( true === fieldDesc.required && _.isNil( value )) {
-			error.required = `${ keys.join( '.' ) } is a required property of type "${ fieldDesc.type }"`;
-		} else if ( !_.isNil( value )) {
-			if ( _.isString( fieldDesc.type )) {
-				const tester = _.get( VALIDATIONS, [ 'TYPE', fieldDesc.type ], fieldDesc.type._ );
-				_.assign( error, tester( keys, fieldDesc, value ));
-			} else {
-				error.spec =  `${ keys.join( '.' ) } spec "type" must be a string`;
-			}
-		}
-
-		// Check enum values
-		if ( !_.isNil( fieldDesc.enum )) {
-			const result = _.some( fieldDesc.enum, enumVal => {
-				if ( enumVal instanceof RegExp ) {
-					return null !== value.match( enumVal );
-				} else {
-					return value === enumVal;
-				}
-			});
-			if ( false === result ) {
-				error.enum = `${ keys.join( '.' ) } expected to have one of enumerated values "${ JSON.stringify( fieldDesc.enum ) }"`;
-			}
-		}
-		if ( !_.isEmpty( error )) {
-			error.value = value;
-			return error;
-		} else {
-			return undefined;
-		}
-	},
-
 	/**
 	 * Set default values if required.
 	 *
@@ -1714,13 +1598,11 @@ const Diaspora = {
 	 * @returns {undefined} This function does not return anything.
 	 */
 	registerDataSource( name, dataSource ) {
-		if ( !_.isString( name ) && name.length > 0 ) {
-			throw new Error( `DataSource name must be a non empty string, had "${ name }"` );
-		}
+		requireName( 'DataSource', name );
 		if ( dataSources.hasOwnProperty( name )) {
 			throw new Error( `DataSource name already used, had "${ name }"` );
 		}
-		if ( !( dataSource instanceof Diaspora.components.DiasporaAdapter )) {
+		if ( !( dataSource instanceof Diaspora.components.Adapters.Adapter )) {
 			throw new Error( 'DataSource must be an instance inheriting "DiasporaAdapter"' );
 		}
 		dataSource.name = name;
@@ -1755,7 +1637,7 @@ const Diaspora = {
 	 */
 	declareModel( name, modelDesc ) {
 		if ( !_.isString( name ) && name.length > 0 ) {
-			throw new Error( `DataSource name must be a non empty string, had "${ name }"` );
+			requireName( 'Model', name );
 		}
 		if ( !_.isObject( modelDesc )) {
 			throw new Error( '"modelDesc" must be an object' );
@@ -1782,7 +1664,7 @@ const Diaspora = {
 			throw new Error( `Adapter with label "${ label }" already exists.` );
 		}
 		// Check inheritance of adapter
-		if ( !( adapter.prototype instanceof Diaspora.components.DiasporaAdapter )) {
+		if ( !( adapter.prototype instanceof Diaspora.components.Adapters.Adapter )) {
 			throw new TypeError( `Trying to register an adapter with label "${ label }", but it does not extends DiasporaAdapter.` );
 		}
 		adapters[label] = adapter;
@@ -1799,6 +1681,7 @@ const Diaspora = {
 	 * @see Use {@link Diaspora.declareModel} to add models.
 	 */
 	models,
+
 	/**
 	 * Hash containing all available data sources.
 	 *
@@ -1810,6 +1693,7 @@ const Diaspora = {
 	 * @see Use {@link Diaspora.createNamedDataSource} or {@link Diaspora.registerDataSource} to make data sources available for models.
 	 */
 	dataSources,
+
 	/**
 	 * Hash containing all available adapters. The only universal adapter is `inMemory`.
 	 *
@@ -1822,6 +1706,7 @@ const Diaspora = {
 	 * @see Use {@link Diaspora.registerAdapter} to add adapters.
 	 */
 	adapters,
+
 	/**
 	 * Dependencies of Diaspora.
 	 *
@@ -1834,6 +1719,7 @@ const Diaspora = {
 	 * @author gerkin
 	 */
 	dependencies: dependencies,
+
 	/**
 	 * Logger used by Diaspora and its adapters. You can use this property to configure winston. On brower environment, this is replaced by a reference to global {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/console Console}.
 	 *
@@ -1861,34 +1747,40 @@ Diaspora.components = {
 	Entity:        require( './entityFactory' ).Entity,
 	Set:           require( './set' ),
 	Model:         require( './model' ),
+	Validator:     require( './validator' ),
 	Errors:        {
 		ExtendableError:       require( './errors/extendableError' ),
 		EntityValidationError: require( './errors/entityValidationError' ),
 		SetValidationError:    require( './errors/setValidationError' ),
 		EntityStateError:      require( './errors/entityStateError' ),
 	},
-	DiasporaAdapter: require( './adapters/baseAdapter' ),
-	DataStoreEntity: require( './dataStoreEntities/baseEntity' ),
+	Adapters: {
+		Adapter: require( './adapters/base/adapter' ),
+		Entity:  require( './adapters/base/entity' ),
+	},
 };
 
 // Register available built-in adapters
-Diaspora.registerAdapter( 'inMemory', require( './adapters/inMemoryAdapter' ));
+Diaspora.registerAdapter( 'inMemory', require( './adapters/inMemory/adapter' ));
 // Register webStorage only if in browser
 if ( process.browser ) {
-	Diaspora.registerAdapter( 'webStorage', require( './adapters/webStorageAdapter' ));
+	Diaspora.registerAdapter( 'webStorage', require( './adapters/webStorage/adapter' ));
 }
 
 }).call(this,require('_process'))
-},{"./adapters/baseAdapter":4,"./adapters/inMemoryAdapter":5,"./adapters/webStorageAdapter":6,"./dataStoreEntities/baseEntity":7,"./dependencies":10,"./entityFactory":12,"./errors/entityStateError":13,"./errors/entityValidationError":14,"./errors/extendableError":15,"./errors/setValidationError":16,"./model":17,"./set":18,"_process":22,"winston":undefined}],12:[function(require,module,exports){
+},{"./adapters/base/adapter":4,"./adapters/base/entity":5,"./adapters/inMemory/adapter":6,"./adapters/webStorage/adapter":8,"./dependencies":10,"./entityFactory":12,"./errors/entityStateError":13,"./errors/entityValidationError":14,"./errors/extendableError":15,"./errors/setValidationError":16,"./model":17,"./set":18,"./validator":20,"_process":23,"winston":undefined}],12:[function(require,module,exports){
 'use strict';
 
 const {
 	_, Promise, SequentialEvent,
 } = require( './dependencies' );
 const Diaspora = require( './diaspora' );
-const DataStoreEntity = require( './dataStoreEntities/baseEntity' );
-const EntityValidationError = require( './errors/entityValidationError' );
+const DataStoreEntity = require( './adapters/base/entity' );
 const EntityStateError = require( './errors/entityStateError' );
+
+/**
+ * @module EntityFactory
+ */
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 const PRIVATE = Symbol( 'PRIVATE' );
@@ -1947,9 +1839,7 @@ const entityCtrSteps = {
  * The entity is the class you use to manage a single document in all data sources managed by your model.
  * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
  * 
- * @summary An entity is a document in the population of all your datas of the same type
  * @extends SequentialEvent
- * @memberof EntityFactory
  */
 class Entity extends SequentialEvent {
 	/**
@@ -1997,8 +1887,6 @@ class Entity extends SequentialEvent {
 	/**
 	 * Generate the query to get this unique entity in the desired data source.
 	 *
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 * @param   {Adapters.DiasporaAdapter} dataSource - Name of the data source to get query for.
 	 * @returns {Object} Query to find this entity.
@@ -2012,8 +1900,6 @@ class Entity extends SequentialEvent {
 	/**
 	 * Return the table of this entity in the specified data source.
 	 *
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 * @returns {string} Name of the table.
 	 */
@@ -2025,28 +1911,21 @@ class Entity extends SequentialEvent {
 	/**
 	 * Check if the entity matches model description.
 	 *
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
 	 * @returns {undefined} This function does not return anything.
-	 * @see Diaspora.check
+	 * @see Validator.Validator#validate
 	 */
 	validate() {
-		const validationErrors = Diaspora.check( this[PRIVATE].attributes, this[PRIVATE].modelDesc.attributes );
-		if ( !_.isEmpty( validationErrors )) {
-			throw new EntityValidationError( validationErrors, 'Validation failed' );
-		}
+		this.constructor.model.validator.validate( this[PRIVATE].attributes );
 	}
 
 	/**
 	 * Remove all editable properties & replace them with provided object.
 	 *
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 * @param   {Object} [newContent={}] - Replacement content.
-	 * @returns {Entity} Returns `this`.
+	 * @returns {module:EntityFactory~Entity} Returns `this`.
 	 */
 	replaceAttributes( newContent = {}) {
 		newContent.idHash = this[PRIVATE].attributes.idHash;
@@ -2057,8 +1936,6 @@ class Entity extends SequentialEvent {
 	/**
 	 * Generate a diff update query by checking deltas with last source interaction.
 	 *
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
 	 * @returns {Object} Diff query.
@@ -2080,8 +1957,6 @@ class Entity extends SequentialEvent {
 	/**
 	 * Returns a copy of this entity attributes.
 	 *
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 * @returns {Object} Attributes of this entity.
 	 */
@@ -2092,16 +1967,14 @@ class Entity extends SequentialEvent {
 	/**
 	 * Save this entity in specified data source.
 	 *
-	 * @memberof Entity
-	 * @instance
-	 * @fires Entity#beforeUpdate
-	 * @fires Entity#afterUpdate
+	 * @fires EntityFactory.Entity#beforeUpdate
+	 * @fires EntityFactory.Entity#afterUpdate
 	 * @author gerkin
 	 * @param   {string}  sourceName                 - Name of the data source to persist entity in.
 	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
 	 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
-		 */
+	 */
 	persist( sourceName, options = {}) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
@@ -2138,10 +2011,8 @@ class Entity extends SequentialEvent {
 	/**
 	 * Reload this entity from specified data source.
 	 *
-	 * @memberof Entity
-	 * @instance
-	 * @fires Entity#beforeFind
-	 * @fires Entity#afterFind
+	 * @fires EntityFactory.Entity#beforeFind
+	 * @fires EntityFactory.Entity#afterFind
 	 * @author gerkin
 	 * @param   {string}  sourceName                 - Name of the data source to fetch entity from.
 	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
@@ -2171,10 +2042,8 @@ class Entity extends SequentialEvent {
 	/**
 	 * Delete this entity from the specified data source.
 	 *
-	 * @memberof Entity
-	 * @instance
-	 * @fires Entity#beforeDelete
-	 * @fires Entity#afterDelete
+	 * @fires EntityFactory.Entity#beforeDelete
+	 * @fires EntityFactory.Entity#afterDelete
 	 * @author gerkin
 	 * @param   {string}  sourceName                 - Name of the data source to delete entity from.
 	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
@@ -2208,11 +2077,7 @@ class Entity extends SequentialEvent {
 	/**
 	 * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
 	 *
-	 * @name dataSources
-	 * @readonly
 	 * @type {Object}
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 */
 	get dataSources() {
@@ -2222,11 +2087,7 @@ class Entity extends SequentialEvent {
 	/**
 	 * TODO.
 	 *
-	 * @name dataSources
-	 * @readonly
 	 * @type {TODO}
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 */
 	get attributes() {
@@ -2236,11 +2097,7 @@ class Entity extends SequentialEvent {
 	/**
 	 * Get entity's current state.
 	 *
-	 * @name dataSources
-	 * @readonly
 	 * @type {Entity.State}
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 */
 	get state() {
@@ -2250,11 +2107,7 @@ class Entity extends SequentialEvent {
 	/**
 	 * Get entity's last data source.
 	 *
-	 * @name lastDataSources
-	 * @readonly
 	 * @type {null|string}
-	 * @memberof Entity
-	 * @instance
 	 * @author gerkin
 	 */
 	get lastDataSource() {
@@ -2265,10 +2118,14 @@ class Entity extends SequentialEvent {
 /**
  * This factory function generate a new class constructor, prepared for a specific model.
  *
+ * @method EntityFactory
+ * @public
+ * @static
  * @param   {string}           name       - Name of this model.
  * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
  * @param   {Model}            model      - Model that will spawn entities.
- * @returns {Entity} Entity constructor to use with this model.
+ * @returns {module:EntityFactory~Entity} Entity constructor to use with this model.
+ * @property {module:EntityFactory~Entity} Entity Entity constructor
  */
 const EntityFactory = ( name, modelDesc, model ) => {
 	/**
@@ -2279,9 +2136,6 @@ const EntityFactory = ( name, modelDesc, model ) => {
 		 * Name of the class.
 		 *
 		 * @type {string}
-		 * @readonly
-		 * @memberof Entity
-		 * @static
 		 * @author gerkin
 		 */
 		static get name() {
@@ -2291,9 +2145,6 @@ const EntityFactory = ( name, modelDesc, model ) => {
 		 * Reference to this entity's model.
 		 *
 		 * @type {Model}
-		 * @readonly
-		 * @memberof Entity
-		 * @static
 		 * @author gerkin
 		 */
 		static get model() {
@@ -2311,6 +2162,7 @@ const EntityFactory = ( name, modelDesc, model ) => {
 	});
 	return SubEntity.bind( Entity, name, modelDesc, model );
 };
+EntityFactory.Entity = Entity;
 // =====
 // ## Lifecycle Events
 
@@ -2318,42 +2170,42 @@ const EntityFactory = ( name, modelDesc, model ) => {
 // ### Persist
 
 /**
- * @event Entity#beforePersist
+ * @event EntityFactory.Entity#beforePersist
  * @type {String}
  */
 
 /**
- * @event Entity#beforeValidate
+ * @event EntityFactory.Entity#beforeValidate
  * @type {String}
  */
 
 /**
- * @event Entity#afterValidate
+ * @event EntityFactory.Entity#afterValidate
  * @type {String}
  */
 
 /**
- * @event Entity#beforePersistCreate
+ * @event EntityFactory.Entity#beforePersistCreate
  * @type {String}
  */
 
 /**
- * @event Entity#beforePersistUpdate
+ * @event EntityFactory.Entity#beforePersistUpdate
  * @type {String}
  */
 
 /**
- * @event Entity#afterPersistCreate
+ * @event EntityFactory.Entity#afterPersistCreate
  * @type {String}
  */
 
 /**
- * @event Entity#afterPersistUpdate
+ * @event EntityFactory.Entity#afterPersistUpdate
  * @type {String}
  */
 
 /**
- * @event Entity#afterPersist
+ * @event EntityFactory.Entity#afterPersist
  * @type {String}
  */
 
@@ -2361,12 +2213,12 @@ const EntityFactory = ( name, modelDesc, model ) => {
 // ### Find
 
 /**
- * @event Entity#beforeFind
+ * @event EntityFactory.Entity#beforeFind
  * @type {String}
  */
 
 /**
- * @event Entity#afterFind
+ * @event EntityFactory.Entity#afterFind
  * @type {String}
  */
 
@@ -2374,32 +2226,35 @@ const EntityFactory = ( name, modelDesc, model ) => {
 // ### Destroy
 
 /**
- * @event Entity#beforeDestroy
+ * @event EntityFactory.Entity#beforeDestroy
  * @type {String}
  */
 
 /**
- * @event Entity#afterDestroy
+ * @event EntityFactory.Entity#afterDestroy
  * @type {String}
  */
 
 module.exports = EntityFactory;
 
-},{"./dataStoreEntities/baseEntity":7,"./dependencies":10,"./diaspora":11,"./errors/entityStateError":13,"./errors/entityValidationError":14}],13:[function(require,module,exports){
+},{"./adapters/base/entity":5,"./dependencies":10,"./diaspora":11,"./errors/entityStateError":13}],13:[function(require,module,exports){
 'use strict';
 
 const ExtendableError = require( './extendableError' );
 
 /**
+ * @module Errors/EntityStateError
+ */
+
+/**
  * This class represents an error related to validation.
- * @extends Error
+ * @extends module:Errors/ExtendableError~ExtendableError
  */
 class EntityStateError extends ExtendableError {
 	/**
 	 * Construct a new error related to an invalide state of the entity.
 	 * 
 	 * @author gerkin
-	 * @memberof Errors
 	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
 	 */
 	constructor( ...errorArgs ) {
@@ -2425,18 +2280,19 @@ const stringifyValidationObject = validationErrors => {
 };
 
 /**
+ * @module Errors/EntityValidationError
+ */
+
+/**
  * This class represents an error related to validation.
  *
- * @extends Error
- * @memberof Errors
+ * @extends module:Errors/ExtendableError~ExtendableError
  */
 class EntityValidationError extends ExtendableError {
 	/**
 	 * Construct a new validation error.
 	 *
 	 * @author gerkin
-	 * @see Diaspora.check
-	 * @memberof Errors
 	 * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
 	 * @param {string} message          - Message of this error.
 	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
@@ -2455,11 +2311,12 @@ module.exports = EntityValidationError;
 'use strict';
 
 /**
- * @namespace Errors
+ * @module Errors/ExtendableError
  */
 
 /**
  * This class is the base class for custom Diaspora errors
+ * 
  * @extends Error
  */
 class ExtendableError extends Error {
@@ -2491,12 +2348,14 @@ const {
 } = require( '../dependencies' );
 const ExtendableError = require( './extendableError' );
 
+/**
+ * @module Errors/SetValidationError
+ */
 
 /**
  * This class represents an error related to validation on a set.
  *
- * @extends Error
- * @memberof Errors
+ * @extends module:Errors/ExtendableError~ExtendableError
  */
 class SetValidationError extends ExtendableError {
 	/**
@@ -2504,10 +2363,9 @@ class SetValidationError extends ExtendableError {
 	 *
 	 * @author gerkin
 	 * @see Diaspora.check
-	 * @memberof Errors
-	 * @param {string}                         message          - Message of this error.
-	 * @param {Errors.EntityValidationError[]} validationErrors - Array of validation errors.
-	 * @param {*}                              errorArgs        - Arguments to transfer to parent Error.
+	 * @param {string}                                                      message          - Message of this error.
+	 * @param {module:Errors/EntityValidationError~EntityValidationError[]} validationErrors - Array of validation errors.
+	 * @param {*}                                                           errorArgs        - Arguments to transfer to parent Error.
 	 */
 	constructor( message, validationErrors, ...errorArgs ) {
 		message += `[\n${ _( validationErrors ).map(( error, index ) => {
@@ -2533,13 +2391,14 @@ const {
 const EntityFactory = require( './entityFactory' );
 const Diaspora = require( './diaspora' );
 const Set = require( './set' );
+const Validator = require( './validator' );
 
 const {
 	entityPrototypeProperties,
 } = EntityFactory;
 
 /**
- * @namespace ModelConfiguration
+ * @module Model
  */
 
 /**
@@ -2658,6 +2517,7 @@ class Model {
 			defaultDataSource: sourceNames[0],
 			name,
 			entityFactory:     EntityFactory( name, modelDesc, this ),
+			validator:         new Validator( modelDesc.attributes ),
 		});
 	}
 
@@ -2812,7 +2672,7 @@ class Model {
 
 module.exports = Model;
 
-},{"./dependencies":10,"./diaspora":11,"./entityFactory":12,"./set":18}],18:[function(require,module,exports){
+},{"./dependencies":10,"./diaspora":11,"./entityFactory":12,"./set":18,"./validator":20}],18:[function(require,module,exports){
 'use strict';
 
 const {
@@ -2820,6 +2680,10 @@ const {
 } = require( './dependencies' );
 const Utils = require( './utils' );
 const SetValidationError = require( './errors/setValidationError' );
+
+/**
+ * @module Set
+ */
 
 /**
  * Get the verb of the action (either the `verb` param or the string at the `index` position in `verb` array).
@@ -3060,6 +2924,10 @@ const {
 	_,
 } = require( './dependencies' );
 
+/**
+ * @module Utils
+ */
+
 module.exports = {
 	defineEnumerableProperties( subject, handlers ) {
 		const remappedHandlers = _.mapValues( handlers, handler => {
@@ -3141,6 +3009,422 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./dependencies":10}],20:[function(require,module,exports){
+'use strict';
+
+const dependencies = require( './dependencies' );
+const EntityValidationError = require( './errors/entityValidationError' );
+const { _ } = dependencies;
+
+/**
+ * @module Validator
+ */
+
+/**
+ * Execute the simple tester and return an error component if it returns falsey.
+ *
+ * @param   {Function} tester - The test function to invoke.
+ * @returns {module:Validator~Checker} Function to execute to validate the type.
+ */
+const validateWrongType = tester => {
+	return ( keys, fieldDesc, value ) => {
+		if ( !tester( value )) {
+			return {type: `${ keys.toValidatePath() } expected to be a "${ fieldDesc.type }"`};
+		}
+	};
+};
+
+/**
+ * Prepare the check of each items in the array.
+ *
+ * @param   {module:Validator~Validator} validator - Validator instance that do this call.
+ * @param   {Object}                     fieldDesc - Description of the field to check.
+ * @param   {module:Validator~PathStack} keys      - Keys so far.
+ * @returns {Function} Function to execute to validate array items.
+ */
+const validateArrayItems = ( validator, fieldDesc, keys ) => {
+	return ( propVal, index ) => {
+		if ( fieldDesc.hasOwnProperty( 'of' )) {
+			const ofArray = _.castArray( fieldDesc.of );
+			const subErrors = _( ofArray ).map(( desc, subIndex ) => validator.check(
+				propVal,
+				keys.clone().pushValidationProp( 'of', _.isArray( fieldDesc.of ) ? subIndex : undefined ).pushEntityProp( index ),
+				{getProps: false}
+			));
+			if ( !_.isArray( fieldDesc.of )) {
+				return subErrors.get( 0 );
+			} else if ( subErrors.compact().value().length === ofArray.length ) {
+				return subErrors.toPlainObject().omitBy( _.isNil ).value();
+			}
+		}
+		return {};
+	};
+};
+
+/**
+ * A checker is a function that can return an error component with provided standard args.
+ *
+ * @callback Checker
+ * @param   {module:Validator~PathStack} keys      - Pathstack so far.
+ * @param   {Object}                     fieldDesc - Description of the field.
+ * @param   {Any}                        value     - Value to check.
+ * @returns {Object} Error component.
+ */
+
+/**
+ * Store for validation functions.
+ *
+ * @type {object}
+ * @property {object<string, module:Validator~Checker>} TYPE - Type checkers.
+ * @property {module:Validator~Checker} TYPE.string - String type checker.
+ * @property {module:Validator~Checker} TYPE.integer - Integer type checker.
+ * @property {module:Validator~Checker} TYPE.float - Float type checker.
+ * @property {module:Validator~Checker} TYPE.date - Date type checker.
+ * @property {module:Validator~Checker} TYPE.object - Object type checker.
+ * @property {module:Validator~Checker} TYPE.array - Array type checker.
+ * @property {module:Validator~Checker} TYPE.any - Type checker for type 'any'.
+ * @property {module:Validator~Checker} TYPE._ - Default function for unhandled type.
+ */
+const VALIDATIONS = {
+	TYPE: {
+		string:  validateWrongType( _.isString ),
+		integer: validateWrongType( _.isInteger ),
+		float:   validateWrongType( _.isNumber ),
+		date:    validateWrongType( _.isDate ),
+		object( keys, fieldDesc, value ) {
+			if ( !_.isObject( value )) {
+				return {type: `${ keys.toValidatePath() } expected to be a "${ fieldDesc.type }"`};
+			} else {
+				const deepTest = _.isObject(
+					fieldDesc.attributes
+				) ? _( _.assign({}, fieldDesc.attributes, value )).mapValues(
+						( pv, propName ) => {
+							const propVal = value[propName];
+							return this.check(
+								propVal,
+								keys.clone().pushValidationProp( 'attributes' ).pushProp( propName ),
+								{getProps: false}
+							);
+						}
+					)
+						.omitBy( _.isEmpty )
+						.value() : {};
+				if ( !_.isEmpty( deepTest )) {
+					return {children: deepTest};
+				}
+			}
+		},
+		array( keys, fieldDesc, value ) {
+			if ( !_.isArray( value )) {
+				return {type: `${ keys.toValidatePath() } expected to be a "${ fieldDesc.type }"`};
+			} else {
+				const deepTest = _.isObject(
+					fieldDesc.of
+				) ? _( value ).map( validateArrayItems( this, fieldDesc, keys ))
+						.omitBy( _.isEmpty )
+						.value() : {};
+				if ( !_.isEmpty( deepTest )) {
+					return {children: deepTest};
+				}
+			}
+		},
+		any( keys, fieldDesc, value ) {
+			if ( !_.stubTrue( value )) {
+				return {type: `${ keys.toValidatePath() } expected to be assigned with any type`};
+			}
+		},
+		_( keys, fieldDesc ) {
+			return {type: `${ keys.toValidatePath() } requires to be unhandled type "${ fieldDesc.type }"`};
+		},
+	},
+};
+
+/**
+ * Standard function that can be used to add steps to the validation process..
+ *
+ * @callback ValidationStep
+ * @param   {module:Validator~ValidationStepsArgs} validationArgs - Object of arguments.
+ * @returns {undefined} This function returns nothing.
+ */
+
+/**
+ * This object can be passed through each validation steps.
+ *
+ * @typedef  {Object} ValidationStepsArgs
+ * @property {Object}                     error     - Error object to extend.
+ * @property {Object}                     fieldDesc - Description of the field.
+ * @property {module:Validator~PathStack} keys      - Pathstack representing keys so far.
+ * @property {*}                          value     - Value to check.
+ */
+
+
+const VALIDATION_STEPS = ([
+	/**
+	 * Apply the custom `validate` function or function array, if it exists.
+	 *
+	 * @function module:Validator~checkCustoms
+	 * @type {module:Validator~ValidationStep}
+	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
+	 * @returns {undefined} This function returns nothing.
+	 */
+	function checkCustoms( validationArgs ) {
+		const {
+			error, fieldDesc, keys, value,
+		} = validationArgs;
+		// It the field has a `validate` property, try to use it
+		const validateFcts = _( fieldDesc.validate ).castArray().compact();
+		validateFcts.forEach( validateFct => {
+			if ( !validateFct.call( this, value, fieldDesc )) {
+				error.validate = `${ keys.toValidatePath() } custom validation failed`;
+			}
+		});
+	},
+	/**
+	 * Check if the type & the existence matches the `type` & `required` specifications.
+	 *
+	 * @function module:Validator~checkTypeRequired
+	 * @type {module:Validator~ValidationStep}
+	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
+	 * @returns {undefined} This function returns nothing.
+	 */
+	function checkTypeRequired( validationArgs ) {
+		const {
+			error, fieldDesc, keys, value,
+		} = validationArgs;
+		// Check the type and the required status
+		if ( !_.isNil( fieldDesc.type ) && !_.isNil( fieldDesc.model )) {
+			error.spec =  `${ keys.toValidatePath() } spec can't have both a type and a model`;
+			// Apply the `required` modifier
+		} else if ( true === fieldDesc.required && _.isNil( value )) {
+			error.required = `${ keys.toValidatePath() } is a required property of type "${ fieldDesc.type }"`;
+		} else if ( !_.isNil( value )) {
+			if ( _.isString( fieldDesc.type )) {
+				const tester = _.get( VALIDATIONS, [ 'TYPE', fieldDesc.type ], fieldDesc.type._ );
+				_.assign( error, tester.call( this, keys, fieldDesc, value ));
+			} else {
+				error.spec =  `${ keys.toValidatePath() } spec "type" must be a string`;
+			}
+		}
+	},
+	/**
+	 * Verify if the value correspond to a value in the `enum` property.
+	 *
+	 * @function module:Validator~checkEnum
+	 * @type {module:Validator~ValidationStep}
+	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
+	 * @returns {undefined} This function returns nothing.
+	 */
+	function checkEnum( validationArgs ) {
+		const {
+			error, fieldDesc, keys, value,
+		} = validationArgs;
+		// Check enum values
+		if ( !_.isNil( value ) && !_.isNil( fieldDesc.enum )) {
+			const result = _.some( fieldDesc.enum, enumVal => {
+				if ( enumVal instanceof RegExp ) {
+					return null !== value.match( enumVal );
+				} else {
+					return value === enumVal;
+				}
+			});
+			if ( false === result ) {
+				error.enum = `${ keys.toValidatePath() } expected to have one of enumerated values "${ JSON.stringify( fieldDesc.enum ) }"`;
+			}
+		}
+	},
+]);
+/**
+ * Those validation steps are called one after one during the validation of a single field.
+ *
+ * @const VALIDATION_STEPS
+ * @type {module:Validator~ValidationStep[]}
+ * @property {module:Validator~checkCustoms}      '0' - Check for `validate` field.
+ * @property {module:Validator~checkTypeRequired} '1' - Check for `type` & `required` fields.
+ * @property {module:Validator~checkEnum}         '2' - Check for `enum` field.
+ */
+
+const PRIVATE = Symbol( 'PRIVATE' );
+
+/**
+ * The PathStack class allows model validation to follow different paths in model description & entity.
+ */
+class PathStack {
+	/**
+	 * Constructs a pathstack.
+	 *
+	 * @author gerkin
+	 * @param {string[]} [segmentsEntity=[]]     - Keys to follow in entity.
+	 * @param {string[]} [segmentsValidation=[]] - Keys to follow in model description.
+	 */
+	constructor( segmentsEntity = [], segmentsValidation = []) {
+		_.assign( this, {
+			segmentsEntity,
+			segmentsValidation,
+		});
+	}
+
+	/**
+	 * Add a path segment for entity navigation.
+	 *
+	 * @param   {...string} prop - Properties to add.
+	 * @returns {module:Validator~PathStack} Returns `this`.
+	 */
+	pushEntityProp( ...prop ) {
+		this.segmentsEntity = _( this.segmentsEntity ).concat( prop ).filter( _.isNil ).value();
+		return this;
+	}
+
+	/**
+	 * Add a path segment for model description navigation.
+	 *
+	 * @param   {...string} prop - Properties to add.
+	 * @returns {module:Validator~PathStack} Returns `this`.
+	 */
+	pushValidationProp( ...prop ) {
+		this.segmentsValidation = _( this.segmentsValidation ).concat( prop ).filter( val => !_.isNil( val )).value();
+		return this;
+	}
+
+	/**
+	 * Add a path segment for both entity & model description navigation.
+	 *
+	 * @param   {...string} prop - Properties to add.
+	 * @returns {module:Validator~PathStack} Returns `this`.
+	 */
+	pushProp( ...prop ) {
+		return this.pushEntityProp( ...prop ).pushValidationProp( ...prop );
+	}
+
+	/**
+	 * Get a string version of entity segments.
+	 *
+	 * @returns {string} String representation of path in entity.
+	 */
+	toValidatePath() {
+		return this.segmentsEntity.join( '.' );
+	}
+
+	/**
+	 * Cast this PathStack to its representing arrays.
+	 *
+	 * @returns {Array<Array<string>>} Array of paths. The first path represents the entity segments, second represents model description segments.
+	 */
+	toArray() {
+		return [
+			this.segmentsEntity.slice(),
+			this.segmentsValidation.slice(),
+		];
+	}
+
+	/**
+	 * Duplicate this PathStack, detaching its state from the new.
+	 *
+	 * @returns {module:Validator~PathStack} Clone of caller PathStack.
+	 */
+	clone() {
+		return new PathStack( ...this.toArray());
+	}
+}
+
+/**
+ * The Validator class is used to check an entity or its fields against a model description.
+ */
+class Validator {
+	/**
+	 * Construct a Validator configured for the provided model.
+	 *
+	 * @param {ModelConfiguration.AttributesDescriptor} modelDesc - Model description to validate.
+	 */
+	constructor( modelDesc ) {
+		const _this = {modelDesc};
+		this[PRIVATE] = _this;
+	}
+
+	/**
+	 * Check if the value matches the field description provided, thus verify if it is valid.
+	 *
+	 * @author gerkin
+	 * @param   {Object} entity - Entity to check.
+	 * @returns {Error[]} Array of errors.
+	 */
+	validate( entity ) {
+		// Apply method `checkField` on each field described
+		const checkResults = _( this[PRIVATE].modelDesc )
+			.mapValues(( fieldDesc, field ) => this.check( entity[field], new PathStack().pushProp( field ), {getProps: false}))
+			.omitBy( _.isEmpty )
+			.value();
+		if ( !_.isNil( checkResults ) && !_.isEmpty( checkResults )) {
+			throw new EntityValidationError( checkResults, 'Validation failed' );
+		}
+	}
+
+	/**
+	 * Check if the value matches the field description provided, thus verify if it is valid.
+	 *
+	 * @author gerkin
+	 * @param   {Any}                        value                  - Value to check.
+	 * @param   {module:Validator~PathStack} keys                   - Pathstack representing path to this validation.
+	 * @param   {Object}                     [options=(})]          - Hash of options.
+	 * @param   {boolean}                    options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
+	 * @returns {Object} Hash describing errors.
+	 */
+	check( value, keys, options = {}) {
+		_.defaults( options, { getProps: true });
+		if ( !( keys instanceof PathStack )) {
+			keys = new PathStack( keys );
+		}
+
+		const val = options.getProps ? _.get( value, keys.segmentsEntity ) : value;
+		const fieldDesc = _.get( this[PRIVATE].modelDesc, keys.segmentsValidation );
+		if ( !_.isObject( fieldDesc )) {
+			return;
+		}
+		_.defaults( fieldDesc, { required: false });
+
+		const error = {};
+
+		const stepsArgs = {
+			error,
+			fieldDesc,
+			keys,
+			value: val,
+		};
+
+		_.forEach( VALIDATION_STEPS, validationStep => {
+			validationStep.call( this, stepsArgs );
+		});
+
+		if ( !_.isEmpty( error )) {
+			error.value = value;
+			return error;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Get the model description provided in constructor.
+	 *
+	 * @readonly
+	 * @type {ModelConfiguration.AttributesDescriptor}
+	 */
+	get modelDesc() {
+		return _.cloneDeep( this[PRIVATE].modelDesc );
+	}
+
+	/**
+	 * Get the PathStack constructor.
+	 *
+	 * @readonly
+	 * @type {module:Validator~PathStack}
+	 */
+	static get PathStack() {
+		return PathStack;
+	}
+}
+
+module.exports = Validator;
+
+},{"./dependencies":10,"./errors/entityValidationError":14}],21:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)
@@ -8766,7 +9050,7 @@ module.exports = ret;
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":22}],21:[function(require,module,exports){
+},{"_process":23}],22:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -25854,7 +26138,7 @@ module.exports = ret;
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -26040,12 +26324,12 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 module.exports = require( './lib/sequential-event.js' );
 
-},{"./lib/sequential-event.js":24}],24:[function(require,module,exports){
+},{"./lib/sequential-event.js":25}],25:[function(require,module,exports){
 'use strict';
 
 /**
