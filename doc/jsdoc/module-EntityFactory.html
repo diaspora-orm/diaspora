@@ -1,6 +1,6 @@
 ---
 layout: docpage
-title: "Class: Entity"
+title: "Module: EntityFactory"
 toc: false
 ---
 
@@ -16,22 +16,10 @@ toc: false
 			<div id="main">
 				
 
-	<h1 class="page-title">Class: Entity</h1>
+	<h1 class="page-title">Module: EntityFactory</h1>
 <section>
 
 <header>
-    
-        <h2>
-            <span class="ancestors"><a href="global.html#EntityFactory">EntityFactory</a>.</span>
-        
-        Entity
-        </h2>
-        
-            <div class="class-description"><p>The entity is the class you use to manage a single document in all data sources managed by your model.</p>
-<blockquote>
-<p>Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes</p>
-</blockquote></div>
-        
     
 </header>
 
@@ -40,19 +28,86 @@ toc: false
     <div class="container-overview">
     
         
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="module-EntityFactory-Entity.html">Entity</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
 <hr>
 <dt>
-    <h4 class="name" id="Entity"><span class="type-signature"></span>new Entity(name, modelDesc, model [, source])</h4>
+    <h4 class="name" id=".EntityFactory"><span class="type-signature">&lt;static> </span>EntityFactory(name, modelDesc, model)</h4>
     
-    
-    <p class="summary"><p>An entity is a document in the population of all your datas of the same type</p></p>
     
 </dt>
 <dd>
 
     
     <div class="description">
-        <p>Create a new entity.</p>
+        <p>This factory function generate a new class constructor, prepared for a specific model.</p>
     </div>
     
 
@@ -75,11 +130,7 @@ toc: false
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -105,19 +156,7 @@ toc: false
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last"><p>Name of this model.</p></td>
@@ -141,19 +180,7 @@ toc: false
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last"><p>Model configuration that generated the associated <code>model</code>.</p></td>
@@ -169,7 +196,7 @@ toc: false
             <td class="type">
             
                 
-<span class="param-type"><a href="Model.html">Model</a></span>
+<span class="param-type">Model</span>
 
 
 
@@ -177,66 +204,10 @@ toc: false
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
             
 
             <td class="description last"><p>Model that will spawn entities.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>source</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-|
-
-<span class="param-type"><a href="DataStoreEntities.DataStoreEntity.html">DataStoreEntities.DataStoreEntity</a></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last"><p>Hash with properties to copy on the new object.
-       If provided object inherits DataStoreEntity, the constructed entity is built in <code>sync</code> state.</p></td>
         </tr>
 
     
@@ -247,6 +218,59 @@ toc: false
 
     
 <dl class="details">
+    
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>Entity</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-EntityFactory-Entity.html">module:EntityFactory~Entity</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Entity constructor</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+</dl>
+
     
 
 	
@@ -296,36 +320,35 @@ toc: false
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Entity constructor to use with this model.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-EntityFactory-Entity.html">module:EntityFactory~Entity</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
 
-    
-    </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="global.html#SequentialEvent">SequentialEvent</a></li>
-    </ul>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+        </dl>
     
 
     
@@ -358,7 +381,7 @@ toc: false
 	<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 		
-		on 2017-11-02T05:06:09+01:00
+		on 2017-11-04T14:36:46+01:00
 		
 		using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 	</span>

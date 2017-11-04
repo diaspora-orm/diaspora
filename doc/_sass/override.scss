@@ -973,6 +973,7 @@ nav#header{
 			}
 			> ul{
 				@media (min-width: 768px){
+					max-height: calc(100vh - 40px);
 					position: absolute;
 					right: 0;
 					left: auto;
