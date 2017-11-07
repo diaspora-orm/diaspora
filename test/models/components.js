@@ -10,7 +10,7 @@ const SOURCE = 'inMemory-components';
 
 
 it( 'Should create a model', () => {
-	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
+	Diaspora.createNamedDataSource( SOURCE, 'inMemory' );
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,

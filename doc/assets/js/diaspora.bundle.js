@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-11-07 20:38:54
+* Standalone build compiled on 2017-11-07 18:01:34
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -15,29 +15,6 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function _extendableBuiltin(cls) {
-	function ExtendableBuiltin() {
-		cls.apply(this, arguments);
-	}
-
-	ExtendableBuiltin.prototype = Object.create(cls.prototype, {
-		constructor: {
-			value: cls,
-			enumerable: false,
-			writable: true,
-			configurable: true
-		}
-	});
-
-	if (Object.setPrototypeOf) {
-		Object.setPrototypeOf(ExtendableBuiltin, cls);
-	} else {
-		ExtendableBuiltin.__proto__ = cls;
-	}
-
-	return ExtendableBuiltin;
-}
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -1654,7 +1631,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					}()
 				};
 			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
-		}, { "bluebird": undefined, "lodash": undefined, "sequential-event": undefined }], 10: [function (require, module, exports) {
+		}, { "bluebird": "bluebird", "lodash": "lodash", "sequential-event": "sequential-event" }], 10: [function (require, module, exports) {
 			(function (process) {
 				'use strict';
 
@@ -2775,8 +2752,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     * @extends Error
     */
 
-			var ExtendableError = function (_extendableBuiltin2) {
-				_inherits(ExtendableError, _extendableBuiltin2);
+			var ExtendableError = function (_Error) {
+				_inherits(ExtendableError, _Error);
 
 				/**
      * Construct a new extendable error.
@@ -2786,13 +2763,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @param {*}      errorArgs        - Arguments to transfer to parent Error.
      */
 				function ExtendableError(message) {
+					var _ref5;
+
 					_classCallCheck(this, ExtendableError);
 
-					var _this30 = _possibleConstructorReturn(this, (ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call(this, message));
+					for (var _len4 = arguments.length, errorArgs = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
+						errorArgs[_key4 - 1] = arguments[_key4];
+					}
 
-					_this30.name = _this30.constructor.name;
+					//		this.constructor = super.target;
+					//		this.__proto__ = super.target;
+					var _this30 = _possibleConstructorReturn(this, (_ref5 = ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call.apply(_ref5, [this, message].concat(errorArgs)));
+
 					if ('function' === typeof Error.captureStackTrace) {
-						Error.captureStackTrace(_this30, _this30.constructor);
+						Error.captureStackTrace(_this30, _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this30));
 					} else {
 						_this30.stack = new Error(message).stack;
 					}
@@ -2800,7 +2784,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}
 
 				return ExtendableError;
-			}(_extendableBuiltin(Error));
+			}(Error);
 
 			module.exports = ExtendableError;
 		}, {}], 15: [function (require, module, exports) {
@@ -2834,7 +2818,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @param {*}                                                           errorArgs        - Arguments to transfer to parent Error.
      */
 				function SetValidationError(message, validationErrors) {
-					var _ref5;
+					var _ref6;
 
 					_classCallCheck(this, SetValidationError);
 
@@ -2846,11 +2830,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						}
 					}).filter(_.identity).join(',\n') + "\n]";
 
-					for (var _len4 = arguments.length, errorArgs = Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
-						errorArgs[_key4 - 2] = arguments[_key4];
+					for (var _len5 = arguments.length, errorArgs = Array(_len5 > 2 ? _len5 - 2 : 0), _key5 = 2; _key5 < _len5; _key5++) {
+						errorArgs[_key5 - 2] = arguments[_key5];
 					}
 
-					var _this31 = _possibleConstructorReturn(this, (_ref5 = SetValidationError.__proto__ || Object.getPrototypeOf(SetValidationError)).call.apply(_ref5, [this, message].concat(errorArgs)));
+					var _this31 = _possibleConstructorReturn(this, (_ref6 = SetValidationError.__proto__ || Object.getPrototypeOf(SetValidationError)).call.apply(_ref6, [this, message].concat(errorArgs)));
 
 					_this31.validationErrors = validationErrors;
 					return _this31;
@@ -3001,9 +2985,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
 					var sourcesNormalized = normalizeRemaps(modelDesc);
 					// List sources required by this model
-					var _ref6 = [_.keys(sourcesNormalized), Diaspora.dataSources],
-					    sourceNames = _ref6[0],
-					    scopeAvailableSources = _ref6[1];
+					var _ref7 = [_.keys(sourcesNormalized), Diaspora.dataSources],
+					    sourceNames = _ref7[0],
+					    scopeAvailableSources = _ref7[1];
 
 					var modelSources = _.pick(scopeAvailableSources, sourceNames);
 					var missingSources = _.difference(sourceNames, _.keys(modelSources));
@@ -3336,8 +3320,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @param {Entity|Entity[]} entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
      */
 				function Set(model) {
-					for (var _len5 = arguments.length, entities = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
-						entities[_key5 - 1] = arguments[_key5];
+					for (var _len6 = arguments.length, entities = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
+						entities[_key6 - 1] = arguments[_key6];
 					}
 
 					_classCallCheck(this, Set);
@@ -3899,8 +3883,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				_createClass(PathStack, [{
 					key: "pushEntityProp",
 					value: function pushEntityProp() {
-						for (var _len6 = arguments.length, prop = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-							prop[_key6] = arguments[_key6];
+						for (var _len7 = arguments.length, prop = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+							prop[_key7] = arguments[_key7];
 						}
 
 						this.segmentsEntity = _(this.segmentsEntity).concat(prop).filter(_.isNil).value();
@@ -3917,8 +3901,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				}, {
 					key: "pushValidationProp",
 					value: function pushValidationProp() {
-						for (var _len7 = arguments.length, prop = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
-							prop[_key7] = arguments[_key7];
+						for (var _len8 = arguments.length, prop = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+							prop[_key8] = arguments[_key8];
 						}
 
 						this.segmentsValidation = _(this.segmentsValidation).concat(prop).filter(function (val) {

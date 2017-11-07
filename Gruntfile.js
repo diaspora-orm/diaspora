@@ -23,6 +23,24 @@ module.exports = function gruntInit( grunt ) {
 		'!test/browser/**/*.js',
 		'test/browser/selenium.js',
 	]);
+	const depsShim = {
+		lodash: {
+			path:    'node_modules/lodash/lodash.min.js',
+			exports: '_',
+		},
+		'sequential-event': {
+			path:    'node_modules/sequential-event/dist/sequential-event.min.js',
+			exports: 'SequentialEvent',
+		},
+		bluebird: {
+			path:    'node_modules/bluebird/js/browser/bluebird.min.js',
+			exports: 'Promise',
+		},
+	};
+	const babelPluginExtend = [ 'babel-plugin-transform-builtin-extend', {
+		globals:     [ 'Error', 'Array' ],
+		approximate: true,
+	}];
 
 	grunt.initConfig({
 		pkg:    grunt.file.readJSON( 'package.json' ),
@@ -65,20 +83,7 @@ module.exports = function gruntInit( grunt ) {
 		browserify: {
 			deps: {
 				options: {
-					shim: {
-						lodash: {
-							path:    'node_modules/lodash/lodash.min.js',
-							exports: '_',
-						},
-						'sequential-event': {
-							path:    'node_modules/sequential-event/dist/sequential-event.min.js',
-							exports: 'SequentialEvent',
-						},
-						bluebird: {
-							path:    'node_modules/bluebird/js/browser/bluebird.min.js',
-							exports: 'Promise',
-						},
-					},
+					shim: depsShim,
 				},
 				src:  [ 'node_modules/lodash/lodash.min.js', 'node_modules/sequential-event/dist/sequential-event.min.js', 'node_modules/bluebird/js/browser/bluebird.min.js' ],
 				dest: 'build/dependencies/src/dependencies.js',
@@ -90,7 +95,7 @@ module.exports = function gruntInit( grunt ) {
 					browserifyOptions: {
 						standalone: 'Diaspora',
 					},
-					external:   [ 'lodash', 'bluebird', 'sequential-event' ],
+					shim:    depsShim,
 					exclude: [ 'winston' ],
 				},
 			},
@@ -115,6 +120,7 @@ module.exports = function gruntInit( grunt ) {
 				options: {
 					alias: {
 						'/test/adapters/index.js':          './test/adapters/index.js',
+						'/test/adapters/baseAdapter.js':    './test/adapters/baseAdapter.js',
 						'/test/adapters/inMemory.js':       './test/adapters/inMemory.js',
 						'/test/adapters/webStorage.js':     './test/adapters/webStorage.js',
 						'/test/models/index.js':            './test/models/index.js',
@@ -135,12 +141,14 @@ module.exports = function gruntInit( grunt ) {
 		},
 		babel: {
 			options: {
-				presets: [[ 'env', {
-					modules: false,
-					targets: {
-						browsers: '>= 1%',
-					},
-				}]],
+				presets: [
+					[ 'env', {
+						modules: false,
+						targets: {
+							browsers: '>= 1%',
+						},
+					}],
+				],
 				//				plugins: [ 'babel-plugin-proxy' ],
 			},
 			deps: {
@@ -170,6 +178,7 @@ module.exports = function gruntInit( grunt ) {
 * @author <%= pkg.author %>
 */`,
 						}],
+						babelPluginExtend,
 					],
 				},
 				files: [{
@@ -195,6 +204,7 @@ module.exports = function gruntInit( grunt ) {
 * @author <%= pkg.author %>
 */`,
 						}],
+						babelPluginExtend,
 					],
 				},
 				files: [{

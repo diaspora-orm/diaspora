@@ -35,37 +35,96 @@ var AdapterTestUtils = {
 			}).catch( done );
 		});
 	},
-	checkInputFiltering(adapter){
+	checkInputFiltering( adapter ) {
 		describe( `${ getStyle( 'taskCategory', 'Check query inputs filtering' )  } with ${  adapter.name }`, () => {
-			describe('Check options normalization', () => {
+			describe( 'Check options normalization', () => {
 				const no = adapter.normalizeOptions;
-				it('Default options', () => {
-					expect(no({})).to.eql({skip: 0, remapInput: true, remapOutput: true});
+				it( 'Default options', () => {
+					expect( no({})).to.eql({
+						skip:        0,
+						remapInput:  true,
+						remapOutput: true,
+					});
 				});
-				it('"limit" option', () => {
-					expect(no({limit:10})).to.eql({limit: 10, skip: 0, remapInput: true, remapOutput: true});
-					expect(no({limit:"10"})).to.eql({limit: 10, skip: 0, remapInput: true, remapOutput: true});
-					expect(no({limit:Infinity})).to.eql({limit: Infinity, skip: 0, remapInput: true, remapOutput: true});
-					expect(() => no({limit:0.5})).to.throw(TypeError);
-					expect(() => no({limit:-1})).to.throw(RangeError);
-					expect(() => no({limit:-Infinity})).to.throw(RangeError);
+				it( '"limit" option', () => {
+					expect( no({limit: 10})).to.eql({
+						limit:       10,
+						skip:        0,
+						remapInput:  true,
+						remapOutput: true,
+					});
+					expect( no({limit: '10'})).to.eql({
+						limit:       10,
+						skip:        0,
+						remapInput:  true,
+						remapOutput: true,
+					});
+					expect( no({limit: Infinity})).to.eql({
+						limit:       Infinity,
+						skip:        0,
+						remapInput:  true,
+						remapOutput: true,
+					});
+					expect(() => no({limit: 0.5})).to.throw( TypeError );
+					expect(() => no({limit: -1})).to.throw( RangeError );
+					expect(() => no({limit: -Infinity})).to.throw( RangeError );
 				});
-				it('"skip" option', () => {
-					expect(no({skip:10})).to.eql({skip: 10, remapInput: true, remapOutput: true});
-					expect(no({skip:"10"})).to.eql({skip: 10, remapInput: true, remapOutput: true});
-					expect(() => no({skip:0.5})).to.throw(TypeError);
-					expect(() => no({skip:-1})).to.throw(RangeError);
-					expect(() => no({skip:Infinity})).to.throw(RangeError);
+				it( '"skip" option', () => {
+					expect( no({skip: 10})).to.eql({
+						skip:        10,
+						remapInput:  true,
+						remapOutput: true,
+					});
+					expect( no({skip: '10'})).to.eql({
+						skip:        10,
+						remapInput:  true,
+						remapOutput: true,
+					});
+					expect(() => no({skip: 0.5})).to.throw( TypeError );
+					expect(() => no({skip: -1})).to.throw( RangeError );
+					expect(() => no({skip: Infinity})).to.throw( RangeError );
 				});
-				it('"page" option', () => {
-					expect(no({page:5, limit: 10})).to.eql({skip: 50, limit: 10, remapInput: true, remapOutput: true});
-					expect(no({page:"5", limit: "10"})).to.eql({skip: 50, limit: 10, remapInput: true, remapOutput: true});
-					expect(() => no({page:1})).to.throw(ReferenceError);
-					expect(() => no({page:1, skip: 1, limit: 5})).to.throw(ReferenceError);
-					expect(() => no({page:0.5, limit: 5})).to.throw(TypeError);
-					expect(() => no({page:1, limit: Infinity})).to.throw(RangeError);
-					expect(() => no({page:Infinity, limit: 5})).to.throw(RangeError);
-					expect(() => no({page:-1, limit: 5})).to.throw(RangeError);
+				it( '"page" option', () => {
+					expect( no({
+						page:  5,
+						limit: 10,
+					})).to.eql({
+						skip:        50,
+						limit:       10,
+						remapInput:  true,
+						remapOutput: true,
+					});
+					expect( no({
+						page:  '5',
+						limit: '10',
+					})).to.eql({
+						skip:        50,
+						limit:       10,
+						remapInput:  true,
+						remapOutput: true,
+					});
+					expect(() => no({page: 1})).to.throw( ReferenceError );
+					expect(() => no({
+						page:  1,
+						skip:  1,
+						limit: 5,
+					})).to.throw( ReferenceError );
+					expect(() => no({
+						page:  0.5,
+						limit: 5,
+					})).to.throw( TypeError );
+					expect(() => no({
+						page:  1,
+						limit: Infinity,
+					})).to.throw( RangeError );
+					expect(() => no({
+						page:  Infinity,
+						limit: 5,
+					})).to.throw( RangeError );
+					expect(() => no({
+						page:  -1,
+						limit: 5,
+					})).to.throw( RangeError );
 				});
 			});
 			describe( 'Check "normalizeQuery"', () => {
@@ -553,7 +612,7 @@ var AdapterTestUtils = {
 			}
 		};
 
-		AdapterTestUtils.checkInputFiltering(adapter);
+		AdapterTestUtils.checkInputFiltering( adapter );
 		describe( getStyle( 'taskCategory', 'Test adapter methods' ), () => {
 			let findManyOk = false;
 			let findAllOk = false;

@@ -35,8 +35,10 @@ module.exports = {
 			if ( _.isString( limitOpt )) {
 				limitOpt = parseInt( limitOpt );
 			}
-			if ( !( _.isInteger( limitOpt ) || Infinity === limitOpt ) || limitOpt < 0 ) {
-				throw new TypeError( `Expect "options.limit" to be an integer equal to or above 0, have ${ limitOpt }` );
+			if ( !_.isInteger( limitOpt ) && isFinite( limitOpt )) {
+				throw new TypeError( 'Expect "options.limit" to be a integer' );
+			} else if ( limitOpt < 0 ) {
+				throw new RangeError( `Expect "options.limit" to be an integer equal to or above 0, have ${ limitOpt }` );
 			}
 			opts.limit = limitOpt;
 		},
@@ -45,8 +47,10 @@ module.exports = {
 			if ( _.isString( skipOpt )) {
 				skipOpt = parseInt( skipOpt );
 			}
-			if ( !_.isInteger( skipOpt ) || skipOpt < 0 || !isFinite( skipOpt )) {
-				throw new TypeError( `Expect "options.skip" to be a finite integer equal to or above 0, have ${ skipOpt }` );
+			if ( !_.isInteger( skipOpt ) && isFinite( skipOpt )) {
+				throw new TypeError( 'Expect "options.skip" to be a integer' );
+			} else if ( !isFinite( skipOpt ) || skipOpt < 0 ) {
+				throw new RangeError( `Expect "options.skip" to be a finite integer equal to or above 0, have ${ skipOpt }` );
 			}
 			opts.skip = skipOpt;
 		},
@@ -55,17 +59,19 @@ module.exports = {
 				throw new ReferenceError( 'Usage of "options.page" requires "options.limit" to be defined.' );
 			}
 			if ( !isFinite( opts.limit )) {
-				throw new ReferenceError( 'Usage of "options.page" requires "options.limit" to not be infinite' );
+				throw new RangeError( 'Usage of "options.page" requires "options.limit" to not be infinite' );
 			}
 			if ( opts.hasOwnProperty( 'skip' )) {
-				throw new Error( 'Use either "options.page" or "options.skip"' );
+				throw new ReferenceError( 'Use either "options.page" or "options.skip"' );
 			}
 			let pageOpt = opts.page;
 			if ( _.isString( pageOpt )) {
 				pageOpt = parseInt( pageOpt );
 			}
-			if ( !_.isInteger( pageOpt ) || pageOpt < 0 ) {
-				throw new TypeError( `Expect "options.page" to be an integer equal to or above 0, have ${ pageOpt }` );
+			if ( !_.isInteger( pageOpt ) && isFinite( pageOpt )) {
+				throw new TypeError( 'Expect "options.page" to be a integer' );
+			} else if ( !isFinite( pageOpt ) || pageOpt < 0 ) {
+				throw new RangeError( `Expect "options.page" to be a finite integer equal to or above 0, have ${ pageOpt }` );
 			}
 			opts.skip = pageOpt * opts.limit;
 			delete opts.page;
@@ -892,7 +898,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 					return new this.classEntity( item, this );
 				}));
 			} else {
-				return Promise.resolve();
+				return Promise.resolve([]);
 			}
 		});
 	}
@@ -1474,7 +1480,6 @@ const Diaspora = {
 	 * @returns {Object} Entity merged with default values.
 	 */
 	default( entity, modelDesc ) {
-		console.log( entity );
 		// Apply method `defaultField` on each field described
 		return _.defaults(
 			entity,
@@ -2316,12 +2321,11 @@ class ExtendableError extends Error {
 	 * @param {string} message          - Message of this error.
 	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
 	 */
-	constructor( message, ...errorArgs ) {
-		super( message, ...errorArgs );
-		//		this.constructor = super.target;
-		//		this.__proto__ = super.target;
+	constructor( message ) {
+		super( message );
+		this.name = this.constructor.name;
 		if ( 'function' === typeof Error.captureStackTrace ) {
-			Error.captureStackTrace( this, super.target );
+			Error.captureStackTrace( this, this.constructor );
 		} else {
 			this.stack = ( new Error( message )).stack;
 		}
