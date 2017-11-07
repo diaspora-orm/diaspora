@@ -6,10 +6,11 @@ let testModel;
 let testEntity;
 let testSet;
 const MODEL_NAME = 'testModelComponents';
-const SOURCE = 'inMemory';
+const SOURCE = 'inMemory-components';
 
 
 it( 'Should create a model', () => {
+	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
@@ -304,7 +305,7 @@ describe( 'Test errors', () => {
 		 */
 		class subError extends ExtendableError {}
 		const saveCST = Error.captureStackTrace;
-		
+
 		Error.captureStackTrace = undefined;
 		expect( new subError()).to.be.an( 'Error' );
 		Error.captureStackTrace = saveCST;

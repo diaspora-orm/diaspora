@@ -41,7 +41,6 @@ const THROWING = ( desc, obj ) => {
 const NOT_THROWING = ( desc, obj ) => {
 	return `Validation ${ JSON.stringify( desc ) } NOT throwing correctly for ${ JSON.stringify( obj ) }`;
 };
-console.log( Diaspora.components );
 
 const runTests = ( validator, [ accepted, rejected ]) => {
 	//console.log({validator, accepted, rejected});

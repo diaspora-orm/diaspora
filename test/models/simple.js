@@ -5,10 +5,11 @@
 let testModel;
 let testedEntity;
 const MODEL_NAME = 'testModel';
-const SOURCE = 'inMemory';
+const SOURCE = 'inMemory-simple';
 
 
 it( 'Should create a model', () => {
+	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
@@ -36,7 +37,7 @@ it( 'Should be able to create an entity of the defined model.', () => {
 it( 'Should be able to create multiple entities.', () => {
 	const objects = [
 		{
-			foo: 'bar', 
+			foo: 'bar',
 		},
 		undefined,
 	];
@@ -48,28 +49,28 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		it( 'Create a single instance', () => {
 			expect( testModel ).to.respondTo( 'insert' );
 			const object = {
-				foo: 'bar', 
+				foo: 'bar',
 			};
 			return testModel.insert( object ).then( newEntity => {
-				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
+				expect( newEntity ).to.be.an.entity( testModel, object, SOURCE );
 			});
 		});
 		it( 'Create multiple instances', () => {
 			expect( testModel ).to.respondTo( 'insertMany' );
 			const objects = [
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				undefined,
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 			];
 			return testModel.insertMany( objects ).then( newEntities => {
-				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
+				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, SOURCE ).that.have.lengthOf( 4 );
 			});
 		});
 	});
@@ -88,13 +89,13 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'find' );
 			return Promise.mapSeries([
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				{
-					foo: 'bar', 
+					foo: 'bar',
 				},
 			], item => checkFind( item, false ));
 		});
@@ -103,19 +104,19 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			return Promise.mapSeries([
 				{
 					query: {
-						foo: undefined, 
+						foo: undefined,
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'baz', 
+						foo: 'baz',
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'bar', 
+						foo: 'bar',
 					},
 					length: 1,
 				},
@@ -238,7 +239,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
 	it( 'Fetch should be rejected with an error on orphan items', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -249,7 +250,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 	});
 	it( 'Destroy should be rejected with an error on orphan items', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -260,7 +261,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 	});
 	it( 'Persist should change the entity', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );

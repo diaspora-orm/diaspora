@@ -4,13 +4,14 @@
 
 let testModel;
 const MODEL_NAME = 'validatedModel';
-const SOURCE = 'inMemory';
+const SOURCE = 'inMemory-validations';
 const {
 	EntityValidationError, SetValidationError,
 } = Diaspora.components.Errors;
 
 
 it( 'Should create a model', () => {
+	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
@@ -95,7 +96,7 @@ it( 'Should define default values on valid items', () => {
 			expect( entity ).to.be.an.entity( testModel, {
 				prop2: 2,
 				prop3: 0.1,
-			}, 'inMemory' );
+			}, SOURCE );
 		}),
 		testModel.spawn({
 			prop2: 3,
@@ -104,7 +105,7 @@ it( 'Should define default values on valid items', () => {
 			expect( entity ).to.be.an.entity( testModel, {
 				prop2: 3,
 				prop3: 12,
-			}, 'inMemory' );
+			}, SOURCE );
 		}),
 	]);
 });

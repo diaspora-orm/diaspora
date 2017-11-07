@@ -35,62 +35,38 @@ var AdapterTestUtils = {
 			}).catch( done );
 		});
 	},
-	checkEachStandardMethods: ( adapterLabel, addName = '' ) => {
-		const adapter = dataSources[getDataSourceLabel( adapterLabel, addName )];
-		const getTestLabel = fctName => {
-			if ( adapter.__proto__.hasOwnProperty( fctName )) {
-				return fctName;
-			} else {
-				return `${ fctName } (from BaseAdapter)`;
-			}
-		};
-
-		describe( `${ getStyle( 'taskCategory', 'Check filtering options' )  } with ${  adapterLabel }`, () => {
-			it( 'Check "normalizeOptions"', () => {
+	checkInputFiltering(adapter){
+		describe( `${ getStyle( 'taskCategory', 'Check query inputs filtering' )  } with ${  adapter.name }`, () => {
+			describe('Check options normalization', () => {
 				const no = adapter.normalizeOptions;
-				expect( no()).to.deep.include({
-					skip:        0,
-					remapInput:  true,
-					remapOutput: true,
+				it('Default options', () => {
+					expect(no({})).to.eql({skip: 0, remapInput: true, remapOutput: true});
 				});
-				expect( no({
-					skip:        1,
-					remapInput:  false,
-					remapOutput: false,
-				})).to.deep.include({
-					skip:        1,
-					remapInput:  false,
-					remapOutput: false,
+				it('"limit" option', () => {
+					expect(no({limit:10})).to.eql({limit: 10, skip: 0, remapInput: true, remapOutput: true});
+					expect(no({limit:"10"})).to.eql({limit: 10, skip: 0, remapInput: true, remapOutput: true});
+					expect(no({limit:Infinity})).to.eql({limit: Infinity, skip: 0, remapInput: true, remapOutput: true});
+					expect(() => no({limit:0.5})).to.throw(TypeError);
+					expect(() => no({limit:-1})).to.throw(RangeError);
+					expect(() => no({limit:-Infinity})).to.throw(RangeError);
 				});
-				expect( no({
-					page:  1,
-					limit: 10,
-				})).to.deep.include({
-					skip:  10,
-					limit: 10,
-				}).and.not.have.property( 'page' );
-				expect( no.bind( adapter, {
-					page: 1,
-				})).to.throw();
-				expect( no.bind( adapter, {
-					page:  -1,
-					limit: 5,
-				})).to.throw();
-				expect( no.bind( adapter, {
-					limit: -1,
-				})).to.throw();
-				expect( no.bind( adapter, {
-					skip: -1,
-				})).to.throw();
-				expect( no.bind( adapter, {
-					page: 'aze',
-				})).to.throw();
-				expect( no.bind( adapter, {
-					limit: 'aze',
-				})).to.throw();
-				expect( no.bind( adapter, {
-					skip: 'aze',
-				})).to.throw();
+				it('"skip" option', () => {
+					expect(no({skip:10})).to.eql({skip: 10, remapInput: true, remapOutput: true});
+					expect(no({skip:"10"})).to.eql({skip: 10, remapInput: true, remapOutput: true});
+					expect(() => no({skip:0.5})).to.throw(TypeError);
+					expect(() => no({skip:-1})).to.throw(RangeError);
+					expect(() => no({skip:Infinity})).to.throw(RangeError);
+				});
+				it('"page" option', () => {
+					expect(no({page:5, limit: 10})).to.eql({skip: 50, limit: 10, remapInput: true, remapOutput: true});
+					expect(no({page:"5", limit: "10"})).to.eql({skip: 50, limit: 10, remapInput: true, remapOutput: true});
+					expect(() => no({page:1})).to.throw(ReferenceError);
+					expect(() => no({page:1, skip: 1, limit: 5})).to.throw(ReferenceError);
+					expect(() => no({page:0.5, limit: 5})).to.throw(TypeError);
+					expect(() => no({page:1, limit: Infinity})).to.throw(RangeError);
+					expect(() => no({page:Infinity, limit: 5})).to.throw(RangeError);
+					expect(() => no({page:-1, limit: 5})).to.throw(RangeError);
+				});
 			});
 			describe( 'Check "normalizeQuery"', () => {
 				const nq = l.partialRight( adapter.normalizeQuery, {
@@ -566,6 +542,18 @@ var AdapterTestUtils = {
 				});
 			});
 		});
+	},
+	checkEachStandardMethods: ( adapterLabel, addName = '' ) => {
+		const adapter = dataSources[getDataSourceLabel( adapterLabel, addName )];
+		const getTestLabel = fctName => {
+			if ( adapter.__proto__.hasOwnProperty( fctName )) {
+				return fctName;
+			} else {
+				return `${ fctName } (from BaseAdapter)`;
+			}
+		};
+
+		AdapterTestUtils.checkInputFiltering(adapter);
 		describe( getStyle( 'taskCategory', 'Test adapter methods' ), () => {
 			let findManyOk = false;
 			let findAllOk = false;
@@ -658,6 +646,30 @@ var AdapterTestUtils = {
 						};
 						return adapter.updateMany( TABLE, fromObj, targetObj ).then( entities => {
 							expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, l.assign({}, fromObj, targetObj )).that.have.lengthOf( 3 );
+						});
+					});
+					it( getTestLabel( 'updateOne not found' ), () => {
+						expect( adapter ).to.respondTo( 'updateOne' );
+						const fromObj = {
+							qwe: 'rty',
+						};
+						const targetObj = {
+							foo: 'bar',
+						};
+						return adapter.updateOne( TABLE, fromObj, targetObj ).then( entity => {
+							expect( entity ).to.be.undefined;
+						});
+					});
+					it( getTestLabel( 'updateMany not found' ), () => {
+						expect( adapter ).to.respondTo( 'updateMany' );
+						const fromObj = {
+							qwe: 'rty',
+						};
+						const targetObj = {
+							baz: 'qux',
+						};
+						return adapter.updateMany( TABLE, fromObj, targetObj ).then( entities => {
+							expect( entities ).to.have.lengthOf( 0 );
 						});
 					});
 				});

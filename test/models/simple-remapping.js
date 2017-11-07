@@ -6,12 +6,12 @@ let testModel;
 let store;
 let testedEntity;
 const MODEL_NAME = 'remapped';
-const SOURCE = 'inMemory';
+const SOURCE = 'inMemory-simple-remapping';
 
 
 const checkDataStoreRemap = ( item, propsObject ) => {
 	const dataStoreItem = l.find( store.items, {
-		id: item.dataSources.inMemory.id,
+		id: item.dataSources[SOURCE].id,
 	});
 	expect( dataStoreItem ).to.not.have.property( 'foo' );
 	if ( propsObject ) {
@@ -26,6 +26,7 @@ const checkDataStoreRemap = ( item, propsObject ) => {
 };
 
 it( 'Should create a model', () => {
+	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources: {
 			[ SOURCE ]: {
@@ -43,7 +44,7 @@ it( 'Should create a model', () => {
 	if ( 'undefined' === typeof window ) {
 		expect( testModel.constructor.name ).to.be.eql( 'Model' );
 	}
-	store = Diaspora.dataSources.inMemory.store.remapped;
+	store = Diaspora.dataSources[SOURCE].store.remapped;
 });
 it( 'Should be able to create an entity of the defined model.', () => {
 	const entity1 = testModel.spawn();
@@ -58,7 +59,7 @@ it( 'Should be able to create an entity of the defined model.', () => {
 it( 'Should be able to create multiple entities.', () => {
 	const objects = [
 		{
-			foo: 'bar', 
+			foo: 'bar',
 		},
 		undefined,
 	];
@@ -70,10 +71,10 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		it( 'Create a single instance', () => {
 			expect( testModel ).to.respondTo( 'insert' );
 			const object = {
-				foo: 'bar', 
+				foo: 'bar',
 			};
 			return testModel.insert( object ).then( newEntity => {
-				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
+				expect( newEntity ).to.be.an.entity( testModel, object, SOURCE );
 				checkDataStoreRemap( newEntity, object );
 			});
 		});
@@ -81,18 +82,18 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'insertMany' );
 			const objects = [
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				undefined,
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 			];
 			return testModel.insertMany( objects ).then( newEntities => {
-				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
+				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, SOURCE ).that.have.lengthOf( 4 );
 				return Promise.map( newEntities.value(), ( newEntity, index ) => {
 					const object = objects[index];
 					checkDataStoreRemap( newEntity, object );
@@ -115,13 +116,13 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'find' );
 			return Promise.mapSeries([
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				{
-					foo: 'bar', 
+					foo: 'bar',
 				},
 			], item => checkFind( item, false ));
 		});
@@ -130,19 +131,19 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			return Promise.mapSeries([
 				{
 					query: {
-						foo: undefined, 
+						foo: undefined,
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'baz', 
+						foo: 'baz',
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'bar', 
+						foo: 'bar',
 					},
 					length: 1,
 				},
@@ -268,7 +269,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
 	it( 'Fetch should be rejected with an error on orphan items', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -279,7 +280,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 	});
 	it( 'Destroy should be rejected with an error on orphan items', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -290,7 +291,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 	});
 	it( 'Persist should change the entity', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
