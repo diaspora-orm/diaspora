@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-11-07 12:27:06
+* Isolated build compiled on 2017-11-07 14:54:33
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -2148,16 +2148,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					var modelAttrsKeys = _.keys(modelDesc.attributes);
 
+					// ### Init defaults
 					var _this22 = _possibleConstructorReturn(this, (Entity.__proto__ || Object.getPrototypeOf(Entity)).call(this));
 
-					console.log({
-						this: _this22,
-						proto: _this22.__proto__,
-						serialize: _this22.__proto__.serialize
-					});
-					console.log(_this22.serialize === _.get(modelDesc, 'methods.serialize'), _this22.serialize.toString(), _.get(modelDesc, 'methods.serialize', {}).toString());
-
-					// ### Init defaults
 					var dataSources = Object.seal(_.mapValues(model.dataSources, function () {
 						return undefined;
 					}));
@@ -2291,16 +2284,32 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function toObject() {
 						return this[PRIVATE].attributes;
 					}
+
+					/**
+      * Applied before persisting the entity, this function is in charge to convert entity convinient attributes to a raw entity.
+      *
+      * @author gerkin
+      * @param   {Object} data - Data to convert to primitive types.
+      * @returns {Object} Object with Primitives-only types.
+      */
+
 				}, {
 					key: "serialize",
 					value: function serialize(data) {
-						console.log('serialize', this.constructor.name);
 						return _.cloneDeep(data);
 					}
+
+					/**
+      * Applied after retrieving the entity, this function is in charge to convert entity raw attributes to convinient types.
+      *
+      * @author gerkin
+      * @param   {Object} data - Data to convert from primitive types.
+      * @returns {Object} Object with Primitives & non primitives types.
+      */
+
 				}, {
 					key: "deserialize",
 					value: function deserialize(data) {
-						console.log('deserialize', this.constructor.name);
 						return _.cloneDeep(data);
 					}
 

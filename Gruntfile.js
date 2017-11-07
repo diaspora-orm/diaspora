@@ -89,8 +89,8 @@ module.exports = function gruntInit( grunt ) {
 				options: {
 					browserifyOptions: {
 						standalone: 'Diaspora',
-						external:   [ 'lodash', 'bluebird', 'sequential-event' ],
 					},
+					external:   [ 'lodash', 'bluebird', 'sequential-event' ],
 					exclude: [ 'winston' ],
 				},
 			},

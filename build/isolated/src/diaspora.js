@@ -1820,12 +1820,6 @@ class Entity extends SequentialEvent {
 	constructor( name, modelDesc, model, source = {}) {
 		const modelAttrsKeys = _.keys( modelDesc.attributes );
 		super();
-		console.log({
-			this:      this,
-			proto:     this.__proto__,
-			serialize: this.__proto__.serialize,
-		});
-		console.log( this.serialize === _.get( modelDesc, 'methods.serialize' ), this.serialize.toString(), _.get( modelDesc, 'methods.serialize', {}).toString());
 
 		// ### Init defaults
 		const dataSources = Object.seal( _.mapValues( model.dataSources, () => undefined ));
@@ -1935,13 +1929,25 @@ class Entity extends SequentialEvent {
 		return this[PRIVATE].attributes;
 	}
 
+	/**
+	 * Applied before persisting the entity, this function is in charge to convert entity convinient attributes to a raw entity.
+	 *
+	 * @author gerkin
+	 * @param   {Object} data - Data to convert to primitive types.
+	 * @returns {Object} Object with Primitives-only types.
+	 */
 	serialize( data ) {
-		console.log( 'serialize', this.constructor.name );
 		return _.cloneDeep( data );
 	}
 
+	/**
+	 * Applied after retrieving the entity, this function is in charge to convert entity raw attributes to convinient types.
+	 *
+	 * @author gerkin
+	 * @param   {Object} data - Data to convert from primitive types.
+	 * @returns {Object} Object with Primitives & non primitives types.
+	 */
 	deserialize( data ) {
-		console.log( 'deserialize', this.constructor.name );
 		return _.cloneDeep( data );
 	}
 
