@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Standalone build compiled on 2017-11-04 17:46:43
+* Standalone build compiled on 2017-11-07 12:26:50
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -158,7 +158,7 @@ _this2.on('ready',function(){_this2.state='ready';}).on('error',function(err){_t
 	 * @param   {Object} remaps       - Associative hash that links entity field names with data source field names.
 	 * @param   {Object} [filters={}] - Not used yet...
 	 * @returns {undefined} This function does not return anything.
-	 */_createClass(DiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps){var filters=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};this.remaps[tableName]=remaps;this.remapsInverted[tableName]=_.invert(remaps);this.filters=filters||{};}// -----
+	 */_createClass(DiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps){var filters=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};this.remaps[tableName]={normal:remaps,inverted:_.invert(remaps)};this.filters[tableName]=filters;}// -----
 // ### Events
 /**
 	 * Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
@@ -182,14 +182,6 @@ _this2.on('ready',function(){_this2.state='ready';}).on('error',function(err){_t
 	 * @listens Adapters.DiasporaAdapter#ready
 	 * @returns {Promise} Promise resolved when adapter is ready, and rejected if an error occured.
 	 */},{key:"waitReady",value:function waitReady(){var _this3=this;return new Promise(function(resolve,reject){if('ready'===_this3.state){return resolve(_this3);}else if('error'===_this3.state){return reject(_this3.error);}_this3.on('ready',function(){return resolve(_this3);}).on('error',function(err){return reject(err);});});}/**
-	 * Cast entity field names to table field name, or the opposite.
-	 *
-	 * @author gerkin
-	 * @param   {string}  tableName      - Name of the table we are remapping for.
-	 * @param   {Object}  query          - Hash representing the raw query to remap.
-	 * @param   {boolean} [invert=false] - Set to `false` to cast to `table` field names, `true` to cast to `entity` field name.
-	 * @returns {Object} Remapped object.
-	 */},{key:"remapFields",value:function remapFields(tableName,query){var invert=arguments.length>2&&arguments[2]!==undefined?arguments[2]:false;var keysMap=(invert?this.remapsInverted:this.remaps)[tableName];if(_.isNil(keysMap)){return query;}return _.mapKeys(query,function(value,key){if(keysMap.hasOwnProperty(key)){return keysMap[key];}return key;});}/**
 	 * TODO.
 	 *
 	 * @author gerkin
@@ -216,7 +208,7 @@ _this2.on('ready',function(){_this2.state='ready';}).on('error',function(err){_t
 	 * @param   {Object}  query     - Hash representing the entity to remap.
 	 * @param   {boolean} input     - Set to `true` if handling input, `false`to output.
 	 * @returns {Object} Remapped object.
-	 */},{key:"remapIO",value:function remapIO(tableName,query,input){var _this4=this;if(_.isNil(query)){return query;}var direction=true===input?'input':'output';var filtered=_.mapValues(query,function(value,key){if(_.isObject(_.get(_this4,['filters',direction]))&&_this4.filters[direction].hasOwnProperty(key)){return _this4.filters.output[key](value);}return value;});var remaps=true===input?this.remaps:this.remapsInverted;var remaped=_.mapKeys(filtered,function(value,key){if(remaps.hasOwnProperty(key)){return remaps[key];}return key;});return remaped;}/**
+	 */},{key:"remapIO",value:function remapIO(tableName,query,input){var _this4=this;if(_.isNil(query)){return query;}var direction=true===input?'input':'output';var filtered=_.mapValues(query,function(value,key){var filter=_.get(_this4,['filters',tableName,direction,key],undefined);if(_.isFunction(filter)){return filter(value);}return value;});var remapType=true===input?'normal':'inverted';var remaped=_.mapKeys(filtered,function(value,key){return _.get(_this4,['remaps',tableName,remapType,key],key);});return remaped;}/**
 	 * Refresh the `idHash` with current adapter's `id` injected.
 	 *
 	 * @author gerkin
@@ -287,7 +279,7 @@ _.forEach(['$less','$lessEqual','$greater','$greaterEqual'],function(operation){
 	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
-	 */},{key:"findMany",value:function findMany(table,queryFind){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};options=this.normalizeOptions(options);return iterateLimit(options,_.partial(this.findOne,table,queryFind,_))(true);}// -----
+	 */},{key:"findMany",value:function findMany(table,queryFind){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};options=this.normalizeOptions(options);return iterateLimit(options,this.findOne.bind(this,table,queryFind))(true);}// -----
 // ### Update
 /**
 	 * Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateOne` itself.
@@ -309,7 +301,7 @@ _.forEach(['$less','$lessEqual','$greater','$greaterEqual'],function(operation){
 	 * @param   {Object}                               update       - Object properties to set.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
-	 */},{key:"updateMany",value:function updateMany(table,queryFind,update){var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};options=this.normalizeOptions(options);return iterateLimit(options,_.partial(this.updateOne,table,queryFind,update,_))(true);}// -----
+	 */},{key:"updateMany",value:function updateMany(table,queryFind,update){var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};options=this.normalizeOptions(options);return iterateLimit(options,this.updateOne.bind(this,table,queryFind,update))(true);}// -----
 // ### Delete
 /**
 	 * Delete a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteOne` itself.
@@ -352,18 +344,18 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 	 * 
 	 * @author gerkin
 	 * @returns {Object} Plain object representing this entity.
-	 */_createClass(DataStoreEntity,[{key:"toObject",value:function toObject(){return _.omit(this,['dataSource','id']);}}]);return DataStoreEntity;}();module.exports=DataStoreEntity;},{"../../dependencies":10}],6:[function(require,module,exports){'use strict';var _require5=require('../../dependencies'),_=_require5._,Promise=_require5.Promise;var Utils=require('../../utils');var DiasporaAdapter=require('../base/adapter');var InMemoryEntity=require('./entity.js');/**
+	 */_createClass(DataStoreEntity,[{key:"toObject",value:function toObject(){return _.omit(this,['dataSource','id']);}}]);return DataStoreEntity;}();module.exports=DataStoreEntity;},{"../../dependencies":10}],6:[function(require,module,exports){'use strict';var _require5=require('../../dependencies'),_=_require5._,Promise=_require5.Promise;var Utils=require('../../utils');var Diaspora=require('../../diaspora');var DiasporaAdapter=Diaspora.components.Adapters.Adapter;var InMemoryEntity=require('./entity.js');/**
  * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
- * 
+ *
  * @extends Adapters.DiasporaAdapter
  * @memberof Adapters
  */var InMemoryDiasporaAdapter=function(_DiasporaAdapter){_inherits(InMemoryDiasporaAdapter,_DiasporaAdapter);/**
 	 * Create a new instance of in memory adapter.
-	 * 
+	 *
 	 * @author gerkin
 	 */function InMemoryDiasporaAdapter(){_classCallCheck(this,InMemoryDiasporaAdapter);var _this7=_possibleConstructorReturn(this,(InMemoryDiasporaAdapter.__proto__||Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this,InMemoryEntity));/**
 		 * Link to the InMemoryEntity.
-		 * 
+		 *
 		 * @name classEntity
 		 * @type {DataStoreEntities.InMemoryEntity}
 		 * @memberof Adapters.InMemoryDiasporaAdapter
@@ -371,11 +363,11 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 		 * @author Gerkin
 		 */_this7.state='ready';/**
 		 * Plain old javascript object used as data store.
-		 * 
+		 *
 		 * @author Gerkin
 		 */_this7.store={};return _this7;}/**
 	 * Create the data store and call {@link Adapters.DiasporaAdapter#configureCollection}.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} tableName - Name of the table (usually, model name).
 	 * @param   {Object} remaps    - Associative hash that links entity field names with data source field names.
@@ -384,7 +376,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 // ### Utils
 /**
 	 * Get or create the store hash.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} table - Name of the table.
 	 * @returns {DataStoreTable} In memory table to use.
@@ -392,7 +384,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 // ### Insert
 /**
 	 * Insert a single entity in the memory store.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string} table  - Name of the table to insert data in.
@@ -402,7 +394,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 // ### Find
 /**
 	 * Retrieve a single entity from the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -411,7 +403,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`).
 	 */},{key:"findOne",value:function findOne(table,queryFind){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);var matches=_.filter(storeTable.items,_.partial(this.matchEntity,queryFind));var reducedMatches=Utils.applyOptionsToSet(matches,options);return Promise.resolve(reducedMatches.length>0?new this.classEntity(_.first(reducedMatches),this):undefined);}/**
 	 * Retrieve several entities from the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -422,7 +414,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 // ### Update
 /**
 	 * Update a single entity in the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to update data in.
@@ -432,7 +424,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`).
 	 */},{key:"updateOne",value:function updateOne(table,queryFind,update){var _this9=this;var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};return this.findOne(table,queryFind,options).then(function(found){if(!_.isNil(found)){var storeTable=_this9.ensureCollectionExists(table);var match=_.find(storeTable.items,{id:found.id});Utils.applyUpdateEntity(update,match);return Promise.resolve(new _this9.classEntity(match,_this9));}else{return Promise.resolve();}});}/**
 	 * Update several entities in the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to update data in.
@@ -444,7 +436,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 // ### Delete
 /**
 	 * Delete a single entity from the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
@@ -453,14 +445,14 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*).
 	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this11=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findOne(table,queryFind,options).then(function(entityToDelete){storeTable.items=_.reject(storeTable.items,function(entity){return entity.id===entityToDelete.idHash[_this11.name];});return Promise.resolve();});}/**
 	 * Delete several entities from the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
 	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
-	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this12=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var entitiesIds=_.map(entitiesToDelete,function(entity){return _.get(entity,"idHash."+_this12.name);});storeTable.items=_.reject(storeTable.items,function(entity){return _.includes(entitiesIds,entity.id);});return Promise.resolve();});}}]);return InMemoryDiasporaAdapter;}(DiasporaAdapter);module.exports=InMemoryDiasporaAdapter;},{"../../dependencies":10,"../../utils":19,"../base/adapter":4,"./entity.js":7}],7:[function(require,module,exports){'use strict';var DataStoreEntity=require('../base/entity.js');/**
+	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this12=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var entitiesIds=_.map(entitiesToDelete,function(entity){return _.get(entity,"idHash."+_this12.name);});storeTable.items=_.reject(storeTable.items,function(entity){return _.includes(entitiesIds,entity.id);});return Promise.resolve();});}}]);return InMemoryDiasporaAdapter;}(DiasporaAdapter);module.exports=InMemoryDiasporaAdapter;},{"../../dependencies":10,"../../diaspora":11,"../../utils":19,"./entity.js":7}],7:[function(require,module,exports){'use strict';var DataStoreEntity=require('../base/entity.js');/**
  * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
  * @extends DataStoreEntities.DataStoreEntity
  * @memberof DataStoreEntities
@@ -470,20 +462,20 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 	 * @author gerkin
 	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
 	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-	 */function InMemoryEntity(entity,dataSource){_classCallCheck(this,InMemoryEntity);return _possibleConstructorReturn(this,(InMemoryEntity.__proto__||Object.getPrototypeOf(InMemoryEntity)).call(this,entity,dataSource));}return InMemoryEntity;}(DataStoreEntity);module.exports=InMemoryEntity;},{"../base/entity.js":5}],8:[function(require,module,exports){(function(global){'use strict';var _require6=require('../../dependencies'),_=_require6._,Promise=_require6.Promise;var Utils=require('../../utils');var DiasporaAdapter=require('../base/adapter');var WebStorageEntity=require('./entity');/**
+	 */function InMemoryEntity(entity,dataSource){_classCallCheck(this,InMemoryEntity);return _possibleConstructorReturn(this,(InMemoryEntity.__proto__||Object.getPrototypeOf(InMemoryEntity)).call(this,entity,dataSource));}return InMemoryEntity;}(DataStoreEntity);module.exports=InMemoryEntity;},{"../base/entity.js":5}],8:[function(require,module,exports){(function(global){'use strict';var _require6=require('../../dependencies'),_=_require6._,Promise=_require6.Promise;var Utils=require('../../utils');var Diaspora=require('../../diaspora');var DiasporaAdapter=Diaspora.components.Adapters.Adapter;var WebStorageEntity=require('./entity');/**
  * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
- * 
+ *
  * @extends Adapters.DiasporaAdapter
  * @memberof Adapters
  */var WebStorageDiasporaAdapter=function(_DiasporaAdapter2){_inherits(WebStorageDiasporaAdapter,_DiasporaAdapter2);/**
 	 * Create a new instance of local storage adapter.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param {Object}  config                 - Configuration object.
 	 * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
 	 */function WebStorageDiasporaAdapter(config){_classCallCheck(this,WebStorageDiasporaAdapter);var _this14=_possibleConstructorReturn(this,(WebStorageDiasporaAdapter.__proto__||Object.getPrototypeOf(WebStorageDiasporaAdapter)).call(this,WebStorageEntity));/**
 		 * Link to the WebStorageEntity.
-		 * 
+		 *
 		 * @name classEntity
 		 * @type {DataStoreEntities.WebStorageEntity}
 		 * @memberof Adapters.WebStorageDiasporaAdapter
@@ -491,14 +483,14 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 		 * @author Gerkin
 		 */_.defaults(config,{session:false});_this14.state='ready';/**
 		 * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
-		 * 
+		 *
 		 * @type {Storage}
 		 * @author Gerkin
 		 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
 		 * @see {@link Adapters.WebStorageDiasporaAdapter}:config.session parameter.
 		 */_this14.source=true===config.session?global.sessionStorage:global.localStorage;return _this14;}/**
 	 * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param {string} tableName - Name of the table (usually, model name).
 	 * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
@@ -507,13 +499,13 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 // ### Utils
 /**
 	 * Create the table key if it does not exist.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} table - Name of the table.
 	 * @returns {string[]} Index of the collection.
 	 */},{key:"ensureCollectionExists",value:function ensureCollectionExists(table){var index=this.source.getItem(table);if(_.isNil(index)){index=[];this.source.setItem(table,JSON.stringify(index));}else{index=JSON.parse(index);}return index;}/**
 	 * Deduce the item name from table name and item ID.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} table - Name of the table to construct name for.
 	 * @param   {string} id    - Id of the item to find.
@@ -522,7 +514,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 // ### Insert
 /**
 	 * Insert a single entity in the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string} table  - Name of the table to insert data in.
@@ -530,7 +522,7 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
 	 */},{key:"insertOne",value:function insertOne(table,entity){entity=_.cloneDeep(entity||{});entity.id=Utils.generateUUID();this.setIdHash(entity);try{var tableIndex=this.ensureCollectionExists(table);tableIndex.push(entity.id);this.source.setItem(table,JSON.stringify(tableIndex));this.source.setItem(this.getItemName(table,entity.id),JSON.stringify(entity));}catch(error){return Promise.reject(error);}return Promise.resolve(new this.classEntity(entity,this));}/**
 	 * Insert several entities in the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}   table    - Name of the table to insert data in.
@@ -540,14 +532,14 @@ return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loop
 // ### Find
 /**
 	 * Find a single local storage entity using its id.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} table - Name of the collection to search entity in.
 	 * @param   {string} id    - Id of the entity to search.
 	 * @returns {DataStoreEntities.WebStorageEntity|undefined} Found entity, or undefined if not found.
 	 */},{key:"findOneById",value:function findOneById(table,id){var item=this.source.getItem(this.getItemName(table,id));if(!_.isNil(item)){return Promise.resolve(new this.classEntity(JSON.parse(item),this));}return Promise.resolve();}/**
 	 * Retrieve a single entity from the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the model to retrieve data from.
@@ -559,7 +551,7 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 // ### Update
 /**
 	 * Update a single entity in the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to update data in.
@@ -571,7 +563,7 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 // ### Delete
 /**
 	 * Delete a single entity from the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
@@ -580,14 +572,14 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*).
 	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this18=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};return this.findOne(table,queryFind,options).then(function(entityToDelete){try{var tableIndex=_this18.ensureCollectionExists(table);_.pull(tableIndex,entityToDelete.id);_this18.source.setItem(table,JSON.stringify(tableIndex));_this18.source.removeItem(_this18.getItemName(table,entityToDelete.id));}catch(error){return Promise.reject(error);}return Promise.resolve();});}/**
 	 * Delete several entities from the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
 	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
 	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
-	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this19=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};try{return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var tableIndex=_this19.ensureCollectionExists(table);_.pullAll(tableIndex,_.map(entitiesToDelete,'id'));_this19.source.setItem(table,JSON.stringify(tableIndex));_.forEach(entitiesToDelete,function(entityToDelete){_this19.source.removeItem(_this19.getItemName(table,entityToDelete.id));});return Promise.resolve();});}catch(error){return Promise.reject(error);}}}]);return WebStorageDiasporaAdapter;}(DiasporaAdapter);module.exports=WebStorageDiasporaAdapter;}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"../../dependencies":10,"../../utils":19,"../base/adapter":4,"./entity":9}],9:[function(require,module,exports){'use strict';var DataStoreEntity=require('../base/entity.js');/**
+	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this19=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};try{return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var tableIndex=_this19.ensureCollectionExists(table);_.pullAll(tableIndex,_.map(entitiesToDelete,'id'));_this19.source.setItem(table,JSON.stringify(tableIndex));_.forEach(entitiesToDelete,function(entityToDelete){_this19.source.removeItem(_this19.getItemName(table,entityToDelete.id));});return Promise.resolve();});}catch(error){return Promise.reject(error);}}}]);return WebStorageDiasporaAdapter;}(DiasporaAdapter);module.exports=WebStorageDiasporaAdapter;}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"../../dependencies":10,"../../diaspora":11,"../../utils":19,"./entity":9}],9:[function(require,module,exports){'use strict';var DataStoreEntity=require('../base/entity.js');/**
  * Entity stored in {@link Adapters.WebStorageDiasporaAdapter the local storage adapter}.
  * 
  * @extends DataStoreEntities.DataStoreEntity
@@ -616,12 +608,12 @@ if(matched>options.skip){returnedItem=item;return false;}}});return Promise.reso
 //
 if(process.env.NODE_ENV!=='production'){log.add(new winston.transports.Console({format:winston.format.simple()}));}return log;}else{return console;}}();var adapters={};var dataSources={};var models={};var ensureAllEntities=function ensureAllEntities(adapter,table){// Filter our results
 var filterResults=function filterResults(entity){// Remap fields
-entity=adapter.remapFields(table,entity,true);// Force results to be class instances
-if(!(entity instanceof adapter.classEntity)&&!_.isNil(entity)){return new adapter.classEntity(entity,adapter);}return entity;};return function(results){if(_.isArrayLike(results)){return Promise.resolve(_.map(results,filterResults));}else{return Promise.resolve(filterResults(results));}};};var remapArgs=function remapArgs(args,optIndex,update,queryType,remapFunction){if(false!==optIndex){// Remap input objects
+entity=adapter.remapOutput(table,entity);// Force results to be class instances
+if(!(entity instanceof adapter.classEntity)&&!_.isNil(entity)){return new adapter.classEntity(entity,adapter);}return entity;};return function(results){if(_.isNil(results)){return Promise.resolve();}else if(_.isArrayLike(results)){return Promise.resolve(_.map(results,filterResults));}else{return Promise.resolve(filterResults(results));}};};var remapArgs=function remapArgs(args,optIndex,update,queryType,remapFunction){if(false!==optIndex){// Remap input objects
 if(true===args[optIndex].remapInput){args[0]=remapFunction(args[0]);if(true===update){args[1]=remapFunction(args[1]);}}args[optIndex].remapInput=false;}else if('insert'===queryType.query){// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
 if('many'===queryType.number){// If inserting *several* entities, map the array to remap each entity objects...
 args[0]=_.map(args[0],function(insertion){return remapFunction(insertion);});}else{// ... or we are inserting a *single* one. We still need to remap entity.
-args[0]=remapFunction(args[0]);}}};var getRemapFunction=function getRemapFunction(adapter,table){return function(entity){return adapter.remapFields(table,entity,false);};};var wrapDataSourceAction=function wrapDataSourceAction(callback,queryType,adapter){return function(table){for(var _len=arguments.length,args=Array(_len>1?_len-1:0),_key=1;_key<_len;_key++){args[_key-1]=arguments[_key];}// Transform arguments for find, update & delete
+args[0]=remapFunction(args[0]);}}};var getRemapFunction=function getRemapFunction(adapter,table){return function(query){return adapter.remapInput(table,query);};};var wrapDataSourceAction=function wrapDataSourceAction(callback,queryType,adapter){return function(table){for(var _len=arguments.length,args=Array(_len>1?_len-1:0),_key=1;_key<_len;_key++){args[_key-1]=arguments[_key];}// Transform arguments for find, update & delete
 var optIndex=false;var upd=false;if(['find','delete'].indexOf(queryType.query)>=0){// For find & delete, options are 3rd argument (so 2nd item in `args`)
 optIndex=1;}else if('update'===queryType.query){// For update, options are 4th argument (so 3nd item in `args`), and `upd` flag is toggled on.
 optIndex=2;upd=true;}try{if(false!==optIndex){// Options to canonical
@@ -639,7 +631,7 @@ return callback.call.apply(callback,[adapter,table].concat(args)).then(ensureAll
 	 * @param   {Object}         entity    - Entity to set defaults in.
 	 * @param   {ModelPrototype} modelDesc - Model description.
 	 * @returns {Object} Entity merged with default values.
-	 */default:function _default(entity,modelDesc){var _this21=this;// Apply method `defaultField` on each field described
+	 */default:function _default(entity,modelDesc){var _this21=this;console.log(entity);// Apply method `defaultField` on each field described
 return _.defaults(entity,_.mapValues(modelDesc,function(fieldDesc,field){return _this21.defaultField(entity[field],fieldDesc);}));},/**
 	 * Set the default on a single field according to its description.
 	 *
@@ -655,7 +647,7 @@ return _.defaults(entity,_.mapValues(modelDesc,function(fieldDesc,field){return 
 	 * @param   {string} adapterLabel - Label of the adapter used to create the data source.
 	 * @param   {Object} config       - Configuration hash. This configuration hash depends on the adapter we want to use.
 	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
-	 */createDataSource:function createDataSource(adapterLabel,config){if(!adapters.hasOwnProperty(adapterLabel)){throw new Error("Unknown adapter \""+adapterLabel+"\". Available currently are "+Object.keys(adapters).join(', '));}var baseAdapter=new adapters[adapterLabel](config);var newDataSource=new Proxy(baseAdapter,{get:function get(target,key){// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
+	 */createDataSource:function createDataSource(adapterLabel,config){if(!adapters.hasOwnProperty(adapterLabel)){try{require("diaspora-"+adapterLabel);}catch(e){throw new Error("Unknown adapter \""+adapterLabel+"\". Available currently are "+Object.keys(adapters).join(', ')+". Additionnaly, an error was thrown: "+e);}}var baseAdapter=new adapters[adapterLabel](config);var newDataSource=new Proxy(baseAdapter,{get:function get(target,key){// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
 if(_.isString(key)){var method=key.match(/^(find|update|insert|delete)(Many|One)$/);if(null!==method){method[2]=method[2].toLowerCase();method=_.mapKeys(method.slice(0,3),function(val,key){return['full','query','number'][key];});return wrapDataSourceAction(target[key],method,target);}}return target[key];}});return newDataSource;},/**
 	 * Stores the data source with provided label.
 	 *
@@ -664,7 +656,9 @@ if(_.isString(key)){var method=key.match(/^(find|update|insert|delete)(Many|One)
 	 * @param   {string}          name       - Name associated with this datasource.
 	 * @param   {DiasporaAdapter} dataSource - Datasource itself.
 	 * @returns {undefined} This function does not return anything.
-	 */registerDataSource:function registerDataSource(name,dataSource){requireName('DataSource',name);if(dataSources.hasOwnProperty(name)){throw new Error("DataSource name already used, had \""+name+"\"");}if(!(dataSource instanceof Diaspora.components.Adapters.Adapter)){throw new Error('DataSource must be an instance inheriting "DiasporaAdapter"');}dataSource.name=name;_.merge(dataSources,_defineProperty({},name,dataSource));},/**
+	 */registerDataSource:function registerDataSource(name,dataSource){requireName('DataSource',name);if(dataSources.hasOwnProperty(name)){throw new Error("DataSource name already used, had \""+name+"\"");}/*		if ( !( dataSource instanceof Diaspora.components.Adapters.Adapter )) {
+			throw new Error( 'DataSource must be an instance inheriting "DiasporaAdapter"' );
+		}*/dataSource.name=name;_.merge(dataSources,_defineProperty({},name,dataSource));return dataSource;},/**
 	 * Create a data source (usually, a database connection) that may be used by models.
 	 *
 	 * @author gerkin
@@ -673,7 +667,7 @@ if(_.isString(key)){var method=key.match(/^(find|update|insert|delete)(Many|One)
 	 * @param   {string} adapterLabel - Label of the adapter used to create the data source.
 	 * @param   {Object} configHash   - Configuration hash. This configuration hash depends on the adapter we want to use.
 	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
-	 */createNamedDataSource:function createNamedDataSource(sourceName,adapterLabel,configHash){var dataSource=Diaspora.createDataSource(adapterLabel,configHash);Diaspora.registerDataSource(sourceName,dataSource);},/**
+	 */createNamedDataSource:function createNamedDataSource(sourceName,adapterLabel,configHash){var dataSource=Diaspora.createDataSource(adapterLabel,configHash);return Diaspora.registerDataSource(sourceName,dataSource);},/**
 	 * Create a new Model with provided description.
 	 *
 	 * @author gerkin
@@ -690,8 +684,10 @@ if(_.isString(key)){var method=key.match(/^(find|update|insert|delete)(Many|One)
 	 * @param   {string}                   label   - Label of the adapter to register.
 	 * @param   {Adapters.DiasporaAdapter} adapter - The adapter to register.
 	 * @returns {undefined} This function does not return anything.
-	 */registerAdapter:function registerAdapter(label,adapter){if(adapters[label]){throw new Error("Adapter with label \""+label+"\" already exists.");}// Check inheritance of adapter
-if(!(adapter.prototype instanceof Diaspora.components.Adapters.Adapter)){throw new TypeError("Trying to register an adapter with label \""+label+"\", but it does not extends DiasporaAdapter.");}adapters[label]=adapter;},/**
+	 */registerAdapter:function registerAdapter(label,adapter){if(adapters.hasOwnProperty(label)){throw new Error("Adapter with label \""+label+"\" already exists.");}// Check inheritance of adapter
+/*if ( !( adapter.prototype instanceof Diaspora.components.Adapters.Adapter )) {
+			throw new TypeError( `Trying to register an adapter with label "${ label }", but it does not extends DiasporaAdapter.` );
+		}*/adapters[label]=adapter;},/**
 	 * Hash containing all available models.
 	 *
 	 * @type {Object}
@@ -744,18 +740,18 @@ if(!(adapter.prototype instanceof Diaspora.components.Adapters.Adapter)){throw n
  * @memberof Diaspora
  * @private
  * @author gerkin
- */Diaspora.components={EntityFactory:require('./entityFactory'),Entity:require('./entityFactory').Entity,Set:require('./set'),Model:require('./model'),Validator:require('./validator'),Errors:{ExtendableError:require('./errors/extendableError'),EntityValidationError:require('./errors/entityValidationError'),SetValidationError:require('./errors/setValidationError'),EntityStateError:require('./errors/entityStateError')},Adapters:{Adapter:require('./adapters/base/adapter'),Entity:require('./adapters/base/entity')}};// Register available built-in adapters
+ */Diaspora.components={Errors:{ExtendableError:require('./errors/extendableError'),EntityValidationError:require('./errors/entityValidationError'),SetValidationError:require('./errors/setValidationError'),EntityStateError:require('./errors/entityStateError')}};_.assign(Diaspora.components,{Adapters:{Adapter:require('./adapters/base/adapter'),Entity:require('./adapters/base/entity')}});_.assign(Diaspora.components,{Model:require('./model'),EntityFactory:require('./entityFactory'),Entity:require('./entityFactory').Entity,Set:require('./set'),Validator:require('./validator')});// Register available built-in adapters
 Diaspora.registerAdapter('inMemory',require('./adapters/inMemory/adapter'));// Register webStorage only if in browser
-if(process.browser){Diaspora.registerAdapter('webStorage',require('./adapters/webStorage/adapter'));}}).call(this,require('_process'));},{"./adapters/base/adapter":4,"./adapters/base/entity":5,"./adapters/inMemory/adapter":6,"./adapters/webStorage/adapter":8,"./dependencies":10,"./entityFactory":12,"./errors/entityStateError":13,"./errors/entityValidationError":14,"./errors/extendableError":15,"./errors/setValidationError":16,"./model":17,"./set":18,"./validator":20,"_process":23,"winston":undefined}],12:[function(require,module,exports){'use strict';var _require7=require('./dependencies'),_=_require7._,Promise=_require7.Promise,SequentialEvent=_require7.SequentialEvent;var Diaspora=require('./diaspora');var DataStoreEntity=require('./adapters/base/entity');var EntityStateError=require('./errors/entityStateError');/**
+if(process.browser){Diaspora.registerAdapter('webStorage',require('./adapters/webStorage/adapter'));}}).call(this,require('_process'));},{"./adapters/base/adapter":4,"./adapters/base/entity":5,"./adapters/inMemory/adapter":6,"./adapters/webStorage/adapter":8,"./dependencies":10,"./entityFactory":12,"./errors/entityStateError":13,"./errors/entityValidationError":14,"./errors/extendableError":15,"./errors/setValidationError":16,"./model":17,"./set":18,"./validator":20,"_process":23,"winston":undefined}],12:[function(require,module,exports){'use strict';var _require7=require('./dependencies'),_=_require7._,Promise=_require7.Promise,SequentialEvent=_require7.SequentialEvent;var Diaspora=require('./diaspora');var DataStoreEntity=Diaspora.components.Adapters.Entity;var EntityStateError=require('./errors/entityStateError');/**
  * @module EntityFactory
  */var DEFAULT_OPTIONS={skipEvents:false};var PRIVATE=Symbol('PRIVATE');var maybeEmit=function maybeEmit(entity,options,eventsArgs,events){events=_.castArray(events);if(options.skipEvents){return Promise.resolve(entity);}else{return entity.emit.apply(entity,[events[0]].concat(_toConsumableArray(eventsArgs))).then(function(){if(events.length>1){return maybeEmit(entity,options,eventsArgs,_.slice(events,1));}else{return Promise.resolve(entity);}});}};var maybeThrowInvalidEntityState=function maybeThrowInvalidEntityState(entity,beforeState,dataSource,method){return function(){// Depending on state, we are going to perform a different operation
 if('orphan'===beforeState){return Promise.reject(new EntityStateError('Can\'t fetch an orphan entity.'));}else{entity[PRIVATE].lastDataSource=dataSource.name;return dataSource[method](entity.table(dataSource.name),entity.uidQuery(dataSource));}};};var entityCtrSteps={bindLifecycleEvents:function bindLifecycleEvents(entity,modelDesc){// Bind lifecycle events
 _.forEach(modelDesc.lifecycleEvents,function(eventFunctions,eventName){// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
-_.forEach(_.castArray(eventFunctions),function(eventFunction){entity.on(eventName,eventFunction);});});},loadSource:function loadSource(_entity,source){// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
-if(source instanceof DataStoreEntity){_.assign(_entity,{state:'sync',lastDataSource:source.dataSource.name});_entity.dataSources[_entity.lastDataSource]=source;source=_.omit(source.toObject(),['id']);}return source;}};/**
+_.forEach(_.castArray(eventFunctions),function(eventFunction){entity.on(eventName,eventFunction);});});},loadSource:function loadSource(entity,source){// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
+if(source instanceof DataStoreEntity){var _entity=entity[PRIVATE];_.assign(_entity,{state:'sync',lastDataSource:source.dataSource.name});_entity.dataSources[_entity.lastDataSource]=source;source=entity.deserialize(_.omit(source.toObject(),['id']));}return source;}};/**
  * The entity is the class you use to manage a single document in all data sources managed by your model.
  * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
- * 
+ *
  * @extends SequentialEvent
  */var Entity=function(_SequentialEvent2){_inherits(Entity,_SequentialEvent2);/**
 	 * Create a new entity.
@@ -766,9 +762,9 @@ if(source instanceof DataStoreEntity){_.assign(_entity,{state:'sync',lastDataSou
 	 * @param {Model}                                    model       - Model that will spawn entities.
 	 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.
 	 *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
-	 */function Entity(name,modelDesc,model){var source=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};_classCallCheck(this,Entity);var modelAttrsKeys=_.keys(modelDesc.attributes);// ### Init defaults
-var _this22=_possibleConstructorReturn(this,(Entity.__proto__||Object.getPrototypeOf(Entity)).call(this));var dataSources=Object.seal(_.mapValues(model.dataSources,function(){return undefined;}));var _this={state:'orphan',lastDataSource:null,dataSources:dataSources,name:name,modelDesc:modelDesc,model:model};_this22[PRIVATE]=_this;// ### Load datas from source
-source=entityCtrSteps.loadSource(_this,source);// ### Final validation
+	 */function Entity(name,modelDesc,model){var source=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};_classCallCheck(this,Entity);var modelAttrsKeys=_.keys(modelDesc.attributes);var _this22=_possibleConstructorReturn(this,(Entity.__proto__||Object.getPrototypeOf(Entity)).call(this));console.log({this:_this22,proto:_this22.__proto__,serialize:_this22.__proto__.serialize});console.log(_this22.serialize===_.get(modelDesc,'methods.serialize'),_this22.serialize.toString(),_.get(modelDesc,'methods.serialize',{}).toString());// ### Init defaults
+var dataSources=Object.seal(_.mapValues(model.dataSources,function(){return undefined;}));var _this={state:'orphan',lastDataSource:null,dataSources:dataSources,name:name,modelDesc:modelDesc,model:model};_this22[PRIVATE]=_this;// ### Load datas from source
+source=entityCtrSteps.loadSource(_this22,source);// ### Final validation
 // Check keys provided in source
 var sourceDModel=_.difference(source,modelAttrsKeys);if(0!==sourceDModel.length){// Later, add a criteria for schemaless models
 throw new Error("Source has unknown keys: "+JSON.stringify(sourceDModel)+" in "+JSON.stringify(source));}// ### Generate prototype & attributes
@@ -810,7 +806,7 @@ return this[PRIVATE].name;}/**
 	 *
 	 * @author gerkin
 	 * @returns {Object} Attributes of this entity.
-	 */},{key:"toObject",value:function toObject(){return this[PRIVATE].attributes;}/**
+	 */},{key:"toObject",value:function toObject(){return this[PRIVATE].attributes;}},{key:"serialize",value:function serialize(data){console.log('serialize',this.constructor.name);return _.cloneDeep(data);}},{key:"deserialize",value:function deserialize(data){console.log('deserialize',this.constructor.name);return _.cloneDeep(data);}/**
 	 * Save this entity in specified data source.
 	 *
 	 * @fires EntityFactory.Entity#beforeUpdate
@@ -836,7 +832,7 @@ if('orphan'===beforeState){return dataSource.insertOne(_this24.table(sourceName)
 	 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
 	 */},{key:"fetch",value:function fetch(sourceName){var _this25=this;var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};_.defaults(options,DEFAULT_OPTIONS);// Change the state of the entity
 var beforeState=this[PRIVATE].state;this[PRIVATE].state='syncing';// Generate events args
-var dataSource=this.constructor.model.getDataSource(sourceName);var eventsArgs=[dataSource.name];var _maybeEmit=_.partial(maybeEmit,this,options,eventsArgs);return _maybeEmit('beforeFetch').then(maybeThrowInvalidEntityState(this,beforeState,dataSource,'findOne')).then(function(dataStoreEntity){_this25[PRIVATE].state='sync';_this25[PRIVATE].attributes=dataStoreEntity.toObject();_this25[PRIVATE].dataSources[dataSource.name]=dataStoreEntity;return _maybeEmit('afterFetch');});}/**
+var dataSource=this.constructor.model.getDataSource(sourceName);var eventsArgs=[dataSource.name,this.serialize(this[PRIVATE].attributes)];var _maybeEmit=_.partial(maybeEmit,this,options,eventsArgs);return _maybeEmit('beforeFetch').then(maybeThrowInvalidEntityState(this,beforeState,dataSource,'findOne')).then(function(dataStoreEntity){_this25[PRIVATE].state='sync';_this25[PRIVATE].attributes=dataStoreEntity.toObject();_this25[PRIVATE].dataSources[dataSource.name]=dataStoreEntity;return _maybeEmit('afterFetch');});}/**
 	 * Delete this entity from the specified data source.
 	 *
 	 * @fires EntityFactory.Entity#beforeDelete
@@ -894,8 +890,8 @@ if(0===_.without(_this26[PRIVATE].model.dataSources,dataSource.name).length){_th
 		 * @author gerkin
 		 */},{key:"model",get:function get(){return model;}}]);return SubEntity;}(Entity);// We use keys `methods` and not `functions` as explained in this [StackOverflow thread](https://stackoverflow.com/a/155655/4839162).
 // Extend prototype with methods in our model description
-_.forEach(modelDesc.methods,function(methodName,method){SubEntity.__proto__[methodName]=method;});// Add static methods
-_.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEntity[staticMethodName]=staticMethod;});return SubEntity.bind(Entity,name,modelDesc,model);};EntityFactory.Entity=Entity;// =====
+_.forEach(modelDesc.methods,function(method,methodName){SubEntity.prototype[methodName]=method;});// Add static methods
+_.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEntity[staticMethodName]=staticMethod;});return SubEntity.bind(SubEntity,name,modelDesc,model);};EntityFactory.Entity=Entity;// =====
 // ## Lifecycle Events
 // -----
 // ### Persist
@@ -939,7 +935,7 @@ _.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEnt
  *//**
  * @event EntityFactory.Entity#afterDestroy
  * @type {String}
- */module.exports=EntityFactory;},{"./adapters/base/entity":5,"./dependencies":10,"./diaspora":11,"./errors/entityStateError":13}],13:[function(require,module,exports){'use strict';var ExtendableError=require('./extendableError');/**
+ */module.exports=EntityFactory;},{"./dependencies":10,"./diaspora":11,"./errors/entityStateError":13}],13:[function(require,module,exports){'use strict';var ExtendableError=require('./extendableError');/**
  * @module Errors/EntityStateError
  *//**
  * This class represents an error related to validation.
@@ -966,15 +962,17 @@ _.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEnt
  * @module Errors/ExtendableError
  *//**
  * This class is the base class for custom Diaspora errors
- * 
+ *
  * @extends Error
  */var ExtendableError=function(_Error){_inherits(ExtendableError,_Error);/**
 	 * Construct a new extendable error.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param {string} message          - Message of this error.
 	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
-	 */function ExtendableError(message){var _ref5;_classCallCheck(this,ExtendableError);for(var _len4=arguments.length,errorArgs=Array(_len4>1?_len4-1:0),_key4=1;_key4<_len4;_key4++){errorArgs[_key4-1]=arguments[_key4];}var _this30=_possibleConstructorReturn(this,(_ref5=ExtendableError.__proto__||Object.getPrototypeOf(ExtendableError)).call.apply(_ref5,[this,message].concat(errorArgs)));_this30.constructor=_get(ExtendableError.prototype.__proto__||Object.getPrototypeOf(ExtendableError.prototype),"target",_this30);if('function'===typeof Error.captureStackTrace){Error.captureStackTrace(_this30,_get(ExtendableError.prototype.__proto__||Object.getPrototypeOf(ExtendableError.prototype),"target",_this30));}else{_this30.stack=new Error(message).stack;}return _this30;}return ExtendableError;}(Error);module.exports=ExtendableError;},{}],16:[function(require,module,exports){'use strict';var _require9=require('../dependencies'),_=_require9._;var ExtendableError=require('./extendableError');/**
+	 */function ExtendableError(message){var _ref5;_classCallCheck(this,ExtendableError);for(var _len4=arguments.length,errorArgs=Array(_len4>1?_len4-1:0),_key4=1;_key4<_len4;_key4++){errorArgs[_key4-1]=arguments[_key4];}//		this.constructor = super.target;
+//		this.__proto__ = super.target;
+var _this30=_possibleConstructorReturn(this,(_ref5=ExtendableError.__proto__||Object.getPrototypeOf(ExtendableError)).call.apply(_ref5,[this,message].concat(errorArgs)));if('function'===typeof Error.captureStackTrace){Error.captureStackTrace(_this30,_get(ExtendableError.prototype.__proto__||Object.getPrototypeOf(ExtendableError.prototype),"target",_this30));}else{_this30.stack=new Error(message).stack;}return _this30;}return ExtendableError;}(Error);module.exports=ExtendableError;},{}],16:[function(require,module,exports){'use strict';var _require9=require('../dependencies'),_=_require9._;var ExtendableError=require('./extendableError');/**
  * @module Errors/SetValidationError
  *//**
  * This class represents an error related to validation on a set.
@@ -992,7 +990,7 @@ _.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEnt
  * @module Model
  *//**
  * Object describing a model.
- * 
+ *
  * @typedef  {Object} ModelConfiguration.ModelDescription
  * @author gerkin
  * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
@@ -1000,54 +998,54 @@ _.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEnt
  * @property {Object<string, Function>}                methods         - Methods to add to entities prototype.
  * @property {Object<string, Function>}                staticMethods   - Static methods to add to entities.
  * @property {Object<string, Function|Function[]>}     lifecycleEvents - Events to bind on entities.
- */var findArgs=function findArgs(model){var queryFind=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];var ret=void 0;if(_.isString(options)&&!!_.isNil(dataSourceName)){ret={dataSourceName:options,options:{}};}else if(_.isString(queryFind)&&!!_.isNil(options)&&!!_.isNil(dataSourceName)){ret={dataSourceName:queryFind,queryFind:{},options:{}};}else{ret={queryFind:queryFind,options:options,dataSourceName:dataSourceName};}ret.dataSource=model.getDataSource(ret.dataSourceName);return ret;};var makeSet=function makeSet(model){return function(dataSourceEntities){var newEntities=_.map(dataSourceEntities,function(dataSourceEntity){return new model.entityFactory(dataSourceEntity);});var set=new Set(model,newEntities);return Promise.resolve(set);};};var makeEntity=function makeEntity(model){return function(dataSourceEntity){if(_.isNil(dataSourceEntity)){return Promise.resolve();}var newEntity=new model.entityFactory(dataSourceEntity);return Promise.resolve(newEntity);};};var doDelete=function doDelete(methodName,model){return function(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];var args=findArgs(model,queryFind,options,dataSourceName);return args.dataSource[methodName](model.name,args.queryFind,args.options);};};var doFindUpdate=function doFindUpdate(model,plural,queryFind,options,dataSourceName,update){var _queryComponents$data;var queryComponents=findArgs(model,queryFind,options,dataSourceName);var args=_([model.name,queryComponents.queryFind]).push(update).push(queryComponents.options).compact().value();return(_queryComponents$data=queryComponents.dataSource)[(update?'update':'find')+(plural?'Many':'One')].apply(_queryComponents$data,_toConsumableArray(args)).then((plural?makeSet:makeEntity)(model));};var normalizeRemaps=function normalizeRemaps(remap,dataSourceName){if(true===remap){return{};}else if(_.isObject(remap)){return remap;}else{throw new TypeError("Datasource \""+dataSourceName+"\" value is invalid: expect `true` or a remap hash, but have "+JSON.stringify(remap));}};/**
+ */var findArgs=function findArgs(model){var queryFind=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];var ret=void 0;if(_.isString(options)&&!!_.isNil(dataSourceName)){ret={dataSourceName:options,options:{}};}else if(_.isString(queryFind)&&!!_.isNil(options)&&!!_.isNil(dataSourceName)){ret={dataSourceName:queryFind,queryFind:{},options:{}};}else{ret={queryFind:queryFind,options:options,dataSourceName:dataSourceName};}ret.dataSource=model.getDataSource(ret.dataSourceName);return ret;};var makeSet=function makeSet(model){return function(dataSourceEntities){var newEntities=_.map(dataSourceEntities,function(dataSourceEntity){return new model.entityFactory(dataSourceEntity);});var set=new Set(model,newEntities);return Promise.resolve(set);};};var makeEntity=function makeEntity(model){return function(dataSourceEntity){if(_.isNil(dataSourceEntity)){return Promise.resolve();}var newEntity=new model.entityFactory(dataSourceEntity);return Promise.resolve(newEntity);};};var doDelete=function doDelete(methodName,model){return function(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];var args=findArgs(model,queryFind,options,dataSourceName);return args.dataSource[methodName](model.name,args.queryFind,args.options);};};var doFindUpdate=function doFindUpdate(model,plural,queryFind,options,dataSourceName,update){var _queryComponents$data;var queryComponents=findArgs(model,queryFind,options,dataSourceName);var args=_([model.name,queryComponents.queryFind]).push(update).push(queryComponents.options).compact().value();return(_queryComponents$data=queryComponents.dataSource)[(update?'update':'find')+(plural?'Many':'One')].apply(_queryComponents$data,_toConsumableArray(args)).then((plural?makeSet:makeEntity)(model));};var normalizeRemaps=function normalizeRemaps(modelDesc){var sources=modelDesc.sources;if(_.isString(sources)){sources=_defineProperty({},modelDesc.sources,true);}else if(_.isArrayLike(sources)){sources=_.zipObject(sources,_.times(sources.length,_.constant({})));}else{sources=_.mapValues(sources,function(remap,dataSourceName){if(true===remap){return{};}else if(_.isObject(remap)){return remap;}else{throw new TypeError("Datasource \""+dataSourceName+"\" value is invalid: expect `true` or a remap hash, but have "+JSON.stringify(remap));}});}return sources;};/**
  * The model class is used to interact with the population of all data of the same type.
  */var Model=function(){/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param {string}                              name      - Name of the model.
 	 * @param {ModelConfiguration.ModelDescription} modelDesc - Hash representing the configuration of the model.
 	 */function Model(name,modelDesc){_classCallCheck(this,Model);// Check model configuration
 var reservedPropIntersect=_.intersection(entityPrototypeProperties,_.keys(modelDesc.attributes));if(0!==reservedPropIntersect.length){throw new Error(JSON.stringify(reservedPropIntersect)+" is/are reserved property names. To match those column names in data source, please use the data source mapper property");}else if(!modelDesc.hasOwnProperty('sources')||!(_.isArrayLike(modelDesc.sources)||_.isObject(modelDesc.sources))){throw new TypeError("Expect model sources to be either an array or an object, had "+JSON.stringify(modelDesc.sources)+".");}// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
-var sourcesNormalized=_.isArrayLike(modelDesc.sources)?_.zipObject(modelDesc.sources,_.times(modelDesc.sources.length,_.constant({}))):_.mapValues(modelDesc.sources,normalizeRemaps);// List sources required by this model
+var sourcesNormalized=normalizeRemaps(modelDesc);// List sources required by this model
 var _ref7=[_.keys(sourcesNormalized),Diaspora.dataSources],sourceNames=_ref7[0],scopeAvailableSources=_ref7[1];var modelSources=_.pick(scopeAvailableSources,sourceNames);var missingSources=_.difference(sourceNames,_.keys(modelSources));if(0!==missingSources.length){throw new Error("Missing data sources "+missingSources.map(function(v){return"\""+v+"\"";}).join(', '));}// Now, we are sure that config is valid. We can configure our datasources with model options, and set `this` properties.
 _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=modelSources[sourceName];sourceConfiguring.configureCollection(name,remap);});_.assign(this,{dataSources:modelSources,defaultDataSource:sourceNames[0],name:name,entityFactory:EntityFactory(name,modelDesc,this),validator:new Validator(modelDesc.attributes)});}/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws  {Error} Thrown if requested source name does not exists.
 	 * @param   {string} [sourceName=Model.defaultDataSource] - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.sources.
 	 * @returns {Adapters.DiasporaAdapter} Source adapter with requested name.
 	 */_createClass(Model,[{key:"getDataSource",value:function getDataSource(sourceName){if(_.isNil(sourceName)){sourceName=this.defaultDataSource;}else if(!this.dataSources.hasOwnProperty(sourceName)){throw new Error("Unknown data source \""+sourceName+"\" in model \""+this.name+"\", available are "+_.keys(this.dataSources).map(function(v){return"\""+v+"\"";}).join(', '));}return this.dataSources[sourceName];}/**
 	 * Create a new *orphan* {@link Entity entity}.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object} source - Object to copy attributes from.
 	 * @returns {Entity} New *orphan* entity.
 	 */},{key:"spawn",value:function spawn(source){var newEntity=new this.entityFactory(source);return newEntity;}/**
 	 * Create multiple new *orphan* {@link Entity entities}.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object[]} sources - Array of objects to copy attributes from.
 	 * @returns {Set} Set with new *orphan* entities.
 	 */},{key:"spawnMany",value:function spawnMany(sources){var _this32=this;return new Set(this,_.map(sources,function(source){return _this32.spawn(source);}));}/**
 	 * Insert a raw source object in the data store.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object} source                                   - Object to copy attributes from.
 	 * @param   {string} [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
 	 * @returns {Promise} Promise resolved with new *sync* {@link Entity entity}.
 	 */},{key:"insert",value:function insert(source,dataSourceName){var _this33=this;var dataSource=this.getDataSource(dataSourceName);return dataSource.insertOne(this.name,source).then(function(entity){return Promise.resolve(new _this33.entityFactory(entity));});}/**
 	 * Insert multiple raw source objects in the data store.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object[]} sources                                  - Array of object to copy attributes from.
 	 * @param   {string}   [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
 	 * @returns {Promise} Promise resolved with a {@link Set set} containing new *sync* entities.
 	 */},{key:"insertMany",value:function insertMany(sources,dataSourceName){var dataSource=this.getDataSource(dataSourceName);return dataSource.insertMany(this.name,sources).then(makeSet(this));}/**
 	 * Retrieve a single entity from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -1055,7 +1053,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
 	 * @returns {Promise} Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */},{key:"find",value:function find(queryFind,options,dataSourceName){return doFindUpdate(this,false,queryFind,options,dataSourceName);}/**
 	 * Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -1063,7 +1061,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
 	 * @returns {Promise} Promise resolved with a {@link Set set} of found entities in *sync* state.
 	 */},{key:"findMany",value:function findMany(queryFind,options,dataSourceName){return doFindUpdate(this,true,queryFind,options,dataSourceName);}/**
 	 * Update a single entity from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
 	 * @param   {Object}                               update                                   - Attributes to update on matched set.
@@ -1072,7 +1070,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
 	 * @returns {Promise} Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */},{key:"update",value:function update(queryFind,_update){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];return doFindUpdate(this,false,queryFind,options,dataSourceName,_update);}/**
 	 * Update multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
 	 * @param   {Object}                               update                                   - Attributes to update on matched set.
@@ -1081,7 +1079,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
 	 * @returns {Promise} Promise resolved with the {@link Set set} of found entities in *sync* state.
 	 */},{key:"updateMany",value:function updateMany(queryFind,update){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];return doFindUpdate(this,true,queryFind,options,dataSourceName,update);}/**
 	 * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind]                           - Query to get desired entity.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -1089,7 +1087,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
 	 * @returns {Promise} Promise resolved with `undefined`.
 	 */},{key:"delete",value:function _delete(queryFind){var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];return doDelete('deleteOne',this)(queryFind,options,dataSourceName);}/**
 	 * Delete multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -1099,7 +1097,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
  * @module Set
  *//**
  * Get the verb of the action (either the `verb` param or the string at the `index` position in `verb` array).
- * 
+ *
  * @author Gerkin
  * @inner
  * @param   {string|string[]} verb - Verbs to get item from.
@@ -1107,7 +1105,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
  * @returns {string} Verb for this index's item.
  */var getVerb=function getVerb(verb,index){return _.isArray(verb)?verb[index]:verb;};/**
  * Emit events on each entities.
- * 
+ *
  * @author Gerkin
  * @inner
  * @param   {SequentialEvent[]} entities - Items to iterate over.
@@ -1116,7 +1114,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
  * @returns {Promise} Promise resolved once all promises are done.
  */var allEmit=function allEmit(entities,verb,prefix){return Promise.all(entities.map(function(entity,index){return entity.emit(""+prefix+getVerb(verb,index));}));};/**
  * Emit `before` & `after` events around the entity action. `this` must be bound to the calling {@link Set}.
- * 
+ *
  * @author Gerkin
  * @inner
  * @this Set
@@ -1206,7 +1204,7 @@ Set.checkEntitiesFromModel(entities.value(),model);var defined=Utils.defineEnume
 	 *
 	 * @author gerkin
 	 * @returns {Object} POJO representation of set & children.
-	 */},{key:"toObject",value:function toObject(){return this.entities.map(function(entity){return entity.toObject();});}}],[{key:"checkEntitiesFromModel",value:function checkEntitiesFromModel(entities,model){entities.forEach(function(entity,index){if(entity.constructor.model!==model){throw new TypeError("Provided entity n\xB0"+index+" "+entity+" is not from model "+model+" ("+model.modelName+")");}});}}]);return Set;}();module.exports=Set;},{"./dependencies":10,"./errors/setValidationError":16,"./utils":19}],19:[function(require,module,exports){(function(global){'use strict';var _require12=require('./dependencies'),_=_require12._;/**
+	 */},{key:"toObject",value:function toObject(){return this.entities.map(function(entity){return entity.toObject();}).value();}}],[{key:"checkEntitiesFromModel",value:function checkEntitiesFromModel(entities,model){entities.forEach(function(entity,index){if(entity.constructor.model!==model){throw new TypeError("Provided entity n\xB0"+index+" "+entity+" is not from model "+model+" ("+model.modelName+")");}});}}]);return Set;}();module.exports=Set;},{"./dependencies":10,"./errors/setValidationError":16,"./utils":19}],19:[function(require,module,exports){(function(global){'use strict';var _require12=require('./dependencies'),_=_require12._;/**
  * @module Utils
  */module.exports={defineEnumerableProperties:function defineEnumerableProperties(subject,handlers){var remappedHandlers=_.mapValues(handlers,function(handler){if(_.isNil(handler)||'object'!==(typeof handler==="undefined"?"undefined":_typeof(handler))||Object.getPrototypeOf(handler)!==Object.prototype){handler={value:handler};}var defaults={enumerable:true};if(!handler.hasOwnProperty('get')){defaults.writable=false;}_.defaults(handler,defaults);return handler;});return Object.defineProperties(subject,remappedHandlers);},/**
 	 * Merge update query with the entity. This operation allows to delete fields.
@@ -1228,7 +1226,7 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
 	 * @param   {Object[]} set     - Objects retrieved from memory store.
 	 * @param   {Object}   options - Options to apply to the set.
 	 * @returns {Object[]} Set with options applied.
-	 */applyOptionsToSet:function applyOptionsToSet(set,options){_.defaults(options,{limit:Infinity,skip:0});set=set.slice(options.skip);if(set.length>options.limit){set=set.slice(0,options.limit);}return set;}};}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"./dependencies":10}],20:[function(require,module,exports){'use strict';var dependencies=require('./dependencies');var EntityValidationError=require('./errors/entityValidationError');var _=dependencies._;/**
+	 */applyOptionsToSet:function applyOptionsToSet(set,options){_.defaults(options,{limit:Infinity,skip:0});set=set.slice(options.skip);if(set.length>options.limit){set=set.slice(0,options.limit);}return set;}};}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"./dependencies":10}],20:[function(require,module,exports){'use strict';var dependencies=require('./dependencies');var Diaspora=require('./diaspora');var EntityValidationError=Diaspora.components.Errors.EntityValidationError;var _=dependencies._;/**
  * @module Validator
  *//**
  * Execute the simple tester and return an error component if it returns falsey.
@@ -1367,7 +1365,7 @@ var checkResults=_(this[PRIVATE].modelDesc).mapValues(function(fieldDesc,field){
 	 * @param   {Object}                     [options=(})]          - Hash of options.
 	 * @param   {boolean}                    options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
 	 * @returns {Object} Hash describing errors.
-	 */},{key:"check",value:function check(value,keys){var _this41=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};_.defaults(options,{getProps:true});if(!(keys instanceof PathStack)){keys=new PathStack(keys);}var val=options.getProps?_.get(value,keys.segmentsEntity):value;var fieldDesc=_.get(this[PRIVATE].modelDesc,keys.segmentsValidation);if(!_.isObject(fieldDesc)){return;}_.defaults(fieldDesc,{required:false});var error={};var stepsArgs={error:error,fieldDesc:fieldDesc,keys:keys,value:val};_.forEach(VALIDATION_STEPS,function(validationStep){validationStep.call(_this41,stepsArgs);});if(!_.isEmpty(error)){error.value=value;return error;}else{return null;}}/**
+	 */},{key:"check",value:function check(value,keys){var _this41=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};_.defaults(options,{getProps:true});if(!(keys instanceof PathStack)){keys=new PathStack(keys);}var val=options.getProps?_.get(value,keys.segmentsEntity):value;var fieldDesc=_.get(this[PRIVATE].modelDesc,keys.segmentsValidation);if(!_.isObject(fieldDesc)){return;}_.defaults(fieldDesc,{required:false});var error={};var stepsArgs={error:error,fieldDesc:fieldDesc,keys:keys,value:val};_.forEach(VALIDATION_STEPS,function(validationStep){return validationStep.call(_this41,stepsArgs);});if(!_.isEmpty(error)){error.value=value;return error;}else{return null;}}/**
 	 * Get the model description provided in constructor.
 	 *
 	 * @readonly
@@ -1377,7 +1375,7 @@ var checkResults=_(this[PRIVATE].modelDesc).mapValues(function(fieldDesc,field){
 	 *
 	 * @readonly
 	 * @type {module:Validator~PathStack}
-	 */}],[{key:"PathStack",get:function get(){return PathStack;}}]);return Validator;}();module.exports=Validator;},{"./dependencies":10,"./errors/entityValidationError":14}],21:[function(require,module,exports){(function(process,global){/* @preserve
+	 */}],[{key:"PathStack",get:function get(){return PathStack;}}]);return Validator;}();module.exports=Validator;},{"./dependencies":10,"./diaspora":11}],21:[function(require,module,exports){(function(process,global){/* @preserve
  * The MIT License (MIT)
  * 
  * Copyright (c) 2013-2017 Petka Antonov

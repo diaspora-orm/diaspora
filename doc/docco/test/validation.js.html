@@ -44,7 +44,7 @@ toc: false
 </span><span id="line-40">    <span class="k">return</span> <span class="sb">`Validation </span><span class="si">${</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span> <span class="nx">desc</span> <span class="p">)</span> <span class="si">}</span><span class="sb"> throwing for </span><span class="si">${</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span> <span class="nx">obj</span> <span class="p">)</span> <span class="si">}</span><span class="sb">`</span><span class="p">;</span>
 </span><span id="line-41"><span class="p">};</span>
 </span><span id="line-42"><span class="kr">const</span> <span class="nx">NOT_THROWING</span> <span class="o">=</span> <span class="p">(</span> <span class="nx">desc</span><span class="p">,</span> <span class="nx">obj</span> <span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span><span id="line-43">    <span class="k">return</span> <span class="sb">`Validation </span><span class="si">${</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span> <span class="nx">desc</span> <span class="p">)</span> <span class="si">}</span><span class="sb"> NOT throwing for </span><span class="si">${</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span> <span class="nx">obj</span> <span class="p">)</span> <span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</span><span id="line-43">    <span class="k">return</span> <span class="sb">`Validation </span><span class="si">${</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span> <span class="nx">desc</span> <span class="p">)</span> <span class="si">}</span><span class="sb"> NOT throwing correctly for </span><span class="si">${</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span> <span class="nx">obj</span> <span class="p">)</span> <span class="si">}</span><span class="sb">`</span><span class="p">;</span>
 </span><span id="line-44"><span class="p">};</span>
 </span><span id="line-45">
 </span><span id="line-46"><span class="kr">const</span> <span class="nx">runTests</span> <span class="o">=</span> <span class="p">(</span> <span class="nx">validator</span><span class="p">,</span> <span class="p">[</span> <span class="nx">accepted</span><span class="p">,</span> <span class="nx">rejected</span> <span class="p">])</span> <span class="p">=&gt;</span> <span class="p">{</span>
@@ -342,11 +342,11 @@ toc: false
 </span><span id="line-339">                            <span class="k">of</span><span class="o">:</span>   <span class="p">[</span>
 </span><span id="line-340">                                <span class="p">{</span>
 </span><span id="line-341">                                    <span class="nx">type</span><span class="o">:</span>     <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
-</span><span id="line-342">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> 
+</span><span id="line-342">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 </span><span id="line-343">                                <span class="p">},</span>
 </span><span id="line-344">                                <span class="p">{</span>
 </span><span id="line-345">                                    <span class="nx">type</span><span class="o">:</span>     <span class="s1">&#39;date&#39;</span><span class="p">,</span>
-</span><span id="line-346">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> 
+</span><span id="line-346">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 </span><span id="line-347">                                <span class="p">},</span>
 </span><span id="line-348">                            <span class="p">],</span>
 </span><span id="line-349">                        <span class="p">},</span>
@@ -365,11 +365,11 @@ toc: false
 </span><span id="line-362">                            <span class="k">of</span><span class="o">:</span>       <span class="p">[</span>
 </span><span id="line-363">                                <span class="p">{</span>
 </span><span id="line-364">                                    <span class="nx">type</span><span class="o">:</span>     <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
-</span><span id="line-365">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> 
+</span><span id="line-365">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 </span><span id="line-366">                                <span class="p">},</span>
 </span><span id="line-367">                                <span class="p">{</span>
 </span><span id="line-368">                                    <span class="nx">type</span><span class="o">:</span>     <span class="s1">&#39;date&#39;</span><span class="p">,</span>
-</span><span id="line-369">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> 
+</span><span id="line-369">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 </span><span id="line-370">                                <span class="p">},</span>
 </span><span id="line-371">                            <span class="p">],</span>
 </span><span id="line-372">                        <span class="p">},</span>
@@ -387,7 +387,7 @@ toc: false
 </span><span id="line-384">                            <span class="k">of</span><span class="o">:</span>   <span class="p">[</span>
 </span><span id="line-385">                                <span class="p">{</span>
 </span><span id="line-386">                                    <span class="nx">type</span><span class="o">:</span>     <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
-</span><span id="line-387">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> 
+</span><span id="line-387">                                    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 </span><span id="line-388">                                <span class="p">},</span>
 </span><span id="line-389">                                <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;date&#39;</span> <span class="p">},</span>
 </span><span id="line-390">                            <span class="p">],</span>

@@ -39,8 +39,9 @@ const THROWING = ( desc, obj ) => {
 	return `Validation ${ JSON.stringify( desc ) } throwing for ${ JSON.stringify( obj ) }`;
 };
 const NOT_THROWING = ( desc, obj ) => {
-	return `Validation ${ JSON.stringify( desc ) } NOT throwing for ${ JSON.stringify( obj ) }`;
+	return `Validation ${ JSON.stringify( desc ) } NOT throwing correctly for ${ JSON.stringify( obj ) }`;
 };
+console.log( Diaspora.components );
 
 const runTests = ( validator, [ accepted, rejected ]) => {
 	//console.log({validator, accepted, rejected});
@@ -337,11 +338,11 @@ describe( '"check" feature', () => {
 							of:   [
 								{
 									type:     'integer',
-									required: true, 
+									required: true,
 								},
 								{
 									type:     'date',
-									required: true, 
+									required: true,
 								},
 							],
 						},
@@ -360,11 +361,11 @@ describe( '"check" feature', () => {
 							of:       [
 								{
 									type:     'integer',
-									required: true, 
+									required: true,
 								},
 								{
 									type:     'date',
-									required: true, 
+									required: true,
 								},
 							],
 						},
@@ -382,7 +383,7 @@ describe( '"check" feature', () => {
 							of:   [
 								{
 									type:     'integer',
-									required: true, 
+									required: true,
 								},
 								{ type: 'date' },
 							],

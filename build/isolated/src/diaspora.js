@@ -285,9 +285,11 @@ class DiasporaAdapter extends SequentialEvent {
 	 * @returns {undefined} This function does not return anything.
 	 */
 	configureCollection( tableName, remaps, filters = {}) {
-		this.remaps[tableName] = remaps;
-		this.remapsInverted[tableName] = _.invert( remaps );
-		this.filters = filters || {};
+		this.remaps[tableName] = {
+			normal:   remaps,
+			inverted: _.invert( remaps ),
+		};
+		this.filters[tableName] = filters;
 	}
 
 	// -----
@@ -336,28 +338,6 @@ class DiasporaAdapter extends SequentialEvent {
 	}
 
 	/**
-	 * Cast entity field names to table field name, or the opposite.
-	 *
-	 * @author gerkin
-	 * @param   {string}  tableName      - Name of the table we are remapping for.
-	 * @param   {Object}  query          - Hash representing the raw query to remap.
-	 * @param   {boolean} [invert=false] - Set to `false` to cast to `table` field names, `true` to cast to `entity` field name.
-	 * @returns {Object} Remapped object.
-	 */
-	remapFields( tableName, query, invert = false ) {
-		const keysMap = ( invert ? this.remapsInverted : this.remaps )[tableName];
-		if ( _.isNil( keysMap )) {
-			return query;
-		}
-		return _.mapKeys( query, ( value, key ) => {
-			if ( keysMap.hasOwnProperty( key )) {
-				return keysMap[key];
-			}
-			return key;
-		});
-	}
-
-	/**
 	 * TODO.
 	 *
 	 * @author gerkin
@@ -401,17 +381,15 @@ class DiasporaAdapter extends SequentialEvent {
 		}
 		const direction = true === input ? 'input' : 'output';
 		const filtered = _.mapValues( query, ( value, key ) => {
-			if ( _.isObject( _.get( this, [ 'filters', direction ])) && this.filters[direction].hasOwnProperty( key )) {
-				return this.filters.output[key]( value );
+			const filter = _.get( this, [ 'filters', tableName, direction, key ], undefined );
+			if ( _.isFunction( filter )) {
+				return filter( value );
 			}
 			return value;
 		});
-		const remaps = true === input ? this.remaps : this.remapsInverted;
+		const remapType = true === input ? 'normal' : 'inverted';
 		const remaped = _.mapKeys( filtered, ( value, key ) => {
-			if ( remaps.hasOwnProperty( key )) {
-				return remaps[key];
-			}
-			return key;
+			return _.get( this, [ 'remaps', tableName, remapType, key ], key );
 		});
 		return remaped;
 	}
@@ -580,7 +558,7 @@ class DiasporaAdapter extends SequentialEvent {
 	 */
 	findMany( table, queryFind, options = {}) {
 		options = this.normalizeOptions( options );
-		return iterateLimit( options, _.partial( this.findOne, table, queryFind, _ ))( true );
+		return iterateLimit( options, this.findOne.bind( this, table, queryFind ))( true );
 	}
 
 	// -----
@@ -616,7 +594,7 @@ class DiasporaAdapter extends SequentialEvent {
 	 */
 	updateMany( table, queryFind, update, options = {}) {
 		options = this.normalizeOptions( options );
-		return iterateLimit( options, _.partial( this.updateOne, table, queryFind, update, _ ))( true );
+		return iterateLimit( options, this.updateOne.bind( this, table, queryFind, update ))( true );
 	}
 
 	// -----
@@ -736,25 +714,26 @@ const {
 } = require( '../../dependencies' );
 const Utils = require( '../../utils' );
 
-const DiasporaAdapter = require( '../base/adapter' );
+const Diaspora = require( '../../diaspora' );
+const DiasporaAdapter = Diaspora.components.Adapters.Adapter;
 const InMemoryEntity = require( './entity.js' );
 
 /**
  * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
- * 
+ *
  * @extends Adapters.DiasporaAdapter
  * @memberof Adapters
  */
 class InMemoryDiasporaAdapter extends DiasporaAdapter {
 	/**
 	 * Create a new instance of in memory adapter.
-	 * 
+	 *
 	 * @author gerkin
 	 */
 	constructor() {
 		/**
 		 * Link to the InMemoryEntity.
-		 * 
+		 *
 		 * @name classEntity
 		 * @type {DataStoreEntities.InMemoryEntity}
 		 * @memberof Adapters.InMemoryDiasporaAdapter
@@ -765,7 +744,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 		this.state = 'ready';
 		/**
 		 * Plain old javascript object used as data store.
-		 * 
+		 *
 		 * @author Gerkin
 		 */
 		this.store = {};
@@ -773,7 +752,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Create the data store and call {@link Adapters.DiasporaAdapter#configureCollection}.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} tableName - Name of the table (usually, model name).
 	 * @param   {Object} remaps    - Associative hash that links entity field names with data source field names.
@@ -789,7 +768,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Get or create the store hash.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} table - Name of the table.
 	 * @returns {DataStoreTable} In memory table to use.
@@ -801,7 +780,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 			return this.store[table] = {
 				items: [],
 			};
-		} 
+		}
 	}
 
 	// -----
@@ -809,7 +788,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Insert a single entity in the memory store.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string} table  - Name of the table to insert data in.
@@ -830,7 +809,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Retrieve a single entity from the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -847,7 +826,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Retrieve several entities from the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -867,7 +846,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Update a single entity in the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to update data in.
@@ -893,7 +872,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Update several entities in the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to update data in.
@@ -923,7 +902,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Delete a single entity from the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
@@ -941,7 +920,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Delete several entities from the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
@@ -963,7 +942,7 @@ class InMemoryDiasporaAdapter extends DiasporaAdapter {
 
 module.exports = InMemoryDiasporaAdapter;
 
-},{"../../dependencies":9,"../../utils":18,"../base/adapter":3,"./entity.js":6}],6:[function(require,module,exports){
+},{"../../dependencies":9,"../../diaspora":10,"../../utils":18,"./entity.js":6}],6:[function(require,module,exports){
 'use strict';
 
 const DataStoreEntity = require( '../base/entity.js' );
@@ -997,19 +976,20 @@ const {
 } = require( '../../dependencies' );
 const Utils = require( '../../utils' );
 
-const DiasporaAdapter = require( '../base/adapter' );
+const Diaspora = require( '../../diaspora' );
+const DiasporaAdapter = Diaspora.components.Adapters.Adapter;
 const WebStorageEntity = require( './entity' );
 
 /**
  * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
- * 
+ *
  * @extends Adapters.DiasporaAdapter
  * @memberof Adapters
  */
 class WebStorageDiasporaAdapter extends DiasporaAdapter {
 	/**
 	 * Create a new instance of local storage adapter.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param {Object}  config                 - Configuration object.
 	 * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
@@ -1017,7 +997,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 	constructor( config ) {
 		/**
 		 * Link to the WebStorageEntity.
-		 * 
+		 *
 		 * @name classEntity
 		 * @type {DataStoreEntities.WebStorageEntity}
 		 * @memberof Adapters.WebStorageDiasporaAdapter
@@ -1031,7 +1011,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 		this.state = 'ready';
 		/**
 		 * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
-		 * 
+		 *
 		 * @type {Storage}
 		 * @author Gerkin
 		 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
@@ -1042,7 +1022,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param {string} tableName - Name of the table (usually, model name).
 	 * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
@@ -1058,7 +1038,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Create the table key if it does not exist.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} table - Name of the table.
 	 * @returns {string[]} Index of the collection.
@@ -1076,7 +1056,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Deduce the item name from table name and item ID.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} table - Name of the table to construct name for.
 	 * @param   {string} id    - Id of the item to find.
@@ -1091,7 +1071,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Insert a single entity in the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string} table  - Name of the table to insert data in.
@@ -1115,7 +1095,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Insert several entities in the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}   table    - Name of the table to insert data in.
@@ -1145,7 +1125,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Find a single local storage entity using its id.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {string} table - Name of the collection to search entity in.
 	 * @param   {string} id    - Id of the entity to search.
@@ -1161,7 +1141,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Retrieve a single entity from the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the model to retrieve data from.
@@ -1200,7 +1180,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Update a single entity in the memory.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to update data in.
@@ -1232,7 +1212,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Delete a single entity from the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
@@ -1256,7 +1236,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 
 	/**
 	 * Delete several entities from the local storage.
-	 * 
+	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
 	 * @author gerkin
 	 * @param   {string}                               table        - Name of the table to delete data from.
@@ -1284,7 +1264,7 @@ class WebStorageDiasporaAdapter extends DiasporaAdapter {
 module.exports = WebStorageDiasporaAdapter;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../dependencies":9,"../../utils":18,"../base/adapter":3,"./entity":8}],8:[function(require,module,exports){
+},{"../../dependencies":9,"../../diaspora":10,"../../utils":18,"./entity":8}],8:[function(require,module,exports){
 'use strict';
 
 const DataStoreEntity = require( '../base/entity.js' );
@@ -1385,7 +1365,7 @@ const ensureAllEntities = ( adapter, table ) => {
 	// Filter our results
 	const filterResults = entity => {
 		// Remap fields
-		entity = adapter.remapFields( table, entity, true );
+		entity = adapter.remapOutput( table, entity );
 		// Force results to be class instances
 		if ( !( entity instanceof adapter.classEntity ) && !_.isNil( entity )) {
 			return new adapter.classEntity( entity, adapter );
@@ -1394,7 +1374,9 @@ const ensureAllEntities = ( adapter, table ) => {
 	};
 
 	return results => {
-		if ( _.isArrayLike( results )) {
+		if ( _.isNil( results )) {
+			return Promise.resolve();
+		} else if ( _.isArrayLike( results )) {
 			return Promise.resolve( _.map( results, filterResults ));
 		} else {
 			return Promise.resolve( filterResults( results ));
@@ -1426,8 +1408,8 @@ const remapArgs = ( args, optIndex, update, queryType, remapFunction ) => {
 };
 
 const getRemapFunction = ( adapter, table ) => {
-	return entity => {
-		return adapter.remapFields( table, entity, false );
+	return query => {
+		return adapter.remapInput( table, query );
 	};
 };
 
@@ -1492,6 +1474,7 @@ const Diaspora = {
 	 * @returns {Object} Entity merged with default values.
 	 */
 	default( entity, modelDesc ) {
+		console.log( entity );
 		// Apply method `defaultField` on each field described
 		return _.defaults(
 			entity,
@@ -1538,7 +1521,11 @@ const Diaspora = {
 	 */
 	createDataSource( adapterLabel, config ) {
 		if ( !adapters.hasOwnProperty( adapterLabel )) {
-			throw new Error( `Unknown adapter "${ adapterLabel }". Available currently are ${ Object.keys( adapters ).join( ', ' ) }` );
+			try {
+				require( `diaspora-${  adapterLabel }` );
+			} catch ( e ) {
+				throw new Error( `Unknown adapter "${ adapterLabel }". Available currently are ${ Object.keys( adapters ).join( ', ' ) }. Additionnaly, an error was thrown: ${ e }` );
+			}
 		}
 		const baseAdapter = new adapters[adapterLabel]( config );
 		const newDataSource = new Proxy( baseAdapter, {
@@ -1574,13 +1561,14 @@ const Diaspora = {
 		if ( dataSources.hasOwnProperty( name )) {
 			throw new Error( `DataSource name already used, had "${ name }"` );
 		}
-		if ( !( dataSource instanceof Diaspora.components.Adapters.Adapter )) {
+		/*		if ( !( dataSource instanceof Diaspora.components.Adapters.Adapter )) {
 			throw new Error( 'DataSource must be an instance inheriting "DiasporaAdapter"' );
-		}
+		}*/
 		dataSource.name = name;
 		_.merge( dataSources, {
 			[name]: dataSource,
 		});
+		return dataSource;
 	},
 
 	/**
@@ -1595,7 +1583,7 @@ const Diaspora = {
 	 */
 	createNamedDataSource( sourceName, adapterLabel, configHash ) {
 		const dataSource = Diaspora.createDataSource( adapterLabel, configHash );
-		Diaspora.registerDataSource( sourceName, dataSource );
+		return Diaspora.registerDataSource( sourceName, dataSource );
 	},
 
 	/**
@@ -1632,13 +1620,13 @@ const Diaspora = {
 	 * @returns {undefined} This function does not return anything.
 	 */
 	registerAdapter( label, adapter ) {
-		if ( adapters[label]) {
+		if ( adapters.hasOwnProperty( label )) {
 			throw new Error( `Adapter with label "${ label }" already exists.` );
 		}
 		// Check inheritance of adapter
-		if ( !( adapter.prototype instanceof Diaspora.components.Adapters.Adapter )) {
+		/*if ( !( adapter.prototype instanceof Diaspora.components.Adapters.Adapter )) {
 			throw new TypeError( `Trying to register an adapter with label "${ label }", but it does not extends DiasporaAdapter.` );
-		}
+		}*/
 		adapters[label] = adapter;
 	},
 
@@ -1715,22 +1703,26 @@ module.exports = Diaspora;
  * @author gerkin
  */
 Diaspora.components = {
-	EntityFactory: require( './entityFactory' ),
-	Entity:        require( './entityFactory' ).Entity,
-	Set:           require( './set' ),
-	Model:         require( './model' ),
-	Validator:     require( './validator' ),
-	Errors:        {
+	Errors: {
 		ExtendableError:       require( './errors/extendableError' ),
 		EntityValidationError: require( './errors/entityValidationError' ),
 		SetValidationError:    require( './errors/setValidationError' ),
 		EntityStateError:      require( './errors/entityStateError' ),
 	},
+};
+_.assign( Diaspora.components, {
 	Adapters: {
 		Adapter: require( './adapters/base/adapter' ),
 		Entity:  require( './adapters/base/entity' ),
 	},
-};
+});
+_.assign( Diaspora.components, {
+	Model:         require( './model' ),
+	EntityFactory: require( './entityFactory' ),
+	Entity:        require( './entityFactory' ).Entity,
+	Set:           require( './set' ),
+	Validator:     require( './validator' ),
+});
 
 // Register available built-in adapters
 Diaspora.registerAdapter( 'inMemory', require( './adapters/inMemory/adapter' ));
@@ -1747,7 +1739,7 @@ const {
 	_, Promise, SequentialEvent,
 } = require( './dependencies' );
 const Diaspora = require( './diaspora' );
-const DataStoreEntity = require( './adapters/base/entity' );
+const DataStoreEntity = Diaspora.components.Adapters.Entity;
 const EntityStateError = require( './errors/entityStateError' );
 
 /**
@@ -1793,15 +1785,16 @@ const entityCtrSteps = {
 			});
 		});
 	},
-	loadSource( _entity, source ) {
+	loadSource( entity, source ) {
 		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 		if ( source instanceof DataStoreEntity ) {
+			const _entity = entity[PRIVATE];
 			_.assign( _entity, {
 				state:          'sync',
-				lastDataSource: source.dataSource.name, 
+				lastDataSource: source.dataSource.name,
 			});
 			_entity.dataSources[_entity.lastDataSource] = source;
-			source = _.omit( source.toObject(), [ 'id' ]);
+			source = entity.deserialize( _.omit( source.toObject(), [ 'id' ]));
 		}
 		return source;
 	},
@@ -1810,7 +1803,7 @@ const entityCtrSteps = {
 /**
  * The entity is the class you use to manage a single document in all data sources managed by your model.
  * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
- * 
+ *
  * @extends SequentialEvent
  */
 class Entity extends SequentialEvent {
@@ -1827,6 +1820,12 @@ class Entity extends SequentialEvent {
 	constructor( name, modelDesc, model, source = {}) {
 		const modelAttrsKeys = _.keys( modelDesc.attributes );
 		super();
+		console.log({
+			this:      this,
+			proto:     this.__proto__,
+			serialize: this.__proto__.serialize,
+		});
+		console.log( this.serialize === _.get( modelDesc, 'methods.serialize' ), this.serialize.toString(), _.get( modelDesc, 'methods.serialize', {}).toString());
 
 		// ### Init defaults
 		const dataSources = Object.seal( _.mapValues( model.dataSources, () => undefined ));
@@ -1836,11 +1835,11 @@ class Entity extends SequentialEvent {
 			dataSources,
 			name,
 			modelDesc,
-			model, 
+			model,
 		};
 		this[PRIVATE] = _this;
 		// ### Load datas from source
-		source = entityCtrSteps.loadSource( _this, source );
+		source = entityCtrSteps.loadSource( this, source );
 		// ### Final validation
 		// Check keys provided in source
 		const sourceDModel = _.difference( source, modelAttrsKeys );
@@ -1936,6 +1935,16 @@ class Entity extends SequentialEvent {
 		return this[PRIVATE].attributes;
 	}
 
+	serialize( data ) {
+		console.log( 'serialize', this.constructor.name );
+		return _.cloneDeep( data );
+	}
+
+	deserialize( data ) {
+		console.log( 'deserialize', this.constructor.name );
+		return _.cloneDeep( data );
+	}
+
 	/**
 	 * Save this entity in specified data source.
 	 *
@@ -1998,7 +2007,7 @@ class Entity extends SequentialEvent {
 		this[PRIVATE].state = 'syncing';
 		// Generate events args
 		const dataSource = this.constructor.model.getDataSource( sourceName );
-		const eventsArgs = [ dataSource.name ];
+		const eventsArgs = [ dataSource.name, this.serialize( this[PRIVATE].attributes ) ];
 		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
 		return _maybeEmit( 'beforeFetch' )
 			.then( maybeThrowInvalidEntityState( this, beforeState, dataSource, 'findOne' ))
@@ -2113,6 +2122,7 @@ const EntityFactory = ( name, modelDesc, model ) => {
 		static get name() {
 			return `${ name  }Entity`;
 		}
+
 		/**
 		 * Reference to this entity's model.
 		 *
@@ -2125,14 +2135,14 @@ const EntityFactory = ( name, modelDesc, model ) => {
 	}
 	// We use keys `methods` and not `functions` as explained in this [StackOverflow thread](https://stackoverflow.com/a/155655/4839162).
 	// Extend prototype with methods in our model description
-	_.forEach( modelDesc.methods, ( methodName, method ) => {
-		SubEntity.__proto__[methodName] = method;
+	_.forEach( modelDesc.methods, ( method, methodName ) => {
+		SubEntity.prototype[methodName] = method;
 	});
 	// Add static methods
 	_.forEach( modelDesc.staticMethods, ( staticMethodName, staticMethod ) => {
 		SubEntity[staticMethodName] = staticMethod;
 	});
-	return SubEntity.bind( Entity, name, modelDesc, model );
+	return SubEntity.bind( SubEntity, name, modelDesc, model );
 };
 EntityFactory.Entity = Entity;
 // =====
@@ -2209,7 +2219,7 @@ EntityFactory.Entity = Entity;
 
 module.exports = EntityFactory;
 
-},{"./adapters/base/entity":4,"./dependencies":9,"./diaspora":10,"./errors/entityStateError":12}],12:[function(require,module,exports){
+},{"./dependencies":9,"./diaspora":10,"./errors/entityStateError":12}],12:[function(require,module,exports){
 'use strict';
 
 const ExtendableError = require( './extendableError' );
@@ -2288,24 +2298,26 @@ module.exports = EntityValidationError;
 
 /**
  * This class is the base class for custom Diaspora errors
- * 
+ *
  * @extends Error
  */
+
 class ExtendableError extends Error {
 	/**
 	 * Construct a new extendable error.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param {string} message          - Message of this error.
 	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
 	 */
 	constructor( message, ...errorArgs ) {
 		super( message, ...errorArgs );
-		this.constructor = super.target;
+		//		this.constructor = super.target;
+		//		this.__proto__ = super.target;
 		if ( 'function' === typeof Error.captureStackTrace ) {
 			Error.captureStackTrace( this, super.target );
-		} else { 
-			this.stack = ( new Error( message )).stack; 
+		} else {
+			this.stack = ( new Error( message )).stack;
 		}
 	}
 }
@@ -2375,7 +2387,7 @@ const {
 
 /**
  * Object describing a model.
- * 
+ *
  * @typedef  {Object} ModelConfiguration.ModelDescription
  * @author gerkin
  * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
@@ -2440,14 +2452,24 @@ const doFindUpdate = ( model, plural, queryFind, options, dataSourceName, update
 		.then(( plural ? makeSet : makeEntity )( model ));
 };
 
-const normalizeRemaps = ( remap, dataSourceName ) => {
-	if ( true === remap ) {
-		return {};
-	} else if ( _.isObject( remap )) {
-		return remap;
+const normalizeRemaps = ( modelDesc ) => {
+	let sources = modelDesc.sources;
+	if ( _.isString( sources )) {
+		sources = {[modelDesc.sources]: true};
+	} else if ( _.isArrayLike( sources )) {
+		sources = _.zipObject( sources, _.times( sources.length, _.constant({})));
 	} else {
-		throw new TypeError( `Datasource "${ dataSourceName }" value is invalid: expect \`true\` or a remap hash, but have ${ JSON.stringify( remap ) }` );
+		sources = _.mapValues( sources, ( remap, dataSourceName ) => {
+			if ( true === remap ) {
+				return {};
+			} else if ( _.isObject( remap )) {
+				return remap;
+			} else {
+				throw new TypeError( `Datasource "${ dataSourceName }" value is invalid: expect \`true\` or a remap hash, but have ${ JSON.stringify( remap ) }` );
+			}
+		});
 	}
+	return sources;
 };
 
 /**
@@ -2456,7 +2478,7 @@ const normalizeRemaps = ( remap, dataSourceName ) => {
 class Model {
 	/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param {string}                              name      - Name of the model.
 	 * @param {ModelConfiguration.ModelDescription} modelDesc - Hash representing the configuration of the model.
@@ -2470,7 +2492,7 @@ class Model {
 			throw new TypeError( `Expect model sources to be either an array or an object, had ${ JSON.stringify( modelDesc.sources ) }.` );
 		}
 		// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
-		const sourcesNormalized = _.isArrayLike( modelDesc.sources ) ? _.zipObject( modelDesc.sources, _.times( modelDesc.sources.length, _.constant({}))) : _.mapValues( modelDesc.sources, normalizeRemaps );
+		const sourcesNormalized = normalizeRemaps( modelDesc );
 		// List sources required by this model
 		const [ sourceNames, scopeAvailableSources ] = [ _.keys( sourcesNormalized ), Diaspora.dataSources ];
 		const modelSources = _.pick( scopeAvailableSources, sourceNames );
@@ -2495,7 +2517,7 @@ class Model {
 
 	/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-	 * 
+	 *
 	 * @author gerkin
 	 * @throws  {Error} Thrown if requested source name does not exists.
 	 * @param   {string} [sourceName=Model.defaultDataSource] - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.sources.
@@ -2512,7 +2534,7 @@ class Model {
 
 	/**
 	 * Create a new *orphan* {@link Entity entity}.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object} source - Object to copy attributes from.
 	 * @returns {Entity} New *orphan* entity.
@@ -2524,7 +2546,7 @@ class Model {
 
 	/**
 	 * Create multiple new *orphan* {@link Entity entities}.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object[]} sources - Array of objects to copy attributes from.
 	 * @returns {Set} Set with new *orphan* entities.
@@ -2535,7 +2557,7 @@ class Model {
 
 	/**
 	 * Insert a raw source object in the data store.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object} source                                   - Object to copy attributes from.
 	 * @param   {string} [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
@@ -2550,7 +2572,7 @@ class Model {
 
 	/**
 	 * Insert multiple raw source objects in the data store.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {Object[]} sources                                  - Array of object to copy attributes from.
 	 * @param   {string}   [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
@@ -2563,7 +2585,7 @@ class Model {
 
 	/**
 	 * Retrieve a single entity from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -2576,7 +2598,7 @@ class Model {
 
 	/**
 	 * Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -2589,7 +2611,7 @@ class Model {
 
 	/**
 	 * Update a single entity from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
 	 * @param   {Object}                               update                                   - Attributes to update on matched set.
@@ -2603,7 +2625,7 @@ class Model {
 
 	/**
 	 * Update multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
 	 * @param   {Object}                               update                                   - Attributes to update on matched set.
@@ -2617,7 +2639,7 @@ class Model {
 
 	/**
 	 * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind]                           - Query to get desired entity.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -2630,7 +2652,7 @@ class Model {
 
 	/**
 	 * Delete multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 * 
+	 *
 	 * @author gerkin
 	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
 	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -2659,7 +2681,7 @@ const SetValidationError = require( './errors/setValidationError' );
 
 /**
  * Get the verb of the action (either the `verb` param or the string at the `index` position in `verb` array).
- * 
+ *
  * @author Gerkin
  * @inner
  * @param   {string|string[]} verb - Verbs to get item from.
@@ -2670,7 +2692,7 @@ const getVerb = ( verb, index ) => _.isArray( verb ) ? verb[index] : verb;
 
 /**
  * Emit events on each entities.
- * 
+ *
  * @author Gerkin
  * @inner
  * @param   {SequentialEvent[]} entities - Items to iterate over.
@@ -2682,7 +2704,7 @@ const allEmit = ( entities, verb, prefix ) => Promise.all( entities.map(( entity
 
 /**
  * Emit `before` & `after` events around the entity action. `this` must be bound to the calling {@link Set}.
- * 
+ *
  * @author Gerkin
  * @inner
  * @this Set
@@ -2882,7 +2904,7 @@ class Set {
 	 * @returns {Object} POJO representation of set & children.
 	 */
 	toObject() {
-		return this.entities.map( entity => entity.toObject());
+		return this.entities.map( entity => entity.toObject()).value();
 	}
 }
 
@@ -2984,7 +3006,8 @@ module.exports = {
 'use strict';
 
 const dependencies = require( './dependencies' );
-const EntityValidationError = require( './errors/entityValidationError' );
+const Diaspora = require( './diaspora' );
+const {EntityValidationError} = Diaspora.components.Errors;
 const { _ } = dependencies;
 
 /**
@@ -3361,9 +3384,7 @@ class Validator {
 			value: val,
 		};
 
-		_.forEach( VALIDATION_STEPS, validationStep => {
-			validationStep.call( this, stepsArgs );
-		});
+		_.forEach( VALIDATION_STEPS, validationStep => validationStep.call( this, stepsArgs ));
 
 		if ( !_.isEmpty( error )) {
 			error.value = value;
@@ -3396,7 +3417,7 @@ class Validator {
 
 module.exports = Validator;
 
-},{"./dependencies":9,"./errors/entityValidationError":13}],20:[function(require,module,exports){
+},{"./dependencies":9,"./diaspora":10}],20:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

@@ -122,6 +122,7 @@ module.exports = function gruntInit( grunt ) {
 						'/test/models/simple-remapping.js': './test/models/simple-remapping.js',
 						'/test/models/validations.js':      './test/models/validations.js',
 						'/test/models/components.js':       './test/models/components.js',
+						'/test/validation.js':              './test/validation.js',
 					},
 					exclude: [ './browser/selenium.js', './config.js', 'chai', '../diaspora', 'path', 'chalk', 'stack-trace', 'expect.js', 'node-localstorage', 'fs' ],
 					options: {

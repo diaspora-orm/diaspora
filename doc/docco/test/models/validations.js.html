@@ -85,4 +85,33 @@ toc: false
 </span><span id="line-81">        <span class="nx">expect</span><span class="p">(</span> <span class="nx">fail2</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">rejectedWith</span><span class="p">(</span> <span class="nx">SetValidationError</span> <span class="p">).</span><span class="nx">and</span><span class="p">.</span><span class="nx">eventually</span><span class="p">.</span><span class="nx">satisfy</span><span class="p">(</span> <span class="nx">error</span> <span class="p">=&gt;</span> <span class="p">{</span>
 </span><span id="line-82">            <span class="kr">const</span> <span class="nx">validationErrors</span> <span class="o">=</span> <span class="nx">error</span><span class="p">.</span><span class="nx">validationErrors</span><span class="p">;</span>
 </span><span id="line-83">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">validationErrors</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="k">instanceof</span><span class="p">(</span> <span class="nx">EntityValidationError</span> <span class="p">);</span>
-</span><span id="line-84">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">validationErrors</span><span class="p">[</span><span class="mi">0</span><span class="p">].</</pre></div></td></tr></tbody></table></div>
+</span><span id="line-84">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">validationErrors</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">message</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span> <span class="sr">/(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m</span> <span class="p">);</span>
+</span><span id="line-85">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">validationErrors</span><span class="p">[</span><span class="mi">1</span><span class="p">]).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="k">instanceof</span><span class="p">(</span> <span class="nx">EntityValidationError</span> <span class="p">);</span>
+</span><span id="line-86">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">validationErrors</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">message</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span> <span class="sr">/(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m</span> <span class="p">);</span>
+</span><span id="line-87">            <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+</span><span id="line-88">        <span class="p">}),</span>
+</span><span id="line-89">    <span class="p">]);</span>
+</span><span id="line-90"><span class="p">});</span>
+</span><span id="line-91"><span class="nx">it</span><span class="p">(</span> <span class="s1">&#39;Should define default values on valid items&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span><span id="line-92">    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
+</span><span id="line-93">        <span class="nx">testModel</span><span class="p">.</span><span class="nx">spawn</span><span class="p">({</span>
+</span><span id="line-94">            <span class="nx">prop2</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span id="line-95">        <span class="p">}).</span><span class="nx">persist</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span><span id="line-96">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">an</span><span class="p">.</span><span class="nx">entity</span><span class="p">(</span> <span class="nx">testModel</span><span class="p">,</span> <span class="p">{</span>
+</span><span id="line-97">                <span class="nx">prop2</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span id="line-98">                <span class="nx">prop3</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">,</span>
+</span><span id="line-99">            <span class="p">},</span> <span class="s1">&#39;inMemory&#39;</span> <span class="p">);</span>
+</span><span id="line-100">        <span class="p">}),</span>
+</span><span id="line-101">        <span class="nx">testModel</span><span class="p">.</span><span class="nx">spawn</span><span class="p">({</span>
+</span><span id="line-102">            <span class="nx">prop2</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span id="line-103">            <span class="nx">prop3</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
+</span><span id="line-104">        <span class="p">}).</span><span class="nx">persist</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span><span id="line-105">            <span class="nx">expect</span><span class="p">(</span> <span class="nx">entity</span> <span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">an</span><span class="p">.</span><span class="nx">entity</span><span class="p">(</span> <span class="nx">testModel</span><span class="p">,</span> <span class="p">{</span>
+</span><span id="line-106">                <span class="nx">prop2</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span id="line-107">                <span class="nx">prop3</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
+</span><span id="line-108">            <span class="p">},</span> <span class="s1">&#39;inMemory&#39;</span> <span class="p">);</span>
+</span><span id="line-109">        <span class="p">}),</span>
+</span><span id="line-110">    <span class="p">]);</span>
+</span><span id="line-111"><span class="p">});</span>
+</span>
+</pre></div></td></tr></tbody></table></div>

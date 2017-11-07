@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-11-04 17:47:00
+* Isolated build compiled on 2017-11-07 12:27:06
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -370,9 +370,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function configureCollection(tableName, remaps) {
 						var filters = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-						this.remaps[tableName] = remaps;
-						this.remapsInverted[tableName] = _.invert(remaps);
-						this.filters = filters || {};
+						this.remaps[tableName] = {
+							normal: remaps,
+							inverted: _.invert(remaps)
+						};
+						this.filters[tableName] = filters;
 					}
 
 					// -----
@@ -422,33 +424,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 							}).on('error', function (err) {
 								return reject(err);
 							});
-						});
-					}
-
-					/**
-      * Cast entity field names to table field name, or the opposite.
-      *
-      * @author gerkin
-      * @param   {string}  tableName      - Name of the table we are remapping for.
-      * @param   {Object}  query          - Hash representing the raw query to remap.
-      * @param   {boolean} [invert=false] - Set to `false` to cast to `table` field names, `true` to cast to `entity` field name.
-      * @returns {Object} Remapped object.
-      */
-
-				}, {
-					key: "remapFields",
-					value: function remapFields(tableName, query) {
-						var invert = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-						var keysMap = (invert ? this.remapsInverted : this.remaps)[tableName];
-						if (_.isNil(keysMap)) {
-							return query;
-						}
-						return _.mapKeys(query, function (value, key) {
-							if (keysMap.hasOwnProperty(key)) {
-								return keysMap[key];
-							}
-							return key;
 						});
 					}
 
@@ -507,17 +482,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						}
 						var direction = true === input ? 'input' : 'output';
 						var filtered = _.mapValues(query, function (value, key) {
-							if (_.isObject(_.get(_this4, ['filters', direction])) && _this4.filters[direction].hasOwnProperty(key)) {
-								return _this4.filters.output[key](value);
+							var filter = _.get(_this4, ['filters', tableName, direction, key], undefined);
+							if (_.isFunction(filter)) {
+								return filter(value);
 							}
 							return value;
 						});
-						var remaps = true === input ? this.remaps : this.remapsInverted;
+						var remapType = true === input ? 'normal' : 'inverted';
 						var remaped = _.mapKeys(filtered, function (value, key) {
-							if (remaps.hasOwnProperty(key)) {
-								return remaps[key];
-							}
-							return key;
+							return _.get(_this4, ['remaps', tableName, remapType, key], key);
 						});
 						return remaped;
 					}
@@ -728,7 +701,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 						options = this.normalizeOptions(options);
-						return iterateLimit(options, _.partial(this.findOne, table, queryFind, _))(true);
+						return iterateLimit(options, this.findOne.bind(this, table, queryFind))(true);
 					}
 
 					// -----
@@ -776,7 +749,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
 						options = this.normalizeOptions(options);
-						return iterateLimit(options, _.partial(this.updateOne, table, queryFind, update, _))(true);
+						return iterateLimit(options, this.updateOne.bind(this, table, queryFind, update))(true);
 					}
 
 					// -----
@@ -920,12 +893,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			var Utils = require('../../utils');
 
-			var DiasporaAdapter = require('../base/adapter');
+			var Diaspora = require('../../diaspora');
+			var DiasporaAdapter = Diaspora.components.Adapters.Adapter;
 			var InMemoryEntity = require('./entity.js');
 
 			/**
     * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
-    * 
+    *
     * @extends Adapters.DiasporaAdapter
     * @memberof Adapters
     */
@@ -935,7 +909,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				/**
      * Create a new instance of in memory adapter.
-     * 
+     *
      * @author gerkin
      */
 				function InMemoryDiasporaAdapter() {
@@ -944,7 +918,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					var _this7 = _possibleConstructorReturn(this, (InMemoryDiasporaAdapter.__proto__ || Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this, InMemoryEntity));
 					/**
       * Link to the InMemoryEntity.
-      * 
+      *
       * @name classEntity
       * @type {DataStoreEntities.InMemoryEntity}
       * @memberof Adapters.InMemoryDiasporaAdapter
@@ -956,7 +930,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					_this7.state = 'ready';
 					/**
       * Plain old javascript object used as data store.
-      * 
+      *
       * @author Gerkin
       */
 					_this7.store = {};
@@ -965,7 +939,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				/**
      * Create the data store and call {@link Adapters.DiasporaAdapter#configureCollection}.
-     * 
+     *
      * @author gerkin
      * @param   {string} tableName - Name of the table (usually, model name).
      * @param   {Object} remaps    - Associative hash that links entity field names with data source field names.
@@ -985,7 +959,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Get or create the store hash.
-      * 
+      *
       * @author gerkin
       * @param   {string} table - Name of the table.
       * @returns {DataStoreTable} In memory table to use.
@@ -1008,7 +982,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Insert a single entity in the memory store.
-      * 
+      *
       * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.
       * @author gerkin
       * @param   {string} table  - Name of the table to insert data in.
@@ -1032,7 +1006,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Retrieve a single entity from the memory.
-      * 
+      *
       * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for in-memory interactions.
       * @author gerkin
       * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -1054,7 +1028,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Retrieve several entities from the memory.
-      * 
+      *
       * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.
       * @author gerkin
       * @param   {string}                               table        - Name of the table to retrieve data from.
@@ -1083,7 +1057,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Update a single entity in the memory.
-      * 
+      *
       * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.
       * @author gerkin
       * @param   {string}                               table        - Name of the table to update data in.
@@ -1116,7 +1090,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Update several entities in the memory.
-      * 
+      *
       * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
       * @author gerkin
       * @param   {string}                               table        - Name of the table to update data in.
@@ -1155,7 +1129,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Delete a single entity from the memory.
-      * 
+      *
       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.
       * @author gerkin
       * @param   {string}                               table        - Name of the table to delete data from.
@@ -1182,7 +1156,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Delete several entities from the memory.
-      * 
+      *
       * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
       * @author gerkin
       * @param   {string}                               table        - Name of the table to delete data from.
@@ -1215,7 +1189,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}(DiasporaAdapter);
 
 			module.exports = InMemoryDiasporaAdapter;
-		}, { "../../dependencies": 9, "../../utils": 18, "../base/adapter": 3, "./entity.js": 6 }], 6: [function (require, module, exports) {
+		}, { "../../dependencies": 9, "../../diaspora": 10, "../../utils": 18, "./entity.js": 6 }], 6: [function (require, module, exports) {
 			'use strict';
 
 			var DataStoreEntity = require('../base/entity.js');
@@ -1256,12 +1230,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				var Utils = require('../../utils');
 
-				var DiasporaAdapter = require('../base/adapter');
+				var Diaspora = require('../../diaspora');
+				var DiasporaAdapter = Diaspora.components.Adapters.Adapter;
 				var WebStorageEntity = require('./entity');
 
 				/**
      * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
-     * 
+     *
      * @extends Adapters.DiasporaAdapter
      * @memberof Adapters
      */
@@ -1271,7 +1246,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Create a new instance of local storage adapter.
-      * 
+      *
       * @author gerkin
       * @param {Object}  config                 - Configuration object.
       * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
@@ -1282,7 +1257,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						var _this14 = _possibleConstructorReturn(this, (WebStorageDiasporaAdapter.__proto__ || Object.getPrototypeOf(WebStorageDiasporaAdapter)).call(this, WebStorageEntity));
 						/**
        * Link to the WebStorageEntity.
-       * 
+       *
        * @name classEntity
        * @type {DataStoreEntities.WebStorageEntity}
        * @memberof Adapters.WebStorageDiasporaAdapter
@@ -1297,7 +1272,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						_this14.state = 'ready';
 						/**
        * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
-       * 
+       *
        * @type {Storage}
        * @author Gerkin
        * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
@@ -1309,7 +1284,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
-      * 
+      *
       * @author gerkin
       * @param {string} tableName - Name of the table (usually, model name).
       * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
@@ -1329,7 +1304,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Create the table key if it does not exist.
-       * 
+       *
        * @author gerkin
        * @param   {string} table - Name of the table.
        * @returns {string[]} Index of the collection.
@@ -1350,7 +1325,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Deduce the item name from table name and item ID.
-       * 
+       *
        * @author gerkin
        * @param   {string} table - Name of the table to construct name for.
        * @param   {string} id    - Id of the item to find.
@@ -1368,7 +1343,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Insert a single entity in the local storage.
-       * 
+       *
        * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
        * @author gerkin
        * @param   {string} table  - Name of the table to insert data in.
@@ -1395,7 +1370,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Insert several entities in the local storage.
-       * 
+       *
        * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
        * @author gerkin
        * @param   {string}   table    - Name of the table to insert data in.
@@ -1432,7 +1407,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Find a single local storage entity using its id.
-       * 
+       *
        * @author gerkin
        * @param   {string} table - Name of the collection to search entity in.
        * @param   {string} id    - Id of the entity to search.
@@ -1451,7 +1426,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Retrieve a single entity from the local storage.
-       * 
+       *
        * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
        * @author gerkin
        * @param   {string}                               table        - Name of the model to retrieve data from.
@@ -1497,7 +1472,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Update a single entity in the memory.
-       * 
+       *
        * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
        * @author gerkin
        * @param   {string}                               table        - Name of the table to update data in.
@@ -1534,7 +1509,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Delete a single entity from the local storage.
-       * 
+       *
        * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
        * @author gerkin
        * @param   {string}                               table        - Name of the table to delete data from.
@@ -1565,7 +1540,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 						/**
        * Delete several entities from the local storage.
-       * 
+       *
        * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
        * @author gerkin
        * @param   {string}                               table        - Name of the table to delete data from.
@@ -1602,7 +1577,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				module.exports = WebStorageDiasporaAdapter;
 			}).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
-		}, { "../../dependencies": 9, "../../utils": 18, "../base/adapter": 3, "./entity": 8 }], 8: [function (require, module, exports) {
+		}, { "../../dependencies": 9, "../../diaspora": 10, "../../utils": 18, "./entity": 8 }], 8: [function (require, module, exports) {
 			'use strict';
 
 			var DataStoreEntity = require('../base/entity.js');
@@ -1707,7 +1682,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					// Filter our results
 					var filterResults = function filterResults(entity) {
 						// Remap fields
-						entity = adapter.remapFields(table, entity, true);
+						entity = adapter.remapOutput(table, entity);
 						// Force results to be class instances
 						if (!(entity instanceof adapter.classEntity) && !_.isNil(entity)) {
 							return new adapter.classEntity(entity, adapter);
@@ -1716,7 +1691,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					};
 
 					return function (results) {
-						if (_.isArrayLike(results)) {
+						if (_.isNil(results)) {
+							return Promise.resolve();
+						} else if (_.isArrayLike(results)) {
 							return Promise.resolve(_.map(results, filterResults));
 						} else {
 							return Promise.resolve(filterResults(results));
@@ -1750,8 +1727,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				};
 
 				var getRemapFunction = function getRemapFunction(adapter, table) {
-					return function (entity) {
-						return adapter.remapFields(table, entity, false);
+					return function (query) {
+						return adapter.remapInput(table, query);
 					};
 				};
 
@@ -1821,6 +1798,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					default: function _default(entity, modelDesc) {
 						var _this21 = this;
 
+						console.log(entity);
 						// Apply method `defaultField` on each field described
 						return _.defaults(entity, _.mapValues(modelDesc, function (fieldDesc, field) {
 							return _this21.defaultField(entity[field], fieldDesc);
@@ -1862,7 +1840,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       */
 					createDataSource: function createDataSource(adapterLabel, config) {
 						if (!adapters.hasOwnProperty(adapterLabel)) {
-							throw new Error("Unknown adapter \"" + adapterLabel + "\". Available currently are " + Object.keys(adapters).join(', '));
+							try {
+								require("diaspora-" + adapterLabel);
+							} catch (e) {
+								throw new Error("Unknown adapter \"" + adapterLabel + "\". Available currently are " + Object.keys(adapters).join(', ') + ". Additionnaly, an error was thrown: " + e);
+							}
 						}
 						var baseAdapter = new adapters[adapterLabel](config);
 						var newDataSource = new Proxy(baseAdapter, {
@@ -1899,11 +1881,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						if (dataSources.hasOwnProperty(name)) {
 							throw new Error("DataSource name already used, had \"" + name + "\"");
 						}
-						if (!(dataSource instanceof Diaspora.components.Adapters.Adapter)) {
-							throw new Error('DataSource must be an instance inheriting "DiasporaAdapter"');
-						}
+						/*		if ( !( dataSource instanceof Diaspora.components.Adapters.Adapter )) {
+      	throw new Error( 'DataSource must be an instance inheriting "DiasporaAdapter"' );
+      }*/
 						dataSource.name = name;
 						_.merge(dataSources, _defineProperty({}, name, dataSource));
+						return dataSource;
 					},
 
 
@@ -1919,7 +1902,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       */
 					createNamedDataSource: function createNamedDataSource(sourceName, adapterLabel, configHash) {
 						var dataSource = Diaspora.createDataSource(adapterLabel, configHash);
-						Diaspora.registerDataSource(sourceName, dataSource);
+						return Diaspora.registerDataSource(sourceName, dataSource);
 					},
 
 
@@ -1956,13 +1939,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       * @returns {undefined} This function does not return anything.
       */
 					registerAdapter: function registerAdapter(label, adapter) {
-						if (adapters[label]) {
+						if (adapters.hasOwnProperty(label)) {
 							throw new Error("Adapter with label \"" + label + "\" already exists.");
 						}
 						// Check inheritance of adapter
-						if (!(adapter.prototype instanceof Diaspora.components.Adapters.Adapter)) {
-							throw new TypeError("Trying to register an adapter with label \"" + label + "\", but it does not extends DiasporaAdapter.");
-						}
+						/*if ( !( adapter.prototype instanceof Diaspora.components.Adapters.Adapter )) {
+      	throw new TypeError( `Trying to register an adapter with label "${ label }", but it does not extends DiasporaAdapter.` );
+      }*/
 						adapters[label] = adapter;
 					},
 
@@ -2040,22 +2023,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      * @author gerkin
      */
 				Diaspora.components = {
-					EntityFactory: require('./entityFactory'),
-					Entity: require('./entityFactory').Entity,
-					Set: require('./set'),
-					Model: require('./model'),
-					Validator: require('./validator'),
 					Errors: {
 						ExtendableError: require('./errors/extendableError'),
 						EntityValidationError: require('./errors/entityValidationError'),
 						SetValidationError: require('./errors/setValidationError'),
 						EntityStateError: require('./errors/entityStateError')
-					},
+					}
+				};
+				_.assign(Diaspora.components, {
 					Adapters: {
 						Adapter: require('./adapters/base/adapter'),
 						Entity: require('./adapters/base/entity')
 					}
-				};
+				});
+				_.assign(Diaspora.components, {
+					Model: require('./model'),
+					EntityFactory: require('./entityFactory'),
+					Entity: require('./entityFactory').Entity,
+					Set: require('./set'),
+					Validator: require('./validator')
+				});
 
 				// Register available built-in adapters
 				Diaspora.registerAdapter('inMemory', require('./adapters/inMemory/adapter'));
@@ -2073,7 +2060,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			    SequentialEvent = _require7.SequentialEvent;
 
 			var Diaspora = require('./diaspora');
-			var DataStoreEntity = require('./adapters/base/entity');
+			var DataStoreEntity = Diaspora.components.Adapters.Entity;
 			var EntityStateError = require('./errors/entityStateError');
 
 			/**
@@ -2119,15 +2106,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						});
 					});
 				},
-				loadSource: function loadSource(_entity, source) {
+				loadSource: function loadSource(entity, source) {
 					// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 					if (source instanceof DataStoreEntity) {
+						var _entity = entity[PRIVATE];
 						_.assign(_entity, {
 							state: 'sync',
 							lastDataSource: source.dataSource.name
 						});
 						_entity.dataSources[_entity.lastDataSource] = source;
-						source = _.omit(source.toObject(), ['id']);
+						source = entity.deserialize(_.omit(source.toObject(), ['id']));
 					}
 					return source;
 				}
@@ -2136,7 +2124,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			/**
     * The entity is the class you use to manage a single document in all data sources managed by your model.
     * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
-    * 
+    *
     * @extends SequentialEvent
     */
 
@@ -2160,9 +2148,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					var modelAttrsKeys = _.keys(modelDesc.attributes);
 
-					// ### Init defaults
 					var _this22 = _possibleConstructorReturn(this, (Entity.__proto__ || Object.getPrototypeOf(Entity)).call(this));
 
+					console.log({
+						this: _this22,
+						proto: _this22.__proto__,
+						serialize: _this22.__proto__.serialize
+					});
+					console.log(_this22.serialize === _.get(modelDesc, 'methods.serialize'), _this22.serialize.toString(), _.get(modelDesc, 'methods.serialize', {}).toString());
+
+					// ### Init defaults
 					var dataSources = Object.seal(_.mapValues(model.dataSources, function () {
 						return undefined;
 					}));
@@ -2176,7 +2171,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					};
 					_this22[PRIVATE] = _this;
 					// ### Load datas from source
-					source = entityCtrSteps.loadSource(_this, source);
+					source = entityCtrSteps.loadSource(_this22, source);
 					// ### Final validation
 					// Check keys provided in source
 					var sourceDModel = _.difference(source, modelAttrsKeys);
@@ -2296,6 +2291,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function toObject() {
 						return this[PRIVATE].attributes;
 					}
+				}, {
+					key: "serialize",
+					value: function serialize(data) {
+						console.log('serialize', this.constructor.name);
+						return _.cloneDeep(data);
+					}
+				}, {
+					key: "deserialize",
+					value: function deserialize(data) {
+						console.log('deserialize', this.constructor.name);
+						return _.cloneDeep(data);
+					}
 
 					/**
       * Save this entity in specified data source.
@@ -2373,7 +2380,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						this[PRIVATE].state = 'syncing';
 						// Generate events args
 						var dataSource = this.constructor.model.getDataSource(sourceName);
-						var eventsArgs = [dataSource.name];
+						var eventsArgs = [dataSource.name, this.serialize(this[PRIVATE].attributes)];
 						var _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 						return _maybeEmit('beforeFetch').then(maybeThrowInvalidEntityState(this, beforeState, dataSource, 'findOne')).then(function (dataStoreEntity) {
 							_this25[PRIVATE].state = 'sync';
@@ -2519,6 +2526,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						get: function get() {
 							return name + "Entity";
 						}
+
 						/**
        * Reference to this entity's model.
        *
@@ -2539,14 +2547,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				// Extend prototype with methods in our model description
 
 
-				_.forEach(modelDesc.methods, function (methodName, method) {
-					SubEntity.__proto__[methodName] = method;
+				_.forEach(modelDesc.methods, function (method, methodName) {
+					SubEntity.prototype[methodName] = method;
 				});
 				// Add static methods
 				_.forEach(modelDesc.staticMethods, function (staticMethodName, staticMethod) {
 					SubEntity[staticMethodName] = staticMethod;
 				});
-				return SubEntity.bind(Entity, name, modelDesc, model);
+				return SubEntity.bind(SubEntity, name, modelDesc, model);
 			};
 			EntityFactory.Entity = Entity;
 			// =====
@@ -2622,7 +2630,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     */
 
 			module.exports = EntityFactory;
-		}, { "./adapters/base/entity": 4, "./dependencies": 9, "./diaspora": 10, "./errors/entityStateError": 12 }], 12: [function (require, module, exports) {
+		}, { "./dependencies": 9, "./diaspora": 10, "./errors/entityStateError": 12 }], 12: [function (require, module, exports) {
 			'use strict';
 
 			var ExtendableError = require('./extendableError');
@@ -2726,7 +2734,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			/**
     * This class is the base class for custom Diaspora errors
-    * 
+    *
     * @extends Error
     */
 
@@ -2735,7 +2743,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				/**
      * Construct a new extendable error.
-     * 
+     *
      * @author gerkin
      * @param {string} message          - Message of this error.
      * @param {*}      errorArgs        - Arguments to transfer to parent Error.
@@ -2749,9 +2757,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						errorArgs[_key4 - 1] = arguments[_key4];
 					}
 
+					//		this.constructor = super.target;
+					//		this.__proto__ = super.target;
 					var _this30 = _possibleConstructorReturn(this, (_ref5 = ExtendableError.__proto__ || Object.getPrototypeOf(ExtendableError)).call.apply(_ref5, [this, message].concat(errorArgs)));
 
-					_this30.constructor = _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this30);
 					if ('function' === typeof Error.captureStackTrace) {
 						Error.captureStackTrace(_this30, _get(ExtendableError.prototype.__proto__ || Object.getPrototypeOf(ExtendableError.prototype), "target", _this30));
 					} else {
@@ -2841,7 +2850,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			/**
     * Object describing a model.
-    * 
+    *
     * @typedef  {Object} ModelConfiguration.ModelDescription
     * @author gerkin
     * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
@@ -2917,14 +2926,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				return (_queryComponents$data = queryComponents.dataSource)[(update ? 'update' : 'find') + (plural ? 'Many' : 'One')].apply(_queryComponents$data, _toConsumableArray(args)).then((plural ? makeSet : makeEntity)(model));
 			};
 
-			var normalizeRemaps = function normalizeRemaps(remap, dataSourceName) {
-				if (true === remap) {
-					return {};
-				} else if (_.isObject(remap)) {
-					return remap;
+			var normalizeRemaps = function normalizeRemaps(modelDesc) {
+				var sources = modelDesc.sources;
+				if (_.isString(sources)) {
+					sources = _defineProperty({}, modelDesc.sources, true);
+				} else if (_.isArrayLike(sources)) {
+					sources = _.zipObject(sources, _.times(sources.length, _.constant({})));
 				} else {
-					throw new TypeError("Datasource \"" + dataSourceName + "\" value is invalid: expect `true` or a remap hash, but have " + JSON.stringify(remap));
+					sources = _.mapValues(sources, function (remap, dataSourceName) {
+						if (true === remap) {
+							return {};
+						} else if (_.isObject(remap)) {
+							return remap;
+						} else {
+							throw new TypeError("Datasource \"" + dataSourceName + "\" value is invalid: expect `true` or a remap hash, but have " + JSON.stringify(remap));
+						}
+					});
 				}
+				return sources;
 			};
 
 			/**
@@ -2934,7 +2953,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var Model = function () {
 				/**
      * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-     * 
+     *
      * @author gerkin
      * @param {string}                              name      - Name of the model.
      * @param {ModelConfiguration.ModelDescription} modelDesc - Hash representing the configuration of the model.
@@ -2950,7 +2969,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						throw new TypeError("Expect model sources to be either an array or an object, had " + JSON.stringify(modelDesc.sources) + ".");
 					}
 					// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
-					var sourcesNormalized = _.isArrayLike(modelDesc.sources) ? _.zipObject(modelDesc.sources, _.times(modelDesc.sources.length, _.constant({}))) : _.mapValues(modelDesc.sources, normalizeRemaps);
+					var sourcesNormalized = normalizeRemaps(modelDesc);
 					// List sources required by this model
 					var _ref7 = [_.keys(sourcesNormalized), Diaspora.dataSources],
 					    sourceNames = _ref7[0],
@@ -2980,7 +2999,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 				/**
      * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-     * 
+     *
      * @author gerkin
      * @throws  {Error} Thrown if requested source name does not exists.
      * @param   {string} [sourceName=Model.defaultDataSource] - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.sources.
@@ -3003,7 +3022,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Create a new *orphan* {@link Entity entity}.
-      * 
+      *
       * @author gerkin
       * @param   {Object} source - Object to copy attributes from.
       * @returns {Entity} New *orphan* entity.
@@ -3018,7 +3037,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Create multiple new *orphan* {@link Entity entities}.
-      * 
+      *
       * @author gerkin
       * @param   {Object[]} sources - Array of objects to copy attributes from.
       * @returns {Set} Set with new *orphan* entities.
@@ -3036,7 +3055,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Insert a raw source object in the data store.
-      * 
+      *
       * @author gerkin
       * @param   {Object} source                                   - Object to copy attributes from.
       * @param   {string} [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
@@ -3056,7 +3075,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Insert multiple raw source objects in the data store.
-      * 
+      *
       * @author gerkin
       * @param   {Object[]} sources                                  - Array of object to copy attributes from.
       * @param   {string}   [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
@@ -3072,7 +3091,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Retrieve a single entity from specified data source that matches provided `queryFind` and `options`.
-      * 
+      *
       * @author gerkin
       * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
       * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -3088,7 +3107,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`.
-      * 
+      *
       * @author gerkin
       * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
       * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -3104,7 +3123,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Update a single entity from specified data source that matches provided `queryFind` and `options`.
-      * 
+      *
       * @author gerkin
       * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
       * @param   {Object}                               update                                   - Attributes to update on matched set.
@@ -3124,7 +3143,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Update multiple entities from specified data source that matches provided `queryFind` and `options`.
-      * 
+      *
       * @author gerkin
       * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
       * @param   {Object}                               update                                   - Attributes to update on matched set.
@@ -3144,7 +3163,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
-      * 
+      *
       * @author gerkin
       * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind]                           - Query to get desired entity.
       * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -3163,7 +3182,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 					/**
       * Delete multiple entities from specified data source that matches provided `queryFind` and `options`.
-      * 
+      *
       * @author gerkin
       * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
       * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
@@ -3202,7 +3221,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			/**
     * Get the verb of the action (either the `verb` param or the string at the `index` position in `verb` array).
-    * 
+    *
     * @author Gerkin
     * @inner
     * @param   {string|string[]} verb - Verbs to get item from.
@@ -3215,7 +3234,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			/**
     * Emit events on each entities.
-    * 
+    *
     * @author Gerkin
     * @inner
     * @param   {SequentialEvent[]} entities - Items to iterate over.
@@ -3231,7 +3250,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 			/**
     * Emit `before` & `after` events around the entity action. `this` must be bound to the calling {@link Set}.
-    * 
+    *
     * @author Gerkin
     * @inner
     * @this Set
@@ -3475,7 +3494,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 					value: function toObject() {
 						return this.entities.map(function (entity) {
 							return entity.toObject();
-						});
+						}).value();
 					}
 				}], [{
 					key: "checkEntitiesFromModel",
@@ -3589,7 +3608,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			'use strict';
 
 			var dependencies = require('./dependencies');
-			var EntityValidationError = require('./errors/entityValidationError');
+			var Diaspora = require('./diaspora');
+			var EntityValidationError = Diaspora.components.Errors.EntityValidationError;
 			var _ = dependencies._;
 
 			/**
@@ -4013,7 +4033,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						};
 
 						_.forEach(VALIDATION_STEPS, function (validationStep) {
-							validationStep.call(_this41, stepsArgs);
+							return validationStep.call(_this41, stepsArgs);
 						});
 
 						if (!_.isEmpty(error)) {
@@ -4055,7 +4075,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			}();
 
 			module.exports = Validator;
-		}, { "./dependencies": 9, "./errors/entityValidationError": 13 }], 20: [function (require, module, exports) {
+		}, { "./dependencies": 9, "./diaspora": 10 }], 20: [function (require, module, exports) {
 			// shim for using process in browser
 			var process = module.exports = {};
 
