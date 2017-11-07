@@ -24673,62 +24673,38 @@ var AdapterTestUtils = {
 			}).catch( done );
 		});
 	},
-	checkEachStandardMethods: ( adapterLabel, addName = '' ) => {
-		const adapter = dataSources[getDataSourceLabel( adapterLabel, addName )];
-		const getTestLabel = fctName => {
-			if ( adapter.__proto__.hasOwnProperty( fctName )) {
-				return fctName;
-			} else {
-				return `${ fctName } (from BaseAdapter)`;
-			}
-		};
-
-		describe( `${ getStyle( 'taskCategory', 'Check filtering options' )  } with ${  adapterLabel }`, () => {
-			it( 'Check "normalizeOptions"', () => {
+	checkInputFiltering(adapter){
+		describe( `${ getStyle( 'taskCategory', 'Check query inputs filtering' )  } with ${  adapter.name }`, () => {
+			describe('Check options normalization', () => {
 				const no = adapter.normalizeOptions;
-				expect( no()).to.deep.include({
-					skip:        0,
-					remapInput:  true,
-					remapOutput: true,
+				it('Default options', () => {
+					expect(no({})).to.eql({skip: 0, remapInput: true, remapOutput: true});
 				});
-				expect( no({
-					skip:        1,
-					remapInput:  false,
-					remapOutput: false,
-				})).to.deep.include({
-					skip:        1,
-					remapInput:  false,
-					remapOutput: false,
+				it('"limit" option', () => {
+					expect(no({limit:10})).to.eql({limit: 10, skip: 0, remapInput: true, remapOutput: true});
+					expect(no({limit:"10"})).to.eql({limit: 10, skip: 0, remapInput: true, remapOutput: true});
+					expect(no({limit:Infinity})).to.eql({limit: Infinity, skip: 0, remapInput: true, remapOutput: true});
+					expect(() => no({limit:0.5})).to.throw(TypeError);
+					expect(() => no({limit:-1})).to.throw(RangeError);
+					expect(() => no({limit:-Infinity})).to.throw(RangeError);
 				});
-				expect( no({
-					page:  1,
-					limit: 10,
-				})).to.deep.include({
-					skip:  10,
-					limit: 10,
-				}).and.not.have.property( 'page' );
-				expect( no.bind( adapter, {
-					page: 1,
-				})).to.throw();
-				expect( no.bind( adapter, {
-					page:  -1,
-					limit: 5,
-				})).to.throw();
-				expect( no.bind( adapter, {
-					limit: -1,
-				})).to.throw();
-				expect( no.bind( adapter, {
-					skip: -1,
-				})).to.throw();
-				expect( no.bind( adapter, {
-					page: 'aze',
-				})).to.throw();
-				expect( no.bind( adapter, {
-					limit: 'aze',
-				})).to.throw();
-				expect( no.bind( adapter, {
-					skip: 'aze',
-				})).to.throw();
+				it('"skip" option', () => {
+					expect(no({skip:10})).to.eql({skip: 10, remapInput: true, remapOutput: true});
+					expect(no({skip:"10"})).to.eql({skip: 10, remapInput: true, remapOutput: true});
+					expect(() => no({skip:0.5})).to.throw(TypeError);
+					expect(() => no({skip:-1})).to.throw(RangeError);
+					expect(() => no({skip:Infinity})).to.throw(RangeError);
+				});
+				it('"page" option', () => {
+					expect(no({page:5, limit: 10})).to.eql({skip: 50, limit: 10, remapInput: true, remapOutput: true});
+					expect(no({page:"5", limit: "10"})).to.eql({skip: 50, limit: 10, remapInput: true, remapOutput: true});
+					expect(() => no({page:1})).to.throw(ReferenceError);
+					expect(() => no({page:1, skip: 1, limit: 5})).to.throw(ReferenceError);
+					expect(() => no({page:0.5, limit: 5})).to.throw(TypeError);
+					expect(() => no({page:1, limit: Infinity})).to.throw(RangeError);
+					expect(() => no({page:Infinity, limit: 5})).to.throw(RangeError);
+					expect(() => no({page:-1, limit: 5})).to.throw(RangeError);
+				});
 			});
 			describe( 'Check "normalizeQuery"', () => {
 				const nq = l.partialRight( adapter.normalizeQuery, {
@@ -25204,6 +25180,18 @@ var AdapterTestUtils = {
 				});
 			});
 		});
+	},
+	checkEachStandardMethods: ( adapterLabel, addName = '' ) => {
+		const adapter = dataSources[getDataSourceLabel( adapterLabel, addName )];
+		const getTestLabel = fctName => {
+			if ( adapter.__proto__.hasOwnProperty( fctName )) {
+				return fctName;
+			} else {
+				return `${ fctName } (from BaseAdapter)`;
+			}
+		};
+
+		AdapterTestUtils.checkInputFiltering(adapter);
 		describe( getStyle( 'taskCategory', 'Test adapter methods' ), () => {
 			let findManyOk = false;
 			let findAllOk = false;
@@ -25296,6 +25284,30 @@ var AdapterTestUtils = {
 						};
 						return adapter.updateMany( TABLE, fromObj, targetObj ).then( entities => {
 							expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, l.assign({}, fromObj, targetObj )).that.have.lengthOf( 3 );
+						});
+					});
+					it( getTestLabel( 'updateOne not found' ), () => {
+						expect( adapter ).to.respondTo( 'updateOne' );
+						const fromObj = {
+							qwe: 'rty',
+						};
+						const targetObj = {
+							foo: 'bar',
+						};
+						return adapter.updateOne( TABLE, fromObj, targetObj ).then( entity => {
+							expect( entity ).to.be.undefined;
+						});
+					});
+					it( getTestLabel( 'updateMany not found' ), () => {
+						expect( adapter ).to.respondTo( 'updateMany' );
+						const fromObj = {
+							qwe: 'rty',
+						};
+						const targetObj = {
+							baz: 'qux',
+						};
+						return adapter.updateMany( TABLE, fromObj, targetObj ).then( entities => {
+							expect( entities ).to.have.lengthOf( 0 );
 						});
 					});
 				});
@@ -26007,6 +26019,7 @@ AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL, 'inMemory' );
 
 /* globals importTest: false, getStyle: false */
 
+importTest( getStyle( 'adapter', 'Base adapter' ), `${ __dirname  }/baseAdapter.js` );
 importTest( getStyle( 'adapter', 'In Memory' ), `${ __dirname  }/inMemory.js` );
 if ( 'undefined' !== typeof window ) {
 	importTest( getStyle( 'adapter', 'Browser Storage' ), `${ __dirname  }/webStorage.js` );
@@ -26066,10 +26079,11 @@ let testModel;
 let testEntity;
 let testSet;
 const MODEL_NAME = 'testModelComponents';
-const SOURCE = 'inMemory';
+const SOURCE = 'inMemory-components';
 
 
 it( 'Should create a model', () => {
+	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
@@ -26364,7 +26378,7 @@ describe( 'Test errors', () => {
 		 */
 		class subError extends ExtendableError {}
 		const saveCST = Error.captureStackTrace;
-		
+
 		Error.captureStackTrace = undefined;
 		expect( new subError()).to.be.an( 'Error' );
 		Error.captureStackTrace = saveCST;
@@ -26395,12 +26409,12 @@ let testModel;
 let store;
 let testedEntity;
 const MODEL_NAME = 'remapped';
-const SOURCE = 'inMemory';
+const SOURCE = 'inMemory-simple-remapping';
 
 
 const checkDataStoreRemap = ( item, propsObject ) => {
 	const dataStoreItem = l.find( store.items, {
-		id: item.dataSources.inMemory.id,
+		id: item.dataSources[SOURCE].id,
 	});
 	expect( dataStoreItem ).to.not.have.property( 'foo' );
 	if ( propsObject ) {
@@ -26415,6 +26429,7 @@ const checkDataStoreRemap = ( item, propsObject ) => {
 };
 
 it( 'Should create a model', () => {
+	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources: {
 			[ SOURCE ]: {
@@ -26432,7 +26447,7 @@ it( 'Should create a model', () => {
 	if ( 'undefined' === typeof window ) {
 		expect( testModel.constructor.name ).to.be.eql( 'Model' );
 	}
-	store = Diaspora.dataSources.inMemory.store.remapped;
+	store = Diaspora.dataSources[SOURCE].store.remapped;
 });
 it( 'Should be able to create an entity of the defined model.', () => {
 	const entity1 = testModel.spawn();
@@ -26447,7 +26462,7 @@ it( 'Should be able to create an entity of the defined model.', () => {
 it( 'Should be able to create multiple entities.', () => {
 	const objects = [
 		{
-			foo: 'bar', 
+			foo: 'bar',
 		},
 		undefined,
 	];
@@ -26459,10 +26474,10 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		it( 'Create a single instance', () => {
 			expect( testModel ).to.respondTo( 'insert' );
 			const object = {
-				foo: 'bar', 
+				foo: 'bar',
 			};
 			return testModel.insert( object ).then( newEntity => {
-				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
+				expect( newEntity ).to.be.an.entity( testModel, object, SOURCE );
 				checkDataStoreRemap( newEntity, object );
 			});
 		});
@@ -26470,18 +26485,18 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'insertMany' );
 			const objects = [
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				undefined,
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 			];
 			return testModel.insertMany( objects ).then( newEntities => {
-				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
+				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, SOURCE ).that.have.lengthOf( 4 );
 				return Promise.map( newEntities.value(), ( newEntity, index ) => {
 					const object = objects[index];
 					checkDataStoreRemap( newEntity, object );
@@ -26504,13 +26519,13 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'find' );
 			return Promise.mapSeries([
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				{
-					foo: 'bar', 
+					foo: 'bar',
 				},
 			], item => checkFind( item, false ));
 		});
@@ -26519,19 +26534,19 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			return Promise.mapSeries([
 				{
 					query: {
-						foo: undefined, 
+						foo: undefined,
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'baz', 
+						foo: 'baz',
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'bar', 
+						foo: 'bar',
 					},
 					length: 1,
 				},
@@ -26657,7 +26672,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
 	it( 'Fetch should be rejected with an error on orphan items', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -26668,7 +26683,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 	});
 	it( 'Destroy should be rejected with an error on orphan items', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -26679,7 +26694,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 	});
 	it( 'Persist should change the entity', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -26734,10 +26749,11 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 let testModel;
 let testedEntity;
 const MODEL_NAME = 'testModel';
-const SOURCE = 'inMemory';
+const SOURCE = 'inMemory-simple';
 
 
 it( 'Should create a model', () => {
+	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
@@ -26765,7 +26781,7 @@ it( 'Should be able to create an entity of the defined model.', () => {
 it( 'Should be able to create multiple entities.', () => {
 	const objects = [
 		{
-			foo: 'bar', 
+			foo: 'bar',
 		},
 		undefined,
 	];
@@ -26777,28 +26793,28 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 		it( 'Create a single instance', () => {
 			expect( testModel ).to.respondTo( 'insert' );
 			const object = {
-				foo: 'bar', 
+				foo: 'bar',
 			};
 			return testModel.insert( object ).then( newEntity => {
-				expect( newEntity ).to.be.an.entity( testModel, object, 'inMemory' );
+				expect( newEntity ).to.be.an.entity( testModel, object, SOURCE );
 			});
 		});
 		it( 'Create multiple instances', () => {
 			expect( testModel ).to.respondTo( 'insertMany' );
 			const objects = [
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				undefined,
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 			];
 			return testModel.insertMany( objects ).then( newEntities => {
-				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, 'inMemory' ).that.have.lengthOf( 4 );
+				expect( newEntities ).to.be.a.set.of.entity( testModel, objects, SOURCE ).that.have.lengthOf( 4 );
 			});
 		});
 	});
@@ -26817,13 +26833,13 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'find' );
 			return Promise.mapSeries([
 				{
-					foo: undefined, 
+					foo: undefined,
 				},
 				{
-					foo: 'baz', 
+					foo: 'baz',
 				},
 				{
-					foo: 'bar', 
+					foo: 'bar',
 				},
 			], item => checkFind( item, false ));
 		});
@@ -26832,19 +26848,19 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			return Promise.mapSeries([
 				{
 					query: {
-						foo: undefined, 
+						foo: undefined,
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'baz', 
+						foo: 'baz',
 					},
 					length: 2,
 				},
 				{
 					query: {
-						foo: 'bar', 
+						foo: 'bar',
 					},
 					length: 1,
 				},
@@ -26967,7 +26983,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 describe( 'Should be able to persist, fetch & delete an entity of the defined model.', () => {
 	it( 'Fetch should be rejected with an error on orphan items', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -26978,7 +26994,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 	});
 	it( 'Destroy should be rejected with an error on orphan items', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -26989,7 +27005,7 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 	});
 	it( 'Persist should change the entity', () => {
 		const object = {
-			foo: 'bar', 
+			foo: 'bar',
 		};
 		testedEntity = testModel.spawn( object );
 		expect( testedEntity ).to.be.an.entity( testModel, object, true );
@@ -27043,13 +27059,14 @@ describe( 'Should be able to persist, fetch & delete an entity of the defined mo
 
 let testModel;
 const MODEL_NAME = 'validatedModel';
-const SOURCE = 'inMemory';
+const SOURCE = 'inMemory-validations';
 const {
 	EntityValidationError, SetValidationError,
 } = Diaspora.components.Errors;
 
 
 it( 'Should create a model', () => {
+	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources:    [ SOURCE ],
 		schema:     false,
@@ -27134,7 +27151,7 @@ it( 'Should define default values on valid items', () => {
 			expect( entity ).to.be.an.entity( testModel, {
 				prop2: 2,
 				prop3: 0.1,
-			}, 'inMemory' );
+			}, SOURCE );
 		}),
 		testModel.spawn({
 			prop2: 3,
@@ -27143,7 +27160,7 @@ it( 'Should define default values on valid items', () => {
 			expect( entity ).to.be.an.entity( testModel, {
 				prop2: 3,
 				prop3: 12,
-			}, 'inMemory' );
+			}, SOURCE );
 		}),
 	]);
 });
@@ -27192,7 +27209,6 @@ const THROWING = ( desc, obj ) => {
 const NOT_THROWING = ( desc, obj ) => {
 	return `Validation ${ JSON.stringify( desc ) } NOT throwing correctly for ${ JSON.stringify( obj ) }`;
 };
-console.log( Diaspora.components );
 
 const runTests = ( validator, [ accepted, rejected ]) => {
 	//console.log({validator, accepted, rejected});
@@ -27200,7 +27216,14 @@ const runTests = ( validator, [ accepted, rejected ]) => {
 		expect(() => validator.validate( value ), THROWING( validator.modelDesc, value )).to.not.throw();
 	});
 	l.forEach( rejected, value => {
-		expect(() => validator.validate( value ), NOT_THROWING( validator.modelDesc, value )).to.throw( Diaspora.components.Errors.EntityValidationError );
+		expect(() => {
+			try{
+				validator.validate( value );
+			}catch(e){
+				console.log({e, ctr: e.constructor})
+				throw e;
+			}
+		}, NOT_THROWING( validator.modelDesc, value )).to.throw( Diaspora.components.Errors.EntityValidationError );
 	});
 };
 

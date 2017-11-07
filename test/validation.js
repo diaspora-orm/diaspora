@@ -48,7 +48,14 @@ const runTests = ( validator, [ accepted, rejected ]) => {
 		expect(() => validator.validate( value ), THROWING( validator.modelDesc, value )).to.not.throw();
 	});
 	l.forEach( rejected, value => {
-		expect(() => validator.validate( value ), NOT_THROWING( validator.modelDesc, value )).to.throw( Diaspora.components.Errors.EntityValidationError );
+		expect(() => {
+			try{
+				validator.validate( value );
+			}catch(e){
+				console.log({e, ctr: e.constructor})
+				throw e;
+			}
+		}, NOT_THROWING( validator.modelDesc, value )).to.throw( Diaspora.components.Errors.EntityValidationError );
 	});
 };
 

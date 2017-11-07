@@ -84,7 +84,7 @@ module.exports = function gruntInit( grunt ) {
 				dest: 'build/dependencies/src/dependencies.js',
 			},
 			standalone: {
-				src:     [ 'diaspora.js', 'build/dependencies/dist/dependencies.min.js' ],
+				src:     [ 'diaspora.js' ],
 				dest:    'build/standalone/src/diaspora.js',
 				options: {
 					browserifyOptions: {
