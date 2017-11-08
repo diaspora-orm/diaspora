@@ -1,1368 +1,4 @@
-/**
-* @file diaspora
-*
-* Multi-Layer ORM for Javascript Client+Server
-* Standalone build compiled on 2017-11-08 02:23:10
-*
-* @license GPL-3.0
-* @version 0.2.0-rc.3
-* @author Gerkin
-*/var _get=function get(object,property,receiver){if(object===null)object=Function.prototype;var desc=Object.getOwnPropertyDescriptor(object,property);if(desc===undefined){var parent=Object.getPrototypeOf(object);if(parent===null){return undefined;}else{return get(parent,property,receiver);}}else if("value"in desc){return desc.value;}else{var getter=desc.get;if(getter===undefined){return undefined;}return getter.call(receiver);}};var _slicedToArray=function(){function sliceIterator(arr,i){var _arr=[];var _n=true;var _d=false;var _e=undefined;try{for(var _i=arr[Symbol.iterator](),_s;!(_n=(_s=_i.next()).done);_n=true){_arr.push(_s.value);if(i&&_arr.length===i)break;}}catch(err){_d=true;_e=err;}finally{try{if(!_n&&_i["return"])_i["return"]();}finally{if(_d)throw _e;}}return _arr;}return function(arr,i){if(Array.isArray(arr)){return arr;}else if(Symbol.iterator in Object(arr)){return sliceIterator(arr,i);}else{throw new TypeError("Invalid attempt to destructure non-iterable instance");}};}();var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==Symbol.prototype?"symbol":typeof obj;};function _extendableBuiltin(cls){function ExtendableBuiltin(){cls.apply(this,arguments);}ExtendableBuiltin.prototype=Object.create(cls.prototype,{constructor:{value:cls,enumerable:false,writable:true,configurable:true}});if(Object.setPrototypeOf){Object.setPrototypeOf(ExtendableBuiltin,cls);}else{ExtendableBuiltin.__proto__=cls;}return ExtendableBuiltin;}function _toConsumableArray(arr){if(Array.isArray(arr)){for(var i=0,arr2=Array(arr.length);i<arr.length;i++){arr2[i]=arr[i];}return arr2;}else{return Array.from(arr);}}function _defineProperty(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}(function(f){if((typeof exports==="undefined"?"undefined":_typeof(exports))==="object"&&typeof module!=="undefined"){module.exports=f();}else if(typeof define==="function"&&define.amd){define([],f);}else{var g;if(typeof window!=="undefined"){g=window;}else if(typeof global!=="undefined"){g=global;}else if(typeof self!=="undefined"){g=self;}else{g=this;}g.Diaspora=f();}})(function(){var define,module,exports;return function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f;}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e);},l,l.exports,e,t,n,r);}return n[o].exports;}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++){s(r[o]);}return s;}({1:[function(require,module,exports){'use strict';var Diaspora=require('./lib/diaspora');module.exports=Diaspora;},{"./lib/diaspora":10}],2:[function(require,module,exports){'use strict';var _require=require('../../dependencies'),_=_require._;module.exports={OPERATORS:{$exists:function $exists(entityVal,targetVal){return targetVal===!_.isUndefined(entityVal);},$equal:function $equal(entityVal,targetVal){return!_.isUndefined(entityVal)&&entityVal===targetVal;},$diff:function $diff(entityVal,targetVal){return!_.isUndefined(entityVal)&&entityVal!==targetVal;},$less:function $less(entityVal,targetVal){return!_.isUndefined(entityVal)&&entityVal<targetVal;},$lessEqual:function $lessEqual(entityVal,targetVal){return!_.isUndefined(entityVal)&&entityVal<=targetVal;},$greater:function $greater(entityVal,targetVal){return!_.isUndefined(entityVal)&&entityVal>targetVal;},$greaterEqual:function $greaterEqual(entityVal,targetVal){return!_.isUndefined(entityVal)&&entityVal>=targetVal;}},CANONICAL_OPERATORS:{'~':'$exists','==':'$equal','!=':'$diff','<':'$less','<=':'$lessEqual','>':'$greater','>=':'$greaterEqual'},QUERY_OPTIONS_TRANSFORMS:{limit:function limit(opts){var limitOpt=opts.limit;if(_.isString(limitOpt)){limitOpt=parseInt(limitOpt);}if(!_.isInteger(limitOpt)&&isFinite(limitOpt)){throw new TypeError('Expect "options.limit" to be a integer');}else if(limitOpt<0){throw new RangeError("Expect \"options.limit\" to be an integer equal to or above 0, have "+limitOpt);}opts.limit=limitOpt;},skip:function skip(opts){var skipOpt=opts.skip;if(_.isString(skipOpt)){skipOpt=parseInt(skipOpt);}if(!_.isInteger(skipOpt)&&isFinite(skipOpt)){throw new TypeError('Expect "options.skip" to be a integer');}else if(!isFinite(skipOpt)||skipOpt<0){throw new RangeError("Expect \"options.skip\" to be a finite integer equal to or above 0, have "+skipOpt);}opts.skip=skipOpt;},page:function page(opts){if(!opts.hasOwnProperty('limit')){throw new ReferenceError('Usage of "options.page" requires "options.limit" to be defined.');}if(!isFinite(opts.limit)){throw new RangeError('Usage of "options.page" requires "options.limit" to not be infinite');}if(opts.hasOwnProperty('skip')){throw new ReferenceError('Use either "options.page" or "options.skip"');}var pageOpt=opts.page;if(_.isString(pageOpt)){pageOpt=parseInt(pageOpt);}if(!_.isInteger(pageOpt)&&isFinite(pageOpt)){throw new TypeError('Expect "options.page" to be a integer');}else if(!isFinite(pageOpt)||pageOpt<0){throw new RangeError("Expect \"options.page\" to be a finite integer equal to or above 0, have "+pageOpt);}opts.skip=pageOpt*opts.limit;delete opts.page;}}};},{"../../dependencies":9}],3:[function(require,module,exports){'use strict';var _require2=require('../../dependencies'),_=_require2._,Promise=_require2.Promise,SequentialEvent=_require2.SequentialEvent;/**
- * @namespace ConstrainedTypes
- * @description Namespace for types with constraints, like <code>[0, Infinity]</code>, <code>]0, Infinity[</code>, etc etc
- *//**
- * @typedef {Integer} AbsInt0
- * @memberof ConstrainedTypes
- * @description Integer equal or above 0
- *//**
- * @typedef {Integer} AbsInt
- * @memberof ConstrainedTypes
- * @description Integer above 0
- *//**
- * @typedef {Integer} AbsIntInf
- * @memberof ConstrainedTypes
- * @description Integer above 0, may be integer
- *//**
- * @typedef {Integer} AbsIntInf0
- * @memberof ConstrainedTypes
- * @description Integer equal or above 0, may be integer
- *//**
- * @namespace QueryLanguage
- *//**
- * @typedef {Object} QueryOptions
- * @description All properties are optional
- * @memberof QueryLanguage
- * @public
- * @instance
- * @author gerkin
- * @property {ConstrainedTypes.AbsInt0} skip=0 Number of items to skip
- * @property {ConstrainedTypes.AbsIntInf0} limit=Infinity Number of items to get
- * @property {ConstrainedTypes.AbsInt0} page To use with {@link QueryOptions.limit `limit`} and without {@link QueryOptions.skip `skip`}. Skips `page` pages of `limit` elements
- * @property {Boolean} remapInput=true Flag indicating if adapter input should be remapped or not. TODO Remapping doc
- * @property {Boolean} remapOutput=true Flag indicating if adapter output should be remapped or not. TODO Remapping doc
- *//**
- * @typedef {Object} SelectQuery
- * @memberof QueryLanguage
- * @public
- * @instance
- * @author gerkin
- * @property {Any|SelectQueryCondition} * Fields to search. If not providing an object, find items with a property value that equals this value
- *//**
- * By default, all conditions in a single SelectQueryCondition are combined with an `AND` operator.
- *
- * @typedef {Object} QueryLanguage.SelectQueryCondition
- * @author gerkin
- * @property {Any}                                      $equals       - Match if item value is equal to this. Objects and array are compared deeply. **Alias: `==`**
- * @property {Any}                                      $diff         - Match if item value is different to this. Objects and array are compared deeply. **Alias: `!=`**
- * @property {boolean}                                  $exists       - If `true`, match items where this prop is defined. If `false`, match when prop is null or not set. **Alias: `~`**
- * @property {integer}                                  $less         - Match if item value is less than this. **Alias: `<`**
- * @property {integer}                                  $lessEqual    - Match if item value is less than this or equals to this. **Alias: `<=`**
- * @property {integer}                                  $greater      - Match if item value is greater than this. **Alias: `>`**
- * @property {integer}                                  $greaterEqual - Match if item value is greater than this or equals to this. **Alias: `>=`**
- * @property {QueryLanguage#SelectQueryOrCondition[]}   $or           - Match if *one of* the conditions in the array is true. **Alias: `||`** **NOT IMPLEMENTED YET**
- * @property {QueryLanguage#SelectQueryOrCondition[]}   $and          - Match if *all* the conditions in the array are true. Optional, because several conditions in a single SelectQueryCondition are combined with an `AND` operator. **Alias: `&&`** **NOT IMPLEMENTED YET**
- * @property {QueryLanguage#SelectQueryOrCondition[]}   $xor          - Match if *a single* of the conditions in the array is true. **Alias: `^^`** **NOT IMPLEMENTED YET**
- * @property {QueryLanguage#SelectQueryOrCondition}     $not          - Invert the condition **Alias: `!`** **NOT IMPLEMENTED YET**
- * @property {string}                                   $contains     - On *string*, it will check if query is included in item using GLOB. **NOT IMPLEMENTED YET**
- * @property {QueryLanguage#SelectQueryOrCondition|Any} $contains     - On *array*, it will check if item contains the query. **NOT IMPLEMENTED YET**
- * @property {Any[]}                                    $in           - Check if item value is contained (using deep comparaison) in query. **NOT IMPLEMENTED YET**
- *//**
- * @typedef {QueryLanguage#SelectQuery|QueryLanguage#SelectQueryCondition} SelectQueryOrCondition
- * @memberof QueryLanguage
- * @public
- * @instance
- * @author gerkin
- *//**
- * @namespace Adapters
- */var iterateLimit=function iterateLimit(options,query){var foundEntities=[];var foundCount=0;var origSkip=options.skip;// We are going to loop until we find enough items
-var loopFind=function loopFind(found){// If the search returned nothing, then just finish the findMany
-if(_.isNil(found)){return Promise.resolve(foundEntities);// Else, if this is a value and not the initial `true`, add it to the list
-}else if(found!==true){foundEntities.push(found);}// If we found enough items, return them
-if(foundCount===options.limit){return Promise.resolve(foundEntities);}options.skip=origSkip+foundCount;// Next time we'll skip 1 more item
-foundCount++;// Do the query & loop
-return query(options).then(loopFind);};return loopFind;};var _require3=require('./adapter-utils'),OPERATORS=_require3.OPERATORS,CANONICAL_OPERATORS=_require3.CANONICAL_OPERATORS,QUERY_OPTIONS_TRANSFORMS=_require3.QUERY_OPTIONS_TRANSFORMS;/**
- * DiasporaAdapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
- * @extends SequentialEvent
- * @memberof Adapters
- * @author gerkin
- */var DiasporaAdapter=function(_SequentialEvent){_inherits(DiasporaAdapter,_SequentialEvent);// -----
-// ### Initialization
-/**
-	 * Create a new instance of adapter. This base class should be used by all other adapters.
-	 *
-	 * @public
-	 * @author gerkin
-	 * @param {DataStoreEntities.DataStoreEntity} classEntity - Entity to spawn with this adapter.
-	 */function DiasporaAdapter(classEntity){_classCallCheck(this,DiasporaAdapter);/**
-		 * Describe current adapter status.
-		 *
-		 * @type {string}
-		 * @author Gerkin
-		 */var _this2=_possibleConstructorReturn(this,(DiasporaAdapter.__proto__||Object.getPrototypeOf(DiasporaAdapter)).call(this));_this2.state='preparing';/**
-		 * Hash to transform entity fields to data store fields.
-		 *
-		 * @type {Object}
-		 * @property {string} * - Data store field associated with this entity field.
-		 * @author Gerkin
-		 */_this2.remaps={};/**
-		 * Hash to transform data store fields to entity fields.
-		 *
-		 * @type {Object}
-		 * @property {string} * - Entity field associated with this data store field.
-		 * @author Gerkin
-		 */_this2.remapsInverted={};/**
-		 * Hash of functions to cast data store values to JSON standard values in entity.
-		 *
-		 * @type {Object}
-		 * @property {Function} * - Filter to execute to get standard JSON value.
-		 * @author Gerkin
-		 */_this2.filters={};/**
-		 * Link to the constructor of the class generated by this adapter.
-		 *
-		 * @type {DataStoreEntities.DataStoreEntity}
-		 * @author Gerkin
-		 */_this2.classEntity=classEntity;/**
-		 * Error triggered by adapter initialization.
-		 *
-		 * @type {Error}
-		 * @author Gerkin
-		 */_this2.error=undefined;// Bind events
-_this2.on('ready',function(){_this2.state='ready';}).on('error',function(err){_this2.state='error';_this2.error=err;});return _this2;}/**
-	 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
-	 *
-	 * @author gerkin
-	 * @param   {string} tableName    - Name of the table (usually, model name).
-	 * @param   {Object} remaps       - Associative hash that links entity field names with data source field names.
-	 * @param   {Object} [filters={}] - Not used yet...
-	 * @returns {undefined} This function does not return anything.
-	 */_createClass(DiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps){var filters=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};this.remaps[tableName]={normal:remaps,inverted:_.invert(remaps)};this.filters[tableName]=filters;}// -----
-// ### Events
-/**
-	 * Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
-	 *
-	 * @event Adapters.DiasporaAdapter#ready
-	 * @type {undefined}
-	 * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
-	 *//**
-	 * Fired if the adapter failed to initialize or changed to `error` state. Called with the triggering `error`.
-	 *
-	 * @event Adapters.DiasporaAdapter#error
-	 * @type {Error}
-	 * @see {@link Adapters.DiasporaAdapter#waitReady waitReady} Convinience method to wait for state change.
-	 */// -----
-// ### Utils
-/**
-	 * Returns a promise resolved once adapter state is ready.
-	 *
-	 * @author gerkin
-	 * @listens Adapters.DiasporaAdapter#error
-	 * @listens Adapters.DiasporaAdapter#ready
-	 * @returns {Promise} Promise resolved when adapter is ready, and rejected if an error occured.
-	 */},{key:"waitReady",value:function waitReady(){var _this3=this;return new Promise(function(resolve,reject){if('ready'===_this3.state){return resolve(_this3);}else if('error'===_this3.state){return reject(_this3.error);}_this3.on('ready',function(){return resolve(_this3);}).on('error',function(err){return reject(err);});});}/**
-	 * TODO.
-	 *
-	 * @author gerkin
-	 * @see TODO remapping.
-	 * @see {@link Adapters.DiasporaAdapter#remapIO remapIO}
-	 * @param   {string} tableName - Name of the table for which we remap.
-	 * @param   {Object} query     - Hash representing the entity to remap.
-	 * @returns {Object} Remapped object.
-	 */},{key:"remapInput",value:function remapInput(tableName,query){return this.remapIO(tableName,query,true);}/**
-	 * TODO.
-	 *
-	 * @author gerkin
-	 * @see TODO remapping.
-	 * @see {@link Adapters.DiasporaAdapter#remapIO remapIO}
-	 * @param   {string} tableName - Name of the table for which we remap.
-	 * @param   {Object} query     - Hash representing the entity to remap.
-	 * @returns {Object} Remapped object.
-	 */},{key:"remapOutput",value:function remapOutput(tableName,query){return this.remapIO(tableName,query,false);}/**
-	 * TODO.
-	 *
-	 * @author gerkin
-	 * @see TODO remapping.
-	 * @param   {string}  tableName - Name of the table for which we remap.
-	 * @param   {Object}  query     - Hash representing the entity to remap.
-	 * @param   {boolean} input     - Set to `true` if handling input, `false`to output.
-	 * @returns {Object} Remapped object.
-	 */},{key:"remapIO",value:function remapIO(tableName,query,input){var _this4=this;if(_.isNil(query)){return query;}var direction=true===input?'input':'output';var filtered=_.mapValues(query,function(value,key){var filter=_.get(_this4,['filters',tableName,direction,key],undefined);if(_.isFunction(filter)){return filter(value);}return value;});var remapType=true===input?'normal':'inverted';var remaped=_.mapKeys(filtered,function(value,key){return _.get(_this4,['remaps',tableName,remapType,key],key);});return remaped;}/**
-	 * Refresh the `idHash` with current adapter's `id` injected.
-	 *
-	 * @author gerkin
-	 * @param   {Object} entity          - Object containing attributes of the entity.
-	 * @param   {string} [propName='id'] - Name of the `id` field.
-	 * @returns {Object} Modified entity (for chaining).
-	 */},{key:"setIdHash",value:function setIdHash(entity){var propName=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'id';entity.idHash=_.assign({},entity.idHash,_defineProperty({},this.name,entity[propName]));return entity;}/**
-	 * Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function.
-	 *
-	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQuery} query  - Query to match against.
-	 * @param   {Object}                    entity - Entity to test.
-	 * @returns {boolean} Returns `true` if query matches, `false` otherwise.
-	 */},{key:"matchEntity",value:function matchEntity(query,entity){var matchResult=_.every(_.toPairs(query),function(_ref){var _ref2=_slicedToArray(_ref,2),key=_ref2[0],desc=_ref2[1];if(_.isObject(desc)){var entityVal=entity[key];return _.every(desc,function(val,operation){if(OPERATORS.hasOwnProperty(operation)){return OPERATORS[operation](entityVal,val);}else{return false;}});}return false;});return matchResult;}/**
-	 * Transform options to their canonical form. This function must be applied before calling adapters' methods.
-	 *
-	 * @author gerkin
-	 * @throws  {TypeError} Thrown if an option does not have an acceptable type.
-	 * @throws  {ReferenceError} Thrown if a required option is not present.
-	 * @throws  {Error} Thrown when there isn't more precise description of the error is available (eg. when conflicts occurs) .
-	 * @param   {Object} [opts={}] - Options to transform.
-	 * @returns {Object} Transformed options (also called `canonical options`).
-	 */},{key:"normalizeOptions",value:function normalizeOptions(){var opts=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};opts=_.cloneDeep(opts);_.forEach(QUERY_OPTIONS_TRANSFORMS,function(transform,optionName){if(opts.hasOwnProperty(optionName)){QUERY_OPTIONS_TRANSFORMS[optionName](opts);}});_.defaults(opts,{skip:0,remapInput:true,remapOutput:true});return opts;}/**
-	 * Transform a search query to its canonical form, replacing aliases or shorthands by full query.
-	 *
-	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} originalQuery - Query to cast to its canonical form.
-	 * @param   {QueryLanguage#Options}                options       - Options for this query.
-	 * @returns {QueryLanguage#SelectQueryOrCondition} Query in its canonical form.
-	 */},{key:"normalizeQuery",value:function normalizeQuery(originalQuery,options){var normalizedQuery=true===options.remapInput?_(_.cloneDeep(originalQuery)).mapValues(function(attrSearch){if(_.isUndefined(attrSearch)){return{$exists:false};}else if(!(attrSearch instanceof Object)){return{$equal:attrSearch};}else{// Replace operations alias by canonical expressions
-attrSearch=_.mapKeys(attrSearch,function(val,operator,obj){if(CANONICAL_OPERATORS.hasOwnProperty(operator)){// ... check for conflict with canonical operation name...
-if(obj.hasOwnProperty(CANONICAL_OPERATORS[operator])){throw new Error("Search can't have both \""+operator+"\" and \""+CANONICAL_OPERATORS[operator]+"\" keys, as they are synonyms");}return CANONICAL_OPERATORS[operator];}return operator;});// For arithmetic comparison, check if values are numeric (TODO later: support date)
-_.forEach(['$less','$lessEqual','$greater','$greaterEqual'],function(operation){if(attrSearch.hasOwnProperty(operation)&&!_.isNumber(attrSearch[operation])){throw new TypeError("Expect \""+operation+"\" in "+JSON.stringify(attrSearch)+" to be a numeric value");}});return attrSearch;}}).value():_.cloneDeep(originalQuery);return normalizedQuery;}// -----
-// ### Insert
-/**
-	 * Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertOne` itself.
-	 *
-	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
-	 * @author gerkin
-	 * @param   {string} table  - Name of the table to insert data in.
-	 * @param   {Object} entity - Hash representing the entity to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntity}* entity).
-	 */},{key:"insertOne",value:function insertOne(table,entity){return this.insertMany(table,[entity]).then(function(entities){return Promise.resolve(_.first(entities));});}/**
-	 * Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself.
-	 *
-	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
-	 * @author gerkin
-	 * @param   {string}   table    - Name of the table to insert data in.
-	 * @param   {Object[]} entities - Array of hashs representing the entities to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntity}[]* entities).
-	 */},{key:"insertMany",value:function insertMany(table,entities){var _this5=this;return Promise.mapSeries(entities,function(entity){return _this5.insertOne(table,entity||{});});}// -----
-// ### Find
-/**
-	 * Retrieve a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `findOne` itself.
-	 *
-	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`).
-	 */},{key:"findOne",value:function findOne(table,queryFind){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};options.limit=1;return this.findMany(table,queryFind,options).then(function(entities){return Promise.resolve(_.first(entities));});}/**
-	 * Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `findMany` itself.
-	 *
-	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
-	 */},{key:"findMany",value:function findMany(table,queryFind){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};options=this.normalizeOptions(options);return iterateLimit(options,this.findOne.bind(this,table,queryFind))(true);}// -----
-// ### Update
-/**
-	 * Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateOne` itself.
-	 *
-	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {Object}                               update       - Object properties to set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`).
-	 */},{key:"updateOne",value:function updateOne(table,queryFind,update){var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};options=this.normalizeOptions(options);options.limit=1;return this.updateMany(table,queryFind,update,options).then(function(entities){return Promise.resolve(_.first(entities));});}/**
-	 * Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateMany` itself.
-	 *
-	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {Object}                               update       - Object properties to set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
-	 */},{key:"updateMany",value:function updateMany(table,queryFind,update){var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};options=this.normalizeOptions(options);return iterateLimit(options,this.updateOne.bind(this,table,queryFind,update))(true);}// -----
-// ### Delete
-/**
-	 * Delete a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteOne` itself.
-	 *
-	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}* `entity`).
-	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};options.limit=1;return this.deleteMany(table,queryFind,options);}/**
-	 * Delete several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteMany` itself.
-	 *
-	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
-	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this6=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var count=0;// We are going to loop until we find enough items
-var loopFind=function loopFind(){// First, search for the item.
-return _this6.findOne(table,queryFind,options).then(function(found){// If the search returned nothing, then just finish the findMany
-if(_.isNil(found)){return Promise.resolve();// Else, if this is a value and not the initial `true`, add it to the list
-}// If we found enough items, return them
-if(count===options.limit){return Promise.resolve();}// Increase our counter
-count++;// Do the deletion & loop
-return _this6.deleteOne(table,queryFind,options).then(loopFind);});};return loopFind(true);}}]);return DiasporaAdapter;}(SequentialEvent);module.exports=DiasporaAdapter;},{"../../dependencies":9,"./adapter-utils":2}],4:[function(require,module,exports){'use strict';var _require4=require('../../dependencies'),_=_require4._;/**
- * @namespace DataStoreEntities
- *//**
- * DataStoreEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
- * @memberof DataStoreEntities
- */var DataStoreEntity=function(){/**
-	 * Construct a new data source entity with specified content & parent.
-	 * 
-	 * @author gerkin
-	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-	 */function DataStoreEntity(entity,dataSource){_classCallCheck(this,DataStoreEntity);if(_.isNil(entity)){return undefined;}if(_.isNil(dataSource)){throw new TypeError("Expect 2nd argument to be the parent of this entity, have \""+dataSource+"\"");}Object.defineProperties(this,{dataSource:{value:dataSource,enumerable:false,configurable:false}});_.assign(this,entity);}/**
-	 * Returns a plain object corresponding to this entity attributes.
-	 * 
-	 * @author gerkin
-	 * @returns {Object} Plain object representing this entity.
-	 */_createClass(DataStoreEntity,[{key:"toObject",value:function toObject(){return _.omit(this,['dataSource','id']);}}]);return DataStoreEntity;}();module.exports=DataStoreEntity;},{"../../dependencies":9}],5:[function(require,module,exports){'use strict';var _require5=require('../../dependencies'),_=_require5._,Promise=_require5.Promise;var Utils=require('../../utils');var Diaspora=require('../../diaspora');var DiasporaAdapter=Diaspora.components.Adapters.Adapter;var InMemoryEntity=require('./entity.js');/**
- * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
- *
- * @extends Adapters.DiasporaAdapter
- * @memberof Adapters
- */var InMemoryDiasporaAdapter=function(_DiasporaAdapter){_inherits(InMemoryDiasporaAdapter,_DiasporaAdapter);/**
-	 * Create a new instance of in memory adapter.
-	 *
-	 * @author gerkin
-	 */function InMemoryDiasporaAdapter(){_classCallCheck(this,InMemoryDiasporaAdapter);var _this7=_possibleConstructorReturn(this,(InMemoryDiasporaAdapter.__proto__||Object.getPrototypeOf(InMemoryDiasporaAdapter)).call(this,InMemoryEntity));/**
-		 * Link to the InMemoryEntity.
-		 *
-		 * @name classEntity
-		 * @type {DataStoreEntities.InMemoryEntity}
-		 * @memberof Adapters.InMemoryDiasporaAdapter
-		 * @instance
-		 * @author Gerkin
-		 */_this7.state='ready';/**
-		 * Plain old javascript object used as data store.
-		 *
-		 * @author Gerkin
-		 */_this7.store={};return _this7;}/**
-	 * Create the data store and call {@link Adapters.DiasporaAdapter#configureCollection}.
-	 *
-	 * @author gerkin
-	 * @param   {string} tableName - Name of the table (usually, model name).
-	 * @param   {Object} remaps    - Associative hash that links entity field names with data source field names.
-	 * @returns {undefined} This function does not return anything.
-	 */_createClass(InMemoryDiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps){_get(InMemoryDiasporaAdapter.prototype.__proto__||Object.getPrototypeOf(InMemoryDiasporaAdapter.prototype),"configureCollection",this).call(this,tableName,remaps);this.ensureCollectionExists(tableName);}// -----
-// ### Utils
-/**
-	 * Get or create the store hash.
-	 *
-	 * @author gerkin
-	 * @param   {string} table - Name of the table.
-	 * @returns {DataStoreTable} In memory table to use.
-	 */},{key:"ensureCollectionExists",value:function ensureCollectionExists(table){if(this.store.hasOwnProperty(table)){return this.store[table];}else{return this.store[table]={items:[]};}}// -----
-// ### Insert
-/**
-	 * Insert a single entity in the memory store.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for in-memory interactions.
-	 * @author gerkin
-	 * @param   {string} table  - Name of the table to insert data in.
-	 * @param   {Object} entity - Hash representing the entity to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link InMemoryEntity}* `entity`).
-	 */},{key:"insertOne",value:function insertOne(table,entity){entity=_.cloneDeep(entity);var storeTable=this.ensureCollectionExists(table);entity.id=Utils.generateUUID();this.setIdHash(entity);storeTable.items.push(entity);return Promise.resolve(new this.classEntity(entity,this));}// -----
-// ### Find
-/**
-	 * Retrieve a single entity from the memory.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for in-memory interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`).
-	 */},{key:"findOne",value:function findOne(table,queryFind){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);var matches=_.filter(storeTable.items,_.partial(this.matchEntity,queryFind));var reducedMatches=Utils.applyOptionsToSet(matches,options);return Promise.resolve(reducedMatches.length>0?new this.classEntity(_.first(reducedMatches),this):undefined);}/**
-	 * Retrieve several entities from the memory.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for in-memory interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`).
-	 */},{key:"findMany",value:function findMany(table,queryFind){var _this8=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);var matches=_.filter(storeTable.items,_.partial(this.matchEntity,queryFind));var reducedMatches=Utils.applyOptionsToSet(matches,options);return Promise.resolve(_.map(reducedMatches,function(entity){return new _this8.classEntity(entity,_this8);}));}// -----
-// ### Update
-/**
-	 * Update a single entity in the memory.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for in-memory interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to update data in.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {Object}                               update       - Object properties to set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`).
-	 */},{key:"updateOne",value:function updateOne(table,queryFind,update){var _this9=this;var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};return this.findOne(table,queryFind,options).then(function(found){if(!_.isNil(found)){var storeTable=_this9.ensureCollectionExists(table);var match=_.find(storeTable.items,{id:found.id});Utils.applyUpdateEntity(update,match);return Promise.resolve(new _this9.classEntity(match,_this9));}else{return Promise.resolve();}});}/**
-	 * Update several entities in the memory.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for in-memory interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to update data in.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {Object}                               update       - Object properties to set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`).
-	 */},{key:"updateMany",value:function updateMany(table,queryFind,update){var _this10=this;var options=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};return this.findMany(table,queryFind,options).then(function(found){if(!_.isNil(found)&&found.length>0){var storeTable=_this10.ensureCollectionExists(table);var foundIds=_.map(found,'id');var matches=_.filter(storeTable.items,function(item){return-1!==foundIds.indexOf(item.id);});return Promise.resolve(_.map(matches,function(item){Utils.applyUpdateEntity(update,item);return new _this10.classEntity(item,_this10);}));}else{return Promise.resolve([]);}});}// -----
-// ### Delete
-/**
-	 * Delete a single entity from the memory.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for in-memory interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*).
-	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this11=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findOne(table,queryFind,options).then(function(entityToDelete){storeTable.items=_.reject(storeTable.items,function(entity){return entity.id===entityToDelete.idHash[_this11.name];});return Promise.resolve();});}/**
-	 * Delete several entities from the memory.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for in-memory interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
-	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this12=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var storeTable=this.ensureCollectionExists(table);return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var entitiesIds=_.map(entitiesToDelete,function(entity){return _.get(entity,"idHash."+_this12.name);});storeTable.items=_.reject(storeTable.items,function(entity){return _.includes(entitiesIds,entity.id);});return Promise.resolve();});}}]);return InMemoryDiasporaAdapter;}(DiasporaAdapter);module.exports=InMemoryDiasporaAdapter;},{"../../dependencies":9,"../../diaspora":10,"../../utils":18,"./entity.js":6}],6:[function(require,module,exports){'use strict';var DataStoreEntity=require('../base/entity.js');/**
- * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
- * @extends DataStoreEntities.DataStoreEntity
- * @memberof DataStoreEntities
- */var InMemoryEntity=function(_DataStoreEntity){_inherits(InMemoryEntity,_DataStoreEntity);/**
-	 * Construct a in memory entity with specified content & parent.
-	 * 
-	 * @author gerkin
-	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-	 */function InMemoryEntity(entity,dataSource){_classCallCheck(this,InMemoryEntity);return _possibleConstructorReturn(this,(InMemoryEntity.__proto__||Object.getPrototypeOf(InMemoryEntity)).call(this,entity,dataSource));}return InMemoryEntity;}(DataStoreEntity);module.exports=InMemoryEntity;},{"../base/entity.js":4}],7:[function(require,module,exports){(function(global){'use strict';var _require6=require('../../dependencies'),_=_require6._,Promise=_require6.Promise;var Utils=require('../../utils');var Diaspora=require('../../diaspora');var DiasporaAdapter=Diaspora.components.Adapters.Adapter;var WebStorageEntity=require('./entity');/**
- * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
- *
- * @extends Adapters.DiasporaAdapter
- * @memberof Adapters
- */var WebStorageDiasporaAdapter=function(_DiasporaAdapter2){_inherits(WebStorageDiasporaAdapter,_DiasporaAdapter2);/**
-	 * Create a new instance of local storage adapter.
-	 *
-	 * @author gerkin
-	 * @param {Object}  config                 - Configuration object.
-	 * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
-	 */function WebStorageDiasporaAdapter(config){_classCallCheck(this,WebStorageDiasporaAdapter);var _this14=_possibleConstructorReturn(this,(WebStorageDiasporaAdapter.__proto__||Object.getPrototypeOf(WebStorageDiasporaAdapter)).call(this,WebStorageEntity));/**
-		 * Link to the WebStorageEntity.
-		 *
-		 * @name classEntity
-		 * @type {DataStoreEntities.WebStorageEntity}
-		 * @memberof Adapters.WebStorageDiasporaAdapter
-		 * @instance
-		 * @author Gerkin
-		 */_.defaults(config,{session:false});_this14.state='ready';/**
-		 * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
-		 *
-		 * @type {Storage}
-		 * @author Gerkin
-		 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage} and {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage sessionStorage} on MDN web docs.
-		 * @see {@link Adapters.WebStorageDiasporaAdapter}:config.session parameter.
-		 */_this14.source=true===config.session?global.sessionStorage:global.localStorage;return _this14;}/**
-	 * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
-	 *
-	 * @author gerkin
-	 * @param {string} tableName - Name of the table (usually, model name).
-	 * @param {Object} remaps    - Associative hash that links entity field names with data source field names.
-	 * @returns {undefined} This function does not return anything.
-	 */_createClass(WebStorageDiasporaAdapter,[{key:"configureCollection",value:function configureCollection(tableName,remaps){_get(WebStorageDiasporaAdapter.prototype.__proto__||Object.getPrototypeOf(WebStorageDiasporaAdapter.prototype),"configureCollection",this).call(this,tableName,remaps);this.ensureCollectionExists(tableName);}// -----
-// ### Utils
-/**
-	 * Create the table key if it does not exist.
-	 *
-	 * @author gerkin
-	 * @param   {string} table - Name of the table.
-	 * @returns {string[]} Index of the collection.
-	 */},{key:"ensureCollectionExists",value:function ensureCollectionExists(table){var index=this.source.getItem(table);if(_.isNil(index)){index=[];this.source.setItem(table,JSON.stringify(index));}else{index=JSON.parse(index);}return index;}/**
-	 * Deduce the item name from table name and item ID.
-	 *
-	 * @author gerkin
-	 * @param   {string} table - Name of the table to construct name for.
-	 * @param   {string} id    - Id of the item to find.
-	 * @returns {string} Name of the item.
-	 */},{key:"getItemName",value:function getItemName(table,id){return table+".id="+id;}// -----
-// ### Insert
-/**
-	 * Insert a single entity in the local storage.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string} table  - Name of the table to insert data in.
-	 * @param   {Object} entity - Hash representing the entity to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
-	 */},{key:"insertOne",value:function insertOne(table,entity){entity=_.cloneDeep(entity||{});entity.id=Utils.generateUUID();this.setIdHash(entity);try{var tableIndex=this.ensureCollectionExists(table);tableIndex.push(entity.id);this.source.setItem(table,JSON.stringify(tableIndex));this.source.setItem(this.getItemName(table,entity.id),JSON.stringify(entity));}catch(error){return Promise.reject(error);}return Promise.resolve(new this.classEntity(entity,this));}/**
-	 * Insert several entities in the local storage.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}   table    - Name of the table to insert data in.
-	 * @param   {Object[]} entities - Array of hashes representing entities to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link DataStoreEntities.WebStorageEntity}[]* `entities`).
-	 */},{key:"insertMany",value:function insertMany(table,entities){var _this15=this;entities=_.cloneDeep(entities);try{var tableIndex=this.ensureCollectionExists(table);entities=entities.map(function(){var entity=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};entity.id=Utils.generateUUID();_this15.setIdHash(entity);tableIndex.push(entity.id);_this15.source.setItem(_this15.getItemName(table,entity.id),JSON.stringify(entity));return new _this15.classEntity(entity,_this15);});this.source.setItem(table,JSON.stringify(tableIndex));}catch(error){return Promise.reject(error);}return Promise.resolve(entities);}// -----
-// ### Find
-/**
-	 * Find a single local storage entity using its id.
-	 *
-	 * @author gerkin
-	 * @param   {string} table - Name of the collection to search entity in.
-	 * @param   {string} id    - Id of the entity to search.
-	 * @returns {DataStoreEntities.WebStorageEntity|undefined} Found entity, or undefined if not found.
-	 */},{key:"findOneById",value:function findOneById(table,id){var item=this.source.getItem(this.getItemName(table,id));if(!_.isNil(item)){return Promise.resolve(new this.classEntity(JSON.parse(item),this));}return Promise.resolve();}/**
-	 * Retrieve a single entity from the local storage.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the model to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
-	 */},{key:"findOne",value:function findOne(table,queryFind){var _this16=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};_.defaults(options,{skip:0});if(!_.isObject(queryFind)){return this.findOneById(table,queryFind);}else if(_.isEqual(_.keys(queryFind),['id'])&&_.isEqual(_.keys(queryFind.id),['$equal'])){return this.findOneById(table,queryFind.id.$equal);}var items=this.ensureCollectionExists(table);var returnedItem=void 0;var matched=0;_.each(items,function(itemId){var item=JSON.parse(_this16.source.getItem(_this16.getItemName(table,itemId)));if(_this16.matchEntity(queryFind,item)){matched++;// If we matched enough items
-if(matched>options.skip){returnedItem=item;return false;}}});return Promise.resolve(!_.isNil(returnedItem)?new this.classEntity(returnedItem,this):undefined);}// -----
-// ### Update
-/**
-	 * Update a single entity in the memory.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to update data in.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {Object}                               update       - Object properties to set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link DataStoreEntities.WebStorageEntity}* `entity`).
-	 */},{key:"updateOne",value:function updateOne(table,queryFind,update,options){var _this17=this;_.defaults(options,{skip:0});return this.findOne(table,queryFind,options).then(function(entity){if(_.isNil(entity)){return Promise.resolve();}Utils.applyUpdateEntity(update,entity);try{_this17.source.setItem(_this17.getItemName(table,entity.id),JSON.stringify(entity));return Promise.resolve(entity);}catch(error){return Promise.reject(error);}});}// -----
-// ### Delete
-/**
-	 * Delete a single entity from the local storage.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is deleted. Called with (*undefined*).
-	 */},{key:"deleteOne",value:function deleteOne(table,queryFind){var _this18=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};return this.findOne(table,queryFind,options).then(function(entityToDelete){try{var tableIndex=_this18.ensureCollectionExists(table);_.pull(tableIndex,entityToDelete.id);_this18.source.setItem(table,JSON.stringify(tableIndex));_this18.source.removeItem(_this18.getItemName(table,entityToDelete.id));}catch(error){return Promise.reject(error);}return Promise.resolve();});}/**
-	 * Delete several entities from the local storage.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for local storage or session storage interactions.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
-	 */},{key:"deleteMany",value:function deleteMany(table,queryFind){var _this19=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};try{return this.findMany(table,queryFind,options).then(function(entitiesToDelete){var tableIndex=_this19.ensureCollectionExists(table);_.pullAll(tableIndex,_.map(entitiesToDelete,'id'));_this19.source.setItem(table,JSON.stringify(tableIndex));_.forEach(entitiesToDelete,function(entityToDelete){_this19.source.removeItem(_this19.getItemName(table,entityToDelete.id));});return Promise.resolve();});}catch(error){return Promise.reject(error);}}}]);return WebStorageDiasporaAdapter;}(DiasporaAdapter);module.exports=WebStorageDiasporaAdapter;}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"../../dependencies":9,"../../diaspora":10,"../../utils":18,"./entity":8}],8:[function(require,module,exports){'use strict';var DataStoreEntity=require('../base/entity.js');/**
- * Entity stored in {@link Adapters.WebStorageDiasporaAdapter the local storage adapter}.
- * 
- * @extends DataStoreEntities.DataStoreEntity
- * @memberof DataStoreEntities
- */var WebStorageEntity=function(_DataStoreEntity2){_inherits(WebStorageEntity,_DataStoreEntity2);/**
-	 * Construct a local storage entity with specified content & parent.
-	 * 
-	 * @author gerkin
-	 * @param {Object}                   entity     - Object containing attributes to inject in this entity. The only **reserved key** is `dataSource`.
-	 * @param {Adapters.DiasporaAdapter} dataSource - Adapter that spawn this entity.
-	 */function WebStorageEntity(entity,dataSource){_classCallCheck(this,WebStorageEntity);return _possibleConstructorReturn(this,(WebStorageEntity.__proto__||Object.getPrototypeOf(WebStorageEntity)).call(this,entity,dataSource));}return WebStorageEntity;}(DataStoreEntity);module.exports=WebStorageEntity;},{"../base/entity.js":4}],9:[function(require,module,exports){(function(global){'use strict';module.exports={_:function(){return global._||require('lodash');}(),SequentialEvent:function(){return global.SequentialEvent||require('sequential-event');}(),Promise:function(){return global.Promise&&global.Promise.version?global.Promise:require('bluebird');}()};}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"bluebird":20,"lodash":21,"sequential-event":23}],10:[function(require,module,exports){(function(process){'use strict';var dependencies=require('./dependencies');var _=dependencies._,Promise=dependencies.Promise;/**
- * Event emitter that can execute async handlers in sequence
- *
- * @typedef {Object} SequentialEvent
- * @author Gerkin
- * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
- *//**
- * @module Diaspora
- */var logger=function(){if(!process.browser){var winston=require('winston');var log=winston.createLogger({level:'silly',format:winston.format.json(),transports:[//
-// - Write to all logs with level `info` and below to `combined.log`
-// - Write all logs error (and below) to `error.log`.
-//
-]});//
-// If we're not in production then log to the `console` with the format:
-// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-//
-if(process.env.NODE_ENV!=='production'){log.add(new winston.transports.Console({format:winston.format.simple()}));}return log;}else{return console;}}();var adapters={};var dataSources={};var models={};var ensureAllEntities=function ensureAllEntities(adapter,table){// Filter our results
-var filterResults=function filterResults(entity){// Remap fields
-entity=adapter.remapOutput(table,entity);// Force results to be class instances
-if(!(entity instanceof adapter.classEntity)&&!_.isNil(entity)){return new adapter.classEntity(entity,adapter);}return entity;};return function(results){if(_.isNil(results)){return Promise.resolve();}else if(_.isArrayLike(results)){return Promise.resolve(_.map(results,filterResults));}else{return Promise.resolve(filterResults(results));}};};var remapArgs=function remapArgs(args,optIndex,update,queryType,remapFunction){if(false!==optIndex){// Remap input objects
-if(true===args[optIndex].remapInput){args[0]=remapFunction(args[0]);if(true===update){args[1]=remapFunction(args[1]);}}args[optIndex].remapInput=false;}else if('insert'===queryType.query){// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
-if('many'===queryType.number){// If inserting *several* entities, map the array to remap each entity objects...
-args[0]=_.map(args[0],function(insertion){return remapFunction(insertion);});}else{// ... or we are inserting a *single* one. We still need to remap entity.
-args[0]=remapFunction(args[0]);}}};var getRemapFunction=function getRemapFunction(adapter,table){return function(query){return adapter.remapInput(table,query);};};var wrapDataSourceAction=function wrapDataSourceAction(callback,queryType,adapter){return function(table){for(var _len=arguments.length,args=Array(_len>1?_len-1:0),_key=1;_key<_len;_key++){args[_key-1]=arguments[_key];}// Transform arguments for find, update & delete
-var optIndex=false;var upd=false;if(['find','delete'].indexOf(queryType.query)>=0){// For find & delete, options are 3rd argument (so 2nd item in `args`)
-optIndex=1;}else if('update'===queryType.query){// For update, options are 4th argument (so 3nd item in `args`), and `upd` flag is toggled on.
-optIndex=2;upd=true;}try{if(false!==optIndex){// Options to canonical
-args[optIndex]=adapter.normalizeOptions(args[optIndex]);// Query search to cannonical
-args[0]=adapter.normalizeQuery(args[0],args[optIndex]);}remapArgs(args,optIndex,upd,queryType,getRemapFunction(adapter,table));}catch(err){return Promise.reject(err);}// Hook after promise resolution
-return callback.call.apply(callback,[adapter,table].concat(args)).then(ensureAllEntities(adapter,table));};};var ERRORS={NON_EMPTY_STR:_.template('<%= c %> <%= p %> must be a non empty string, had "<%= v %>"')};var requireName=function requireName(classname,value){if(!_.isString(value)&&value.length>0){throw new Error(ERRORS.NON_EMPTY_STR({c:classname,p:'name',v:value}));}};/**
- * Diaspora main namespace
- * @namespace Diaspora
- * @public
- * @author gerkin
- */var Diaspora={/**
-	 * Set default values if required.
-	 *
-	 * @author gerkin
-	 * @param   {Object}         entity    - Entity to set defaults in.
-	 * @param   {ModelPrototype} modelDesc - Model description.
-	 * @returns {Object} Entity merged with default values.
-	 */default:function _default(entity,modelDesc){var _this21=this;// Apply method `defaultField` on each field described
-return _.defaults(entity,_.mapValues(modelDesc,function(fieldDesc,field){return _this21.defaultField(entity[field],fieldDesc);}));},/**
-	 * Set the default on a single field according to its description.
-	 *
-	 * @author gerkin
-	 * @param   {Any}             value     - Value to default.
-	 * @param   {FieldDescriptor} fieldDesc - Description of the field to default.
-	 * @returns {Any} Defaulted value.
-	 */defaultField:function defaultField(value,fieldDesc){var out=void 0;if(!_.isUndefined(value)){out=value;}else{out=_.isFunction(fieldDesc.default)?fieldDesc.default():fieldDesc.default;}if('object'===fieldDesc.type&&_.isObject(fieldDesc.attributes)&&_.keys(fieldDesc.attributes).length>0&&!_.isNil(out)){return this.default(out,fieldDesc.attributes);}else{return out;}},/**
-	 * Create a data source (usually, a database connection) that may be used by models.
-	 *
-	 * @author gerkin
-	 * @throws  {Error} Thrown if provided `adapter` label does not correspond to any adapter registered.
-	 * @param   {string} adapterLabel - Label of the adapter used to create the data source.
-	 * @param   {Object} config       - Configuration hash. This configuration hash depends on the adapter we want to use.
-	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
-	 */createDataSource:function createDataSource(adapterLabel,config){if(!adapters.hasOwnProperty(adapterLabel)){try{require("diaspora-"+adapterLabel);}catch(e){throw new Error("Unknown adapter \""+adapterLabel+"\". Available currently are "+Object.keys(adapters).join(', ')+". Additionnaly, an error was thrown: "+e);}}var baseAdapter=new adapters[adapterLabel](config);var newDataSource=new Proxy(baseAdapter,{get:function get(target,key){// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
-if(_.isString(key)){var method=key.match(/^(find|update|insert|delete)(Many|One)$/);if(null!==method){method[2]=method[2].toLowerCase();method=_.mapKeys(method.slice(0,3),function(val,key){return['full','query','number'][key];});return wrapDataSourceAction(target[key],method,target);}}return target[key];}});return newDataSource;},/**
-	 * Stores the data source with provided label.
-	 *
-	 * @author gerkin
-	 * @throws  {Error} Error is thrown if parameters are incorrect or the name is already used or `dataSource` is not an adapter.
-	 * @param   {string}          name       - Name associated with this datasource.
-	 * @param   {DiasporaAdapter} dataSource - Datasource itself.
-	 * @returns {undefined} This function does not return anything.
-	 */registerDataSource:function registerDataSource(name,dataSource){requireName('DataSource',name);if(dataSources.hasOwnProperty(name)){throw new Error("DataSource name already used, had \""+name+"\"");}/*		if ( !( dataSource instanceof Diaspora.components.Adapters.Adapter )) {
-			throw new Error( 'DataSource must be an instance inheriting "DiasporaAdapter"' );
-		}*/dataSource.name=name;_.merge(dataSources,_defineProperty({},name,dataSource));return dataSource;},/**
-	 * Create a data source (usually, a database connection) that may be used by models.
-	 *
-	 * @author gerkin
-	 * @throws  {Error} Thrown if provided `adapter` label does not correspond to any adapter registered.
-	 * @param   {string} sourceName   - Name associated with this datasource.
-	 * @param   {string} adapterLabel - Label of the adapter used to create the data source.
-	 * @param   {Object} configHash   - Configuration hash. This configuration hash depends on the adapter we want to use.
-	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
-	 */createNamedDataSource:function createNamedDataSource(sourceName,adapterLabel,configHash){var dataSource=Diaspora.createDataSource(adapterLabel,configHash);return Diaspora.registerDataSource(sourceName,dataSource);},/**
-	 * Create a new Model with provided description.
-	 *
-	 * @author gerkin
-	 * @throws  {Error} Thrown if parameters are incorrect.
-	 * @param   {string} name      - Name associated with this datasource.
-	 * @param   {Object} modelDesc - Description of the model to define.
-	 * @returns {Model} Model created.
-	 */declareModel:function declareModel(name,modelDesc){if(!_.isString(name)&&name.length>0){requireName('Model',name);}if(!_.isObject(modelDesc)){throw new Error('"modelDesc" must be an object');}var model=new Diaspora.components.Model(name,modelDesc);_.assign(models,_defineProperty({},name,model));return model;},/**
-	 * Register a new adapter and make it available to use by models.
-	 *
-	 * @author gerkin
-	 * @throws  {Error} Thrown if an adapter already exists with same label.
-	 * @throws  {TypeError} Thrown if adapter does not extends {@link Adapters.DiasporaAdapter}.
-	 * @param   {string}                   label   - Label of the adapter to register.
-	 * @param   {Adapters.DiasporaAdapter} adapter - The adapter to register.
-	 * @returns {undefined} This function does not return anything.
-	 */registerAdapter:function registerAdapter(label,adapter){if(adapters.hasOwnProperty(label)){throw new Error("Adapter with label \""+label+"\" already exists.");}// Check inheritance of adapter
-/*if ( !( adapter.prototype instanceof Diaspora.components.Adapters.Adapter )) {
-			throw new TypeError( `Trying to register an adapter with label "${ label }", but it does not extends DiasporaAdapter.` );
-		}*/adapters[label]=adapter;},/**
-	 * Hash containing all available models.
-	 *
-	 * @type {Object}
-	 * @property {Model} * - Model associated with that name.
-	 * @memberof Diaspora
-	 * @public
-	 * @author gerkin
-	 * @see Use {@link Diaspora.declareModel} to add models.
-	 */models:models,/**
-	 * Hash containing all available data sources.
-	 *
-	 * @type {Object}
-	 * @property {Adapters.DiasporaAdapter} * - Instances of adapters declared.
-	 * @memberof Diaspora
-	 * @private
-	 * @author gerkin
-	 * @see Use {@link Diaspora.createNamedDataSource} or {@link Diaspora.registerDataSource} to make data sources available for models.
-	 */dataSources:dataSources,/**
-	 * Hash containing all available adapters. The only universal adapter is `inMemory`.
-	 *
-	 * @type {Object}
-	 * @property {Adapters.DiasporaAdapter}        *        - Adapter constructor. Those constructors must be subclasses of DiasporaAdapter.
-	 * @property {Adapters.InMemorDiasporaAdapter} inMemory - InMemoryDiasporaAdapter constructor.
-	 * @memberof Diaspora
-	 * @private
-	 * @author gerkin
-	 * @see Use {@link Diaspora.registerAdapter} to add adapters.
-	 */adapters:adapters,/**
-	 * Dependencies of Diaspora.
-	 *
-	 * @type {Object}
-	 * @property {Bluebird}        Promise          - Bluebird lib.
-	 * @property {Lodash}          _                - Lodash lib.
-	 * @property {SequentialEvent} sequential-event - SequentialEvent lib.
-	 * @memberof Diaspora
-	 * @private
-	 * @author gerkin
-	 */dependencies:dependencies,/**
-	 * Logger used by Diaspora and its adapters. You can use this property to configure winston. On brower environment, this is replaced by a reference to global {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/console Console}.
-	 *
-	 * @type {Winston|Console}
-	 * @memberof Diaspora
-	 * @public
-	 * @author gerkin
-	 */logger:logger};module.exports=Diaspora;// Load components after export, so requires of Diaspora returns a complete object
-/**
- * Hash of components exposed by Diaspora.
- *
- * @type {Object}
- * @memberof Diaspora
- * @private
- * @author gerkin
- */Diaspora.components={Errors:{ExtendableError:require('./errors/extendableError'),EntityValidationError:require('./errors/entityValidationError'),SetValidationError:require('./errors/setValidationError'),EntityStateError:require('./errors/entityStateError')}};_.assign(Diaspora.components,{Adapters:{Adapter:require('./adapters/base/adapter'),Entity:require('./adapters/base/entity')}});_.assign(Diaspora.components,{Model:require('./model'),EntityFactory:require('./entityFactory'),Entity:require('./entityFactory').Entity,Set:require('./set'),Validator:require('./validator')});// Register available built-in adapters
-Diaspora.registerAdapter('inMemory',require('./adapters/inMemory/adapter'));// Register webStorage only if in browser
-if(process.browser){Diaspora.registerAdapter('webStorage',require('./adapters/webStorage/adapter'));}}).call(this,require('_process'));},{"./adapters/base/adapter":3,"./adapters/base/entity":4,"./adapters/inMemory/adapter":5,"./adapters/webStorage/adapter":7,"./dependencies":9,"./entityFactory":11,"./errors/entityStateError":12,"./errors/entityValidationError":13,"./errors/extendableError":14,"./errors/setValidationError":15,"./model":16,"./set":17,"./validator":19,"_process":22,"winston":undefined}],11:[function(require,module,exports){'use strict';var _require7=require('./dependencies'),_=_require7._,Promise=_require7.Promise,SequentialEvent=_require7.SequentialEvent;var Diaspora=require('./diaspora');var DataStoreEntity=Diaspora.components.Adapters.Entity;var EntityStateError=require('./errors/entityStateError');/**
- * @module EntityFactory
- */var DEFAULT_OPTIONS={skipEvents:false};var PRIVATE=Symbol('PRIVATE');var maybeEmit=function maybeEmit(entity,options,eventsArgs,events){events=_.castArray(events);if(options.skipEvents){return Promise.resolve(entity);}else{return entity.emit.apply(entity,[events[0]].concat(_toConsumableArray(eventsArgs))).then(function(){if(events.length>1){return maybeEmit(entity,options,eventsArgs,_.slice(events,1));}else{return Promise.resolve(entity);}});}};var maybeThrowInvalidEntityState=function maybeThrowInvalidEntityState(entity,beforeState,dataSource,method){return function(){// Depending on state, we are going to perform a different operation
-if('orphan'===beforeState){return Promise.reject(new EntityStateError('Can\'t fetch an orphan entity.'));}else{entity[PRIVATE].lastDataSource=dataSource.name;return dataSource[method](entity.table(dataSource.name),entity.uidQuery(dataSource));}};};var entityCtrSteps={bindLifecycleEvents:function bindLifecycleEvents(entity,modelDesc){// Bind lifecycle events
-_.forEach(modelDesc.lifecycleEvents,function(eventFunctions,eventName){// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
-_.forEach(_.castArray(eventFunctions),function(eventFunction){entity.on(eventName,eventFunction);});});},loadSource:function loadSource(entity,source){// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
-if(source instanceof DataStoreEntity){var _entity=entity[PRIVATE];_.assign(_entity,{state:'sync',lastDataSource:source.dataSource.name});_entity.dataSources[_entity.lastDataSource]=source;source=entity.deserialize(_.omit(source.toObject(),['id']));}return source;}};/**
- * The entity is the class you use to manage a single document in all data sources managed by your model.
- * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
- *
- * @extends SequentialEvent
- */var Entity=function(_SequentialEvent2){_inherits(Entity,_SequentialEvent2);/**
-	 * Create a new entity.
-	 *
-	 * @author gerkin
-	 * @param {string}                                   name        - Name of this model.
-	 * @param {ModelDescription}                         modelDesc   - Model configuration that generated the associated `model`.
-	 * @param {Model}                                    model       - Model that will spawn entities.
-	 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.
-	 *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
-	 */function Entity(name,modelDesc,model){var source=arguments.length>3&&arguments[3]!==undefined?arguments[3]:{};_classCallCheck(this,Entity);var modelAttrsKeys=_.keys(modelDesc.attributes);// ### Init defaults
-var _this22=_possibleConstructorReturn(this,(Entity.__proto__||Object.getPrototypeOf(Entity)).call(this));var dataSources=Object.seal(_.mapValues(model.dataSources,function(){return undefined;}));var _this={state:'orphan',lastDataSource:null,dataSources:dataSources,name:name,modelDesc:modelDesc,model:model};_this22[PRIVATE]=_this;// ### Load datas from source
-source=entityCtrSteps.loadSource(_this22,source);// ### Final validation
-// Check keys provided in source
-var sourceDModel=_.difference(source,modelAttrsKeys);if(0!==sourceDModel.length){// Later, add a criteria for schemaless models
-throw new Error("Source has unknown keys: "+JSON.stringify(sourceDModel)+" in "+JSON.stringify(source));}// ### Generate prototype & attributes
-// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
-_this.attributes=Diaspora.default(_.cloneDeep(source),modelDesc.attributes);source=null;// ### Load events
-entityCtrSteps.bindLifecycleEvents(_this22,modelDesc);return _this22;}/**
-	 * Generate the query to get this unique entity in the desired data source.
-	 *
-	 * @author gerkin
-	 * @param   {Adapters.DiasporaAdapter} dataSource - Name of the data source to get query for.
-	 * @returns {Object} Query to find this entity.
-	 */_createClass(Entity,[{key:"uidQuery",value:function uidQuery(dataSource){return{id:this[PRIVATE].attributes.idHash[dataSource.name]};}/**
-	 * Return the table of this entity in the specified data source.
-	 *
-	 * @author gerkin
-	 * @returns {string} Name of the table.
-	 */},{key:"table",value:function table()/*sourceName*/{// Will be used later
-return this[PRIVATE].name;}/**
-	 * Check if the entity matches model description.
-	 *
-	 * @author gerkin
-	 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
-	 * @returns {undefined} This function does not return anything.
-	 * @see Validator.Validator#validate
-	 */},{key:"validate",value:function validate(){this.constructor.model.validator.validate(this[PRIVATE].attributes);}/**
-	 * Remove all editable properties & replace them with provided object.
-	 *
-	 * @author gerkin
-	 * @param   {Object} [newContent={}] - Replacement content.
-	 * @returns {module:EntityFactory~Entity} Returns `this`.
-	 */},{key:"replaceAttributes",value:function replaceAttributes(){var newContent=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};newContent.idHash=this[PRIVATE].attributes.idHash;this[PRIVATE].attributes=newContent;return this;}/**
-	 * Generate a diff update query by checking deltas with last source interaction.
-	 *
-	 * @author gerkin
-	 * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
-	 * @returns {Object} Diff query.
-	 */},{key:"getDiff",value:function getDiff(dataSource){var _this23=this;var dataStoreEntity=this[PRIVATE].dataSources[dataSource.name];var dataStoreObject=dataStoreEntity.toObject();var keys=_(this[PRIVATE].attributes).keys().concat(_.keys(dataStoreObject)).uniq().difference(['idHash']).value();var values=_(keys).filter(function(key){return _this23[PRIVATE].attributes[key]!==dataStoreObject[key];}).map(function(key){return _this23[PRIVATE].attributes[key];}).value();var diff=_.zipObject(keys,values);return diff;}/**
-	 * Returns a copy of this entity attributes.
-	 *
-	 * @author gerkin
-	 * @returns {Object} Attributes of this entity.
-	 */},{key:"toObject",value:function toObject(){return this[PRIVATE].attributes;}/**
-	 * Applied before persisting the entity, this function is in charge to convert entity convinient attributes to a raw entity.
-	 *
-	 * @author gerkin
-	 * @param   {Object} data - Data to convert to primitive types.
-	 * @returns {Object} Object with Primitives-only types.
-	 */},{key:"serialize",value:function serialize(data){return _.cloneDeep(data);}/**
-	 * Applied after retrieving the entity, this function is in charge to convert entity raw attributes to convinient types.
-	 *
-	 * @author gerkin
-	 * @param   {Object} data - Data to convert from primitive types.
-	 * @returns {Object} Object with Primitives & non primitives types.
-	 */},{key:"deserialize",value:function deserialize(data){return _.cloneDeep(data);}/**
-	 * Save this entity in specified data source.
-	 *
-	 * @fires EntityFactory.Entity#beforeUpdate
-	 * @fires EntityFactory.Entity#afterUpdate
-	 * @author gerkin
-	 * @param   {string}  sourceName                 - Name of the data source to persist entity in.
-	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
-	 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
-	 */},{key:"persist",value:function persist(sourceName){var _this24=this;var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};_.defaults(options,DEFAULT_OPTIONS);// Change the state of the entity
-var beforeState=this[PRIVATE].state;this[PRIVATE].state='syncing';// Generate events args
-var dataSource=this.constructor.model.getDataSource(sourceName);var eventsArgs=[dataSource.name];var _maybeEmit=_.partial(maybeEmit,this,options,eventsArgs);// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
-var suffix='orphan'===beforeState?'Create':'Update';return _maybeEmit(['beforePersist','beforeValidate']).then(function(){return _this24.validate();}).then(function(){return _maybeEmit(['afterValidate',"beforePersist"+suffix]);}).then(function(){_this24[PRIVATE].lastDataSource=dataSource.name;// Depending on state, we are going to perform a different operation
-if('orphan'===beforeState){return dataSource.insertOne(_this24.table(sourceName),_this24.toObject());}else{return dataSource.updateOne(_this24.table(sourceName),_this24.uidQuery(dataSource),_this24.getDiff(dataSource));}}).then(function(dataStoreEntity){_this24[PRIVATE].state='sync';_this24[PRIVATE].attributes=dataStoreEntity.toObject();_this24[PRIVATE].dataSources[dataSource.name]=dataStoreEntity;return _maybeEmit(["afterPersist"+suffix,'afterPersist']);});}/**
-	 * Reload this entity from specified data source.
-	 *
-	 * @fires EntityFactory.Entity#beforeFind
-	 * @fires EntityFactory.Entity#afterFind
-	 * @author gerkin
-	 * @param   {string}  sourceName                 - Name of the data source to fetch entity from.
-	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeFind` and `afterFind`.
-	 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
-	 */},{key:"fetch",value:function fetch(sourceName){var _this25=this;var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};_.defaults(options,DEFAULT_OPTIONS);// Change the state of the entity
-var beforeState=this[PRIVATE].state;this[PRIVATE].state='syncing';// Generate events args
-var dataSource=this.constructor.model.getDataSource(sourceName);var eventsArgs=[dataSource.name,this.serialize(this[PRIVATE].attributes)];var _maybeEmit=_.partial(maybeEmit,this,options,eventsArgs);return _maybeEmit('beforeFetch').then(maybeThrowInvalidEntityState(this,beforeState,dataSource,'findOne')).then(function(dataStoreEntity){_this25[PRIVATE].state='sync';_this25[PRIVATE].attributes=dataStoreEntity.toObject();_this25[PRIVATE].dataSources[dataSource.name]=dataStoreEntity;return _maybeEmit('afterFetch');});}/**
-	 * Delete this entity from the specified data source.
-	 *
-	 * @fires EntityFactory.Entity#beforeDelete
-	 * @fires EntityFactory.Entity#afterDelete
-	 * @author gerkin
-	 * @param   {string}  sourceName                 - Name of the data source to delete entity from.
-	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeDelete` and `afterDelete`.
-	 * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`.
-	 */},{key:"destroy",value:function destroy(sourceName){var _this26=this;var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};_.defaults(options,DEFAULT_OPTIONS);// Change the state of the entity
-var beforeState=this[PRIVATE].state;this[PRIVATE].state='syncing';// Generate events args
-var dataSource=this.constructor.model.getDataSource(sourceName);var eventsArgs=[dataSource.name];var _maybeEmit=_.partial(maybeEmit,this,options,eventsArgs);return _maybeEmit('beforeDestroy').then(maybeThrowInvalidEntityState(this,beforeState,dataSource,'deleteOne')).then(function(){// If this was our only data source, then go back to orphan state
-if(0===_.without(_this26[PRIVATE].model.dataSources,dataSource.name).length){_this26[PRIVATE].state='orphan';}else{_this26[PRIVATE].state='sync';delete _this26[PRIVATE].attributes.idHash[dataSource.name];}_this26[PRIVATE].dataSources[dataSource.name]=undefined;return _maybeEmit('afterDestroy');});}/**
-	 * Hash that links each data source with its name. This object is prepared with keys from model sources, and sealed.
-	 *
-	 * @type {Object}
-	 * @author gerkin
-	 */},{key:"dataSources",get:function get(){return this[PRIVATE].dataSources;}/**
-	 * TODO.
-	 *
-	 * @type {TODO}
-	 * @author gerkin
-	 */},{key:"attributes",get:function get(){return this[PRIVATE].attributes;}/**
-	 * Get entity's current state.
-	 *
-	 * @type {Entity.State}
-	 * @author gerkin
-	 */},{key:"state",get:function get(){return this[PRIVATE].state;}/**
-	 * Get entity's last data source.
-	 *
-	 * @type {null|string}
-	 * @author gerkin
-	 */},{key:"lastDataSource",get:function get(){return this[PRIVATE].lastDataSource;}}]);return Entity;}(SequentialEvent);/**
- * This factory function generate a new class constructor, prepared for a specific model.
- *
- * @method EntityFactory
- * @public
- * @static
- * @param   {string}           name       - Name of this model.
- * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
- * @param   {Model}            model      - Model that will spawn entities.
- * @returns {module:EntityFactory~Entity} Entity constructor to use with this model.
- * @property {module:EntityFactory~Entity} Entity Entity constructor
- */var EntityFactory=function EntityFactory(name,modelDesc,model){/**
-	 * @ignore
-	 */var SubEntity=function(_Entity){_inherits(SubEntity,_Entity);function SubEntity(){_classCallCheck(this,SubEntity);return _possibleConstructorReturn(this,(SubEntity.__proto__||Object.getPrototypeOf(SubEntity)).apply(this,arguments));}_createClass(SubEntity,null,[{key:"name",/**
-		 * Name of the class.
-		 *
-		 * @type {string}
-		 * @author gerkin
-		 */get:function get(){return name+"Entity";}/**
-		 * Reference to this entity's model.
-		 *
-		 * @type {Model}
-		 * @author gerkin
-		 */},{key:"model",get:function get(){return model;}}]);return SubEntity;}(Entity);// We use keys `methods` and not `functions` as explained in this [StackOverflow thread](https://stackoverflow.com/a/155655/4839162).
-// Extend prototype with methods in our model description
-_.forEach(modelDesc.methods,function(method,methodName){SubEntity.prototype[methodName]=method;});// Add static methods
-_.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEntity[staticMethodName]=staticMethod;});return SubEntity.bind(SubEntity,name,modelDesc,model);};EntityFactory.Entity=Entity;// =====
-// ## Lifecycle Events
-// -----
-// ### Persist
-/**
- * @event EntityFactory.Entity#beforePersist
- * @type {String}
- *//**
- * @event EntityFactory.Entity#beforeValidate
- * @type {String}
- *//**
- * @event EntityFactory.Entity#afterValidate
- * @type {String}
- *//**
- * @event EntityFactory.Entity#beforePersistCreate
- * @type {String}
- *//**
- * @event EntityFactory.Entity#beforePersistUpdate
- * @type {String}
- *//**
- * @event EntityFactory.Entity#afterPersistCreate
- * @type {String}
- *//**
- * @event EntityFactory.Entity#afterPersistUpdate
- * @type {String}
- *//**
- * @event EntityFactory.Entity#afterPersist
- * @type {String}
- */// -----
-// ### Find
-/**
- * @event EntityFactory.Entity#beforeFind
- * @type {String}
- *//**
- * @event EntityFactory.Entity#afterFind
- * @type {String}
- */// -----
-// ### Destroy
-/**
- * @event EntityFactory.Entity#beforeDestroy
- * @type {String}
- *//**
- * @event EntityFactory.Entity#afterDestroy
- * @type {String}
- */module.exports=EntityFactory;},{"./dependencies":9,"./diaspora":10,"./errors/entityStateError":12}],12:[function(require,module,exports){'use strict';var ExtendableError=require('./extendableError');/**
- * @module Errors/EntityStateError
- *//**
- * This class represents an error related to validation.
- * @extends module:Errors/ExtendableError~ExtendableError
- */var EntityStateError=function(_ExtendableError){_inherits(EntityStateError,_ExtendableError);/**
-	 * Construct a new error related to an invalide state of the entity.
-	 * 
-	 * @author gerkin
-	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
-	 */function EntityStateError(){var _ref3;_classCallCheck(this,EntityStateError);for(var _len2=arguments.length,errorArgs=Array(_len2),_key2=0;_key2<_len2;_key2++){errorArgs[_key2]=arguments[_key2];}return _possibleConstructorReturn(this,(_ref3=EntityStateError.__proto__||Object.getPrototypeOf(EntityStateError)).call.apply(_ref3,[this].concat(errorArgs)));}return EntityStateError;}(ExtendableError);module.exports=EntityStateError;},{"./extendableError":14}],13:[function(require,module,exports){'use strict';var _require8=require('../dependencies'),_=_require8._;var ExtendableError=require('./extendableError');var stringifyValidationObject=function stringifyValidationObject(validationErrors){return _(validationErrors).mapValues(function(error,key){return key+" => "+JSON.stringify(error.value)+"\n* "+_(error).omit(['value']).values().map(_.identity).value();}).values().join('\n* ');};/**
- * @module Errors/EntityValidationError
- *//**
- * This class represents an error related to validation.
- *
- * @extends module:Errors/ExtendableError~ExtendableError
- */var EntityValidationError=function(_ExtendableError2){_inherits(EntityValidationError,_ExtendableError2);/**
-	 * Construct a new validation error.
-	 *
-	 * @author gerkin
-	 * @param {Object} validationErrors - Object describing validation errors, usually returned by {@link Diaspora.check}.
-	 * @param {string} message          - Message of this error.
-	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
-	 */function EntityValidationError(validationErrors,message){var _ref4;_classCallCheck(this,EntityValidationError);message+="\n"+stringifyValidationObject(validationErrors);for(var _len3=arguments.length,errorArgs=Array(_len3>2?_len3-2:0),_key3=2;_key3<_len3;_key3++){errorArgs[_key3-2]=arguments[_key3];}var _this29=_possibleConstructorReturn(this,(_ref4=EntityValidationError.__proto__||Object.getPrototypeOf(EntityValidationError)).call.apply(_ref4,[this,message].concat(errorArgs)));_this29.validationErrors=validationErrors;return _this29;}return EntityValidationError;}(ExtendableError);module.exports=EntityValidationError;},{"../dependencies":9,"./extendableError":14}],14:[function(require,module,exports){'use strict';/**
- * @module Errors/ExtendableError
- *//**
- * This class is the base class for custom Diaspora errors
- *
- * @extends Error
- */var ExtendableError=function(_extendableBuiltin2){_inherits(ExtendableError,_extendableBuiltin2);/**
-	 * Construct a new extendable error.
-	 *
-	 * @author gerkin
-	 * @param {string} message          - Message of this error.
-	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
-	 */function ExtendableError(message){var _ref5;_classCallCheck(this,ExtendableError);for(var _len4=arguments.length,errorArgs=Array(_len4>1?_len4-1:0),_key4=1;_key4<_len4;_key4++){errorArgs[_key4-1]=arguments[_key4];}var _this30=_possibleConstructorReturn(this,(_ref5=ExtendableError.__proto__||Object.getPrototypeOf(ExtendableError)).call.apply(_ref5,[this,message].concat(errorArgs)));_this30.name=_this30.constructor.name;_this30.message=message;if('function'===typeof Error.captureStackTrace){Error.captureStackTrace(_this30,_this30.constructor);}else{_this30.stack=new Error(message).stack;}return _this30;}return ExtendableError;}(_extendableBuiltin(Error));module.exports=ExtendableError;},{}],15:[function(require,module,exports){'use strict';var _require9=require('../dependencies'),_=_require9._;var ExtendableError=require('./extendableError');/**
- * @module Errors/SetValidationError
- *//**
- * This class represents an error related to validation on a set.
- *
- * @extends module:Errors/ExtendableError~ExtendableError
- */var SetValidationError=function(_ExtendableError3){_inherits(SetValidationError,_ExtendableError3);/**
-	 * Construct a new validation error.
-	 *
-	 * @author gerkin
-	 * @see Diaspora.check
-	 * @param {string}                                                      message          - Message of this error.
-	 * @param {module:Errors/EntityValidationError~EntityValidationError[]} validationErrors - Array of validation errors.
-	 * @param {*}                                                           errorArgs        - Arguments to transfer to parent Error.
-	 */function SetValidationError(message,validationErrors){var _ref6;_classCallCheck(this,SetValidationError);message+="[\n"+_(validationErrors).map(function(error,index){if(_.isNil(error)){return false;}else{return index+": "+error.message.replace(/\n/g,'\n	');}}).filter(_.identity).join(',\n')+"\n]";for(var _len5=arguments.length,errorArgs=Array(_len5>2?_len5-2:0),_key5=2;_key5<_len5;_key5++){errorArgs[_key5-2]=arguments[_key5];}var _this31=_possibleConstructorReturn(this,(_ref6=SetValidationError.__proto__||Object.getPrototypeOf(SetValidationError)).call.apply(_ref6,[this,message].concat(errorArgs)));_this31.validationErrors=validationErrors;return _this31;}return SetValidationError;}(ExtendableError);module.exports=SetValidationError;},{"../dependencies":9,"./extendableError":14}],16:[function(require,module,exports){'use strict';var _require10=require('./dependencies'),_=_require10._,Promise=_require10.Promise;var EntityFactory=require('./entityFactory');var Diaspora=require('./diaspora');var Set=require('./set');var Validator=require('./validator');var entityPrototypeProperties=EntityFactory.entityPrototypeProperties;/**
- * @module Model
- *//**
- * Object describing a model.
- *
- * @typedef  {Object} ModelConfiguration.ModelDescription
- * @author gerkin
- * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
- * @property {ModelConfiguration.AttributesDescriptor} attributes      - Attributes of the model.
- * @property {Object<string, Function>}                methods         - Methods to add to entities prototype.
- * @property {Object<string, Function>}                staticMethods   - Static methods to add to entities.
- * @property {Object<string, Function|Function[]>}     lifecycleEvents - Events to bind on entities.
- */var findArgs=function findArgs(model){var queryFind=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];var ret=void 0;if(_.isString(options)&&!!_.isNil(dataSourceName)){ret={dataSourceName:options,options:{}};}else if(_.isString(queryFind)&&!!_.isNil(options)&&!!_.isNil(dataSourceName)){ret={dataSourceName:queryFind,queryFind:{},options:{}};}else{ret={queryFind:queryFind,options:options,dataSourceName:dataSourceName};}ret.dataSource=model.getDataSource(ret.dataSourceName);return ret;};var makeSet=function makeSet(model){return function(dataSourceEntities){var newEntities=_.map(dataSourceEntities,function(dataSourceEntity){return new model.entityFactory(dataSourceEntity);});var set=new Set(model,newEntities);return Promise.resolve(set);};};var makeEntity=function makeEntity(model){return function(dataSourceEntity){if(_.isNil(dataSourceEntity)){return Promise.resolve();}var newEntity=new model.entityFactory(dataSourceEntity);return Promise.resolve(newEntity);};};var doDelete=function doDelete(methodName,model){return function(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];var args=findArgs(model,queryFind,options,dataSourceName);return args.dataSource[methodName](model.name,args.queryFind,args.options);};};var doFindUpdate=function doFindUpdate(model,plural,queryFind,options,dataSourceName,update){var _queryComponents$data;var queryComponents=findArgs(model,queryFind,options,dataSourceName);var args=_([model.name,queryComponents.queryFind]).push(update).push(queryComponents.options).compact().value();return(_queryComponents$data=queryComponents.dataSource)[(update?'update':'find')+(plural?'Many':'One')].apply(_queryComponents$data,_toConsumableArray(args)).then((plural?makeSet:makeEntity)(model));};var normalizeRemaps=function normalizeRemaps(modelDesc){var sources=modelDesc.sources;if(_.isString(sources)){sources=_defineProperty({},modelDesc.sources,true);}else if(_.isArrayLike(sources)){sources=_.zipObject(sources,_.times(sources.length,_.constant({})));}else{sources=_.mapValues(sources,function(remap,dataSourceName){if(true===remap){return{};}else if(_.isObject(remap)){return remap;}else{throw new TypeError("Datasource \""+dataSourceName+"\" value is invalid: expect `true` or a remap hash, but have "+JSON.stringify(remap));}});}return sources;};/**
- * The model class is used to interact with the population of all data of the same type.
- */var Model=function(){/**
-	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-	 *
-	 * @author gerkin
-	 * @param {string}                              name      - Name of the model.
-	 * @param {ModelConfiguration.ModelDescription} modelDesc - Hash representing the configuration of the model.
-	 */function Model(name,modelDesc){_classCallCheck(this,Model);// Check model configuration
-var reservedPropIntersect=_.intersection(entityPrototypeProperties,_.keys(modelDesc.attributes));if(0!==reservedPropIntersect.length){throw new Error(JSON.stringify(reservedPropIntersect)+" is/are reserved property names. To match those column names in data source, please use the data source mapper property");}else if(!modelDesc.hasOwnProperty('sources')||!(_.isArrayLike(modelDesc.sources)||_.isObject(modelDesc.sources))){throw new TypeError("Expect model sources to be either an array or an object, had "+JSON.stringify(modelDesc.sources)+".");}// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
-var sourcesNormalized=normalizeRemaps(modelDesc);// List sources required by this model
-var _ref7=[_.keys(sourcesNormalized),Diaspora.dataSources],sourceNames=_ref7[0],scopeAvailableSources=_ref7[1];var modelSources=_.pick(scopeAvailableSources,sourceNames);var missingSources=_.difference(sourceNames,_.keys(modelSources));if(0!==missingSources.length){throw new Error("Missing data sources "+missingSources.map(function(v){return"\""+v+"\"";}).join(', '));}// Now, we are sure that config is valid. We can configure our datasources with model options, and set `this` properties.
-_.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=modelSources[sourceName];sourceConfiguring.configureCollection(name,remap);});_.assign(this,{dataSources:modelSources,defaultDataSource:sourceNames[0],name:name,entityFactory:EntityFactory(name,modelDesc,this),validator:new Validator(modelDesc.attributes)});}/**
-	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-	 *
-	 * @author gerkin
-	 * @throws  {Error} Thrown if requested source name does not exists.
-	 * @param   {string} [sourceName=Model.defaultDataSource] - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.sources.
-	 * @returns {Adapters.DiasporaAdapter} Source adapter with requested name.
-	 */_createClass(Model,[{key:"getDataSource",value:function getDataSource(sourceName){if(_.isNil(sourceName)){sourceName=this.defaultDataSource;}else if(!this.dataSources.hasOwnProperty(sourceName)){throw new Error("Unknown data source \""+sourceName+"\" in model \""+this.name+"\", available are "+_.keys(this.dataSources).map(function(v){return"\""+v+"\"";}).join(', '));}return this.dataSources[sourceName];}/**
-	 * Create a new *orphan* {@link Entity entity}.
-	 *
-	 * @author gerkin
-	 * @param   {Object} source - Object to copy attributes from.
-	 * @returns {Entity} New *orphan* entity.
-	 */},{key:"spawn",value:function spawn(source){var newEntity=new this.entityFactory(source);return newEntity;}/**
-	 * Create multiple new *orphan* {@link Entity entities}.
-	 *
-	 * @author gerkin
-	 * @param   {Object[]} sources - Array of objects to copy attributes from.
-	 * @returns {Set} Set with new *orphan* entities.
-	 */},{key:"spawnMany",value:function spawnMany(sources){var _this32=this;return new Set(this,_.map(sources,function(source){return _this32.spawn(source);}));}/**
-	 * Insert a raw source object in the data store.
-	 *
-	 * @author gerkin
-	 * @param   {Object} source                                   - Object to copy attributes from.
-	 * @param   {string} [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
-	 * @returns {Promise} Promise resolved with new *sync* {@link Entity entity}.
-	 */},{key:"insert",value:function insert(source,dataSourceName){var _this33=this;var dataSource=this.getDataSource(dataSourceName);return dataSource.insertOne(this.name,source).then(function(entity){return Promise.resolve(new _this33.entityFactory(entity));});}/**
-	 * Insert multiple raw source objects in the data store.
-	 *
-	 * @author gerkin
-	 * @param   {Object[]} sources                                  - Array of object to copy attributes from.
-	 * @param   {string}   [dataSourceName=Model.defaultDataSource] - Name of the data source to insert in.
-	 * @returns {Promise} Promise resolved with a {@link Set set} containing new *sync* entities.
-	 */},{key:"insertMany",value:function insertMany(sources,dataSourceName){var dataSource=this.getDataSource(dataSourceName);return dataSource.insertMany(this.name,sources).then(makeSet(this));}/**
-	 * Retrieve a single entity from specified data source that matches provided `queryFind` and `options`.
-	 *
-	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
-	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entity from.
-	 * @returns {Promise} Promise resolved with the found {@link Entity entity} in *sync* state.
-	 */},{key:"find",value:function find(queryFind,options,dataSourceName){return doFindUpdate(this,false,queryFind,options,dataSourceName);}/**
-	 * Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 *
-	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
-	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entities from.
-	 * @returns {Promise} Promise resolved with a {@link Set set} of found entities in *sync* state.
-	 */},{key:"findMany",value:function findMany(queryFind,options,dataSourceName){return doFindUpdate(this,true,queryFind,options,dataSourceName);}/**
-	 * Update a single entity from specified data source that matches provided `queryFind` and `options`.
-	 *
-	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entity.
-	 * @param   {Object}                               update                                   - Attributes to update on matched set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
-	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entity from.
-	 * @returns {Promise} Promise resolved with the updated {@link Entity entity} in *sync* state.
-	 */},{key:"update",value:function update(queryFind,_update){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];return doFindUpdate(this,false,queryFind,options,dataSourceName,_update);}/**
-	 * Update multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 *
-	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
-	 * @param   {Object}                               update                                   - Attributes to update on matched set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
-	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entities from.
-	 * @returns {Promise} Promise resolved with the {@link Set set} of found entities in *sync* state.
-	 */},{key:"updateMany",value:function updateMany(queryFind,update){var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};var dataSourceName=arguments[3];return doFindUpdate(this,true,queryFind,options,dataSourceName,update);}/**
-	 * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
-	 *
-	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind]                           - Query to get desired entity.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
-	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entity from.
-	 * @returns {Promise} Promise resolved with `undefined`.
-	 */},{key:"delete",value:function _delete(queryFind){var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];return doDelete('deleteOne',this)(queryFind,options,dataSourceName);}/**
-	 * Delete multiple entities from specified data source that matches provided `queryFind` and `options`.
-	 *
-	 * @author gerkin
-	 * @param   {QueryLanguage#SelectQueryOrCondition} [queryFind={}]                           - Query to get desired entities.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}]                             - Options for this query.
-	 * @param   {string}                               [dataSourceName=Model.defaultDataSource] - Name of the data source to get entities from.
-	 * @returns {Promise} Promise resolved with `undefined`.
-	 */},{key:"deleteMany",value:function deleteMany(){var queryFind=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};var options=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var dataSourceName=arguments[2];return doDelete('deleteMany',this)(queryFind,options,dataSourceName);}}]);return Model;}();module.exports=Model;},{"./dependencies":9,"./diaspora":10,"./entityFactory":11,"./set":17,"./validator":19}],17:[function(require,module,exports){'use strict';var _require11=require('./dependencies'),_=_require11._,Promise=_require11.Promise;var Utils=require('./utils');var SetValidationError=require('./errors/setValidationError');/**
- * @module Set
- *//**
- * Get the verb of the action (either the `verb` param or the string at the `index` position in `verb` array).
- *
- * @author Gerkin
- * @inner
- * @param   {string|string[]} verb - Verbs to get item from.
- * @param   {integer} index        - Index of the verb to pick.
- * @returns {string} Verb for this index's item.
- */var getVerb=function getVerb(verb,index){return _.isArray(verb)?verb[index]:verb;};/**
- * Emit events on each entities.
- *
- * @author Gerkin
- * @inner
- * @param   {SequentialEvent[]} entities - Items to iterate over.
- * @param   {string|string[]}   verb     - Verb of the action to emit.
- * @param   {string}            prefix   - Prefix to prepend to the verb.
- * @returns {Promise} Promise resolved once all promises are done.
- */var allEmit=function allEmit(entities,verb,prefix){return Promise.all(entities.map(function(entity,index){return entity.emit(""+prefix+getVerb(verb,index));}));};/**
- * Emit `before` & `after` events around the entity action. `this` must be bound to the calling {@link Set}.
- *
- * @author Gerkin
- * @inner
- * @this Set
- * @param   {string} sourceName    - Name of the data source to interact with.
- * @param   {string} action        - Name of the entity function to apply.
- * @param   {string|string[]} verb - String or array of strings to map for events suffix.
- * @returns {Promise} Promise resolved once events are finished.
- */function wrapEventsAction(sourceName,action,verb){var _this34=this;var _allEmit=_.partial(allEmit,this.entities,verb);return _allEmit('before').then(function(){return Promise.all(_this34.entities.map(function(entity){return entity[action](sourceName,{skipEvents:true});}));}).then(function(){return _allEmit('after');});}var setProxyProps={get:function get(target,prop){if(prop in target){return target[prop];}else if(prop in target.entities){return target.entities[prop];}else if('string'===typeof prop&&prop.match(/^-?\d+$/)&&target.entities.nth(parseInt(prop))){return target.entities.nth(parseInt(prop));}},set:function set(target,prop,val){if('model'===prop){return new Error('Can\'t assign to read-only property "model".');}else if('entities'===prop){Set.checkEntitiesFromModel(val,target.model);target.entities=_(val);}}};/**
- * Collections are used to manage multiple entities at the same time. You may try to use this class as an array.
- */var Set=function(){/**
-	 * Create a new set, managing provided `entities` that must be generated from provided `model`.
-	 *
-	 * @param {Model}           model    - Model describing entities managed by this set.
-	 * @param {Entity|Entity[]} entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
-	 */function Set(model){for(var _len6=arguments.length,entities=Array(_len6>1?_len6-1:0),_key6=1;_key6<_len6;_key6++){entities[_key6-1]=arguments[_key6];}_classCallCheck(this,Set);// Flatten arguments
-entities=_(entities).flatten();// Check if each entity is from the expected model
-Set.checkEntitiesFromModel(entities.value(),model);var defined=Utils.defineEnumerableProperties(this,{/**
-			 * List entities of this set.
-			 *
-			 * @name entities
-			 * @readonly
-			 * @memberof Set
-			 * @instance
-			 * @type {LodashWrapper<Entity>}
-			 * @author Gerkin
-			 */entities:entities,/**
-			 * Model that generated this set.
-			 *
-			 * @name model
-			 * @readonly
-			 * @memberof Set
-			 * @instance
-			 * @type {Model}
-			 * @author Gerkin
-			 */model:model,/**
-			 * Number of entities in this set.
-			 *
-			 * @name length
-			 * @readonly
-			 * @memberof Set
-			 * @instance
-			 * @type {Integer}
-			 * @author Gerkin
-			 */length:{get:function get(){return this.entities.size();}}});return new Proxy(defined,setProxyProps);}/**
-	 * Check if all entities in the first argument are from the expected model.
-	 *
-	 * @author gerkin
-	 * @throws {TypeError} Thrown if one of the entity is not from provided `model`.
-	 * @param {Entity[]} entities - Array of entities to check.
-	 * @param {Model}    model    - Model expected to be the source of all entities.
-	 * @returns {undefined} This function does not return anything.
-	 */_createClass(Set,[{key:"persist",/**
-	 * Persist all entities of this collection.
-	 *
-	 * @fires EntityFactory.Entity#beforeUpdate
-	 * @fires EntityFactory.Entity#afterUpdate
-	 * @author gerkin
-	 * @param {string} sourceName - Data source name to persist in.
-	 * @returns {Promise} Promise resolved once all items are persisted.
-	 * @see {@link EntityFactory.Entity#persist}
-	 */value:function persist(sourceName){var _this35=this;var suffixes=this.entities.map(function(entity){return'orphan'===entity.state?'Create':'Update';}).value();var _allEmit=_.partial(allEmit,this.entities);return _allEmit('Persist','before').then(function(){return _allEmit('Validate','before');}).then(function(){var errors=0;var validationResults=_this35.entities.map(function(entity){try{entity.validate();return undefined;}catch(e){errors++;return e;}}).value();if(errors>0){return Promise.reject(new SetValidationError("Set validation failed for "+errors+" elements (on "+_this35.length+"): ",validationResults));}else{return Promise.resolve();}}).then(function(){return _allEmit('Validate','after');}).then(function(){return wrapEventsAction.call(_this35,sourceName,'persist',_.map(suffixes,function(suffix){return"Persist"+suffix;}));}).then(function(){return _allEmit('Persist','after');}).then(function(){return _this35;});}/**
-	 * Reload all entities of this collection.
-	 *
-	 * @fires EntityFactory.Entity#beforeFind
-	 * @fires EntityFactory.Entity#afterFind
-	 * @author gerkin
-	 * @param {string} sourceName - Data source name to reload entities from.
-	 * @returns {Promise} Promise resolved once all items are reloaded.
-	 * @see {@link EntityFactory.Entity#fetch}
-	 */},{key:"fetch",value:function fetch(sourceName){var _this36=this;return wrapEventsAction.call(this,sourceName,'fetch','Fetch').then(function(){return _this36;});}/**
-	 * Destroy all entities from this collection.
-	 *
-	 * @fires EntityFactory.Entity#beforeDelete
-	 * @fires EntityFactory.Entity#afterDelete
-	 * @author gerkin
-	 * @param {string} sourceName - Name of the data source to delete entities from.
-	 * @returns {Promise} Promise resolved once all items are destroyed.
-	 * @see {@link EntityFactory.Entity#destroy}
-	 */},{key:"destroy",value:function destroy(sourceName){var _this37=this;return wrapEventsAction.call(this,sourceName,'destroy','Destroy').then(function(){return _this37;});}/**
-	 * Update all entities in the set with given object.
-	 *
-	 * @author gerkin
-	 * @param   {Object} newData - Attributes to change in each entity of the collection.
-	 * @returns {Collection} `this`.
-	 */},{key:"update",value:function update(newData){this.entities.forEach(function(entity){Utils.applyUpdateEntity(newData,entity);});return this;}/**
-	 * Returns a POJO representation of this set's data.
-	 *
-	 * @author gerkin
-	 * @returns {Object} POJO representation of set & children.
-	 */},{key:"toObject",value:function toObject(){return this.entities.map(function(entity){return entity.toObject();}).value();}}],[{key:"checkEntitiesFromModel",value:function checkEntitiesFromModel(entities,model){entities.forEach(function(entity,index){if(entity.constructor.model!==model){throw new TypeError("Provided entity n\xB0"+index+" "+entity+" is not from model "+model+" ("+model.modelName+")");}});}}]);return Set;}();module.exports=Set;},{"./dependencies":9,"./errors/setValidationError":15,"./utils":18}],18:[function(require,module,exports){(function(global){'use strict';var _require12=require('./dependencies'),_=_require12._;/**
- * @module Utils
- */module.exports={defineEnumerableProperties:function defineEnumerableProperties(subject,handlers){var remappedHandlers=_.mapValues(handlers,function(handler){if(_.isNil(handler)||'object'!==(typeof handler==="undefined"?"undefined":_typeof(handler))||Object.getPrototypeOf(handler)!==Object.prototype){handler={value:handler};}var defaults={enumerable:true};if(!handler.hasOwnProperty('get')){defaults.writable=false;}_.defaults(handler,defaults);return handler;});return Object.defineProperties(subject,remappedHandlers);},/**
-	 * Merge update query with the entity. This operation allows to delete fields.
-	 *
-	 * @author gerkin
-	 * @param   {Object} update - Hash representing modified values. A field with an `undefined` value deletes this field from the entity.
-	 * @param   {Object} entity - Entity to update.
-	 * @returns {Object} Entity modified.
-	 */applyUpdateEntity:function applyUpdateEntity(update,entity){_.forEach(update,function(val,key){if(_.isUndefined(val)){delete entity[key];}else{entity[key]=val;}});return entity;},/**
-	 * Create a new unique id for this store's entity.
-	 * 
-	 * @author gerkin
-	 * @returns {string} Generated unique id.
-	 */generateUUID:function generateUUID(){var d=new Date().getTime();// Use high-precision timer if available
-if(global.performance&&'function'===typeof global.performance.now){d+=global.performance.now();}var uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=(d+Math.random()*16)%16|0;d=Math.floor(d/16);return('x'===c?r:r&0x3|0x8).toString(16);});return uuid;},/**
-	 * Reduce, offset or sort provided set.
-	 * 
-	 * @author gerkin
-	 * @param   {Object[]} set     - Objects retrieved from memory store.
-	 * @param   {Object}   options - Options to apply to the set.
-	 * @returns {Object[]} Set with options applied.
-	 */applyOptionsToSet:function applyOptionsToSet(set,options){_.defaults(options,{limit:Infinity,skip:0});set=set.slice(options.skip);if(set.length>options.limit){set=set.slice(0,options.limit);}return set;}};}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"./dependencies":9}],19:[function(require,module,exports){'use strict';var dependencies=require('./dependencies');var Diaspora=require('./diaspora');var EntityValidationError=Diaspora.components.Errors.EntityValidationError;var _=dependencies._;/**
- * @module Validator
- *//**
- * Execute the simple tester and return an error component if it returns falsey.
- *
- * @param   {Function} tester - The test function to invoke.
- * @returns {module:Validator~Checker} Function to execute to validate the type.
- */var validateWrongType=function validateWrongType(tester){return function(keys,fieldDesc,value){if(!tester(value)){return{type:keys.toValidatePath()+" expected to be a \""+fieldDesc.type+"\""};}};};/**
- * Prepare the check of each items in the array.
- *
- * @param   {module:Validator~Validator} validator - Validator instance that do this call.
- * @param   {Object}                     fieldDesc - Description of the field to check.
- * @param   {module:Validator~PathStack} keys      - Keys so far.
- * @returns {Function} Function to execute to validate array items.
- */var validateArrayItems=function validateArrayItems(validator,fieldDesc,keys){return function(propVal,index){if(fieldDesc.hasOwnProperty('of')){var ofArray=_.castArray(fieldDesc.of);var subErrors=_(ofArray).map(function(desc,subIndex){return validator.check(propVal,keys.clone().pushValidationProp('of',_.isArray(fieldDesc.of)?subIndex:undefined).pushEntityProp(index),{getProps:false});});if(!_.isArray(fieldDesc.of)){return subErrors.get(0);}else if(subErrors.compact().value().length===ofArray.length){return subErrors.toPlainObject().omitBy(_.isNil).value();}}return{};};};/**
- * A checker is a function that can return an error component with provided standard args.
- *
- * @callback Checker
- * @param   {module:Validator~PathStack} keys      - Pathstack so far.
- * @param   {Object}                     fieldDesc - Description of the field.
- * @param   {Any}                        value     - Value to check.
- * @returns {Object} Error component.
- *//**
- * Store for validation functions.
- *
- * @type {object}
- * @property {object<string, module:Validator~Checker>} TYPE - Type checkers.
- * @property {module:Validator~Checker} TYPE.string - String type checker.
- * @property {module:Validator~Checker} TYPE.integer - Integer type checker.
- * @property {module:Validator~Checker} TYPE.float - Float type checker.
- * @property {module:Validator~Checker} TYPE.date - Date type checker.
- * @property {module:Validator~Checker} TYPE.object - Object type checker.
- * @property {module:Validator~Checker} TYPE.array - Array type checker.
- * @property {module:Validator~Checker} TYPE.any - Type checker for type 'any'.
- * @property {module:Validator~Checker} TYPE._ - Default function for unhandled type.
- */var VALIDATIONS={TYPE:{string:validateWrongType(_.isString),integer:validateWrongType(_.isInteger),float:validateWrongType(_.isNumber),date:validateWrongType(_.isDate),object:function object(keys,fieldDesc,value){var _this38=this;if(!_.isObject(value)){return{type:keys.toValidatePath()+" expected to be a \""+fieldDesc.type+"\""};}else{var deepTest=_.isObject(fieldDesc.attributes)?_(_.assign({},fieldDesc.attributes,value)).mapValues(function(pv,propName){var propVal=value[propName];return _this38.check(propVal,keys.clone().pushValidationProp('attributes').pushProp(propName),{getProps:false});}).omitBy(_.isEmpty).value():{};if(!_.isEmpty(deepTest)){return{children:deepTest};}}},array:function array(keys,fieldDesc,value){if(!_.isArray(value)){return{type:keys.toValidatePath()+" expected to be a \""+fieldDesc.type+"\""};}else{var deepTest=_.isObject(fieldDesc.of)?_(value).map(validateArrayItems(this,fieldDesc,keys)).omitBy(_.isEmpty).value():{};if(!_.isEmpty(deepTest)){return{children:deepTest};}}},any:function any(keys,fieldDesc,value){if(!_.stubTrue(value)){return{type:keys.toValidatePath()+" expected to be assigned with any type"};}},_:function _(keys,fieldDesc){return{type:keys.toValidatePath()+" requires to be unhandled type \""+fieldDesc.type+"\""};}}};/**
- * Standard function that can be used to add steps to the validation process..
- *
- * @callback ValidationStep
- * @param   {module:Validator~ValidationStepsArgs} validationArgs - Object of arguments.
- * @returns {undefined} This function returns nothing.
- *//**
- * This object can be passed through each validation steps.
- *
- * @typedef  {Object} ValidationStepsArgs
- * @property {Object}                     error     - Error object to extend.
- * @property {Object}                     fieldDesc - Description of the field.
- * @property {module:Validator~PathStack} keys      - Pathstack representing keys so far.
- * @property {*}                          value     - Value to check.
- */var VALIDATION_STEPS=[/**
-	 * Apply the custom `validate` function or function array, if it exists.
-	 *
-	 * @function module:Validator~checkCustoms
-	 * @type {module:Validator~ValidationStep}
-	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
-	 * @returns {undefined} This function returns nothing.
-	 */function checkCustoms(validationArgs){var _this39=this;var error=validationArgs.error,fieldDesc=validationArgs.fieldDesc,keys=validationArgs.keys,value=validationArgs.value;// It the field has a `validate` property, try to use it
-var validateFcts=_(fieldDesc.validate).castArray().compact();validateFcts.forEach(function(validateFct){if(!validateFct.call(_this39,value,fieldDesc)){error.validate=keys.toValidatePath()+" custom validation failed";}});},/**
-	 * Check if the type & the existence matches the `type` & `required` specifications.
-	 *
-	 * @function module:Validator~checkTypeRequired
-	 * @type {module:Validator~ValidationStep}
-	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
-	 * @returns {undefined} This function returns nothing.
-	 */function checkTypeRequired(validationArgs){var error=validationArgs.error,fieldDesc=validationArgs.fieldDesc,keys=validationArgs.keys,value=validationArgs.value;// Check the type and the required status
-if(!_.isNil(fieldDesc.type)&&!_.isNil(fieldDesc.model)){error.spec=keys.toValidatePath()+" spec can't have both a type and a model";// Apply the `required` modifier
-}else if(true===fieldDesc.required&&_.isNil(value)){error.required=keys.toValidatePath()+" is a required property of type \""+fieldDesc.type+"\"";}else if(!_.isNil(value)){if(_.isString(fieldDesc.type)){var tester=_.get(VALIDATIONS,['TYPE',fieldDesc.type],fieldDesc.type._);_.assign(error,tester.call(this,keys,fieldDesc,value));}else{error.spec=keys.toValidatePath()+" spec \"type\" must be a string";}}},/**
-	 * Verify if the value correspond to a value in the `enum` property.
-	 *
-	 * @function module:Validator~checkEnum
-	 * @type {module:Validator~ValidationStep}
-	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
-	 * @returns {undefined} This function returns nothing.
-	 */function checkEnum(validationArgs){var error=validationArgs.error,fieldDesc=validationArgs.fieldDesc,keys=validationArgs.keys,value=validationArgs.value;// Check enum values
-if(!_.isNil(value)&&!_.isNil(fieldDesc.enum)){var result=_.some(fieldDesc.enum,function(enumVal){if(enumVal instanceof RegExp){return null!==value.match(enumVal);}else{return value===enumVal;}});if(false===result){error.enum=keys.toValidatePath()+" expected to have one of enumerated values \""+JSON.stringify(fieldDesc.enum)+"\"";}}}];/**
- * Those validation steps are called one after one during the validation of a single field.
- *
- * @const VALIDATION_STEPS
- * @type {module:Validator~ValidationStep[]}
- * @property {module:Validator~checkCustoms}      '0' - Check for `validate` field.
- * @property {module:Validator~checkTypeRequired} '1' - Check for `type` & `required` fields.
- * @property {module:Validator~checkEnum}         '2' - Check for `enum` field.
- */var PRIVATE=Symbol('PRIVATE');/**
- * The PathStack class allows model validation to follow different paths in model description & entity.
- */var PathStack=function(){/**
-	 * Constructs a pathstack.
-	 *
-	 * @author gerkin
-	 * @param {string[]} [segmentsEntity=[]]     - Keys to follow in entity.
-	 * @param {string[]} [segmentsValidation=[]] - Keys to follow in model description.
-	 */function PathStack(){var segmentsEntity=arguments.length>0&&arguments[0]!==undefined?arguments[0]:[];var segmentsValidation=arguments.length>1&&arguments[1]!==undefined?arguments[1]:[];_classCallCheck(this,PathStack);_.assign(this,{segmentsEntity:segmentsEntity,segmentsValidation:segmentsValidation});}/**
-	 * Add a path segment for entity navigation.
-	 *
-	 * @param   {...string} prop - Properties to add.
-	 * @returns {module:Validator~PathStack} Returns `this`.
-	 */_createClass(PathStack,[{key:"pushEntityProp",value:function pushEntityProp(){for(var _len7=arguments.length,prop=Array(_len7),_key7=0;_key7<_len7;_key7++){prop[_key7]=arguments[_key7];}this.segmentsEntity=_(this.segmentsEntity).concat(prop).filter(_.isNil).value();return this;}/**
-	 * Add a path segment for model description navigation.
-	 *
-	 * @param   {...string} prop - Properties to add.
-	 * @returns {module:Validator~PathStack} Returns `this`.
-	 */},{key:"pushValidationProp",value:function pushValidationProp(){for(var _len8=arguments.length,prop=Array(_len8),_key8=0;_key8<_len8;_key8++){prop[_key8]=arguments[_key8];}this.segmentsValidation=_(this.segmentsValidation).concat(prop).filter(function(val){return!_.isNil(val);}).value();return this;}/**
-	 * Add a path segment for both entity & model description navigation.
-	 *
-	 * @param   {...string} prop - Properties to add.
-	 * @returns {module:Validator~PathStack} Returns `this`.
-	 */},{key:"pushProp",value:function pushProp(){var _pushEntityProp;return(_pushEntityProp=this.pushEntityProp.apply(this,arguments)).pushValidationProp.apply(_pushEntityProp,arguments);}/**
-	 * Get a string version of entity segments.
-	 *
-	 * @returns {string} String representation of path in entity.
-	 */},{key:"toValidatePath",value:function toValidatePath(){return this.segmentsEntity.join('.');}/**
-	 * Cast this PathStack to its representing arrays.
-	 *
-	 * @returns {Array<Array<string>>} Array of paths. The first path represents the entity segments, second represents model description segments.
-	 */},{key:"toArray",value:function toArray(){return[this.segmentsEntity.slice(),this.segmentsValidation.slice()];}/**
-	 * Duplicate this PathStack, detaching its state from the new.
-	 *
-	 * @returns {module:Validator~PathStack} Clone of caller PathStack.
-	 */},{key:"clone",value:function clone(){return new(Function.prototype.bind.apply(PathStack,[null].concat(_toConsumableArray(this.toArray()))))();}}]);return PathStack;}();/**
- * The Validator class is used to check an entity or its fields against a model description.
- */var Validator=function(){/**
-	 * Construct a Validator configured for the provided model.
-	 *
-	 * @param {ModelConfiguration.AttributesDescriptor} modelDesc - Model description to validate.
-	 */function Validator(modelDesc){_classCallCheck(this,Validator);var _this={modelDesc:modelDesc};this[PRIVATE]=_this;}/**
-	 * Check if the value matches the field description provided, thus verify if it is valid.
-	 *
-	 * @author gerkin
-	 * @param   {Object} entity - Entity to check.
-	 * @returns {Error[]} Array of errors.
-	 */_createClass(Validator,[{key:"validate",value:function validate(entity){var _this40=this;// Apply method `checkField` on each field described
-var checkResults=_(this[PRIVATE].modelDesc).mapValues(function(fieldDesc,field){return _this40.check(entity[field],new PathStack().pushProp(field),{getProps:false});}).omitBy(_.isEmpty).value();if(!_.isNil(checkResults)&&!_.isEmpty(checkResults)){throw new EntityValidationError(checkResults,'Validation failed');}}/**
-	 * Check if the value matches the field description provided, thus verify if it is valid.
-	 *
-	 * @author gerkin
-	 * @param   {Any}                        value                  - Value to check.
-	 * @param   {module:Validator~PathStack} keys                   - Pathstack representing path to this validation.
-	 * @param   {Object}                     [options=(})]          - Hash of options.
-	 * @param   {boolean}                    options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
-	 * @returns {Object} Hash describing errors.
-	 */},{key:"check",value:function check(value,keys){var _this41=this;var options=arguments.length>2&&arguments[2]!==undefined?arguments[2]:{};_.defaults(options,{getProps:true});if(!(keys instanceof PathStack)){keys=new PathStack(keys);}var val=options.getProps?_.get(value,keys.segmentsEntity):value;var fieldDesc=_.get(this[PRIVATE].modelDesc,keys.segmentsValidation);if(!_.isObject(fieldDesc)){return;}_.defaults(fieldDesc,{required:false});var error={};var stepsArgs={error:error,fieldDesc:fieldDesc,keys:keys,value:val};_.forEach(VALIDATION_STEPS,function(validationStep){return validationStep.call(_this41,stepsArgs);});if(!_.isEmpty(error)){error.value=value;return error;}else{return null;}}/**
-	 * Get the model description provided in constructor.
-	 *
-	 * @readonly
-	 * @type {ModelConfiguration.AttributesDescriptor}
-	 */},{key:"modelDesc",get:function get(){return _.cloneDeep(this[PRIVATE].modelDesc);}/**
-	 * Get the PathStack constructor.
-	 *
-	 * @readonly
-	 * @type {module:Validator~PathStack}
-	 */}],[{key:"PathStack",get:function get(){return PathStack;}}]);return Validator;}();module.exports=Validator;},{"./dependencies":9,"./diaspora":10}],20:[function(require,module,exports){(function(process,global){/* @preserve
+var _slicedToArray=function(){function sliceIterator(arr,i){var _arr=[];var _n=true;var _d=false;var _e=undefined;try{for(var _i=arr[Symbol.iterator](),_s;!(_n=(_s=_i.next()).done);_n=true){_arr.push(_s.value);if(i&&_arr.length===i)break;}}catch(err){_d=true;_e=err;}finally{try{if(!_n&&_i["return"])_i["return"]();}finally{if(_d)throw _e;}}return _arr;}return function(arr,i){if(Array.isArray(arr)){return arr;}else if(Symbol.iterator in Object(arr)){return sliceIterator(arr,i);}else{throw new TypeError("Invalid attempt to destructure non-iterable instance");}};}();var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==Symbol.prototype?"symbol":typeof obj;};function _defineProperty(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _toConsumableArray(arr){if(Array.isArray(arr)){for(var i=0,arr2=Array(arr.length);i<arr.length;i++){arr2[i]=arr[i];}return arr2;}else{return Array.from(arr);}}require=function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f;}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e);},l,l.exports,e,t,n,r);}return n[o].exports;}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++){s(r[o]);}return s;}({1:[function(require,module,exports){(function(process,global){/* @preserve
  * The MIT License (MIT)
  * 
  * Copyright (c) 2013-2017 Petka Antonov
@@ -1487,7 +123,341 @@ fillTypes({a:1});fillTypes({b:2});fillTypes({c:3});fillTypes(1);fillTypes(functi
         };                                                                   \n\
         notEnumerableProp(ret, '__isPromisified__', true);                   \n\
         return ret;                                                          \n\
-    ".replace("[CodeForSwitchCase]",generateArgumentSwitchCase()).replace("[GetFunctionCode]",getFunctionCode);body=body.replace("Parameters",parameterDeclaration(newParameterCount));return new Function("Promise","fn","receiver","withAppended","maybeWrapAsError","nodebackForPromise","tryCatch","errorObj","notEnumerableProp","INTERNAL",body)(Promise,fn,receiver,withAppended,maybeWrapAsError,nodebackForPromise,util.tryCatch,util.errorObj,util.notEnumerableProp,INTERNAL);};}function makeNodePromisifiedClosure(callback,receiver,_,fn,__,multiArgs){var defaultThis=function(){return this;}();var method=callback;if(typeof method==="string"){callback=fn;}function promisified(){var _receiver=receiver;if(receiver===THIS)_receiver=this;var promise=new Promise(INTERNAL);promise._captureStackTrace();var cb=typeof method==="string"&&this!==defaultThis?this[method]:callback;var fn=nodebackForPromise(promise,multiArgs);try{cb.apply(_receiver,withAppended(arguments,fn));}catch(e){promise._rejectCallback(maybeWrapAsError(e),true,true);}if(!promise._isFateSealed())promise._setAsyncGuaranteed();return promise;}util.notEnumerableProp(promisified,"__isPromisified__",true);return promisified;}var makeNodePromisified=canEvaluate?makeNodePromisifiedEval:makeNodePromisifiedClosure;function promisifyAll(obj,suffix,filter,promisifier,multiArgs){var suffixRegexp=new RegExp(escapeIdentRegex(suffix)+"$");var methods=promisifiableMethods(obj,suffix,suffixRegexp,filter);for(var i=0,len=methods.length;i<len;i+=2){var key=methods[i];var fn=methods[i+1];var promisifiedKey=key+suffix;if(promisifier===makeNodePromisified){obj[promisifiedKey]=makeNodePromisified(key,THIS,key,fn,suffix,multiArgs);}else{var promisified=promisifier(fn,function(){return makeNodePromisified(key,THIS,key,fn,suffix,multiArgs);});util.notEnumerableProp(promisified,"__isPromisified__",true);obj[promisifiedKey]=promisified;}}util.toFastProperties(obj);return obj;}function promisify(callback,receiver,multiArgs){return makeNodePromisified(callback,receiver,undefined,callback,null,multiArgs);}Promise.promisify=function(fn,options){if(typeof fn!=="function"){throw new TypeError("expecting a function but got "+util.classString(fn));}if(isPromisified(fn)){return fn;}options=Object(options);var receiver=options.context===undefined?THIS:options.context;var multiArgs=!!options.multiArgs;var ret=promisify(fn,receiver,multiArgs);util.copyDescriptors(fn,ret,propsFilter);return ret;};Promise.promisifyAll=function(target,options){if(typeof target!=="function"&&(typeof target==="undefined"?"undefined":_typeof(target))!=="object"){throw new TypeError("the target of promisifyAll must be an object or a function\n\n    See http://goo.gl/MqrFmX\n");}options=Object(options);var multiArgs=!!options.multiArgs;var suffix=options.suffix;if(typeof suffix!=="string")suffix=defaultSuffix;var filter=options.filter;if(typeof filter!=="function")filter=defaultFilter;var promisifier=options.promisifier;if(typeof promisifier!=="function")promisifier=makeNodePromisified;if(!util.isIdentifier(suffix)){throw new RangeError("suffix must be a valid identifier\n\n    See http://goo.gl/MqrFmX\n");}var keys=util.inheritedDataKeys(target);for(var i=0;i<keys.length;++i){var value=target[keys[i]];if(keys[i]!=="constructor"&&util.isClass(value)){promisifyAll(value.prototype,suffix,filter,promisifier,multiArgs);promisifyAll(value,suffix,filter,promisifier,multiArgs);}}return promisifyAll(target,suffix,filter,promisifier,multiArgs);};};},{"./errors":12,"./nodeback":20,"./util":36}],25:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,PromiseArray,tryConvertToPromise,apiRejection){var util=_dereq_("./util");var isObject=util.isObject;var es5=_dereq_("./es5");var Es6Map;if(typeof Map==="function")Es6Map=Map;var mapToEntries=function(){var index=0;var size=0;function extractEntry(value,key){this[index]=value;this[index+size]=key;index++;}return function mapToEntries(map){size=map.size;index=0;var ret=new Array(map.size*2);map.forEach(extractEntry,ret);return ret;};}();var entriesToMap=function entriesToMap(entries){var ret=new Es6Map();var length=entries.length/2|0;for(var i=0;i<length;++i){var key=entries[length+i];var value=entries[i];ret.set(key,value);}return ret;};function PropertiesPromiseArray(obj){var isMap=false;var entries;if(Es6Map!==undefined&&obj instanceof Es6Map){entries=mapToEntries(obj);isMap=true;}else{var keys=es5.keys(obj);var len=keys.length;entries=new Array(len*2);for(var i=0;i<len;++i){var key=keys[i];entries[i]=obj[key];entries[i+len]=key;}}this.constructor$(entries);this._isMap=isMap;this._init$(undefined,isMap?-6:-3);}util.inherits(PropertiesPromiseArray,PromiseArray);PropertiesPromiseArray.prototype._init=function(){};PropertiesPromiseArray.prototype._promiseFulfilled=function(value,index){this._values[index]=value;var totalResolved=++this._totalResolved;if(totalResolved>=this._length){var val;if(this._isMap){val=entriesToMap(this._values);}else{val={};var keyOffset=this.length();for(var i=0,len=this.length();i<len;++i){val[this._values[i+keyOffset]]=this._values[i];}}this._resolve(val);return true;}return false;};PropertiesPromiseArray.prototype.shouldCopyValues=function(){return false;};PropertiesPromiseArray.prototype.getActualLength=function(len){return len>>1;};function props(promises){var ret;var castValue=tryConvertToPromise(promises);if(!isObject(castValue)){return apiRejection("cannot await properties of a non-object\n\n    See http://goo.gl/MqrFmX\n");}else if(castValue instanceof Promise){ret=castValue._then(Promise.props,undefined,undefined,undefined,undefined);}else{ret=new PropertiesPromiseArray(castValue).promise();}if(castValue instanceof Promise){ret._propagateFrom(castValue,2);}return ret;}Promise.prototype.props=function(){return props(this);};Promise.props=function(promises){return props(promises);};};},{"./es5":13,"./util":36}],26:[function(_dereq_,module,exports){"use strict";function arrayMove(src,srcIndex,dst,dstIndex,len){for(var j=0;j<len;++j){dst[j+dstIndex]=src[j+srcIndex];src[j+srcIndex]=void 0;}}function Queue(capacity){this._capacity=capacity;this._length=0;this._front=0;}Queue.prototype._willBeOverCapacity=function(size){return this._capacity<size;};Queue.prototype._pushOne=function(arg){var length=this.length();this._checkCapacity(length+1);var i=this._front+length&this._capacity-1;this[i]=arg;this._length=length+1;};Queue.prototype.push=function(fn,receiver,arg){var length=this.length()+3;if(this._willBeOverCapacity(length)){this._pushOne(fn);this._pushOne(receiver);this._pushOne(arg);return;}var j=this._front+length-3;this._checkCapacity(length);var wrapMask=this._capacity-1;this[j+0&wrapMask]=fn;this[j+1&wrapMask]=receiver;this[j+2&wrapMask]=arg;this._length=length;};Queue.prototype.shift=function(){var front=this._front,ret=this[front];this[front]=undefined;this._front=front+1&this._capacity-1;this._length--;return ret;};Queue.prototype.length=function(){return this._length;};Queue.prototype._checkCapacity=function(size){if(this._capacity<size){this._resizeTo(this._capacity<<1);}};Queue.prototype._resizeTo=function(capacity){var oldCapacity=this._capacity;this._capacity=capacity;var front=this._front;var length=this._length;var moveItemsCount=front+length&oldCapacity-1;arrayMove(this,0,this,oldCapacity,moveItemsCount);};module.exports=Queue;},{}],27:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,INTERNAL,tryConvertToPromise,apiRejection){var util=_dereq_("./util");var raceLater=function raceLater(promise){return promise.then(function(array){return race(array,promise);});};function race(promises,parent){var maybePromise=tryConvertToPromise(promises);if(maybePromise instanceof Promise){return raceLater(maybePromise);}else{promises=util.asArray(promises);if(promises===null)return apiRejection("expecting an array or an iterable object but got "+util.classString(promises));}var ret=new Promise(INTERNAL);if(parent!==undefined){ret._propagateFrom(parent,3);}var fulfill=ret._fulfill;var reject=ret._reject;for(var i=0,len=promises.length;i<len;++i){var val=promises[i];if(val===undefined&&!(i in promises)){continue;}Promise.cast(val)._then(fulfill,reject,undefined,ret,null);}return ret;}Promise.race=function(promises){return race(promises,undefined);};Promise.prototype.race=function(){return race(this,undefined);};};},{"./util":36}],28:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,PromiseArray,apiRejection,tryConvertToPromise,INTERNAL,debug){var getDomain=Promise._getDomain;var util=_dereq_("./util");var tryCatch=util.tryCatch;function ReductionPromiseArray(promises,fn,initialValue,_each){this.constructor$(promises);var domain=getDomain();this._fn=domain===null?fn:util.domainBind(domain,fn);if(initialValue!==undefined){initialValue=Promise.resolve(initialValue);initialValue._attachCancellationCallback(this);}this._initialValue=initialValue;this._currentCancellable=null;if(_each===INTERNAL){this._eachValues=Array(this._length);}else if(_each===0){this._eachValues=null;}else{this._eachValues=undefined;}this._promise._captureStackTrace();this._init$(undefined,-5);}util.inherits(ReductionPromiseArray,PromiseArray);ReductionPromiseArray.prototype._gotAccum=function(accum){if(this._eachValues!==undefined&&this._eachValues!==null&&accum!==INTERNAL){this._eachValues.push(accum);}};ReductionPromiseArray.prototype._eachComplete=function(value){if(this._eachValues!==null){this._eachValues.push(value);}return this._eachValues;};ReductionPromiseArray.prototype._init=function(){};ReductionPromiseArray.prototype._resolveEmptyArray=function(){this._resolve(this._eachValues!==undefined?this._eachValues:this._initialValue);};ReductionPromiseArray.prototype.shouldCopyValues=function(){return false;};ReductionPromiseArray.prototype._resolve=function(value){this._promise._resolveCallback(value);this._values=null;};ReductionPromiseArray.prototype._resultCancelled=function(sender){if(sender===this._initialValue)return this._cancel();if(this._isResolved())return;this._resultCancelled$();if(this._currentCancellable instanceof Promise){this._currentCancellable.cancel();}if(this._initialValue instanceof Promise){this._initialValue.cancel();}};ReductionPromiseArray.prototype._iterate=function(values){this._values=values;var value;var i;var length=values.length;if(this._initialValue!==undefined){value=this._initialValue;i=0;}else{value=Promise.resolve(values[0]);i=1;}this._currentCancellable=value;if(!value.isRejected()){for(;i<length;++i){var ctx={accum:null,value:values[i],index:i,length:length,array:this};value=value._then(gotAccum,undefined,undefined,ctx,undefined);}}if(this._eachValues!==undefined){value=value._then(this._eachComplete,undefined,undefined,this,undefined);}value._then(completed,completed,undefined,value,this);};Promise.prototype.reduce=function(fn,initialValue){return reduce(this,fn,initialValue,null);};Promise.reduce=function(promises,fn,initialValue,_each){return reduce(promises,fn,initialValue,_each);};function completed(valueOrReason,array){if(this.isFulfilled()){array._resolve(valueOrReason);}else{array._reject(valueOrReason);}}function reduce(promises,fn,initialValue,_each){if(typeof fn!=="function"){return apiRejection("expecting a function but got "+util.classString(fn));}var array=new ReductionPromiseArray(promises,fn,initialValue,_each);return array.promise();}function gotAccum(accum){this.accum=accum;this.array._gotAccum(accum);var value=tryConvertToPromise(this.value,this.array._promise);if(value instanceof Promise){this.array._currentCancellable=value;return value._then(gotValue,undefined,undefined,this,undefined);}else{return gotValue.call(this,value);}}function gotValue(value){var array=this.array;var promise=array._promise;var fn=tryCatch(array._fn);promise._pushContext();var ret;if(array._eachValues!==undefined){ret=fn.call(promise._boundValue(),value,this.index,this.length);}else{ret=fn.call(promise._boundValue(),this.accum,value,this.index,this.length);}if(ret instanceof Promise){array._currentCancellable=ret;}var promiseCreated=promise._popContext();debug.checkForgottenReturns(ret,promiseCreated,array._eachValues!==undefined?"Promise.each":"Promise.reduce",promise);return ret;}};},{"./util":36}],29:[function(_dereq_,module,exports){"use strict";var util=_dereq_("./util");var schedule;var noAsyncScheduler=function noAsyncScheduler(){throw new Error("No async scheduler available\n\n    See http://goo.gl/MqrFmX\n");};var NativePromise=util.getNativePromise();if(util.isNode&&typeof MutationObserver==="undefined"){var GlobalSetImmediate=global.setImmediate;var ProcessNextTick=process.nextTick;schedule=util.isRecentNode?function(fn){GlobalSetImmediate.call(global,fn);}:function(fn){ProcessNextTick.call(process,fn);};}else if(typeof NativePromise==="function"&&typeof NativePromise.resolve==="function"){var nativePromise=NativePromise.resolve();schedule=function schedule(fn){nativePromise.then(fn);};}else if(typeof MutationObserver!=="undefined"&&!(typeof window!=="undefined"&&window.navigator&&(window.navigator.standalone||window.cordova))){schedule=function(){var div=document.createElement("div");var opts={attributes:true};var toggleScheduled=false;var div2=document.createElement("div");var o2=new MutationObserver(function(){div.classList.toggle("foo");toggleScheduled=false;});o2.observe(div2,opts);var scheduleToggle=function scheduleToggle(){if(toggleScheduled)return;toggleScheduled=true;div2.classList.toggle("foo");};return function schedule(fn){var o=new MutationObserver(function(){o.disconnect();fn();});o.observe(div,opts);scheduleToggle();};}();}else if(typeof setImmediate!=="undefined"){schedule=function schedule(fn){setImmediate(fn);};}else if(typeof setTimeout!=="undefined"){schedule=function schedule(fn){setTimeout(fn,0);};}else{schedule=noAsyncScheduler;}module.exports=schedule;},{"./util":36}],30:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,PromiseArray,debug){var PromiseInspection=Promise.PromiseInspection;var util=_dereq_("./util");function SettledPromiseArray(values){this.constructor$(values);}util.inherits(SettledPromiseArray,PromiseArray);SettledPromiseArray.prototype._promiseResolved=function(index,inspection){this._values[index]=inspection;var totalResolved=++this._totalResolved;if(totalResolved>=this._length){this._resolve(this._values);return true;}return false;};SettledPromiseArray.prototype._promiseFulfilled=function(value,index){var ret=new PromiseInspection();ret._bitField=33554432;ret._settledValueField=value;return this._promiseResolved(index,ret);};SettledPromiseArray.prototype._promiseRejected=function(reason,index){var ret=new PromiseInspection();ret._bitField=16777216;ret._settledValueField=reason;return this._promiseResolved(index,ret);};Promise.settle=function(promises){debug.deprecated(".settle()",".reflect()");return new SettledPromiseArray(promises).promise();};Promise.prototype.settle=function(){return Promise.settle(this);};};},{"./util":36}],31:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,PromiseArray,apiRejection){var util=_dereq_("./util");var RangeError=_dereq_("./errors").RangeError;var AggregateError=_dereq_("./errors").AggregateError;var isArray=util.isArray;var CANCELLATION={};function SomePromiseArray(values){this.constructor$(values);this._howMany=0;this._unwrap=false;this._initialized=false;}util.inherits(SomePromiseArray,PromiseArray);SomePromiseArray.prototype._init=function(){if(!this._initialized){return;}if(this._howMany===0){this._resolve([]);return;}this._init$(undefined,-5);var isArrayResolved=isArray(this._values);if(!this._isResolved()&&isArrayResolved&&this._howMany>this._canPossiblyFulfill()){this._reject(this._getRangeError(this.length()));}};SomePromiseArray.prototype.init=function(){this._initialized=true;this._init();};SomePromiseArray.prototype.setUnwrap=function(){this._unwrap=true;};SomePromiseArray.prototype.howMany=function(){return this._howMany;};SomePromiseArray.prototype.setHowMany=function(count){this._howMany=count;};SomePromiseArray.prototype._promiseFulfilled=function(value){this._addFulfilled(value);if(this._fulfilled()===this.howMany()){this._values.length=this.howMany();if(this.howMany()===1&&this._unwrap){this._resolve(this._values[0]);}else{this._resolve(this._values);}return true;}return false;};SomePromiseArray.prototype._promiseRejected=function(reason){this._addRejected(reason);return this._checkOutcome();};SomePromiseArray.prototype._promiseCancelled=function(){if(this._values instanceof Promise||this._values==null){return this._cancel();}this._addRejected(CANCELLATION);return this._checkOutcome();};SomePromiseArray.prototype._checkOutcome=function(){if(this.howMany()>this._canPossiblyFulfill()){var e=new AggregateError();for(var i=this.length();i<this._values.length;++i){if(this._values[i]!==CANCELLATION){e.push(this._values[i]);}}if(e.length>0){this._reject(e);}else{this._cancel();}return true;}return false;};SomePromiseArray.prototype._fulfilled=function(){return this._totalResolved;};SomePromiseArray.prototype._rejected=function(){return this._values.length-this.length();};SomePromiseArray.prototype._addRejected=function(reason){this._values.push(reason);};SomePromiseArray.prototype._addFulfilled=function(value){this._values[this._totalResolved++]=value;};SomePromiseArray.prototype._canPossiblyFulfill=function(){return this.length()-this._rejected();};SomePromiseArray.prototype._getRangeError=function(count){var message="Input array must contain at least "+this._howMany+" items but contains only "+count+" items";return new RangeError(message);};SomePromiseArray.prototype._resolveEmptyArray=function(){this._reject(this._getRangeError(0));};function some(promises,howMany){if((howMany|0)!==howMany||howMany<0){return apiRejection("expecting a positive integer\n\n    See http://goo.gl/MqrFmX\n");}var ret=new SomePromiseArray(promises);var promise=ret.promise();ret.setHowMany(howMany);ret.init();return promise;}Promise.some=function(promises,howMany){return some(promises,howMany);};Promise.prototype.some=function(howMany){return some(this,howMany);};Promise._SomePromiseArray=SomePromiseArray;};},{"./errors":12,"./util":36}],32:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise){function PromiseInspection(promise){if(promise!==undefined){promise=promise._target();this._bitField=promise._bitField;this._settledValueField=promise._isFateSealed()?promise._settledValue():undefined;}else{this._bitField=0;this._settledValueField=undefined;}}PromiseInspection.prototype._settledValue=function(){return this._settledValueField;};var value=PromiseInspection.prototype.value=function(){if(!this.isFulfilled()){throw new TypeError("cannot get fulfillment value of a non-fulfilled promise\n\n    See http://goo.gl/MqrFmX\n");}return this._settledValue();};var reason=PromiseInspection.prototype.error=PromiseInspection.prototype.reason=function(){if(!this.isRejected()){throw new TypeError("cannot get rejection reason of a non-rejected promise\n\n    See http://goo.gl/MqrFmX\n");}return this._settledValue();};var isFulfilled=PromiseInspection.prototype.isFulfilled=function(){return(this._bitField&33554432)!==0;};var isRejected=PromiseInspection.prototype.isRejected=function(){return(this._bitField&16777216)!==0;};var isPending=PromiseInspection.prototype.isPending=function(){return(this._bitField&50397184)===0;};var isResolved=PromiseInspection.prototype.isResolved=function(){return(this._bitField&50331648)!==0;};PromiseInspection.prototype.isCancelled=function(){return(this._bitField&8454144)!==0;};Promise.prototype.__isCancelled=function(){return(this._bitField&65536)===65536;};Promise.prototype._isCancelled=function(){return this._target().__isCancelled();};Promise.prototype.isCancelled=function(){return(this._target()._bitField&8454144)!==0;};Promise.prototype.isPending=function(){return isPending.call(this._target());};Promise.prototype.isRejected=function(){return isRejected.call(this._target());};Promise.prototype.isFulfilled=function(){return isFulfilled.call(this._target());};Promise.prototype.isResolved=function(){return isResolved.call(this._target());};Promise.prototype.value=function(){return value.call(this._target());};Promise.prototype.reason=function(){var target=this._target();target._unsetRejectionIsUnhandled();return reason.call(target);};Promise.prototype._value=function(){return this._settledValue();};Promise.prototype._reason=function(){this._unsetRejectionIsUnhandled();return this._settledValue();};Promise.PromiseInspection=PromiseInspection;};},{}],33:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,INTERNAL){var util=_dereq_("./util");var errorObj=util.errorObj;var isObject=util.isObject;function tryConvertToPromise(obj,context){if(isObject(obj)){if(obj instanceof Promise)return obj;var then=getThen(obj);if(then===errorObj){if(context)context._pushContext();var ret=Promise.reject(then.e);if(context)context._popContext();return ret;}else if(typeof then==="function"){if(isAnyBluebirdPromise(obj)){var ret=new Promise(INTERNAL);obj._then(ret._fulfill,ret._reject,undefined,ret,null);return ret;}return doThenable(obj,then,context);}}return obj;}function doGetThen(obj){return obj.then;}function getThen(obj){try{return doGetThen(obj);}catch(e){errorObj.e=e;return errorObj;}}var hasProp={}.hasOwnProperty;function isAnyBluebirdPromise(obj){try{return hasProp.call(obj,"_promise0");}catch(e){return false;}}function doThenable(x,then,context){var promise=new Promise(INTERNAL);var ret=promise;if(context)context._pushContext();promise._captureStackTrace();if(context)context._popContext();var synchronous=true;var result=util.tryCatch(then).call(x,resolve,reject);synchronous=false;if(promise&&result===errorObj){promise._rejectCallback(result.e,true,true);promise=null;}function resolve(value){if(!promise)return;promise._resolveCallback(value);promise=null;}function reject(reason){if(!promise)return;promise._rejectCallback(reason,synchronous,true);promise=null;}return ret;}return tryConvertToPromise;};},{"./util":36}],34:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,INTERNAL,debug){var util=_dereq_("./util");var TimeoutError=Promise.TimeoutError;function HandleWrapper(handle){this.handle=handle;}HandleWrapper.prototype._resultCancelled=function(){clearTimeout(this.handle);};var afterValue=function afterValue(value){return delay(+this).thenReturn(value);};var delay=Promise.delay=function(ms,value){var ret;var handle;if(value!==undefined){ret=Promise.resolve(value)._then(afterValue,null,null,ms,undefined);if(debug.cancellation()&&value instanceof Promise){ret._setOnCancel(value);}}else{ret=new Promise(INTERNAL);handle=setTimeout(function(){ret._fulfill();},+ms);if(debug.cancellation()){ret._setOnCancel(new HandleWrapper(handle));}ret._captureStackTrace();}ret._setAsyncGuaranteed();return ret;};Promise.prototype.delay=function(ms){return delay(ms,this);};var afterTimeout=function afterTimeout(promise,message,parent){var err;if(typeof message!=="string"){if(message instanceof Error){err=message;}else{err=new TimeoutError("operation timed out");}}else{err=new TimeoutError(message);}util.markAsOriginatingFromRejection(err);promise._attachExtraTrace(err);promise._reject(err);if(parent!=null){parent.cancel();}};function successClear(value){clearTimeout(this.handle);return value;}function failureClear(reason){clearTimeout(this.handle);throw reason;}Promise.prototype.timeout=function(ms,message){ms=+ms;var ret,parent;var handleWrapper=new HandleWrapper(setTimeout(function timeoutTimeout(){if(ret.isPending()){afterTimeout(ret,message,parent);}},ms));if(debug.cancellation()){parent=this.then();ret=parent._then(successClear,failureClear,undefined,handleWrapper,undefined);ret._setOnCancel(handleWrapper);}else{ret=this._then(successClear,failureClear,undefined,handleWrapper,undefined);}return ret;};};},{"./util":36}],35:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,apiRejection,tryConvertToPromise,createContext,INTERNAL,debug){var util=_dereq_("./util");var TypeError=_dereq_("./errors").TypeError;var inherits=_dereq_("./util").inherits;var errorObj=util.errorObj;var tryCatch=util.tryCatch;var NULL={};function thrower(e){setTimeout(function(){throw e;},0);}function castPreservingDisposable(thenable){var maybePromise=tryConvertToPromise(thenable);if(maybePromise!==thenable&&typeof thenable._isDisposable==="function"&&typeof thenable._getDisposer==="function"&&thenable._isDisposable()){maybePromise._setDisposable(thenable._getDisposer());}return maybePromise;}function dispose(resources,inspection){var i=0;var len=resources.length;var ret=new Promise(INTERNAL);function iterator(){if(i>=len)return ret._fulfill();var maybePromise=castPreservingDisposable(resources[i++]);if(maybePromise instanceof Promise&&maybePromise._isDisposable()){try{maybePromise=tryConvertToPromise(maybePromise._getDisposer().tryDispose(inspection),resources.promise);}catch(e){return thrower(e);}if(maybePromise instanceof Promise){return maybePromise._then(iterator,thrower,null,null,null);}}iterator();}iterator();return ret;}function Disposer(data,promise,context){this._data=data;this._promise=promise;this._context=context;}Disposer.prototype.data=function(){return this._data;};Disposer.prototype.promise=function(){return this._promise;};Disposer.prototype.resource=function(){if(this.promise().isFulfilled()){return this.promise().value();}return NULL;};Disposer.prototype.tryDispose=function(inspection){var resource=this.resource();var context=this._context;if(context!==undefined)context._pushContext();var ret=resource!==NULL?this.doDispose(resource,inspection):null;if(context!==undefined)context._popContext();this._promise._unsetDisposable();this._data=null;return ret;};Disposer.isDisposer=function(d){return d!=null&&typeof d.resource==="function"&&typeof d.tryDispose==="function";};function FunctionDisposer(fn,promise,context){this.constructor$(fn,promise,context);}inherits(FunctionDisposer,Disposer);FunctionDisposer.prototype.doDispose=function(resource,inspection){var fn=this.data();return fn.call(resource,resource,inspection);};function maybeUnwrapDisposer(value){if(Disposer.isDisposer(value)){this.resources[this.index]._setDisposable(value);return value.promise();}return value;}function ResourceList(length){this.length=length;this.promise=null;this[length-1]=null;}ResourceList.prototype._resultCancelled=function(){var len=this.length;for(var i=0;i<len;++i){var item=this[i];if(item instanceof Promise){item.cancel();}}};Promise.using=function(){var len=arguments.length;if(len<2)return apiRejection("you must pass at least 2 arguments to Promise.using");var fn=arguments[len-1];if(typeof fn!=="function"){return apiRejection("expecting a function but got "+util.classString(fn));}var input;var spreadArgs=true;if(len===2&&Array.isArray(arguments[0])){input=arguments[0];len=input.length;spreadArgs=false;}else{input=arguments;len--;}var resources=new ResourceList(len);for(var i=0;i<len;++i){var resource=input[i];if(Disposer.isDisposer(resource)){var disposer=resource;resource=resource.promise();resource._setDisposable(disposer);}else{var maybePromise=tryConvertToPromise(resource);if(maybePromise instanceof Promise){resource=maybePromise._then(maybeUnwrapDisposer,null,null,{resources:resources,index:i},undefined);}}resources[i]=resource;}var reflectedResources=new Array(resources.length);for(var i=0;i<reflectedResources.length;++i){reflectedResources[i]=Promise.resolve(resources[i]).reflect();}var resultPromise=Promise.all(reflectedResources).then(function(inspections){for(var i=0;i<inspections.length;++i){var inspection=inspections[i];if(inspection.isRejected()){errorObj.e=inspection.error();return errorObj;}else if(!inspection.isFulfilled()){resultPromise.cancel();return;}inspections[i]=inspection.value();}promise._pushContext();fn=tryCatch(fn);var ret=spreadArgs?fn.apply(undefined,inspections):fn(inspections);var promiseCreated=promise._popContext();debug.checkForgottenReturns(ret,promiseCreated,"Promise.using",promise);return ret;});var promise=resultPromise.lastly(function(){var inspection=new Promise.PromiseInspection(resultPromise);return dispose(resources,inspection);});resources.promise=promise;promise._setOnCancel(resources);return promise;};Promise.prototype._setDisposable=function(disposer){this._bitField=this._bitField|131072;this._disposer=disposer;};Promise.prototype._isDisposable=function(){return(this._bitField&131072)>0;};Promise.prototype._getDisposer=function(){return this._disposer;};Promise.prototype._unsetDisposable=function(){this._bitField=this._bitField&~131072;this._disposer=undefined;};Promise.prototype.disposer=function(fn){if(typeof fn==="function"){return new FunctionDisposer(fn,this,createContext());}throw new TypeError();};};},{"./errors":12,"./util":36}],36:[function(_dereq_,module,exports){"use strict";var es5=_dereq_("./es5");var canEvaluate=typeof navigator=="undefined";var errorObj={e:{}};var tryCatchTarget;var globalObject=typeof self!=="undefined"?self:typeof window!=="undefined"?window:typeof global!=="undefined"?global:this!==undefined?this:null;function tryCatcher(){try{var target=tryCatchTarget;tryCatchTarget=null;return target.apply(this,arguments);}catch(e){errorObj.e=e;return errorObj;}}function tryCatch(fn){tryCatchTarget=fn;return tryCatcher;}var inherits=function inherits(Child,Parent){var hasProp={}.hasOwnProperty;function T(){this.constructor=Child;this.constructor$=Parent;for(var propertyName in Parent.prototype){if(hasProp.call(Parent.prototype,propertyName)&&propertyName.charAt(propertyName.length-1)!=="$"){this[propertyName+"$"]=Parent.prototype[propertyName];}}}T.prototype=Parent.prototype;Child.prototype=new T();return Child.prototype;};function isPrimitive(val){return val==null||val===true||val===false||typeof val==="string"||typeof val==="number";}function isObject(value){return typeof value==="function"||(typeof value==="undefined"?"undefined":_typeof(value))==="object"&&value!==null;}function maybeWrapAsError(maybeError){if(!isPrimitive(maybeError))return maybeError;return new Error(safeToString(maybeError));}function withAppended(target,appendee){var len=target.length;var ret=new Array(len+1);var i;for(i=0;i<len;++i){ret[i]=target[i];}ret[i]=appendee;return ret;}function getDataPropertyOrDefault(obj,key,defaultValue){if(es5.isES5){var desc=Object.getOwnPropertyDescriptor(obj,key);if(desc!=null){return desc.get==null&&desc.set==null?desc.value:defaultValue;}}else{return{}.hasOwnProperty.call(obj,key)?obj[key]:undefined;}}function notEnumerableProp(obj,name,value){if(isPrimitive(obj))return obj;var descriptor={value:value,configurable:true,enumerable:false,writable:true};es5.defineProperty(obj,name,descriptor);return obj;}function thrower(r){throw r;}var inheritedDataKeys=function(){var excludedPrototypes=[Array.prototype,Object.prototype,Function.prototype];var isExcludedProto=function isExcludedProto(val){for(var i=0;i<excludedPrototypes.length;++i){if(excludedPrototypes[i]===val){return true;}}return false;};if(es5.isES5){var getKeys=Object.getOwnPropertyNames;return function(obj){var ret=[];var visitedKeys=Object.create(null);while(obj!=null&&!isExcludedProto(obj)){var keys;try{keys=getKeys(obj);}catch(e){return ret;}for(var i=0;i<keys.length;++i){var key=keys[i];if(visitedKeys[key])continue;visitedKeys[key]=true;var desc=Object.getOwnPropertyDescriptor(obj,key);if(desc!=null&&desc.get==null&&desc.set==null){ret.push(key);}}obj=es5.getPrototypeOf(obj);}return ret;};}else{var hasProp={}.hasOwnProperty;return function(obj){if(isExcludedProto(obj))return[];var ret=[];/*jshint forin:false */enumeration:for(var key in obj){if(hasProp.call(obj,key)){ret.push(key);}else{for(var i=0;i<excludedPrototypes.length;++i){if(hasProp.call(excludedPrototypes[i],key)){continue enumeration;}}ret.push(key);}}return ret;};}}();var thisAssignmentPattern=/this\s*\.\s*\S+\s*=/;function isClass(fn){try{if(typeof fn==="function"){var keys=es5.names(fn.prototype);var hasMethods=es5.isES5&&keys.length>1;var hasMethodsOtherThanConstructor=keys.length>0&&!(keys.length===1&&keys[0]==="constructor");var hasThisAssignmentAndStaticMethods=thisAssignmentPattern.test(fn+"")&&es5.names(fn).length>0;if(hasMethods||hasMethodsOtherThanConstructor||hasThisAssignmentAndStaticMethods){return true;}}return false;}catch(e){return false;}}function toFastProperties(obj){/*jshint -W027,-W055,-W031*/function FakeConstructor(){}FakeConstructor.prototype=obj;var l=8;while(l--){new FakeConstructor();}return obj;eval(obj);}var rident=/^[a-z$_][a-z$_0-9]*$/i;function isIdentifier(str){return rident.test(str);}function filledRange(count,prefix,suffix){var ret=new Array(count);for(var i=0;i<count;++i){ret[i]=prefix+i+suffix;}return ret;}function safeToString(obj){try{return obj+"";}catch(e){return"[no string representation]";}}function isError(obj){return obj instanceof Error||obj!==null&&(typeof obj==="undefined"?"undefined":_typeof(obj))==="object"&&typeof obj.message==="string"&&typeof obj.name==="string";}function markAsOriginatingFromRejection(e){try{notEnumerableProp(e,"isOperational",true);}catch(ignore){}}function originatesFromRejection(e){if(e==null)return false;return e instanceof Error["__BluebirdErrorTypes__"].OperationalError||e["isOperational"]===true;}function canAttachTrace(obj){return isError(obj)&&es5.propertyIsWritable(obj,"stack");}var ensureErrorObject=function(){if(!("stack"in new Error())){return function(value){if(canAttachTrace(value))return value;try{throw new Error(safeToString(value));}catch(err){return err;}};}else{return function(value){if(canAttachTrace(value))return value;return new Error(safeToString(value));};}}();function classString(obj){return{}.toString.call(obj);}function copyDescriptors(from,to,filter){var keys=es5.names(from);for(var i=0;i<keys.length;++i){var key=keys[i];if(filter(key)){try{es5.defineProperty(to,key,es5.getDescriptor(from,key));}catch(ignore){}}}}var asArray=function asArray(v){if(es5.isArray(v)){return v;}return null;};if(typeof Symbol!=="undefined"&&Symbol.iterator){var ArrayFrom=typeof Array.from==="function"?function(v){return Array.from(v);}:function(v){var ret=[];var it=v[Symbol.iterator]();var itResult;while(!(itResult=it.next()).done){ret.push(itResult.value);}return ret;};asArray=function asArray(v){if(es5.isArray(v)){return v;}else if(v!=null&&typeof v[Symbol.iterator]==="function"){return ArrayFrom(v);}return null;};}var isNode=typeof process!=="undefined"&&classString(process).toLowerCase()==="[object process]";var hasEnvVariables=typeof process!=="undefined"&&typeof process.env!=="undefined";function env(key){return hasEnvVariables?process.env[key]:undefined;}function getNativePromise(){if(typeof Promise==="function"){try{var promise=new Promise(function(){});if({}.toString.call(promise)==="[object Promise]"){return Promise;}}catch(e){}}}function domainBind(self,cb){return self.bind(cb);}var ret={isClass:isClass,isIdentifier:isIdentifier,inheritedDataKeys:inheritedDataKeys,getDataPropertyOrDefault:getDataPropertyOrDefault,thrower:thrower,isArray:es5.isArray,asArray:asArray,notEnumerableProp:notEnumerableProp,isPrimitive:isPrimitive,isObject:isObject,isError:isError,canEvaluate:canEvaluate,errorObj:errorObj,tryCatch:tryCatch,inherits:inherits,withAppended:withAppended,maybeWrapAsError:maybeWrapAsError,toFastProperties:toFastProperties,filledRange:filledRange,toString:safeToString,canAttachTrace:canAttachTrace,ensureErrorObject:ensureErrorObject,originatesFromRejection:originatesFromRejection,markAsOriginatingFromRejection:markAsOriginatingFromRejection,classString:classString,copyDescriptors:copyDescriptors,hasDevTools:typeof chrome!=="undefined"&&chrome&&typeof chrome.loadTimes==="function",isNode:isNode,hasEnvVariables:hasEnvVariables,env:env,global:globalObject,getNativePromise:getNativePromise,domainBind:domainBind};ret.isRecentNode=ret.isNode&&function(){var version=process.versions.node.split(".").map(Number);return version[0]===0&&version[1]>10||version[0]>0;}();if(ret.isNode)ret.toFastProperties(process);try{throw new Error();}catch(e){ret.lastLineError=e;}module.exports=ret;},{"./es5":13}]},{},[4])(4);});;if(typeof window!=='undefined'&&window!==null){window.P=window.Promise;}else if(typeof self!=='undefined'&&self!==null){self.P=self.Promise;}}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"_process":22}],21:[function(require,module,exports){(function(global){/**
+    ".replace("[CodeForSwitchCase]",generateArgumentSwitchCase()).replace("[GetFunctionCode]",getFunctionCode);body=body.replace("Parameters",parameterDeclaration(newParameterCount));return new Function("Promise","fn","receiver","withAppended","maybeWrapAsError","nodebackForPromise","tryCatch","errorObj","notEnumerableProp","INTERNAL",body)(Promise,fn,receiver,withAppended,maybeWrapAsError,nodebackForPromise,util.tryCatch,util.errorObj,util.notEnumerableProp,INTERNAL);};}function makeNodePromisifiedClosure(callback,receiver,_,fn,__,multiArgs){var defaultThis=function(){return this;}();var method=callback;if(typeof method==="string"){callback=fn;}function promisified(){var _receiver=receiver;if(receiver===THIS)_receiver=this;var promise=new Promise(INTERNAL);promise._captureStackTrace();var cb=typeof method==="string"&&this!==defaultThis?this[method]:callback;var fn=nodebackForPromise(promise,multiArgs);try{cb.apply(_receiver,withAppended(arguments,fn));}catch(e){promise._rejectCallback(maybeWrapAsError(e),true,true);}if(!promise._isFateSealed())promise._setAsyncGuaranteed();return promise;}util.notEnumerableProp(promisified,"__isPromisified__",true);return promisified;}var makeNodePromisified=canEvaluate?makeNodePromisifiedEval:makeNodePromisifiedClosure;function promisifyAll(obj,suffix,filter,promisifier,multiArgs){var suffixRegexp=new RegExp(escapeIdentRegex(suffix)+"$");var methods=promisifiableMethods(obj,suffix,suffixRegexp,filter);for(var i=0,len=methods.length;i<len;i+=2){var key=methods[i];var fn=methods[i+1];var promisifiedKey=key+suffix;if(promisifier===makeNodePromisified){obj[promisifiedKey]=makeNodePromisified(key,THIS,key,fn,suffix,multiArgs);}else{var promisified=promisifier(fn,function(){return makeNodePromisified(key,THIS,key,fn,suffix,multiArgs);});util.notEnumerableProp(promisified,"__isPromisified__",true);obj[promisifiedKey]=promisified;}}util.toFastProperties(obj);return obj;}function promisify(callback,receiver,multiArgs){return makeNodePromisified(callback,receiver,undefined,callback,null,multiArgs);}Promise.promisify=function(fn,options){if(typeof fn!=="function"){throw new TypeError("expecting a function but got "+util.classString(fn));}if(isPromisified(fn)){return fn;}options=Object(options);var receiver=options.context===undefined?THIS:options.context;var multiArgs=!!options.multiArgs;var ret=promisify(fn,receiver,multiArgs);util.copyDescriptors(fn,ret,propsFilter);return ret;};Promise.promisifyAll=function(target,options){if(typeof target!=="function"&&(typeof target==="undefined"?"undefined":_typeof(target))!=="object"){throw new TypeError("the target of promisifyAll must be an object or a function\n\n    See http://goo.gl/MqrFmX\n");}options=Object(options);var multiArgs=!!options.multiArgs;var suffix=options.suffix;if(typeof suffix!=="string")suffix=defaultSuffix;var filter=options.filter;if(typeof filter!=="function")filter=defaultFilter;var promisifier=options.promisifier;if(typeof promisifier!=="function")promisifier=makeNodePromisified;if(!util.isIdentifier(suffix)){throw new RangeError("suffix must be a valid identifier\n\n    See http://goo.gl/MqrFmX\n");}var keys=util.inheritedDataKeys(target);for(var i=0;i<keys.length;++i){var value=target[keys[i]];if(keys[i]!=="constructor"&&util.isClass(value)){promisifyAll(value.prototype,suffix,filter,promisifier,multiArgs);promisifyAll(value,suffix,filter,promisifier,multiArgs);}}return promisifyAll(target,suffix,filter,promisifier,multiArgs);};};},{"./errors":12,"./nodeback":20,"./util":36}],25:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,PromiseArray,tryConvertToPromise,apiRejection){var util=_dereq_("./util");var isObject=util.isObject;var es5=_dereq_("./es5");var Es6Map;if(typeof Map==="function")Es6Map=Map;var mapToEntries=function(){var index=0;var size=0;function extractEntry(value,key){this[index]=value;this[index+size]=key;index++;}return function mapToEntries(map){size=map.size;index=0;var ret=new Array(map.size*2);map.forEach(extractEntry,ret);return ret;};}();var entriesToMap=function entriesToMap(entries){var ret=new Es6Map();var length=entries.length/2|0;for(var i=0;i<length;++i){var key=entries[length+i];var value=entries[i];ret.set(key,value);}return ret;};function PropertiesPromiseArray(obj){var isMap=false;var entries;if(Es6Map!==undefined&&obj instanceof Es6Map){entries=mapToEntries(obj);isMap=true;}else{var keys=es5.keys(obj);var len=keys.length;entries=new Array(len*2);for(var i=0;i<len;++i){var key=keys[i];entries[i]=obj[key];entries[i+len]=key;}}this.constructor$(entries);this._isMap=isMap;this._init$(undefined,isMap?-6:-3);}util.inherits(PropertiesPromiseArray,PromiseArray);PropertiesPromiseArray.prototype._init=function(){};PropertiesPromiseArray.prototype._promiseFulfilled=function(value,index){this._values[index]=value;var totalResolved=++this._totalResolved;if(totalResolved>=this._length){var val;if(this._isMap){val=entriesToMap(this._values);}else{val={};var keyOffset=this.length();for(var i=0,len=this.length();i<len;++i){val[this._values[i+keyOffset]]=this._values[i];}}this._resolve(val);return true;}return false;};PropertiesPromiseArray.prototype.shouldCopyValues=function(){return false;};PropertiesPromiseArray.prototype.getActualLength=function(len){return len>>1;};function props(promises){var ret;var castValue=tryConvertToPromise(promises);if(!isObject(castValue)){return apiRejection("cannot await properties of a non-object\n\n    See http://goo.gl/MqrFmX\n");}else if(castValue instanceof Promise){ret=castValue._then(Promise.props,undefined,undefined,undefined,undefined);}else{ret=new PropertiesPromiseArray(castValue).promise();}if(castValue instanceof Promise){ret._propagateFrom(castValue,2);}return ret;}Promise.prototype.props=function(){return props(this);};Promise.props=function(promises){return props(promises);};};},{"./es5":13,"./util":36}],26:[function(_dereq_,module,exports){"use strict";function arrayMove(src,srcIndex,dst,dstIndex,len){for(var j=0;j<len;++j){dst[j+dstIndex]=src[j+srcIndex];src[j+srcIndex]=void 0;}}function Queue(capacity){this._capacity=capacity;this._length=0;this._front=0;}Queue.prototype._willBeOverCapacity=function(size){return this._capacity<size;};Queue.prototype._pushOne=function(arg){var length=this.length();this._checkCapacity(length+1);var i=this._front+length&this._capacity-1;this[i]=arg;this._length=length+1;};Queue.prototype.push=function(fn,receiver,arg){var length=this.length()+3;if(this._willBeOverCapacity(length)){this._pushOne(fn);this._pushOne(receiver);this._pushOne(arg);return;}var j=this._front+length-3;this._checkCapacity(length);var wrapMask=this._capacity-1;this[j+0&wrapMask]=fn;this[j+1&wrapMask]=receiver;this[j+2&wrapMask]=arg;this._length=length;};Queue.prototype.shift=function(){var front=this._front,ret=this[front];this[front]=undefined;this._front=front+1&this._capacity-1;this._length--;return ret;};Queue.prototype.length=function(){return this._length;};Queue.prototype._checkCapacity=function(size){if(this._capacity<size){this._resizeTo(this._capacity<<1);}};Queue.prototype._resizeTo=function(capacity){var oldCapacity=this._capacity;this._capacity=capacity;var front=this._front;var length=this._length;var moveItemsCount=front+length&oldCapacity-1;arrayMove(this,0,this,oldCapacity,moveItemsCount);};module.exports=Queue;},{}],27:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,INTERNAL,tryConvertToPromise,apiRejection){var util=_dereq_("./util");var raceLater=function raceLater(promise){return promise.then(function(array){return race(array,promise);});};function race(promises,parent){var maybePromise=tryConvertToPromise(promises);if(maybePromise instanceof Promise){return raceLater(maybePromise);}else{promises=util.asArray(promises);if(promises===null)return apiRejection("expecting an array or an iterable object but got "+util.classString(promises));}var ret=new Promise(INTERNAL);if(parent!==undefined){ret._propagateFrom(parent,3);}var fulfill=ret._fulfill;var reject=ret._reject;for(var i=0,len=promises.length;i<len;++i){var val=promises[i];if(val===undefined&&!(i in promises)){continue;}Promise.cast(val)._then(fulfill,reject,undefined,ret,null);}return ret;}Promise.race=function(promises){return race(promises,undefined);};Promise.prototype.race=function(){return race(this,undefined);};};},{"./util":36}],28:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,PromiseArray,apiRejection,tryConvertToPromise,INTERNAL,debug){var getDomain=Promise._getDomain;var util=_dereq_("./util");var tryCatch=util.tryCatch;function ReductionPromiseArray(promises,fn,initialValue,_each){this.constructor$(promises);var domain=getDomain();this._fn=domain===null?fn:util.domainBind(domain,fn);if(initialValue!==undefined){initialValue=Promise.resolve(initialValue);initialValue._attachCancellationCallback(this);}this._initialValue=initialValue;this._currentCancellable=null;if(_each===INTERNAL){this._eachValues=Array(this._length);}else if(_each===0){this._eachValues=null;}else{this._eachValues=undefined;}this._promise._captureStackTrace();this._init$(undefined,-5);}util.inherits(ReductionPromiseArray,PromiseArray);ReductionPromiseArray.prototype._gotAccum=function(accum){if(this._eachValues!==undefined&&this._eachValues!==null&&accum!==INTERNAL){this._eachValues.push(accum);}};ReductionPromiseArray.prototype._eachComplete=function(value){if(this._eachValues!==null){this._eachValues.push(value);}return this._eachValues;};ReductionPromiseArray.prototype._init=function(){};ReductionPromiseArray.prototype._resolveEmptyArray=function(){this._resolve(this._eachValues!==undefined?this._eachValues:this._initialValue);};ReductionPromiseArray.prototype.shouldCopyValues=function(){return false;};ReductionPromiseArray.prototype._resolve=function(value){this._promise._resolveCallback(value);this._values=null;};ReductionPromiseArray.prototype._resultCancelled=function(sender){if(sender===this._initialValue)return this._cancel();if(this._isResolved())return;this._resultCancelled$();if(this._currentCancellable instanceof Promise){this._currentCancellable.cancel();}if(this._initialValue instanceof Promise){this._initialValue.cancel();}};ReductionPromiseArray.prototype._iterate=function(values){this._values=values;var value;var i;var length=values.length;if(this._initialValue!==undefined){value=this._initialValue;i=0;}else{value=Promise.resolve(values[0]);i=1;}this._currentCancellable=value;if(!value.isRejected()){for(;i<length;++i){var ctx={accum:null,value:values[i],index:i,length:length,array:this};value=value._then(gotAccum,undefined,undefined,ctx,undefined);}}if(this._eachValues!==undefined){value=value._then(this._eachComplete,undefined,undefined,this,undefined);}value._then(completed,completed,undefined,value,this);};Promise.prototype.reduce=function(fn,initialValue){return reduce(this,fn,initialValue,null);};Promise.reduce=function(promises,fn,initialValue,_each){return reduce(promises,fn,initialValue,_each);};function completed(valueOrReason,array){if(this.isFulfilled()){array._resolve(valueOrReason);}else{array._reject(valueOrReason);}}function reduce(promises,fn,initialValue,_each){if(typeof fn!=="function"){return apiRejection("expecting a function but got "+util.classString(fn));}var array=new ReductionPromiseArray(promises,fn,initialValue,_each);return array.promise();}function gotAccum(accum){this.accum=accum;this.array._gotAccum(accum);var value=tryConvertToPromise(this.value,this.array._promise);if(value instanceof Promise){this.array._currentCancellable=value;return value._then(gotValue,undefined,undefined,this,undefined);}else{return gotValue.call(this,value);}}function gotValue(value){var array=this.array;var promise=array._promise;var fn=tryCatch(array._fn);promise._pushContext();var ret;if(array._eachValues!==undefined){ret=fn.call(promise._boundValue(),value,this.index,this.length);}else{ret=fn.call(promise._boundValue(),this.accum,value,this.index,this.length);}if(ret instanceof Promise){array._currentCancellable=ret;}var promiseCreated=promise._popContext();debug.checkForgottenReturns(ret,promiseCreated,array._eachValues!==undefined?"Promise.each":"Promise.reduce",promise);return ret;}};},{"./util":36}],29:[function(_dereq_,module,exports){"use strict";var util=_dereq_("./util");var schedule;var noAsyncScheduler=function noAsyncScheduler(){throw new Error("No async scheduler available\n\n    See http://goo.gl/MqrFmX\n");};var NativePromise=util.getNativePromise();if(util.isNode&&typeof MutationObserver==="undefined"){var GlobalSetImmediate=global.setImmediate;var ProcessNextTick=process.nextTick;schedule=util.isRecentNode?function(fn){GlobalSetImmediate.call(global,fn);}:function(fn){ProcessNextTick.call(process,fn);};}else if(typeof NativePromise==="function"&&typeof NativePromise.resolve==="function"){var nativePromise=NativePromise.resolve();schedule=function schedule(fn){nativePromise.then(fn);};}else if(typeof MutationObserver!=="undefined"&&!(typeof window!=="undefined"&&window.navigator&&(window.navigator.standalone||window.cordova))){schedule=function(){var div=document.createElement("div");var opts={attributes:true};var toggleScheduled=false;var div2=document.createElement("div");var o2=new MutationObserver(function(){div.classList.toggle("foo");toggleScheduled=false;});o2.observe(div2,opts);var scheduleToggle=function scheduleToggle(){if(toggleScheduled)return;toggleScheduled=true;div2.classList.toggle("foo");};return function schedule(fn){var o=new MutationObserver(function(){o.disconnect();fn();});o.observe(div,opts);scheduleToggle();};}();}else if(typeof setImmediate!=="undefined"){schedule=function schedule(fn){setImmediate(fn);};}else if(typeof setTimeout!=="undefined"){schedule=function schedule(fn){setTimeout(fn,0);};}else{schedule=noAsyncScheduler;}module.exports=schedule;},{"./util":36}],30:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,PromiseArray,debug){var PromiseInspection=Promise.PromiseInspection;var util=_dereq_("./util");function SettledPromiseArray(values){this.constructor$(values);}util.inherits(SettledPromiseArray,PromiseArray);SettledPromiseArray.prototype._promiseResolved=function(index,inspection){this._values[index]=inspection;var totalResolved=++this._totalResolved;if(totalResolved>=this._length){this._resolve(this._values);return true;}return false;};SettledPromiseArray.prototype._promiseFulfilled=function(value,index){var ret=new PromiseInspection();ret._bitField=33554432;ret._settledValueField=value;return this._promiseResolved(index,ret);};SettledPromiseArray.prototype._promiseRejected=function(reason,index){var ret=new PromiseInspection();ret._bitField=16777216;ret._settledValueField=reason;return this._promiseResolved(index,ret);};Promise.settle=function(promises){debug.deprecated(".settle()",".reflect()");return new SettledPromiseArray(promises).promise();};Promise.prototype.settle=function(){return Promise.settle(this);};};},{"./util":36}],31:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,PromiseArray,apiRejection){var util=_dereq_("./util");var RangeError=_dereq_("./errors").RangeError;var AggregateError=_dereq_("./errors").AggregateError;var isArray=util.isArray;var CANCELLATION={};function SomePromiseArray(values){this.constructor$(values);this._howMany=0;this._unwrap=false;this._initialized=false;}util.inherits(SomePromiseArray,PromiseArray);SomePromiseArray.prototype._init=function(){if(!this._initialized){return;}if(this._howMany===0){this._resolve([]);return;}this._init$(undefined,-5);var isArrayResolved=isArray(this._values);if(!this._isResolved()&&isArrayResolved&&this._howMany>this._canPossiblyFulfill()){this._reject(this._getRangeError(this.length()));}};SomePromiseArray.prototype.init=function(){this._initialized=true;this._init();};SomePromiseArray.prototype.setUnwrap=function(){this._unwrap=true;};SomePromiseArray.prototype.howMany=function(){return this._howMany;};SomePromiseArray.prototype.setHowMany=function(count){this._howMany=count;};SomePromiseArray.prototype._promiseFulfilled=function(value){this._addFulfilled(value);if(this._fulfilled()===this.howMany()){this._values.length=this.howMany();if(this.howMany()===1&&this._unwrap){this._resolve(this._values[0]);}else{this._resolve(this._values);}return true;}return false;};SomePromiseArray.prototype._promiseRejected=function(reason){this._addRejected(reason);return this._checkOutcome();};SomePromiseArray.prototype._promiseCancelled=function(){if(this._values instanceof Promise||this._values==null){return this._cancel();}this._addRejected(CANCELLATION);return this._checkOutcome();};SomePromiseArray.prototype._checkOutcome=function(){if(this.howMany()>this._canPossiblyFulfill()){var e=new AggregateError();for(var i=this.length();i<this._values.length;++i){if(this._values[i]!==CANCELLATION){e.push(this._values[i]);}}if(e.length>0){this._reject(e);}else{this._cancel();}return true;}return false;};SomePromiseArray.prototype._fulfilled=function(){return this._totalResolved;};SomePromiseArray.prototype._rejected=function(){return this._values.length-this.length();};SomePromiseArray.prototype._addRejected=function(reason){this._values.push(reason);};SomePromiseArray.prototype._addFulfilled=function(value){this._values[this._totalResolved++]=value;};SomePromiseArray.prototype._canPossiblyFulfill=function(){return this.length()-this._rejected();};SomePromiseArray.prototype._getRangeError=function(count){var message="Input array must contain at least "+this._howMany+" items but contains only "+count+" items";return new RangeError(message);};SomePromiseArray.prototype._resolveEmptyArray=function(){this._reject(this._getRangeError(0));};function some(promises,howMany){if((howMany|0)!==howMany||howMany<0){return apiRejection("expecting a positive integer\n\n    See http://goo.gl/MqrFmX\n");}var ret=new SomePromiseArray(promises);var promise=ret.promise();ret.setHowMany(howMany);ret.init();return promise;}Promise.some=function(promises,howMany){return some(promises,howMany);};Promise.prototype.some=function(howMany){return some(this,howMany);};Promise._SomePromiseArray=SomePromiseArray;};},{"./errors":12,"./util":36}],32:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise){function PromiseInspection(promise){if(promise!==undefined){promise=promise._target();this._bitField=promise._bitField;this._settledValueField=promise._isFateSealed()?promise._settledValue():undefined;}else{this._bitField=0;this._settledValueField=undefined;}}PromiseInspection.prototype._settledValue=function(){return this._settledValueField;};var value=PromiseInspection.prototype.value=function(){if(!this.isFulfilled()){throw new TypeError("cannot get fulfillment value of a non-fulfilled promise\n\n    See http://goo.gl/MqrFmX\n");}return this._settledValue();};var reason=PromiseInspection.prototype.error=PromiseInspection.prototype.reason=function(){if(!this.isRejected()){throw new TypeError("cannot get rejection reason of a non-rejected promise\n\n    See http://goo.gl/MqrFmX\n");}return this._settledValue();};var isFulfilled=PromiseInspection.prototype.isFulfilled=function(){return(this._bitField&33554432)!==0;};var isRejected=PromiseInspection.prototype.isRejected=function(){return(this._bitField&16777216)!==0;};var isPending=PromiseInspection.prototype.isPending=function(){return(this._bitField&50397184)===0;};var isResolved=PromiseInspection.prototype.isResolved=function(){return(this._bitField&50331648)!==0;};PromiseInspection.prototype.isCancelled=function(){return(this._bitField&8454144)!==0;};Promise.prototype.__isCancelled=function(){return(this._bitField&65536)===65536;};Promise.prototype._isCancelled=function(){return this._target().__isCancelled();};Promise.prototype.isCancelled=function(){return(this._target()._bitField&8454144)!==0;};Promise.prototype.isPending=function(){return isPending.call(this._target());};Promise.prototype.isRejected=function(){return isRejected.call(this._target());};Promise.prototype.isFulfilled=function(){return isFulfilled.call(this._target());};Promise.prototype.isResolved=function(){return isResolved.call(this._target());};Promise.prototype.value=function(){return value.call(this._target());};Promise.prototype.reason=function(){var target=this._target();target._unsetRejectionIsUnhandled();return reason.call(target);};Promise.prototype._value=function(){return this._settledValue();};Promise.prototype._reason=function(){this._unsetRejectionIsUnhandled();return this._settledValue();};Promise.PromiseInspection=PromiseInspection;};},{}],33:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,INTERNAL){var util=_dereq_("./util");var errorObj=util.errorObj;var isObject=util.isObject;function tryConvertToPromise(obj,context){if(isObject(obj)){if(obj instanceof Promise)return obj;var then=getThen(obj);if(then===errorObj){if(context)context._pushContext();var ret=Promise.reject(then.e);if(context)context._popContext();return ret;}else if(typeof then==="function"){if(isAnyBluebirdPromise(obj)){var ret=new Promise(INTERNAL);obj._then(ret._fulfill,ret._reject,undefined,ret,null);return ret;}return doThenable(obj,then,context);}}return obj;}function doGetThen(obj){return obj.then;}function getThen(obj){try{return doGetThen(obj);}catch(e){errorObj.e=e;return errorObj;}}var hasProp={}.hasOwnProperty;function isAnyBluebirdPromise(obj){try{return hasProp.call(obj,"_promise0");}catch(e){return false;}}function doThenable(x,then,context){var promise=new Promise(INTERNAL);var ret=promise;if(context)context._pushContext();promise._captureStackTrace();if(context)context._popContext();var synchronous=true;var result=util.tryCatch(then).call(x,resolve,reject);synchronous=false;if(promise&&result===errorObj){promise._rejectCallback(result.e,true,true);promise=null;}function resolve(value){if(!promise)return;promise._resolveCallback(value);promise=null;}function reject(reason){if(!promise)return;promise._rejectCallback(reason,synchronous,true);promise=null;}return ret;}return tryConvertToPromise;};},{"./util":36}],34:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,INTERNAL,debug){var util=_dereq_("./util");var TimeoutError=Promise.TimeoutError;function HandleWrapper(handle){this.handle=handle;}HandleWrapper.prototype._resultCancelled=function(){clearTimeout(this.handle);};var afterValue=function afterValue(value){return delay(+this).thenReturn(value);};var delay=Promise.delay=function(ms,value){var ret;var handle;if(value!==undefined){ret=Promise.resolve(value)._then(afterValue,null,null,ms,undefined);if(debug.cancellation()&&value instanceof Promise){ret._setOnCancel(value);}}else{ret=new Promise(INTERNAL);handle=setTimeout(function(){ret._fulfill();},+ms);if(debug.cancellation()){ret._setOnCancel(new HandleWrapper(handle));}ret._captureStackTrace();}ret._setAsyncGuaranteed();return ret;};Promise.prototype.delay=function(ms){return delay(ms,this);};var afterTimeout=function afterTimeout(promise,message,parent){var err;if(typeof message!=="string"){if(message instanceof Error){err=message;}else{err=new TimeoutError("operation timed out");}}else{err=new TimeoutError(message);}util.markAsOriginatingFromRejection(err);promise._attachExtraTrace(err);promise._reject(err);if(parent!=null){parent.cancel();}};function successClear(value){clearTimeout(this.handle);return value;}function failureClear(reason){clearTimeout(this.handle);throw reason;}Promise.prototype.timeout=function(ms,message){ms=+ms;var ret,parent;var handleWrapper=new HandleWrapper(setTimeout(function timeoutTimeout(){if(ret.isPending()){afterTimeout(ret,message,parent);}},ms));if(debug.cancellation()){parent=this.then();ret=parent._then(successClear,failureClear,undefined,handleWrapper,undefined);ret._setOnCancel(handleWrapper);}else{ret=this._then(successClear,failureClear,undefined,handleWrapper,undefined);}return ret;};};},{"./util":36}],35:[function(_dereq_,module,exports){"use strict";module.exports=function(Promise,apiRejection,tryConvertToPromise,createContext,INTERNAL,debug){var util=_dereq_("./util");var TypeError=_dereq_("./errors").TypeError;var inherits=_dereq_("./util").inherits;var errorObj=util.errorObj;var tryCatch=util.tryCatch;var NULL={};function thrower(e){setTimeout(function(){throw e;},0);}function castPreservingDisposable(thenable){var maybePromise=tryConvertToPromise(thenable);if(maybePromise!==thenable&&typeof thenable._isDisposable==="function"&&typeof thenable._getDisposer==="function"&&thenable._isDisposable()){maybePromise._setDisposable(thenable._getDisposer());}return maybePromise;}function dispose(resources,inspection){var i=0;var len=resources.length;var ret=new Promise(INTERNAL);function iterator(){if(i>=len)return ret._fulfill();var maybePromise=castPreservingDisposable(resources[i++]);if(maybePromise instanceof Promise&&maybePromise._isDisposable()){try{maybePromise=tryConvertToPromise(maybePromise._getDisposer().tryDispose(inspection),resources.promise);}catch(e){return thrower(e);}if(maybePromise instanceof Promise){return maybePromise._then(iterator,thrower,null,null,null);}}iterator();}iterator();return ret;}function Disposer(data,promise,context){this._data=data;this._promise=promise;this._context=context;}Disposer.prototype.data=function(){return this._data;};Disposer.prototype.promise=function(){return this._promise;};Disposer.prototype.resource=function(){if(this.promise().isFulfilled()){return this.promise().value();}return NULL;};Disposer.prototype.tryDispose=function(inspection){var resource=this.resource();var context=this._context;if(context!==undefined)context._pushContext();var ret=resource!==NULL?this.doDispose(resource,inspection):null;if(context!==undefined)context._popContext();this._promise._unsetDisposable();this._data=null;return ret;};Disposer.isDisposer=function(d){return d!=null&&typeof d.resource==="function"&&typeof d.tryDispose==="function";};function FunctionDisposer(fn,promise,context){this.constructor$(fn,promise,context);}inherits(FunctionDisposer,Disposer);FunctionDisposer.prototype.doDispose=function(resource,inspection){var fn=this.data();return fn.call(resource,resource,inspection);};function maybeUnwrapDisposer(value){if(Disposer.isDisposer(value)){this.resources[this.index]._setDisposable(value);return value.promise();}return value;}function ResourceList(length){this.length=length;this.promise=null;this[length-1]=null;}ResourceList.prototype._resultCancelled=function(){var len=this.length;for(var i=0;i<len;++i){var item=this[i];if(item instanceof Promise){item.cancel();}}};Promise.using=function(){var len=arguments.length;if(len<2)return apiRejection("you must pass at least 2 arguments to Promise.using");var fn=arguments[len-1];if(typeof fn!=="function"){return apiRejection("expecting a function but got "+util.classString(fn));}var input;var spreadArgs=true;if(len===2&&Array.isArray(arguments[0])){input=arguments[0];len=input.length;spreadArgs=false;}else{input=arguments;len--;}var resources=new ResourceList(len);for(var i=0;i<len;++i){var resource=input[i];if(Disposer.isDisposer(resource)){var disposer=resource;resource=resource.promise();resource._setDisposable(disposer);}else{var maybePromise=tryConvertToPromise(resource);if(maybePromise instanceof Promise){resource=maybePromise._then(maybeUnwrapDisposer,null,null,{resources:resources,index:i},undefined);}}resources[i]=resource;}var reflectedResources=new Array(resources.length);for(var i=0;i<reflectedResources.length;++i){reflectedResources[i]=Promise.resolve(resources[i]).reflect();}var resultPromise=Promise.all(reflectedResources).then(function(inspections){for(var i=0;i<inspections.length;++i){var inspection=inspections[i];if(inspection.isRejected()){errorObj.e=inspection.error();return errorObj;}else if(!inspection.isFulfilled()){resultPromise.cancel();return;}inspections[i]=inspection.value();}promise._pushContext();fn=tryCatch(fn);var ret=spreadArgs?fn.apply(undefined,inspections):fn(inspections);var promiseCreated=promise._popContext();debug.checkForgottenReturns(ret,promiseCreated,"Promise.using",promise);return ret;});var promise=resultPromise.lastly(function(){var inspection=new Promise.PromiseInspection(resultPromise);return dispose(resources,inspection);});resources.promise=promise;promise._setOnCancel(resources);return promise;};Promise.prototype._setDisposable=function(disposer){this._bitField=this._bitField|131072;this._disposer=disposer;};Promise.prototype._isDisposable=function(){return(this._bitField&131072)>0;};Promise.prototype._getDisposer=function(){return this._disposer;};Promise.prototype._unsetDisposable=function(){this._bitField=this._bitField&~131072;this._disposer=undefined;};Promise.prototype.disposer=function(fn){if(typeof fn==="function"){return new FunctionDisposer(fn,this,createContext());}throw new TypeError();};};},{"./errors":12,"./util":36}],36:[function(_dereq_,module,exports){"use strict";var es5=_dereq_("./es5");var canEvaluate=typeof navigator=="undefined";var errorObj={e:{}};var tryCatchTarget;var globalObject=typeof self!=="undefined"?self:typeof window!=="undefined"?window:typeof global!=="undefined"?global:this!==undefined?this:null;function tryCatcher(){try{var target=tryCatchTarget;tryCatchTarget=null;return target.apply(this,arguments);}catch(e){errorObj.e=e;return errorObj;}}function tryCatch(fn){tryCatchTarget=fn;return tryCatcher;}var inherits=function inherits(Child,Parent){var hasProp={}.hasOwnProperty;function T(){this.constructor=Child;this.constructor$=Parent;for(var propertyName in Parent.prototype){if(hasProp.call(Parent.prototype,propertyName)&&propertyName.charAt(propertyName.length-1)!=="$"){this[propertyName+"$"]=Parent.prototype[propertyName];}}}T.prototype=Parent.prototype;Child.prototype=new T();return Child.prototype;};function isPrimitive(val){return val==null||val===true||val===false||typeof val==="string"||typeof val==="number";}function isObject(value){return typeof value==="function"||(typeof value==="undefined"?"undefined":_typeof(value))==="object"&&value!==null;}function maybeWrapAsError(maybeError){if(!isPrimitive(maybeError))return maybeError;return new Error(safeToString(maybeError));}function withAppended(target,appendee){var len=target.length;var ret=new Array(len+1);var i;for(i=0;i<len;++i){ret[i]=target[i];}ret[i]=appendee;return ret;}function getDataPropertyOrDefault(obj,key,defaultValue){if(es5.isES5){var desc=Object.getOwnPropertyDescriptor(obj,key);if(desc!=null){return desc.get==null&&desc.set==null?desc.value:defaultValue;}}else{return{}.hasOwnProperty.call(obj,key)?obj[key]:undefined;}}function notEnumerableProp(obj,name,value){if(isPrimitive(obj))return obj;var descriptor={value:value,configurable:true,enumerable:false,writable:true};es5.defineProperty(obj,name,descriptor);return obj;}function thrower(r){throw r;}var inheritedDataKeys=function(){var excludedPrototypes=[Array.prototype,Object.prototype,Function.prototype];var isExcludedProto=function isExcludedProto(val){for(var i=0;i<excludedPrototypes.length;++i){if(excludedPrototypes[i]===val){return true;}}return false;};if(es5.isES5){var getKeys=Object.getOwnPropertyNames;return function(obj){var ret=[];var visitedKeys=Object.create(null);while(obj!=null&&!isExcludedProto(obj)){var keys;try{keys=getKeys(obj);}catch(e){return ret;}for(var i=0;i<keys.length;++i){var key=keys[i];if(visitedKeys[key])continue;visitedKeys[key]=true;var desc=Object.getOwnPropertyDescriptor(obj,key);if(desc!=null&&desc.get==null&&desc.set==null){ret.push(key);}}obj=es5.getPrototypeOf(obj);}return ret;};}else{var hasProp={}.hasOwnProperty;return function(obj){if(isExcludedProto(obj))return[];var ret=[];/*jshint forin:false */enumeration:for(var key in obj){if(hasProp.call(obj,key)){ret.push(key);}else{for(var i=0;i<excludedPrototypes.length;++i){if(hasProp.call(excludedPrototypes[i],key)){continue enumeration;}}ret.push(key);}}return ret;};}}();var thisAssignmentPattern=/this\s*\.\s*\S+\s*=/;function isClass(fn){try{if(typeof fn==="function"){var keys=es5.names(fn.prototype);var hasMethods=es5.isES5&&keys.length>1;var hasMethodsOtherThanConstructor=keys.length>0&&!(keys.length===1&&keys[0]==="constructor");var hasThisAssignmentAndStaticMethods=thisAssignmentPattern.test(fn+"")&&es5.names(fn).length>0;if(hasMethods||hasMethodsOtherThanConstructor||hasThisAssignmentAndStaticMethods){return true;}}return false;}catch(e){return false;}}function toFastProperties(obj){/*jshint -W027,-W055,-W031*/function FakeConstructor(){}FakeConstructor.prototype=obj;var l=8;while(l--){new FakeConstructor();}return obj;eval(obj);}var rident=/^[a-z$_][a-z$_0-9]*$/i;function isIdentifier(str){return rident.test(str);}function filledRange(count,prefix,suffix){var ret=new Array(count);for(var i=0;i<count;++i){ret[i]=prefix+i+suffix;}return ret;}function safeToString(obj){try{return obj+"";}catch(e){return"[no string representation]";}}function isError(obj){return obj instanceof Error||obj!==null&&(typeof obj==="undefined"?"undefined":_typeof(obj))==="object"&&typeof obj.message==="string"&&typeof obj.name==="string";}function markAsOriginatingFromRejection(e){try{notEnumerableProp(e,"isOperational",true);}catch(ignore){}}function originatesFromRejection(e){if(e==null)return false;return e instanceof Error["__BluebirdErrorTypes__"].OperationalError||e["isOperational"]===true;}function canAttachTrace(obj){return isError(obj)&&es5.propertyIsWritable(obj,"stack");}var ensureErrorObject=function(){if(!("stack"in new Error())){return function(value){if(canAttachTrace(value))return value;try{throw new Error(safeToString(value));}catch(err){return err;}};}else{return function(value){if(canAttachTrace(value))return value;return new Error(safeToString(value));};}}();function classString(obj){return{}.toString.call(obj);}function copyDescriptors(from,to,filter){var keys=es5.names(from);for(var i=0;i<keys.length;++i){var key=keys[i];if(filter(key)){try{es5.defineProperty(to,key,es5.getDescriptor(from,key));}catch(ignore){}}}}var asArray=function asArray(v){if(es5.isArray(v)){return v;}return null;};if(typeof Symbol!=="undefined"&&Symbol.iterator){var ArrayFrom=typeof Array.from==="function"?function(v){return Array.from(v);}:function(v){var ret=[];var it=v[Symbol.iterator]();var itResult;while(!(itResult=it.next()).done){ret.push(itResult.value);}return ret;};asArray=function asArray(v){if(es5.isArray(v)){return v;}else if(v!=null&&typeof v[Symbol.iterator]==="function"){return ArrayFrom(v);}return null;};}var isNode=typeof process!=="undefined"&&classString(process).toLowerCase()==="[object process]";var hasEnvVariables=typeof process!=="undefined"&&typeof process.env!=="undefined";function env(key){return hasEnvVariables?process.env[key]:undefined;}function getNativePromise(){if(typeof Promise==="function"){try{var promise=new Promise(function(){});if({}.toString.call(promise)==="[object Promise]"){return Promise;}}catch(e){}}}function domainBind(self,cb){return self.bind(cb);}var ret={isClass:isClass,isIdentifier:isIdentifier,inheritedDataKeys:inheritedDataKeys,getDataPropertyOrDefault:getDataPropertyOrDefault,thrower:thrower,isArray:es5.isArray,asArray:asArray,notEnumerableProp:notEnumerableProp,isPrimitive:isPrimitive,isObject:isObject,isError:isError,canEvaluate:canEvaluate,errorObj:errorObj,tryCatch:tryCatch,inherits:inherits,withAppended:withAppended,maybeWrapAsError:maybeWrapAsError,toFastProperties:toFastProperties,filledRange:filledRange,toString:safeToString,canAttachTrace:canAttachTrace,ensureErrorObject:ensureErrorObject,originatesFromRejection:originatesFromRejection,markAsOriginatingFromRejection:markAsOriginatingFromRejection,classString:classString,copyDescriptors:copyDescriptors,hasDevTools:typeof chrome!=="undefined"&&chrome&&typeof chrome.loadTimes==="function",isNode:isNode,hasEnvVariables:hasEnvVariables,env:env,global:globalObject,getNativePromise:getNativePromise,domainBind:domainBind};ret.isRecentNode=ret.isNode&&function(){var version=process.versions.node.split(".").map(Number);return version[0]===0&&version[1]>10||version[0]>0;}();if(ret.isNode)ret.toFastProperties(process);try{throw new Error();}catch(e){ret.lastLineError=e;}module.exports=ret;},{"./es5":13}]},{},[4])(4);});;if(typeof window!=='undefined'&&window!==null){window.P=window.Promise;}else if(typeof self!=='undefined'&&self!==null){self.P=self.Promise;}}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"_process":6}],2:[function(require,module,exports){"use strict";/* eslint-disable no-invalid-this */var checkError=require("check-error");module.exports=function(chai,utils){var Assertion=chai.Assertion;var assert=chai.assert;var proxify=utils.proxify;// If we are using a version of Chai that has checkError on it,
+// we want to use that version to be consistent. Otherwise, we use
+// what was passed to the factory.
+if(utils.checkError){checkError=utils.checkError;}function isLegacyJQueryPromise(thenable){// jQuery promises are Promises/A+-compatible since 3.0.0. jQuery 3.0.0 is also the first version
+// to define the catch method.
+return typeof thenable.catch!=="function"&&typeof thenable.always==="function"&&typeof thenable.done==="function"&&typeof thenable.fail==="function"&&typeof thenable.pipe==="function"&&typeof thenable.progress==="function"&&typeof thenable.state==="function";}function assertIsAboutPromise(assertion){if(typeof assertion._obj.then!=="function"){throw new TypeError(utils.inspect(assertion._obj)+" is not a thenable.");}if(isLegacyJQueryPromise(assertion._obj)){throw new TypeError("Chai as Promised is incompatible with thenables of jQuery<3.0.0, sorry! Please "+"upgrade jQuery or use another Promises/A+ compatible library (see "+"http://promisesaplus.com/).");}}function proxifyIfSupported(assertion){return proxify===undefined?assertion:proxify(assertion);}function method(name,asserter){utils.addMethod(Assertion.prototype,name,function(){assertIsAboutPromise(this);return asserter.apply(this,arguments);});}function property(name,asserter){utils.addProperty(Assertion.prototype,name,function(){assertIsAboutPromise(this);return proxifyIfSupported(asserter.apply(this,arguments));});}function doNotify(promise,done){promise.then(function(){return done();},done);}// These are for clarity and to bypass Chai refusing to allow `undefined` as actual when used with `assert`.
+function assertIfNegated(assertion,message,extra){assertion.assert(true,null,message,extra.expected,extra.actual);}function assertIfNotNegated(assertion,message,extra){assertion.assert(false,message,null,extra.expected,extra.actual);}function getBasePromise(assertion){// We need to chain subsequent asserters on top of ones in the chain already (consider
+// `eventually.have.property("foo").that.equals("bar")`), only running them after the existing ones pass.
+// So the first base-promise is `assertion._obj`, but after that we use the assertions themselves, i.e.
+// previously derived promises, to chain off of.
+return typeof assertion.then==="function"?assertion:assertion._obj;}function getReasonName(reason){return reason instanceof Error?reason.toString():checkError.getConstructorName(reason);}// Grab these first, before we modify `Assertion.prototype`.
+var propertyNames=Object.getOwnPropertyNames(Assertion.prototype);var propertyDescs={};var _iteratorNormalCompletion=true;var _didIteratorError=false;var _iteratorError=undefined;try{for(var _iterator=propertyNames[Symbol.iterator](),_step;!(_iteratorNormalCompletion=(_step=_iterator.next()).done);_iteratorNormalCompletion=true){var name=_step.value;propertyDescs[name]=Object.getOwnPropertyDescriptor(Assertion.prototype,name);}}catch(err){_didIteratorError=true;_iteratorError=err;}finally{try{if(!_iteratorNormalCompletion&&_iterator.return){_iterator.return();}}finally{if(_didIteratorError){throw _iteratorError;}}}property("fulfilled",function(){var _this=this;var derivedPromise=getBasePromise(this).then(function(value){assertIfNegated(_this,"expected promise not to be fulfilled but it was fulfilled with #{act}",{actual:value});return value;},function(reason){assertIfNotNegated(_this,"expected promise to be fulfilled but it was rejected with #{act}",{actual:getReasonName(reason)});return reason;});module.exports.transferPromiseness(this,derivedPromise);return this;});property("rejected",function(){var _this2=this;var derivedPromise=getBasePromise(this).then(function(value){assertIfNotNegated(_this2,"expected promise to be rejected but it was fulfilled with #{act}",{actual:value});return value;},function(reason){assertIfNegated(_this2,"expected promise not to be rejected but it was rejected with #{act}",{actual:getReasonName(reason)});// Return the reason, transforming this into a fulfillment, to allow further assertions, e.g.
+// `promise.should.be.rejected.and.eventually.equal("reason")`.
+return reason;});module.exports.transferPromiseness(this,derivedPromise);return this;});method("rejectedWith",function(errorLike,errMsgMatcher,message){var _this3=this;var errorLikeName=null;var negate=utils.flag(this,"negate")||false;// rejectedWith with that is called without arguments is
+// the same as a plain ".rejected" use.
+if(errorLike===undefined&&errMsgMatcher===undefined&&message===undefined){/* eslint-disable no-unused-expressions */return this.rejected;/* eslint-enable no-unused-expressions */}if(message!==undefined){utils.flag(this,"message",message);}if(errorLike instanceof RegExp||typeof errorLike==="string"){errMsgMatcher=errorLike;errorLike=null;}else if(errorLike&&errorLike instanceof Error){errorLikeName=errorLike.toString();}else if(typeof errorLike==="function"){errorLikeName=checkError.getConstructorName(errorLike);}else{errorLike=null;}var everyArgIsDefined=Boolean(errorLike&&errMsgMatcher);var matcherRelation="including";if(errMsgMatcher instanceof RegExp){matcherRelation="matching";}var derivedPromise=getBasePromise(this).then(function(value){var assertionMessage=null;var expected=null;if(errorLike){assertionMessage="expected promise to be rejected with #{exp} but it was fulfilled with #{act}";expected=errorLikeName;}else if(errMsgMatcher){assertionMessage="expected promise to be rejected with an error "+matcherRelation+" #{exp} but "+"it was fulfilled with #{act}";expected=errMsgMatcher;}assertIfNotNegated(_this3,assertionMessage,{expected:expected,actual:value});return value;},function(reason){var errorLikeCompatible=errorLike&&(errorLike instanceof Error?checkError.compatibleInstance(reason,errorLike):checkError.compatibleConstructor(reason,errorLike));var errMsgMatcherCompatible=errMsgMatcher&&checkError.compatibleMessage(reason,errMsgMatcher);var reasonName=getReasonName(reason);if(negate&&everyArgIsDefined){if(errorLikeCompatible&&errMsgMatcherCompatible){_this3.assert(true,null,"expected promise not to be rejected with #{exp} but it was rejected "+"with #{act}",errorLikeName,reasonName);}}else{if(errorLike){_this3.assert(errorLikeCompatible,"expected promise to be rejected with #{exp} but it was rejected with #{act}","expected promise not to be rejected with #{exp} but it was rejected "+"with #{act}",errorLikeName,reasonName);}if(errMsgMatcher){_this3.assert(errMsgMatcherCompatible,"expected promise to be rejected with an error "+matcherRelation+" #{exp} but got "+"#{act}","expected promise not to be rejected with an error "+matcherRelation+" #{exp}",errMsgMatcher,checkError.getMessage(reason));}}return reason;});module.exports.transferPromiseness(this,derivedPromise);return this;});property("eventually",function(){utils.flag(this,"eventually",true);return this;});method("notify",function(done){doNotify(getBasePromise(this),done);return this;});method("become",function(value,message){return this.eventually.deep.equal(value,message);});// ### `eventually`
+// We need to be careful not to trigger any getters, thus `Object.getOwnPropertyDescriptor` usage.
+var methodNames=propertyNames.filter(function(name){return name!=="assert"&&typeof propertyDescs[name].value==="function";});methodNames.forEach(function(methodName){Assertion.overwriteMethod(methodName,function(originalMethod){return function(){return doAsserterAsyncAndAddThen(originalMethod,this,arguments);};});});var getterNames=propertyNames.filter(function(name){return name!=="_obj"&&typeof propertyDescs[name].get==="function";});getterNames.forEach(function(getterName){// Chainable methods are things like `an`, which can work both for `.should.be.an.instanceOf` and as
+// `should.be.an("object")`. We need to handle those specially.
+var isChainableMethod=Assertion.prototype.__methods.hasOwnProperty(getterName);if(isChainableMethod){Assertion.overwriteChainableMethod(getterName,function(originalMethod){return function(){return doAsserterAsyncAndAddThen(originalMethod,this,arguments);};},function(originalGetter){return function(){return doAsserterAsyncAndAddThen(originalGetter,this);};});}else{Assertion.overwriteProperty(getterName,function(originalGetter){return function(){return proxifyIfSupported(doAsserterAsyncAndAddThen(originalGetter,this));};});}});function doAsserterAsyncAndAddThen(asserter,assertion,args){// Since we're intercepting all methods/properties, we need to just pass through if they don't want
+// `eventually`, or if we've already fulfilled the promise (see below).
+if(!utils.flag(assertion,"eventually")){asserter.apply(assertion,args);return assertion;}var derivedPromise=getBasePromise(assertion).then(function(value){// Set up the environment for the asserter to actually run: `_obj` should be the fulfillment value, and
+// now that we have the value, we're no longer in "eventually" mode, so we won't run any of this code,
+// just the base Chai code that we get to via the short-circuit above.
+assertion._obj=value;utils.flag(assertion,"eventually",false);return args?module.exports.transformAsserterArgs(args):args;}).then(function(newArgs){asserter.apply(assertion,newArgs);// Because asserters, for example `property`, can change the value of `_obj` (i.e. change the "object"
+// flag), we need to communicate this value change to subsequent chained asserters. Since we build a
+// promise chain paralleling the asserter chain, we can use it to communicate such changes.
+return assertion._obj;});module.exports.transferPromiseness(assertion,derivedPromise);return assertion;}// ### Now use the `Assertion` framework to build an `assert` interface.
+var originalAssertMethods=Object.getOwnPropertyNames(assert).filter(function(propName){return typeof assert[propName]==="function";});assert.isFulfilled=function(promise,message){return new Assertion(promise,message).to.be.fulfilled;};assert.isRejected=function(promise,errorLike,errMsgMatcher,message){var assertion=new Assertion(promise,message);return assertion.to.be.rejectedWith(errorLike,errMsgMatcher,message);};assert.becomes=function(promise,value,message){return assert.eventually.deepEqual(promise,value,message);};assert.doesNotBecome=function(promise,value,message){return assert.eventually.notDeepEqual(promise,value,message);};assert.eventually={};originalAssertMethods.forEach(function(assertMethodName){assert.eventually[assertMethodName]=function(promise){var otherArgs=Array.prototype.slice.call(arguments,1);var customRejectionHandler=void 0;var message=arguments[assert[assertMethodName].length-1];if(typeof message==="string"){customRejectionHandler=function customRejectionHandler(reason){throw new chai.AssertionError(message+"\n\nOriginal reason: "+utils.inspect(reason));};}var returnedPromise=promise.then(function(fulfillmentValue){return assert[assertMethodName].apply(assert,[fulfillmentValue].concat(otherArgs));},customRejectionHandler);returnedPromise.notify=function(done){doNotify(returnedPromise,done);};return returnedPromise;};});};module.exports.transferPromiseness=function(assertion,promise){assertion.then=promise.then.bind(promise);};module.exports.transformAsserterArgs=function(values){return values;};},{"check-error":3}],3:[function(require,module,exports){'use strict';/* !
+ * Chai - checkError utility
+ * Copyright(c) 2012-2016 Jake Luer <jake@alogicalparadox.com>
+ * MIT Licensed
+ *//**
+ * ### .checkError
+ *
+ * Checks that an error conforms to a given set of criteria and/or retrieves information about it.
+ *
+ * @api public
+ *//**
+ * ### .compatibleInstance(thrown, errorLike)
+ *
+ * Checks if two instances are compatible (strict equal).
+ * Returns false if errorLike is not an instance of Error, because instances
+ * can only be compatible if they're both error instances.
+ *
+ * @name compatibleInstance
+ * @param {Error} thrown error
+ * @param {Error|ErrorConstructor} errorLike object to compare against
+ * @namespace Utils
+ * @api public
+ */function compatibleInstance(thrown,errorLike){return errorLike instanceof Error&&thrown===errorLike;}/**
+ * ### .compatibleConstructor(thrown, errorLike)
+ *
+ * Checks if two constructors are compatible.
+ * This function can receive either an error constructor or
+ * an error instance as the `errorLike` argument.
+ * Constructors are compatible if they're the same or if one is
+ * an instance of another.
+ *
+ * @name compatibleConstructor
+ * @param {Error} thrown error
+ * @param {Error|ErrorConstructor} errorLike object to compare against
+ * @namespace Utils
+ * @api public
+ */function compatibleConstructor(thrown,errorLike){if(errorLike instanceof Error){// If `errorLike` is an instance of any error we compare their constructors
+return thrown.constructor===errorLike.constructor||thrown instanceof errorLike.constructor;}else if(errorLike.prototype instanceof Error||errorLike===Error){// If `errorLike` is a constructor that inherits from Error, we compare `thrown` to `errorLike` directly
+return thrown.constructor===errorLike||thrown instanceof errorLike;}return false;}/**
+ * ### .compatibleMessage(thrown, errMatcher)
+ *
+ * Checks if an error's message is compatible with a matcher (String or RegExp).
+ * If the message contains the String or passes the RegExp test,
+ * it is considered compatible.
+ *
+ * @name compatibleMessage
+ * @param {Error} thrown error
+ * @param {String|RegExp} errMatcher to look for into the message
+ * @namespace Utils
+ * @api public
+ */function compatibleMessage(thrown,errMatcher){var comparisonString=typeof thrown==='string'?thrown:thrown.message;if(errMatcher instanceof RegExp){return errMatcher.test(comparisonString);}else if(typeof errMatcher==='string'){return comparisonString.indexOf(errMatcher)!==-1;// eslint-disable-line no-magic-numbers
+}return false;}/**
+ * ### .getFunctionName(constructorFn)
+ *
+ * Returns the name of a function.
+ * This also includes a polyfill function if `constructorFn.name` is not defined.
+ *
+ * @name getFunctionName
+ * @param {Function} constructorFn
+ * @namespace Utils
+ * @api private
+ */var functionNameMatch=/\s*function(?:\s|\s*\/\*[^(?:*\/)]+\*\/\s*)*([^\(\/]+)/;function getFunctionName(constructorFn){var name='';if(typeof constructorFn.name==='undefined'){// Here we run a polyfill if constructorFn.name is not defined
+var match=String(constructorFn).match(functionNameMatch);if(match){name=match[1];}}else{name=constructorFn.name;}return name;}/**
+ * ### .getConstructorName(errorLike)
+ *
+ * Gets the constructor name for an Error instance or constructor itself.
+ *
+ * @name getConstructorName
+ * @param {Error|ErrorConstructor} errorLike
+ * @namespace Utils
+ * @api public
+ */function getConstructorName(errorLike){var constructorName=errorLike;if(errorLike instanceof Error){constructorName=getFunctionName(errorLike.constructor);}else if(typeof errorLike==='function'){// If `err` is not an instance of Error it is an error constructor itself or another function.
+// If we've got a common function we get its name, otherwise we may need to create a new instance
+// of the error just in case it's a poorly-constructed error. Please see chaijs/chai/issues/45 to know more.
+constructorName=getFunctionName(errorLike).trim()||getFunctionName(new errorLike());// eslint-disable-line new-cap
+}return constructorName;}/**
+ * ### .getMessage(errorLike)
+ *
+ * Gets the error message from an error.
+ * If `err` is a String itself, we return it.
+ * If the error has no message, we return an empty string.
+ *
+ * @name getMessage
+ * @param {Error|String} errorLike
+ * @namespace Utils
+ * @api public
+ */function getMessage(errorLike){var msg='';if(errorLike&&errorLike.message){msg=errorLike.message;}else if(typeof errorLike==='string'){msg=errorLike;}return msg;}module.exports={compatibleInstance:compatibleInstance,compatibleConstructor:compatibleConstructor,compatibleMessage:compatibleMessage,getMessage:getMessage,getConstructorName:getConstructorName};},{}],4:[function(require,module,exports){/*globals define, module, Symbol *//*jshint -W056 */(function(globals){'use strict';var strings,messages,predicates,functions,assert,not,maybe,collections,slice,neginf,posinf,isArray,haveSymbols;strings={v:'value',n:'number',s:'string',b:'boolean',o:'object',t:'type',a:'array',al:'array-like',i:'iterable',d:'date',f:'function',l:'length'};messages={};predicates={};[{n:'equal',f:equal,s:'v'},{n:'undefined',f:isUndefined,s:'v'},{n:'null',f:isNull,s:'v'},{n:'assigned',f:assigned,s:'v'},{n:'primitive',f:primitive,s:'v'},{n:'includes',f:includes,s:'v'},{n:'zero',f:zero},{n:'infinity',f:infinity},{n:'number',f:number},{n:'integer',f:integer},{n:'even',f:even},{n:'odd',f:odd},{n:'greater',f:greater},{n:'less',f:less},{n:'between',f:between},{n:'greaterOrEqual',f:greaterOrEqual},{n:'lessOrEqual',f:lessOrEqual},{n:'inRange',f:inRange},{n:'positive',f:positive},{n:'negative',f:negative},{n:'string',f:string,s:'s'},{n:'emptyString',f:emptyString,s:'s'},{n:'nonEmptyString',f:nonEmptyString,s:'s'},{n:'contains',f:contains,s:'s'},{n:'match',f:match,s:'s'},{n:'boolean',f:boolean,s:'b'},{n:'object',f:object,s:'o'},{n:'emptyObject',f:emptyObject,s:'o'},{n:'nonEmptyObject',f:nonEmptyObject,s:'o'},{n:'instanceStrict',f:instanceStrict,s:'t'},{n:'instance',f:instance,s:'t'},{n:'like',f:like,s:'t'},{n:'array',f:array,s:'a'},{n:'emptyArray',f:emptyArray,s:'a'},{n:'nonEmptyArray',f:nonEmptyArray,s:'a'},{n:'arrayLike',f:arrayLike,s:'al'},{n:'iterable',f:iterable,s:'i'},{n:'date',f:date,s:'d'},{n:'function',f:isFunction,s:'f'},{n:'hasLength',f:hasLength,s:'l'}].map(function(data){var n=data.n;messages[n]='Invalid '+strings[data.s||'n'];predicates[n]=data.f;});functions={apply:apply,map:map,all:all,any:any};collections=['array','arrayLike','iterable','object'];slice=Array.prototype.slice;neginf=Number.NEGATIVE_INFINITY;posinf=Number.POSITIVE_INFINITY;isArray=Array.isArray;haveSymbols=typeof Symbol==='function';functions=mixin(functions,predicates);assert=createModifiedPredicates(assertModifier,assertImpl);not=createModifiedPredicates(notModifier,notImpl);maybe=createModifiedPredicates(maybeModifier,maybeImpl);assert.not=createModifiedModifier(assertModifier,not);assert.maybe=createModifiedModifier(assertModifier,maybe);collections.forEach(createOfPredicates);createOfModifiers(assert,assertModifier);createOfModifiers(not,notModifier);collections.forEach(createMaybeOfModifiers);exportFunctions(mixin(functions,{assert:assert,not:not,maybe:maybe}));/**
+   * Public function `equal`.
+   *
+   * Returns true if `lhs` and `rhs` are strictly equal, without coercion.
+   * Returns false otherwise.
+   */function equal(lhs,rhs){return lhs===rhs;}/**
+   * Public function `undefined`.
+   *
+   * Returns true if `data` is undefined, false otherwise.
+   */function isUndefined(data){return data===undefined;}/**
+   * Public function `null`.
+   *
+   * Returns true if `data` is null, false otherwise.
+   */function isNull(data){return data===null;}/**
+   * Public function `assigned`.
+   *
+   * Returns true if `data` is not null or undefined, false otherwise.
+   */function assigned(data){return data!==undefined&&data!==null;}/**
+   * Public function `primitive`.
+   *
+   * Returns true if `data` is a primitive type, false otherwise.
+   */function primitive(data){var type;switch(data){case null:case undefined:case false:case true:return true;}type=typeof data==="undefined"?"undefined":_typeof(data);return type==='string'||type==='number'||haveSymbols&&type==='symbol';}/**
+   * Public function `zero`.
+   *
+   * Returns true if `data` is zero, false otherwise.
+   */function zero(data){return data===0;}/**
+   * Public function `infinity`.
+   *
+   * Returns true if `data` is positive or negative infinity, false otherwise.
+   */function infinity(data){return data===neginf||data===posinf;}/**
+   * Public function `number`.
+   *
+   * Returns true if `data` is a number, false otherwise.
+   */function number(data){return typeof data==='number'&&data>neginf&&data<posinf;}/**
+   * Public function `integer`.
+   *
+   * Returns true if `data` is an integer, false otherwise.
+   */function integer(data){return typeof data==='number'&&data%1===0;}/**
+   * Public function `even`.
+   *
+   * Returns true if `data` is an even number, false otherwise.
+   */function even(data){return typeof data==='number'&&data%2===0;}/**
+   * Public function `odd`.
+   *
+   * Returns true if `data` is an odd number, false otherwise.
+   */function odd(data){return integer(data)&&data%2!==0;}/**
+   * Public function `greater`.
+   *
+   * Returns true if `lhs` is a number greater than `rhs`, false otherwise.
+   */function greater(lhs,rhs){return number(lhs)&&lhs>rhs;}/**
+   * Public function `less`.
+   *
+   * Returns true if `lhs` is a number less than `rhs`, false otherwise.
+   */function less(lhs,rhs){return number(lhs)&&lhs<rhs;}/**
+   * Public function `between`.
+   *
+   * Returns true if `data` is a number between `x` and `y`, false otherwise.
+   */function between(data,x,y){if(x<y){return greater(data,x)&&data<y;}return less(data,x)&&data>y;}/**
+   * Public function `greaterOrEqual`.
+   *
+   * Returns true if `lhs` is a number greater than or equal to `rhs`, false
+   * otherwise.
+   */function greaterOrEqual(lhs,rhs){return number(lhs)&&lhs>=rhs;}/**
+   * Public function `lessOrEqual`.
+   *
+   * Returns true if `lhs` is a number less than or equal to `rhs`, false
+   * otherwise.
+   */function lessOrEqual(lhs,rhs){return number(lhs)&&lhs<=rhs;}/**
+   * Public function `inRange`.
+   *
+   * Returns true if `data` is a number in the range `x..y`, false otherwise.
+   */function inRange(data,x,y){if(x<y){return greaterOrEqual(data,x)&&data<=y;}return lessOrEqual(data,x)&&data>=y;}/**
+   * Public function `positive`.
+   *
+   * Returns true if `data` is a positive number, false otherwise.
+   */function positive(data){return greater(data,0);}/**
+   * Public function `negative`.
+   *
+   * Returns true if `data` is a negative number, false otherwise.
+   */function negative(data){return less(data,0);}/**
+   * Public function `string`.
+   *
+   * Returns true if `data` is a string, false otherwise.
+   */function string(data){return typeof data==='string';}/**
+   * Public function `emptyString`.
+   *
+   * Returns true if `data` is the empty string, false otherwise.
+   */function emptyString(data){return data==='';}/**
+   * Public function `nonEmptyString`.
+   *
+   * Returns true if `data` is a non-empty string, false otherwise.
+   */function nonEmptyString(data){return string(data)&&data!=='';}/**
+   * Public function `contains`.
+   *
+   * Returns true if `data` is a string that contains `substring`, false
+   * otherwise.
+   */function contains(data,substring){return string(data)&&data.indexOf(substring)!==-1;}/**
+   * Public function `match`.
+   *
+   * Returns true if `data` is a string that matches `regex`, false otherwise.
+   */function match(data,regex){return string(data)&&!!data.match(regex);}/**
+   * Public function `boolean`.
+   *
+   * Returns true if `data` is a boolean value, false otherwise.
+   */function boolean(data){return data===false||data===true;}/**
+   * Public function `object`.
+   *
+   * Returns true if `data` is a plain-old JS object, false otherwise.
+   */function object(data){return Object.prototype.toString.call(data)==='[object Object]';}/**
+   * Public function `emptyObject`.
+   *
+   * Returns true if `data` is an empty object, false otherwise.
+   */function emptyObject(data){return object(data)&&Object.keys(data).length===0;}/**
+   * Public function `nonEmptyObject`.
+   *
+   * Returns true if `data` is a non-empty object, false otherwise.
+   */function nonEmptyObject(data){return object(data)&&Object.keys(data).length>0;}/**
+   * Public function `instanceStrict`.
+   *
+   * Returns true if `data` is an instance of `prototype`, false otherwise.
+   */function instanceStrict(data,prototype){try{return data instanceof prototype;}catch(error){return false;}}/**
+   * Public function `instance`.
+   *
+   * Returns true if `data` is an instance of `prototype`, false otherwise.
+   * Falls back to testing constructor.name and Object.prototype.toString
+   * if the initial instanceof test fails.
+   */function instance(data,prototype){try{return instanceStrict(data,prototype)||data.constructor.name===prototype.name||Object.prototype.toString.call(data)==='[object '+prototype.name+']';}catch(error){return false;}}/**
+   * Public function `like`.
+   *
+   * Tests whether `data` 'quacks like a duck'. Returns true if `data` has all
+   * of the properties of `archetype` (the 'duck'), false otherwise.
+   */function like(data,archetype){var name;for(name in archetype){if(archetype.hasOwnProperty(name)){if(data.hasOwnProperty(name)===false||_typeof(data[name])!==_typeof(archetype[name])){return false;}if(object(data[name])&&like(data[name],archetype[name])===false){return false;}}}return true;}/**
+   * Public function `array`.
+   *
+   * Returns true if `data` is an array, false otherwise.
+   */function array(data){return isArray(data);}/**
+   * Public function `emptyArray`.
+   *
+   * Returns true if `data` is an empty array, false otherwise.
+   */function emptyArray(data){return array(data)&&data.length===0;}/**
+   * Public function `nonEmptyArray`.
+   *
+   * Returns true if `data` is a non-empty array, false otherwise.
+   */function nonEmptyArray(data){return array(data)&&greater(data.length,0);}/**
+   * Public function `arrayLike`.
+   *
+   * Returns true if `data` is an array-like object, false otherwise.
+   */function arrayLike(data){return assigned(data)&&greaterOrEqual(data.length,0);}/**
+   * Public function `iterable`.
+   *
+   * Returns true if `data` is an iterable, false otherwise.
+   */function iterable(data){if(!haveSymbols){// Fall back to `arrayLike` predicate in pre-ES6 environments.
+return arrayLike(data);}return assigned(data)&&isFunction(data[Symbol.iterator]);}/**
+   * Public function `includes`.
+   *
+   * Returns true if `data` contains `value`, false otherwise.
+   */function includes(data,value){var iterator,iteration,keys,length,i;if(!assigned(data)){return false;}if(haveSymbols&&data[Symbol.iterator]&&isFunction(data.values)){iterator=data.values();do{iteration=iterator.next();if(iteration.value===value){return true;}}while(!iteration.done);return false;}keys=Object.keys(data);length=keys.length;for(i=0;i<length;++i){if(data[keys[i]]===value){return true;}}return false;}/**
+   * Public function `hasLength`.
+   *
+   * Returns true if `data` has a length property that equals `length`, false
+   * otherwise.
+   */function hasLength(data,length){return assigned(data)&&data.length===length;}/**
+   * Public function `date`.
+   *
+   * Returns true if `data` is a valid date, false otherwise.
+   */function date(data){return instanceStrict(data,Date)&&integer(data.getTime());}/**
+   * Public function `function`.
+   *
+   * Returns true if `data` is a function, false otherwise.
+   */function isFunction(data){return typeof data==='function';}/**
+   * Public function `apply`.
+   *
+   * Maps each value from the `data` to the corresponding predicate and returns
+   * the result array. If the same function is to be applied across all of the
+   * data, a single predicate function may be passed in.
+   *
+   */function apply(data,predicates){assert.array(data);if(isFunction(predicates)){return data.map(function(value){return predicates(value);});}assert.array(predicates);assert.hasLength(data,predicates.length);return data.map(function(value,index){return predicates[index](value);});}/**
+   * Public function `map`.
+   *
+   * Maps each value from the `data` to the corresponding predicate and returns
+   * the result object. Supports nested objects. If the `data` is not nested and
+   * the same function is to be applied across all of it, a single predicate
+   * function may be passed in.
+   *
+   */function map(data,predicates){assert.object(data);if(isFunction(predicates)){return mapSimple(data,predicates);}assert.object(predicates);return mapComplex(data,predicates);}function mapSimple(data,predicate){var result={};Object.keys(data).forEach(function(key){result[key]=predicate(data[key]);});return result;}function mapComplex(data,predicates){var result={};Object.keys(predicates).forEach(function(key){var predicate=predicates[key];if(isFunction(predicate)){if(not.assigned(data)){result[key]=!!predicate.m;}else{result[key]=predicate(data[key]);}}else if(object(predicate)){result[key]=mapComplex(data[key],predicate);}});return result;}/**
+   * Public function `all`
+   *
+   * Check that all boolean values are true
+   * in an array (returned from `apply`)
+   * or object (returned from `map`).
+   *
+   */function all(data){if(array(data)){return testArray(data,false);}assert.object(data);return testObject(data,false);}function testArray(data,result){var i;for(i=0;i<data.length;i+=1){if(data[i]===result){return result;}}return!result;}function testObject(data,result){var key,value;for(key in data){if(data.hasOwnProperty(key)){value=data[key];if(object(value)&&testObject(value,result)===result){return result;}if(value===result){return result;}}}return!result;}/**
+   * Public function `any`
+   *
+   * Check that at least one boolean value is true
+   * in an array (returned from `apply`)
+   * or object (returned from `map`).
+   *
+   */function any(data){if(array(data)){return testArray(data,true);}assert.object(data);return testObject(data,true);}function mixin(target,source){Object.keys(source).forEach(function(key){target[key]=source[key];});return target;}/**
+   * Public modifier `assert`.
+   *
+   * Throws if `predicate` returns false.
+   */function assertModifier(predicate,defaultMessage){return function(){return assertPredicate(predicate,arguments,defaultMessage);};}function assertPredicate(predicate,args,defaultMessage){var argCount=predicate.l||predicate.length;var message=args[argCount];var ErrorType=args[argCount+1];assertImpl(predicate.apply(null,args),nonEmptyString(message)?message:defaultMessage,isFunction(ErrorType)?ErrorType:TypeError);return args[0];}function assertImpl(value,message,ErrorType){if(value){return value;}throw new(ErrorType||Error)(message||'Assertion failed');}/**
+   * Public modifier `not`.
+   *
+   * Negates `predicate`.
+   */function notModifier(predicate){var modifiedPredicate=function modifiedPredicate(){return notImpl(predicate.apply(null,arguments));};modifiedPredicate.l=predicate.length;return modifiedPredicate;}function notImpl(value){return!value;}/**
+   * Public modifier `maybe`.
+   *
+   * Returns true if predicate argument is  null or undefined,
+   * otherwise propagates the return value from `predicate`.
+   */function maybeModifier(predicate){var modifiedPredicate=function modifiedPredicate(){if(not.assigned(arguments[0])){return true;}return predicate.apply(null,arguments);};modifiedPredicate.l=predicate.length;// Hackishly indicate that this is a maybe.xxx predicate.
+// Without this flag, the alternative would be to iterate
+// through the maybe predicates or use indexOf to check,
+// which would be time-consuming.
+modifiedPredicate.m=true;return modifiedPredicate;}function maybeImpl(value){if(assigned(value)===false){return true;}return value;}/**
+   * Public modifier `of`.
+   *
+   * Applies the chained predicate to members of the collection.
+   */function ofModifier(target,type,predicate){var modifiedPredicate=function modifiedPredicate(){var collection,args;collection=arguments[0];if(target==='maybe'&&not.assigned(collection)){return true;}if(!type(collection)){return false;}collection=coerceCollection(type,collection);args=slice.call(arguments,1);try{collection.forEach(function(item){if((target!=='maybe'||assigned(item))&&!predicate.apply(null,[item].concat(args))){// TODO: Replace with for...of when ES6 is required.
+throw 0;}});}catch(ignore){return false;}return true;};modifiedPredicate.l=predicate.length;return modifiedPredicate;}function coerceCollection(type,collection){switch(type){case arrayLike:return slice.call(collection);case object:return Object.keys(collection).map(function(key){return collection[key];});default:return collection;}}function createModifiedPredicates(modifier,object){return createModifiedFunctions([modifier,predicates,object]);}function createModifiedFunctions(args){var modifier,object,functions,result;modifier=args.shift();object=args.pop();functions=args.pop();result=object||{};Object.keys(functions).forEach(function(key){Object.defineProperty(result,key,{configurable:false,enumerable:true,writable:false,value:modifier.apply(null,args.concat(functions[key],messages[key]))});});return result;}function createModifiedModifier(modifier,modified){return createModifiedFunctions([modifier,modified,null]);}function createOfPredicates(key){predicates[key].of=createModifiedFunctions([ofModifier.bind(null,null),predicates[key],predicates,null]);}function createOfModifiers(base,modifier){collections.forEach(function(key){base[key].of=createModifiedModifier(modifier,predicates[key].of);});}function createMaybeOfModifiers(key){maybe[key].of=createModifiedFunctions([ofModifier.bind(null,'maybe'),predicates[key],predicates,null]);assert.maybe[key].of=createModifiedModifier(assertModifier,maybe[key].of);assert.not[key].of=createModifiedModifier(assertModifier,not[key].of);}function exportFunctions(functions){if(typeof define==='function'&&define.amd){define(function(){return functions;});}else if(typeof module!=='undefined'&&module!==null&&module.exports){module.exports=functions;}else{globals.check=functions;}}})(this);},{}],5:[function(require,module,exports){(function(global){/**
  * @license
  * Lodash <https://lodash.com/>
  * Copyright JS Foundation and other contributors <https://js.foundation/>
@@ -10931,7 +9901,7 @@ define(function(){return _;});}// Check for `exports` after `define` in case a b
 else if(freeModule){// Export for Node.js.
 (freeModule.exports=_)._=_;// Export for CommonJS support.
 freeExports._=_;}else{// Export to the global object.
-root._=_;}}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{}],22:[function(require,module,exports){// shim for using process in browser
+root._=_;}}).call(this);}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{}],6:[function(require,module,exports){// shim for using process in browser
 var process=module.exports={};// cached from whatever global is present so that test runners that stub it
 // don't break things.  But we need to wrap it in a try catch in case it is
 // wrapped in strict mode code which doesn't define any globals.  It's inside a
@@ -10949,7 +9919,7 @@ return cachedClearTimeout.call(null,marker);}catch(e){// same as above but when 
 // Some versions of I.E. have different rules for clearTimeout vs setTimeout
 return cachedClearTimeout.call(this,marker);}}}var queue=[];var draining=false;var currentQueue;var queueIndex=-1;function cleanUpNextTick(){if(!draining||!currentQueue){return;}draining=false;if(currentQueue.length){queue=currentQueue.concat(queue);}else{queueIndex=-1;}if(queue.length){drainQueue();}}function drainQueue(){if(draining){return;}var timeout=runTimeout(cleanUpNextTick);draining=true;var len=queue.length;while(len){currentQueue=queue;queue=[];while(++queueIndex<len){if(currentQueue){currentQueue[queueIndex].run();}}queueIndex=-1;len=queue.length;}currentQueue=null;draining=false;runClearTimeout(timeout);}process.nextTick=function(fun){var args=new Array(arguments.length-1);if(arguments.length>1){for(var i=1;i<arguments.length;i++){args[i-1]=arguments[i];}}queue.push(new Item(fun,args));if(queue.length===1&&!draining){runTimeout(drainQueue);}};// v8 likes predictible objects
 function Item(fun,array){this.fun=fun;this.array=array;}Item.prototype.run=function(){this.fun.apply(null,this.array);};process.title='browser';process.browser=true;process.env={};process.argv=[];process.version='';// empty string to avoid regexp issues
-process.versions={};function noop(){}process.on=noop;process.addListener=noop;process.once=noop;process.off=noop;process.removeListener=noop;process.removeAllListeners=noop;process.emit=noop;process.prependListener=noop;process.prependOnceListener=noop;process.listeners=function(name){return[];};process.binding=function(name){throw new Error('process.binding is not supported');};process.cwd=function(){return'/';};process.chdir=function(dir){throw new Error('process.chdir is not supported');};process.umask=function(){return 0;};},{}],23:[function(require,module,exports){'use strict';module.exports=require('./lib/sequential-event.js');},{"./lib/sequential-event.js":24}],24:[function(require,module,exports){'use strict';/**
+process.versions={};function noop(){}process.on=noop;process.addListener=noop;process.once=noop;process.off=noop;process.removeListener=noop;process.removeAllListeners=noop;process.emit=noop;process.prependListener=noop;process.prependOnceListener=noop;process.listeners=function(name){return[];};process.binding=function(name){throw new Error('process.binding is not supported');};process.cwd=function(){return'/';};process.chdir=function(dir){throw new Error('process.chdir is not supported');};process.umask=function(){return 0;};},{}],7:[function(require,module,exports){'use strict';module.exports=require('./lib/sequential-event.js');},{"./lib/sequential-event.js":8}],8:[function(require,module,exports){'use strict';/**
  * @file File defining the SequentialEvent class
  * @licence GPLv3
  * @author Gerkin
@@ -11037,7 +10007,7 @@ if('function'===typeof handlers){return emitHandler(handlers,object,args);}else{
 	 * @param   {Any[]} [args] - Parameters to pass to handlers.
 	 * @returns {Promise} Returns a Promise resolved when then chain is done.
 	 * @author Gerkin
-	 */_createClass(SequentialEvent,[{key:"emit",value:function emit(type){var events=this.__events;var handler=events[type];if(!handler){return Promise.resolve();}for(var _len9=arguments.length,args=Array(_len9>1?_len9-1:0),_key9=1;_key9<_len9;_key9++){args[_key9-1]=arguments[_key9];}var retPromise=emitHandlers(handler,this,args);return retPromise;}/**
+	 */_createClass(SequentialEvent,[{key:"emit",value:function emit(type){var events=this.__events;var handler=events[type];if(!handler){return Promise.resolve();}for(var _len=arguments.length,args=Array(_len>1?_len-1:0),_key=1;_key<_len;_key++){args[_key-1]=arguments[_key];}var retPromise=emitHandlers(handler,this,args);return retPromise;}/**
 	 * Remove one or many or all event handlers.
 	 *
 	 * @param   {string|Object} [events]   - Event name or hash of events.
@@ -11049,10 +10019,22 @@ if('function'===typeof handlers){return emitHandler(handlers,object,args);}else{
 	 * @param   {string|Object} events     - Event name or hash of events.
 	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
 	 * @returns {SequentialEvent} Returns `this`.
-	 */},{key:"once",value:function once(events,callback){var _this42=this;var _events=this.__events;var eventsObj=castToEventObject(events,callback);var _loop=function _loop(event){if(eventsObj.hasOwnProperty(event)){var _events2=ensureArray(eventsObj[event]);_events2.forEach(function(eventHandler){addEventListener(_events,event,onceify(_this42,event,eventHandler));});}};for(var event in eventsObj){_loop(event);}return this;}/**
+	 */},{key:"once",value:function once(events,callback){var _this4=this;var _events=this.__events;var eventsObj=castToEventObject(events,callback);var _loop=function _loop(event){if(eventsObj.hasOwnProperty(event)){var _events2=ensureArray(eventsObj[event]);_events2.forEach(function(eventHandler){addEventListener(_events,event,onceify(_this4,event,eventHandler));});}};for(var event in eventsObj){_loop(event);}return this;}/**
 	 * Add one or many event handlers.
 	 *
 	 * @param   {string|Object} events     - Event name or hash of events.
 	 * @param   {Function}      [callback] - If provided an event name with `events`, function to associate with the event.
 	 * @returns {SequentialEvent} Returns `this`.
-	 */},{key:"on",value:function on(events,callback){var _events=this.__events;var eventsObj=castToEventObject(events,callback);for(var event in eventsObj){if(eventsObj.hasOwnProperty(event)){addEventListener(_events,event,eventsObj[event]);}}return this;}}]);return SequentialEvent;}();module.exports=SequentialEvent;},{}]},{},[1])(1);});
+	 */},{key:"on",value:function on(events,callback){var _events=this.__events;var eventsObj=castToEventObject(events,callback);for(var event in eventsObj){if(eventsObj.hasOwnProperty(event)){addEventListener(_events,event,eventsObj[event]);}}return this;}}]);return SequentialEvent;}();module.exports=SequentialEvent;},{}],9:[function(require,module,exports){'use strict';/* globals it: false, describe: false, require: false, expect: false, Diaspora: false, dataSources: false, define: false, getStyle: false */var Promise=require('bluebird');var l=require('lodash');var getDataSourceLabel=function getDataSourceLabel(name){var addName=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'';return name+"Adapter"+(addName?"."+addName:'');};var TABLE='test';var AdapterTestUtils={createDataSource:function createDataSource(adapterLabel,config){var addName=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';var dataSourceLabel=getDataSourceLabel(adapterLabel,addName);var dataSource=Diaspora.createDataSource(adapterLabel,config);dataSources[dataSourceLabel]=dataSource;return dataSource;},checkSpawnedAdapter:function checkSpawnedAdapter(adapterLabel,baseName){var addName=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';it(getStyle('taskCategory',"Create "+adapterLabel+" adapter"),function(done){var dataSourceLabel=getDataSourceLabel(adapterLabel,addName);dataSources[dataSourceLabel].waitReady().then(function(adapter){adapter.baseName=baseName;expect(adapter).to.be.an('object');if('undefined'===typeof window){expect(adapter.constructor.name,'Adapter name does not comply to naming convention').to.equal(baseName+"DiasporaAdapter");expect(adapter.classEntity.name,'Class entity name does not comply to naming convention').to.equal(baseName+"Entity");}l.forEach(['insert','find','update','delete'],function(word){expect(adapter).to.satisfy(function(o){return o.__proto__.hasOwnProperty(word+"One")||o.__proto__.hasOwnProperty(word+"Many");},"should have at least one \""+word+"\" method");});return done();}).catch(done);});},checkInputFiltering:function checkInputFiltering(adapter){describe(getStyle('taskCategory','Check query inputs filtering')+" with "+adapter.__proto__.constructor.name,function(){describe('Check options normalization',function(){var no=adapter.normalizeOptions;it('Default options',function(){expect(no({})).to.eql({skip:0,remapInput:true,remapOutput:true});});it('"limit" option',function(){expect(no({limit:10})).to.eql({limit:10,skip:0,remapInput:true,remapOutput:true});expect(no({limit:'10'})).to.eql({limit:10,skip:0,remapInput:true,remapOutput:true});expect(no({limit:Infinity})).to.eql({limit:Infinity,skip:0,remapInput:true,remapOutput:true});expect(function(){return no({limit:0.5});}).to.throw(TypeError);expect(function(){return no({limit:-1});}).to.throw(RangeError);expect(function(){return no({limit:-Infinity});}).to.throw(RangeError);});it('"skip" option',function(){expect(no({skip:10})).to.eql({skip:10,remapInput:true,remapOutput:true});expect(no({skip:'10'})).to.eql({skip:10,remapInput:true,remapOutput:true});expect(function(){return no({skip:0.5});}).to.throw(TypeError);expect(function(){return no({skip:-1});}).to.throw(RangeError);expect(function(){return no({skip:Infinity});}).to.throw(RangeError);});it('"page" option',function(){expect(no({page:5,limit:10})).to.eql({skip:50,limit:10,remapInput:true,remapOutput:true});expect(no({page:'5',limit:'10'})).to.eql({skip:50,limit:10,remapInput:true,remapOutput:true});expect(function(){return no({page:1});}).to.throw(ReferenceError);expect(function(){return no({page:1,skip:1,limit:5});}).to.throw(ReferenceError);expect(function(){return no({page:0.5,limit:5});}).to.throw(TypeError);expect(function(){return no({page:1,limit:Infinity});}).to.throw(RangeError);expect(function(){return no({page:Infinity,limit:5});}).to.throw(RangeError);expect(function(){return no({page:-1,limit:5});}).to.throw(RangeError);});});describe('Check "normalizeQuery"',function(){var nq=l.partialRight(adapter.normalizeQuery,{remapInput:true});it('Empty query',function(){expect(nq({})).to.deep.eql({});});it(getStyle('bold','~')+" ($exists)",function(){expect(nq({foo:undefined})).to.deep.eql({foo:{$exists:false}});expect(nq({foo:{'~':true}})).to.deep.eql({foo:{$exists:true}});expect(nq({foo:{$exists:true}})).to.deep.eql({foo:{$exists:true}});expect(nq({foo:{'~':false}})).to.deep.eql({foo:{$exists:false}});expect(nq({foo:{$exists:false}})).to.deep.eql({foo:{$exists:false}});expect(nq.bind(adapter,{foo:{'~':'bar',$exists:'bar'}})).to.throw();});it(getStyle('bold','==')+" ($equal)",function(){expect(nq({foo:'bar'})).to.deep.eql({foo:{$equal:'bar'}});expect(nq({foo:{$equal:'bar'}})).to.deep.eql({foo:{$equal:'bar'}});expect(nq({foo:{'==':'bar'}})).to.deep.eql({foo:{$equal:'bar'}});expect(nq.bind(adapter,{foo:{'==':'bar',$equal:'bar'}})).to.throw();});it(getStyle('bold','!=')+" ($diff)",function(){expect(nq({foo:{$diff:'bar'}})).to.deep.eql({foo:{$diff:'bar'}});expect(nq({foo:{'!=':'bar'}})).to.deep.eql({foo:{$diff:'bar'}});expect(nq.bind(adapter,{foo:{'!=':'bar',$diff:'bar'}})).to.throw();});it(getStyle('bold','<')+" ($less)",function(){expect(nq({foo:{$less:1}})).to.deep.eql({foo:{$less:1}});expect(nq({foo:{'<':1}})).to.deep.eql({foo:{$less:1}});expect(nq.bind(adapter,{foo:{'<':1,$less:1}})).to.throw();expect(nq.bind(adapter,{foo:{'<':'aze'}})).to.throw();expect(nq.bind(adapter,{foo:{$less:'aze'}})).to.throw();});it(getStyle('bold','<=')+" ($lessEqual)",function(){expect(nq({foo:{$lessEqual:1}})).to.deep.eql({foo:{$lessEqual:1}});expect(nq({foo:{'<=':1}})).to.deep.eql({foo:{$lessEqual:1}});expect(nq.bind(adapter,{foo:{'<=':1,$lessEqual:1}})).to.throw();expect(nq.bind(adapter,{foo:{'<=':'aze'}})).to.throw();expect(nq.bind(adapter,{foo:{$lessEqual:'aze'}})).to.throw();});it(getStyle('bold','>')+" ($greater)",function(){expect(nq({foo:{$greater:1}})).to.deep.eql({foo:{$greater:1}});expect(nq({foo:{'>':1}})).to.deep.eql({foo:{$greater:1}});expect(nq.bind(adapter,{foo:{'>':1,$greater:1}})).to.throw();expect(nq.bind(adapter,{foo:{'>':'aze'}})).to.throw();expect(nq.bind(adapter,{foo:{$greater:'aze'}})).to.throw();});it(getStyle('bold','>=')+" ($greaterEqual)",function(){expect(nq({foo:{$greaterEqual:1}})).to.deep.eql({foo:{$greaterEqual:1}});expect(nq({foo:{'>=':1}})).to.deep.eql({foo:{$greaterEqual:1}});expect(nq.bind(adapter,{foo:{'>=':1,$greaterEqual:1}})).to.throw();expect(nq.bind(adapter,{foo:{'>=':'aze'}})).to.throw();expect(nq.bind(adapter,{foo:{$greaterEqual:'aze'}})).to.throw();});});describe('Check "matchEntity"',function(){var me=adapter.matchEntity;it('Empty query',function(){expect(me({},{foo:'bar'})).to.be.true;});it(getStyle('bold','~')+" ($exists)",function(){expect(me({foo:{$exists:true}},{foo:'bar'})).to.be.true;expect(me({foo:{$exists:true}},{foo:undefined})).to.be.false;expect(me({foo:{$exists:false}},{foo:'bar'})).to.be.false;expect(me({foo:{$exists:false}},{foo:undefined})).to.be.true;});it(getStyle('bold','==')+" ($equal)",function(){expect(me({foo:{$equal:'bar'}},{foo:'bar'})).to.be.true;expect(me({foo:{$equal:'bar'}},{foo:undefined})).to.be.false;expect(me({foo:{$equal:'bar'}},{foo:'baz'})).to.be.false;});it(getStyle('bold','!=')+" ($diff)",function(){expect(me({foo:{$diff:'bar'}},{foo:'bar'})).to.be.false;expect(me({foo:{$diff:'bar'}},{foo:'baz'})).to.be.true;expect(me({foo:{$diff:'bar'}},{foo:undefined})).to.be.false;expect(me({foo:{$diff:'bar'}},{bar:'qux'})).to.be.false;});it(getStyle('bold','<')+" ($less)",function(){expect(me({foo:{$less:2}},{foo:undefined})).to.be.false;expect(me({foo:{$less:2}},{foo:1})).to.be.true;expect(me({foo:{$less:2}},{foo:2})).to.be.false;expect(me({foo:{$less:2}},{foo:3})).to.be.false;});it(getStyle('bold','<=')+" ($lessEqual)",function(){expect(me({foo:{$lessEqual:2}},{foo:undefined})).to.be.false;expect(me({foo:{$lessEqual:2}},{foo:1})).to.be.true;expect(me({foo:{$lessEqual:2}},{foo:2})).to.be.true;expect(me({foo:{$lessEqual:2}},{foo:3})).to.be.false;});it(getStyle('bold','>')+" ($greater)",function(){expect(me({foo:{$greater:2}},{foo:undefined})).to.be.false;expect(me({foo:{$greater:2}},{foo:1})).to.be.false;expect(me({foo:{$greater:2}},{foo:2})).to.be.false;expect(me({foo:{$greater:2}},{foo:3})).to.be.true;});it(getStyle('bold','>=')+" ($greaterEqual)",function(){expect(me({foo:{$greaterEqual:2}},{foo:undefined})).to.be.false;expect(me({foo:{$greaterEqual:2}},{foo:1})).to.be.false;expect(me({foo:{$greaterEqual:2}},{foo:2})).to.be.true;expect(me({foo:{$greaterEqual:2}},{foo:3})).to.be.true;});});});},checkEachStandardMethods:function checkEachStandardMethods(adapterLabel){var addName=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'';var adapter=dataSources[getDataSourceLabel(adapterLabel,addName)];var getTestLabel=function getTestLabel(fctName){if(adapter.__proto__.hasOwnProperty(fctName)){return fctName;}else{return fctName+" (from BaseAdapter)";}};AdapterTestUtils.checkInputFiltering(adapter);describe(getStyle('taskCategory','Test adapter methods'),function(){var findManyOk=false;var findAllOk=false;describe('✨ Insert methods',function(){it(getTestLabel('insertOne'),function(){expect(adapter).to.respondTo('insertOne');var object={foo:'bar'};return adapter.insertOne(TABLE,object).then(function(entity){expect(entity).to.be.a.dataStoreEntity(adapter,object);});});it(getTestLabel('insertMany'),function(){expect(adapter).to.respondTo('insertMany');var objects=[{baz:'qux'},{qux:'foo'},{foo:'bar'}];return adapter.insertMany(TABLE,objects).then(function(entities){expect(entities).to.be.a.set.of.dataStoreEntity(adapter,objects).that.have.lengthOf(objects.length);});});});describe('Specification level 1',function(){describe('🔎 Find methods',function(){it(getTestLabel('findOne'),function(){expect(adapter).to.respondTo('findOne');var object={baz:'qux'};return adapter.findOne(TABLE,object).then(function(entity){return Promise.try(function(){expect(entity).to.be.a.dataStoreEntity(adapter,object);return Promise.resolve();});});});it(getTestLabel('findMany'),function(){expect(adapter).to.respondTo('findMany');var objects={foo:'bar'};return adapter.findMany(TABLE,objects).then(function(entities){return Promise.try(function(){expect(entities).to.be.a.set.of.dataStoreEntity(adapter,objects).that.have.lengthOf(2);findManyOk=true;return Promise.resolve();});});});it('Find all',function skippable(){if(findManyOk!==true){this.skip();return;}expect(adapter).to.respondTo('findMany');return adapter.findMany(TABLE,{}).then(function(entities){return Promise.try(function(){expect(entities).to.be.a.set.of.dataStoreEntity(adapter).that.have.lengthOf(4);findAllOk=true;return Promise.resolve();});});});});describe('🔃 Update methods',function(){it(getTestLabel('updateOne'),function(){expect(adapter).to.respondTo('updateOne');var fromObj={baz:'qux'};var targetObj={foo:'bar'};return adapter.updateOne(TABLE,fromObj,targetObj).then(function(entity){expect(entity).to.be.a.dataStoreEntity(adapter,l.assign({},fromObj,targetObj));});});it(getTestLabel('updateMany'),function(){expect(adapter).to.respondTo('updateMany');var fromObj={foo:'bar'};var targetObj={baz:'qux'};return adapter.updateMany(TABLE,fromObj,targetObj).then(function(entities){expect(entities).to.be.a.set.of.dataStoreEntity(adapter,l.assign({},fromObj,targetObj)).that.have.lengthOf(3);});});it(getTestLabel('updateOne not found'),function(){expect(adapter).to.respondTo('updateOne');var fromObj={qwe:'rty'};var targetObj={foo:'bar'};return adapter.updateOne(TABLE,fromObj,targetObj).then(function(entity){expect(entity).to.be.undefined;});});it(getTestLabel('updateMany not found'),function(){expect(adapter).to.respondTo('updateMany');var fromObj={qwe:'rty'};var targetObj={baz:'qux'};return adapter.updateMany(TABLE,fromObj,targetObj).then(function(entities){expect(entities).to.have.lengthOf(0);});});});describe('❌ Delete methods',function(){it(getTestLabel('deleteOne'),function(){expect(adapter).to.respondTo('deleteOne');var obj={qux:'foo'};return adapter.deleteOne(TABLE,obj).then(function(){for(var _len2=arguments.length,args=Array(_len2),_key2=0;_key2<_len2;_key2++){args[_key2]=arguments[_key2];}expect(args).to.be.an('array').that.eql([undefined]);return Promise.resolve();});});it(getTestLabel('deleteMany'),function(){expect(adapter).to.respondTo('deleteMany');var obj={foo:'bar'};return adapter.deleteMany(TABLE,obj).then(function(){for(var _len3=arguments.length,args=Array(_len3),_key3=0;_key3<_len3;_key3++){args[_key3]=arguments[_key3];}expect(args).to.be.an('array').that.eql([undefined]);return Promise.resolve();});});it('Check deletion: find all again',function skippable(){if(findAllOk!==true){this.skip();return;}return adapter.findMany(TABLE,{}).then(function(entities){return Promise.try(function(){expect(entities).to.be.an('array').that.have.lengthOf(0);return Promise.resolve();});});});});});describe('Specification level 2',function(){it('Initialize test data',function(){var objects=[// Tests for $exists
+{foo:1},{foo:undefined},// Tests for comparison operators
+{bar:1},{bar:2},{bar:3}];return adapter.insertMany(TABLE,objects).then(function(entities){expect(entities).to.be.a.set.of.dataStoreEntity(adapter,objects).that.have.lengthOf(objects.length);});});it(getStyle('bold','~')+" ($exists) operator",function(){return Promise.all([adapter.findOne(TABLE,{foo:{'~':true}}).then(function(output){expect(output).to.be.a.dataStoreEntity(adapter,{foo:1});}),adapter.findOne(TABLE,{foo:{'~':false}}).then(function(output){expect(output).to.be.a.dataStoreEntity(adapter,{foo:undefined});})]);});it(getStyle('bold','==')+" ($equal) operator",function(){return adapter.findOne(TABLE,{foo:{'==':1}}).then(function(output){expect(output).to.be.a.dataStoreEntity(adapter,{foo:1});});});it(getStyle('bold','!=')+" ($diff) operator",function(){return Promise.all([adapter.findOne(TABLE,{bar:{'!=':1}}).then(function(output){expect(output).to.be.a.dataStoreEntity(adapter,{bar:2});}),adapter.findOne(TABLE,{foo:{'!=':1}}).then(function(output){expect(output).to.be.undefined;}),adapter.findOne(TABLE,{foo:{'!=':2}}).then(function(output){expect(output).to.be.a.dataStoreEntity(adapter,{foo:1});})]);});it(getStyle('bold','<')+" ($less) operator",function(){return adapter.findMany(TABLE,{bar:{'<':2}}).then(function(outputs){expect(outputs).to.be.a.set.of.dataStoreEntity(adapter,[{bar:1}]).that.have.lengthOf(1);});});it(getStyle('bold','<=')+" ($lessEqual) operator",function(){return adapter.findMany(TABLE,{bar:{'<=':2}}).then(function(outputs){expect(outputs).to.be.a.set.of.dataStoreEntity(adapter,[{bar:1},{bar:2}]).that.have.lengthOf(2);});});it(getStyle('bold','>')+" ($greater) operator",function(){return adapter.findMany(TABLE,{bar:{'>':2}}).then(function(outputs){expect(outputs).to.be.a.set.of.dataStoreEntity(adapter,[{bar:3}]).that.have.lengthOf(1);});});it(getStyle('bold','>=')+" ($greaterEqual) operator",function(){return adapter.findMany(TABLE,{bar:{'>=':2}}).then(function(outputs){expect(outputs).to.be.a.set.of.dataStoreEntity(adapter,[{bar:2},{bar:3}]).that.have.lengthOf(2);});});});});},checkApplications:function checkApplications(adapterLabel){var addName=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'';if('undefined'!==typeof window){return;}var adapter=dataSources[getDataSourceLabel(adapterLabel,addName)];require('../testApps/adapters/index')(adapter);},checkRegisterAdapter:function checkRegisterAdapter(adapterLabel,dataSourceName){var addName=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';it(getStyle('taskCategory',"Register named "+adapterLabel+" dataSource"),function(){Diaspora.registerDataSource(dataSourceName,dataSources[getDataSourceLabel(adapterLabel,addName)]);//console.log(Diaspora.dataSources);
+expect(Diaspora.dataSources[dataSourceName]).to.eql(dataSources[getDataSourceLabel(adapterLabel,addName)]);});}};if('undefined'!==typeof define){define(AdapterTestUtils);}else{module.exports=AdapterTestUtils;}},{"../testApps/adapters/index":13,"bluebird":1,"lodash":5}],10:[function(require,module,exports){(function(process,global){'use strict';/* globals l: false, c: false, describe: false, require: false, expect: false, chalk: false, chai: false, path: false */var config={};var styles={};if('undefined'===typeof window){global.path=require('path');global.projectPath=path.resolve('../');global.chalk=require('chalk');global.chalk=require('chalk');try{config=require('./config.js');}catch(err){if('MODULE_NOT_FOUND'===err.code){console.error('Missing required file "config.js", please copy "config-sample.js" and edit it.');}else{console.error(err);}process.exit();}styles={category:chalk.bold.underline.blue,taskCategory:chalk.underline.white,bold:chalk.bold,adapter:chalk.bold.red,model:chalk.bold.red};}else{config={};}global.getStyle=function(styleName,text){var styleFct=styles[styleName];if(l.isFunction(styleFct)){return styleFct(text);}return text;};global.getConfig=function(adapterName){return config&&config[adapterName]||{};};global.importTest=function(name,modulePath){describe(name,function(){require(modulePath);});};global.l=require('lodash');global.c=require('check-types');global.CheckTypes=c;if(!process.browser){global.chai=require('chai');}var chaiAsPromised=require('chai-as-promised');chai.use(chaiAsPromised);global.assert=chai.assert;global.expect=chai.expect;global.SequentialEvent=require('sequential-event');global.Promise=require('bluebird');chai.use(function chaiUse(_chai,utils){utils.addProperty(chai.Assertion.prototype,'set',function chaiSet(){this.assert(c.array(this._obj)||this._obj.hasOwnProperty('entities'),'expected #{this} to be a collection','expected #{this} to not be a collection');utils.flag(this,'collection',true);});utils.addProperty(chai.Assertion.prototype,'of',function(){});utils.addChainableMethod(chai.Assertion.prototype,'boolean',function checkBool(){var elem=this._obj;var collection=utils.flag(this,'collection');this.assert(collection?l.every(elem,c.boolean):c.boolean(elem),"expected #{this} to be a "+(collection?'collection of ':'')+"boolean","expected #{this} to not be a "+(collection?'collection of ':'')+"boolean");});utils.addChainableMethod(chai.Assertion.prototype,'dataStoreEntity',function checkDataStoreEntity(adapter,properties){var data=this._obj;var collection=utils.flag(this,'collection');utils.flag(this,'entityType','dataStoreEntity');var check=function check(entity){var props=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};try{expect(entity).to.be.an('object');//	console.log({name: adapter.name, idHash: entity.idHash, id: entity.id})
+expect(entity.idHash).to.be.an('object').that.have.property(adapter.name,entity.id);expect(entity).to.include.all.keys('id','idHash');expect(entity.id).to.not.be.undefined;if(!entity.id){throw new Error();}if('undefined'===typeof window){expect(entity.constructor.name,'Entity Class name does not comply to naming convention').to.equal(adapter.baseName+"Entity");}l.forEach(props,function(val,key){if(c.undefined(val)){expect(entity).to.satisfy(function(obj){return c.undefined(obj[key])||!obj.hasOwnProperty(key);});}else{expect(entity).to.have.property(key,val);}});}catch(e){return e;}};var errorOut=void 0;if(collection){if(c.array(properties)&&properties.length===data.length){l.forEach(data,function(entity,index){errorOut=check(entity,properties[index]);return!errorOut;});}else{l.forEach(data,function(entity){errorOut=check(entity,properties);return!errorOut;});}}else{errorOut=check(data,properties);}this.assert(!errorOut,"expected #{this} to be a "+(collection?'collection of ':'')+"DataStoreEntity: failed because of "+errorOut,"expected #{this} to not be a "+(collection?'collection of ':'')+"DataStoreEntity: failed because of "+errorOut);});utils.addChainableMethod(chai.Assertion.prototype,'entity',function checkDataStoreEntity(model,properties){var orphan=arguments.length>2&&arguments[2]!==undefined?arguments[2]:null;var data=this._obj;var collection=utils.flag(this,'collection');utils.flag(this,'entityType','entity');var check=function check(entity){var props=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};expect(entity.constructor.model).to.equal(model);var dataSource='string'===typeof orphan?orphan:false;orphan=dataSource?false:orphan;switch(orphan){case true:{expect(entity.state,'Entity should be orphan').to.equal('orphan');}break;case false:{expect(entity.state,'Entity should not be orphan').to.not.equal('orphan');}break;}if(orphan){expect(entity.lastDataSource,'Orphans should not have a last data source').to.be.eql(null);expect(entity.attributes,'id should be an undefined value or key on orphans').to.not.have.property('id');expect(entity.attributes,'idHash should be an undefined value or key on orphans').to.not.have.property('idHash');}else if(null!==orphan){if(dataSource){expect(entity.lastDataSource).to.be.eql(dataSource);}else{expect(entity.lastDataSource,'Non orphans should have a last data source').to.be.not.eql(null);}var lds=entity.lastDataSource;expect(entity.dataSources[lds],'id should be a defined value on non-orphan last data source').to.be.an('object').that.have.property('id');expect(entity.dataSources[lds],'idHash should be a hash on non-orphan last data source').to.be.an('object').that.have.property('idHash').that.is.an('object');expect(entity.attributes,'id should not be copied in model\'s value').to.be.an('object').that.have.not.property('id');expect(entity.attributes,'idHash should be a hash on non-orphan model').to.be.an('object').that.have.property('idHash').that.is.an('object');}expect(entity).to.respondTo('persist');expect(entity).to.respondTo('fetch');expect(entity).to.respondTo('destroy');expect(entity).to.respondTo('toObject');var toObj=entity.toObject();l.forEach(props,function(val,key){if(c.undefined(val)){expect(toObj).to.satisfy(function(obj){return c.undefined(obj[key])||!obj.hasOwnProperty(key);});}else{expect(toObj).to.have.property(key,val);}});};var errorOut=void 0;if(collection){if(c.array(properties)&&properties.length===data.length){data.forEach(function(entity,index){errorOut=check(entity,properties[index]);return!errorOut;});}else{data.forEach(function(entity){errorOut=check(entity,properties);return!errorOut;});}}else{errorOut=check(data,properties);}this.assert(!errorOut,"expected #{this} to be a"+(collection?' collection of':'n')+" Entity: failed because of "+errorOut,"expected #{this} to not be a"+(collection?' collection of':'n')+" Entity: failed because of "+errorOut);});});}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"./config.js":undefined,"_process":6,"bluebird":1,"chai":undefined,"chai-as-promised":2,"chalk":undefined,"check-types":4,"lodash":5,"path":undefined,"sequential-event":7}],11:[function(require,module,exports){(function(process,global,__dirname){'use strict';/* globals l: false, it: false, require: false, expect: false, Diaspora: false, getStyle: false, importTest: false */require('./defineGlobals');if('no'===process.env.SAUCE||'undefined'===typeof process.env.SAUCE){if('undefined'===typeof window&&'object'===(typeof exports==="undefined"?"undefined":_typeof(exports))&&typeof exports.nodeName!=='string'){global.Diaspora=require('../diaspora');}global.dataSources={};importTest(getStyle('category','Validation'),__dirname+"/validation.js");it('"default" feature',function(){expect(Diaspora.default({aze:123},{foo:{type:'text',default:'bar'}})).to.deep.equal({aze:123,foo:'bar'});var now=l.now();expect(Diaspora.default({aze:123},{foo:{type:'datetime',default:function _default(){return now;}}})).to.deep.equal({aze:123,foo:now});expect(Diaspora.default({aze:'baz'},{aze:{type:'text',default:'bar'}})).to.deep.equal({aze:'baz'});expect(Diaspora.default({aze:'baz'},{aze:{type:'datetime',default:function _default(){return'bar';}}})).to.deep.equal({aze:'baz'});});importTest(getStyle('category','Adapters'),__dirname+"/adapters/index.js");importTest(getStyle('category','Models'),__dirname+"/models/index.js");}if('yes'===process.env.SAUCE){importTest(getStyle('category','Browser tests'),__dirname+"/browser/selenium.js");}}).call(this,require('_process'),typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{},"/test");},{"../diaspora":undefined,"./defineGlobals":10,"_process":6}],12:[function(require,module,exports){'use strict';/* globals l: false, c: false, it: false, require: false, expect: false, chalk: false */module.exports=function(adapter,data,tableName){it('❌ Clear old data',function(){return adapter.deleteMany(tableName,{}).then(function(){return adapter.findMany(tableName,{});}).then(function(found){expect(found).to.be.a.set.of.dataStoreEntity(adapter).that.have.lengthOf(0);return Promise.resolve();});});it('✨ Insert test data',function insertTestData(){this.timeout(20000);return adapter.insertMany(tableName,data).then(function(entities){expect(entities).to.be.a.set.of.dataStoreEntity(adapter,data).that.have.lengthOf(data.length);return Promise.resolve();});});var lastWithEmail=void 0;it("\uD83D\uDD0E Find last entity with an email (option "+chalk.bold('skip')+")",function(){//		process.exit();
+var index=1;return new Promise(function(resolve,reject){var loop=function loop(){expect(index).to.be.below(data.length,'Oops, we looped over data length');return adapter.findOne(tableName,{},{skip:index-1}).then(function(entity){if(!c.assigned(entity)){return resolve();}if(entity.hasOwnProperty('email')){return resolve(entity);}index++;return loop();}).catch(reject);};return loop();}).then(function(lastCompleteItem){expect(index).to.be.equal(4,'4th item has email');expect(lastCompleteItem).to.be.a.dataStoreEntity(adapter);expect(lastCompleteItem).to.include.all.keys('ip_address','url','email');lastWithEmail=lastCompleteItem;});});it('✨ Insert a new record based on previous',function(){var newItem=l.pick(lastWithEmail,['ip_address','email']);newItem.url='/diaspora_app1';return adapter.insertOne(tableName,newItem).then(function(entity){expect(entity).to.be.a.dataStoreEntity(adapter,newItem);return Promise.resolve();});});var ips=['254.243.134.211','249.7.97.150','168.186.151.29'];var ipRecords={};it('🔎 Get items with some test IPs',function(){return Promise.map(ips,function(ip){return adapter.findMany(tableName,{ip_address:ip});}).then(function(results){l.forEach(results,function(set,index){expect(set).to.be.a.set.of.dataStoreEntity(adapter,{ip_address:ips[index]});});ipRecords=l.zipObject(ips,results);});});it("\uD83D\uDD03 Update those items with email (options "+chalk.bold('skip')+" & "+chalk.bold('limit')+")",function(){return Promise.map(l.keys(ipRecords),function(ip){var records=ipRecords[ip];var emails=l(records).map('email').value();var lastSyncIdx=0;var email=l(emails).compact().first();var promises=[];l.forEach(records.concat([{email:null}]),function(record,idx){if(record.hasOwnProperty('email')&&record.email!==email){promises.push(adapter.updateMany(tableName,{ip_address:ip},{email:email},{skip:lastSyncIdx,limit:idx-lastSyncIdx}));email=record.email;lastSyncIdx=idx;}});return Promise.all(promises);}).then(function(results){l.forEach(results,function(updates,index){l.forEach(updates,function(update){if(update.length>0){expect(update).to.be.a.set.of.dataStoreEntity(adapter,{ip_address:ips[index],email:update[0].email});}});});/*const out = l.zipObject(ips, results);
+			console.log(out);*/});});var pageSize=11;var page=0;it("\uD83D\uDD0E Get items without email by page of "+pageSize+" (options "+chalk.bold('page')+" & "+chalk.bold('skip')+")",function(){return new Promise(function(resolve,reject){var loop=function loop(){expect(page).to.be.below(Math.ceil(data.length/pageSize)+1,'Oops, we looped over data length');return Promise.props({page:adapter.findMany(tableName,{email:undefined},{page:page,limit:pageSize}),skip:adapter.findMany(tableName,{email:undefined},{skip:page*pageSize,limit:pageSize})}).then(function(queryRes){expect(queryRes.page).to.be.deep.eql(queryRes.skip,'"page" & "skip" should return same data');var entities=queryRes.page;expect(entities).to.be.a.set.of.dataStoreEntity(adapter,{email:undefined}).that.have.lengthOf.below(pageSize+1,"Sets should be at most "+pageSize+" items length");if(0===entities.length){return resolve();}page++;return loop();}).catch(function(err){return reject(err);});};return loop();});});var allItems=void 0;it('🔎 Find all items',function(){return adapter.findMany(tableName,{},{limit:Infinity}).then(function(items){expect(items).to.be.a.set.of.dataStoreEntity(adapter).that.have.lengthOf(data.length+1);allItems=items;});});it("\u274C Delete 2 pages (options "+chalk.bold('page')+" & "+chalk.bold('limit')+")",function(){return adapter.deleteMany(tableName,{},{page:3,limit:20}).then(function(){return adapter.deleteMany(tableName,{},{page:2,limit:5});}).then(function(){return adapter.findMany(tableName,{},{limit:Infinity});}).then(function(items){expect(items).to.be.a.set.of.dataStoreEntity(adapter).that.have.lengthOf(data.length+1-(20+5));var idxRemoved=l([]).concat(l.times(5,Number).map(function(v){return v+10;}),l.times(20,Number).map(function(v){return v+60;})).value();l.pullAt(allItems,idxRemoved);expect(items).to.be.eql(allItems);});});};},{}],13:[function(require,module,exports){'use strict';/* globals describe: false, require: false, chalk: false */var describeApp=function describeApp(level,name,slug,adapter){describe("Level "+level+": "+name,function(){var data=void 0;try{data=require("./"+slug+".json");}catch(err){console.error(err);}try{require("./"+slug)(adapter,data,slug);}catch(err){console.log('Could not prepare app:',err);}});};module.exports=function(adapter){describe(chalk.underline.white('Testing adapter with apps'),function(){describeApp(1,'MatchMail Simple','app1-matchmail-simple',adapter);});};// Symbols: ✨ 🔎 🔃 ❌
+},{}],"/test/adapters/baseAdapter.js":[function(require,module,exports){'use strict';/* globals Diaspora: false */var adapter=new Diaspora.components.Adapters.Adapter();var AdapterTestUtils=require('./utils');AdapterTestUtils.checkInputFiltering(adapter);},{"./utils":9}],"/test/adapters/inMemory.js":[function(require,module,exports){'use strict';var AdapterTestUtils=require('./utils');var ADAPTER_LABEL='inMemory';AdapterTestUtils.createDataSource(ADAPTER_LABEL,{});AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL,'InMemory');AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);AdapterTestUtils.checkApplications(ADAPTER_LABEL);AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL,'inMemory');},{"./utils":9}],"/test/adapters/index.js":[function(require,module,exports){(function(__dirname){'use strict';/* globals importTest: false, getStyle: false */importTest(getStyle('adapter','Base adapter'),__dirname+"/baseAdapter.js");importTest(getStyle('adapter','In Memory'),__dirname+"/inMemory.js");if('undefined'!==typeof window){importTest(getStyle('adapter','Browser Storage'),__dirname+"/webStorage.js");}}).call(this,"/test/adapters");},{}],"/test/adapters/webStorage.js":[function(require,module,exports){(function(global){'use strict';/* globals it: false, require: false, getConfig: false */var ADAPTER_LABEL='webStorage';var adapterConfig=getConfig(ADAPTER_LABEL);if('undefined'===typeof window){if(!adapterConfig.data_dir){it('LocalStorage adapter unconfigured',function unconfiguredAdapter(){this.skip();});}var LocalStorage=require('node-localstorage').LocalStorage;var localStorageDir=adapterConfig.data_dir;global.localStorage=new LocalStorage(localStorageDir);global.localStorage.clear();}else{global.localStorage.clear();global.sessionStorage.clear();}var AdapterTestUtils=require('./utils');AdapterTestUtils.createDataSource(ADAPTER_LABEL,{},'localStorage');AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL,'LocalStorage','localStorage');AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL,'localStorage');AdapterTestUtils.checkApplications(ADAPTER_LABEL,'localStorage');AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL,'localStorage','localStorage');if('undefined'!==typeof window){AdapterTestUtils.createDataSource(ADAPTER_LABEL,{session:true},'sessionStorage');AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL,'SessionStorage','sessionStorage');AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL,'sessionStorage');AdapterTestUtils.checkApplications(ADAPTER_LABEL,'sessionStorage');AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL,'sessionStorage','sessionStorage');}}).call(this,typeof global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="undefined"?window:{});},{"./utils":9,"node-localstorage":undefined}],"/test/models/components.js":[function(require,module,exports){(function(process){'use strict';/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false */var testModel=void 0;var testEntity=void 0;var testSet=void 0;var MODEL_NAME='testModelComponents';var SOURCE='inMemory-components';it('Should create a model',function(){Diaspora.createNamedDataSource(SOURCE,'inMemory');testModel=Diaspora.declareModel(MODEL_NAME,{sources:[SOURCE],schema:false,attributes:{}});expect(testModel).to.be.an('object');if(!process.browser){expect(testModel.constructor.name).to.be.eql('Model');}testEntity=testModel.spawn({});testSet=testModel.spawnMany([{},{}]);});var randomTimeout=function randomTimeout(time){//return Promise.resolve();
+return new Promise(function(resolve){setTimeout(resolve,time||l.random(0,100));});};var events={create:['beforePersist','beforeValidate','afterValidate','beforePersistCreate','afterPersistCreate','afterPersist'],update:['beforePersist','beforeValidate','afterValidate','beforePersistUpdate','afterPersistUpdate','afterPersist'],find:['beforeFetch','afterFetch'],delete:['beforeDestroy','afterDestroy']};describe('Test entity',function(){describe('Check lifecycle events',function(){it('before/after persist (create)',function(){var eventCat='create';var eventCatList=events[eventCat];var eventsFlags=l.zipObject(eventCatList,l.times(eventCatList.length,l.constant(false)));l.forEach(eventCatList,function(eventName,eventIndex){var parts=l.partition(eventCatList,function(subEventName){var subEventIndex=l.indexOf(eventCatList,subEventName);return eventIndex<=subEventIndex;});testEntity.once(eventName,function(){l.forEach(parts[0],function(subEventName){expect(eventsFlags[subEventName],"Event "+subEventName+" should be false: "+JSON.stringify(eventsFlags)).to.be.false;});l.forEach(parts[1],function(subEventName){expect(eventsFlags[subEventName],"Event "+subEventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});return randomTimeout().then(function(){eventsFlags[eventCatList[eventIndex]]=true;});});});return testEntity.persist().then(function(){l.forEach(eventsFlags,function(eventFlag,eventName){expect(eventFlag,"Event "+eventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});});});it('before/after persist (update)',function(){var eventCat='update';var eventCatList=events[eventCat];var eventsFlags=l.zipObject(eventCatList,l.times(eventCatList.length,l.constant(false)));l.forEach(eventCatList,function(eventName,eventIndex){var parts=l.partition(eventCatList,function(subEventName){var subEventIndex=l.indexOf(eventCatList,subEventName);return eventIndex<=subEventIndex;});testEntity.once(eventName,function(){l.forEach(parts[0],function(subEventName){expect(eventsFlags[subEventName],"Event "+subEventName+" should be false: "+JSON.stringify(eventsFlags)).to.be.false;});l.forEach(parts[1],function(subEventName){expect(eventsFlags[subEventName],"Event "+subEventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});return randomTimeout().then(function(){eventsFlags[eventCatList[eventIndex]]=true;});});});return testEntity.persist().then(function(){l.forEach(eventsFlags,function(eventFlag,eventName){expect(eventFlag,"Event "+eventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});});});it('before/after fetch',function(){var eventCat='find';var eventCatList=events[eventCat];var eventsFlags=l.zipObject(eventCatList,l.times(eventCatList.length,l.constant(false)));l.forEach(eventCatList,function(eventName,eventIndex){var parts=l.partition(eventCatList,function(subEventName){var subEventIndex=l.indexOf(eventCatList,subEventName);return eventIndex<=subEventIndex;});testEntity.once(eventName,function(){l.forEach(parts[0],function(subEventName){expect(eventsFlags[subEventName],"Event "+subEventName+" should be false: "+JSON.stringify(eventsFlags)).to.be.false;});l.forEach(parts[1],function(subEventName){expect(eventsFlags[subEventName],"Event "+subEventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});return randomTimeout().then(function(){eventsFlags[eventCatList[eventIndex]]=true;});});});return testEntity.fetch().then(function(){l.forEach(eventsFlags,function(eventFlag,eventName){expect(eventFlag,"Event "+eventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});});});it('before/after destroy',function(){var eventCat='delete';var eventCatList=events[eventCat];var eventsFlags=l.zipObject(eventCatList,l.times(eventCatList.length,l.constant(false)));l.forEach(eventCatList,function(eventName,eventIndex){var parts=l.partition(eventCatList,function(subEventName){var subEventIndex=l.indexOf(eventCatList,subEventName);return eventIndex<=subEventIndex;});testEntity.once(eventName,function(){l.forEach(parts[0],function(subEventName){expect(eventsFlags[subEventName],"Event "+subEventName+" should be false: "+JSON.stringify(eventsFlags)).to.be.false;});l.forEach(parts[1],function(subEventName){expect(eventsFlags[subEventName],"Event "+subEventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});return randomTimeout().then(function(){eventsFlags[eventCatList[eventIndex]]=true;});});});return testEntity.destroy().then(function(){l.forEach(eventsFlags,function(eventFlag,eventName){expect(eventFlag,"Event "+eventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});});});});});describe('Test set',function(){describe('Check lifecycle events',function(){it('before/after persist (create)',function(){var eventCat='create';var eventCatList=events[eventCat];var eventsFlags=l.zipObject(eventCatList,l.times(eventCatList.length,function(){return l.times(testSet.length,l.constant(false));}));testSet.forEach(function(entity,entityIndex){l.forEach(eventCatList,function(eventName,eventIndex){var parts=l.partition(eventCatList,function(subEventName){var subEventIndex=l.indexOf(eventCatList,subEventName);return eventIndex<=subEventIndex;});entity.once(eventName,function(){l.forEach(parts[0],function(subEventName){expect(eventsFlags[subEventName][entityIndex],"Event "+subEventName+" should be false: "+JSON.stringify(eventsFlags)).to.be.false;});l.forEach(parts[1],function(subEventName){expect(eventsFlags[subEventName][entityIndex],"Event "+subEventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});return randomTimeout().then(function(){eventsFlags[eventCatList[eventIndex]][entityIndex]=true;});});});});return testSet.persist().then(function(){l.forEach(eventsFlags,function(eventFlagEntity){l.forEach(eventFlagEntity,function(eventFlag,eventName){expect(eventFlag,"Event "+eventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});});});});it('before/after persist (update)',function(){var eventCat='update';var eventCatList=events[eventCat];var eventsFlags=l.zipObject(eventCatList,l.times(eventCatList.length,function(){return l.times(testSet.length,l.constant(false));}));testSet.forEach(function(entity,index){l.forEach(eventCatList,function(eventName,eventIndex){var parts=l.partition(eventCatList,function(subEventName){var subEventIndex=l.indexOf(eventCatList,subEventName);return eventIndex<=subEventIndex;});entity.once(eventName,function(){l.forEach(parts[0],function(subEventName){expect(eventsFlags[subEventName][index],"Event "+subEventName+" should be false: "+JSON.stringify(eventsFlags)).to.be.false;});l.forEach(parts[1],function(subEventName){expect(eventsFlags[subEventName][index],"Event "+subEventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});return randomTimeout(index*50).then(function(){eventsFlags[eventCatList[eventIndex]][index]=true;});});});});return testSet.persist().then(function(){l.forEach(eventsFlags,function(eventFlagEntity){l.forEach(eventFlagEntity,function(eventFlag,eventName){expect(eventFlag,"Event "+eventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});});});});it('before/after fetch',function(){var eventCat='find';var eventCatList=events[eventCat];var eventsFlags=l.zipObject(eventCatList,l.times(eventCatList.length,function(){return l.times(testSet.length,l.constant(false));}));testSet.forEach(function(entity,index){l.forEach(eventCatList,function(eventName,eventIndex){var parts=l.partition(eventCatList,function(subEventName){var subEventIndex=l.indexOf(eventCatList,subEventName);return eventIndex<=subEventIndex;});entity.once(eventName,function(){l.forEach(parts[0],function(subEventName){expect(eventsFlags[subEventName][index],"Event "+subEventName+" should be false: "+JSON.stringify(eventsFlags)).to.be.false;});l.forEach(parts[1],function(subEventName){expect(eventsFlags[subEventName][index],"Event "+subEventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});return randomTimeout(index*50).then(function(){eventsFlags[eventCatList[eventIndex]][index]=true;});});});});return testSet.fetch().then(function(){l.forEach(eventsFlags,function(eventFlagEntity){l.forEach(eventFlagEntity,function(eventFlag,eventName){expect(eventFlag,"Event "+eventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});});});});it('before/after destroy',function(){var eventCat='delete';var eventCatList=events[eventCat];var eventsFlags=l.zipObject(eventCatList,l.times(eventCatList.length,function(){return l.times(testSet.length,l.constant(false));}));testSet.forEach(function(entity,index){l.forEach(eventCatList,function(eventName,eventIndex){var parts=l.partition(eventCatList,function(subEventName){var subEventIndex=l.indexOf(eventCatList,subEventName);return eventIndex<=subEventIndex;});entity.once(eventName,function(){l.forEach(parts[0],function(subEventName){expect(eventsFlags[subEventName][index],"Event "+subEventName+" should be false: "+JSON.stringify(eventsFlags)).to.be.false;});l.forEach(parts[1],function(subEventName){expect(eventsFlags[subEventName][index],"Event "+subEventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});return randomTimeout(index*50).then(function(){eventsFlags[eventCatList[eventIndex]][index]=true;});});});});return testSet.destroy().then(function(){l.forEach(eventsFlags,function(eventFlagEntity){l.forEach(eventFlagEntity,function(eventFlag,eventName){expect(eventFlag,"Event "+eventName+" should be true: "+JSON.stringify(eventsFlags)).to.be.true;});});});});});});describe('Test errors',function(){it('Extendable error',function(){var ExtendableError=Diaspora.components.Errors.ExtendableError;/**
+		 * @ignore
+		 */var SubError=function(_ExtendableError){_inherits(SubError,_ExtendableError);function SubError(){_classCallCheck(this,SubError);return _possibleConstructorReturn(this,(SubError.__proto__||Object.getPrototypeOf(SubError)).apply(this,arguments));}return SubError;}(ExtendableError);var subError=new SubError();expect(subError).to.be.an.instanceof(ExtendableError);expect(subError).to.be.an.instanceof(Error);});});}).call(this,require('_process'));},{"_process":6}],"/test/models/index.js":[function(require,module,exports){(function(__dirname){'use strict';/* globals getStyle: false, importTest: false */importTest(getStyle('model','Test entities & sets'),__dirname+"/components.js");importTest(getStyle('model','Simple model (single source)'),__dirname+"/simple.js");importTest(getStyle('model','Simple model with remapping (single source)'),__dirname+"/simple-remapping.js");importTest(getStyle('model','Simple model with validations (single source)'),__dirname+"/validations.js");}).call(this,"/test/models");},{}],"/test/models/simple-remapping.js":[function(require,module,exports){'use strict';/* globals l: false, c: false, it: false, describe: false, require: false, expect: false, Diaspora: false */var testModel=void 0;var store=void 0;var testedEntity=void 0;var MODEL_NAME='remapped';var SOURCE='inMemory-simple-remapping';var checkDataStoreRemap=function checkDataStoreRemap(item,propsObject){var dataStoreItem=l.find(store.items,{id:item.dataSources[SOURCE].id});expect(dataStoreItem).to.not.have.property('foo');if(propsObject){if(c.assigned(propsObject.foo)){expect(dataStoreItem).to.be.an('object').that.have.property('bar',propsObject.foo);}else{expect(dataStoreItem).to.satisfy(function(obj){return!obj.hasOwnProperty('bar')||c.undefined(obj.bar);});}}};it('Should create a model',function(){Diaspora.createNamedDataSource(SOURCE,'inMemory');testModel=Diaspora.declareModel(MODEL_NAME,{sources:_defineProperty({},SOURCE,{foo:'bar'}),schema:false,attributes:{foo:{type:'string'}}});expect(testModel).to.be.an('object');if('undefined'===typeof window){expect(testModel.constructor.name).to.be.eql('Model');}store=Diaspora.dataSources[SOURCE].store.remapped;});it('Should be able to create an entity of the defined model.',function(){var entity1=testModel.spawn();expect(entity1).to.be.an.entity(testModel,{},true);var entity2=testModel.spawn({foo:'bar'});expect(entity2).to.be.an.entity(testModel,{foo:'bar'},true);});it('Should be able to create multiple entities.',function(){var objects=[{foo:'bar'},undefined];var entities=testModel.spawnMany(objects);expect(entities).to.be.a.set.of.entity(testModel,objects,true).that.have.lengthOf(2);});describe('Should be able to use model methods to find, update, delete & create',function(){describe('- Create instances',function(){it('Create a single instance',function(){expect(testModel).to.respondTo('insert');var object={foo:'bar'};return testModel.insert(object).then(function(newEntity){expect(newEntity).to.be.an.entity(testModel,object,SOURCE);checkDataStoreRemap(newEntity,object);});});it('Create multiple instances',function(){expect(testModel).to.respondTo('insertMany');var objects=[{foo:'baz'},undefined,{foo:undefined},{foo:'baz'}];return testModel.insertMany(objects).then(function(newEntities){expect(newEntities).to.be.a.set.of.entity(testModel,objects,SOURCE).that.have.lengthOf(4);return Promise.map(newEntities.value(),function(newEntity,index){var object=objects[index];checkDataStoreRemap(newEntity,object);});});});});describe('- Find instances',function(){var checkFind=function checkFind(query){var many=arguments.length>1&&arguments[1]!==undefined?arguments[1]:true;return testModel[many?'findMany':'find'](query).then(function(foundEntities){if(many){expect(foundEntities).to.be.a.set.of.entity(testModel,query,SOURCE);}else if(c.assigned(foundEntities)){expect(foundEntities).to.be.an.entity(testModel,query,SOURCE);}return Promise.resolve(foundEntities);});};it('Find a single instance',function(){expect(testModel).to.respondTo('find');return Promise.mapSeries([{foo:undefined},{foo:'baz'},{foo:'bar'}],function(item){return checkFind(item,false);});});it('Find multiple instances',function(){expect(testModel).to.respondTo('findMany');return Promise.mapSeries([{query:{foo:undefined},length:2},{query:{foo:'baz'},length:2},{query:{foo:'bar'},length:1}],function(item){return checkFind(item.query,true).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(item.length);});});});it('Find all instances',function(){return testModel.findMany({}).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(5);});});});describe('- Update instances',function(){var checkUpdate=function checkUpdate(query,update){var many=arguments.length>2&&arguments[2]!==undefined?arguments[2]:true;return testModel[many?'updateMany':'update'](query,update).then(function(updatedEntities){if(many){expect(updatedEntities).to.be.a.set.of.entity(testModel,update,SOURCE);l.forEach(updatedEntities,function(updatedEntity){checkDataStoreRemap(updatedEntity,update);});}else if(c.assigned(updatedEntities)){expect(updatedEntities).to.be.an.entity(testModel,update,SOURCE);checkDataStoreRemap(updatedEntities,update);}return Promise.resolve(updatedEntities);});};it('Update a single instance',function(){expect(testModel).to.respondTo('update');return Promise.resolve().then(function(){return checkUpdate({foo:undefined},{foo:'qux'},false);}).then(function(){return checkUpdate({foo:'baz'},{foo:'qux'},false);}).then(function(){return checkUpdate({foo:'bar'},{foo:undefined},false);});});it('Update multiple instances',function(){expect(testModel).to.respondTo('updateMany');return Promise.resolve().then(function(){return checkUpdate({foo:undefined},{foo:'bar'},true).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(2);return Promise.resolve();});}).then(function(){return checkUpdate({foo:'baz'},{foo:undefined},true).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(1);return Promise.resolve();});}).then(function(){return checkUpdate({foo:'bat'},{foo:'twy'},true).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(0);return Promise.resolve();});});});});describe('- Delete instances',function(){var checkDestroy=function checkDestroy(query){var many=arguments.length>1&&arguments[1]!==undefined?arguments[1]:true;return testModel.findMany(query).then(function(entities){return Promise.resolve(entities.length);}).then(function(beforeCount){return testModel[many?'deleteMany':'delete'](query).then(function(){return Promise.resolve(beforeCount);});}).then(function(beforeCount){return testModel.findMany(query).then(function(entities){return Promise.resolve({before:beforeCount,after:entities.length});});}).then(function(result){if(many||0===result.before){expect(result.after).to.be.equal(0);}else{expect(result.after).to.be.equal(result.before-1);}});};it('Delete a single instance',function(){expect(testModel).to.respondTo('delete');return Promise.resolve().then(function(){return checkDestroy({foo:undefined},false);}).then(function(){return checkDestroy({foo:'bar'},false);});});it('Delete multiple instances',function(){expect(testModel).to.respondTo('deleteMany');return Promise.resolve().then(function(){return checkDestroy({foo:undefined},true);}).then(function(){return checkDestroy({foo:'baz'},true);}).then(function(){return checkDestroy({foo:'qux'},true);});});it('Delete all instances',function(){return testModel.deleteMany({});});});});describe('Should be able to persist, fetch & delete an entity of the defined model.',function(){it('Fetch should be rejected with an error on orphan items',function(){var object={foo:'bar'};testedEntity=testModel.spawn(object);expect(testedEntity).to.be.an.entity(testModel,object,true);var retPromise=testedEntity.fetch();expect(testedEntity.state).to.be.eql('syncing');expect(testedEntity).to.be.an.entity(testModel,object,null);expect(retPromise).to.be.rejectedWith(Diaspora.components.Errors.EntityStateError);});it('Destroy should be rejected with an error on orphan items',function(){var object={foo:'bar'};testedEntity=testModel.spawn(object);expect(testedEntity).to.be.an.entity(testModel,object,true);var retPromise=testedEntity.destroy();expect(testedEntity.state).to.be.eql('syncing');expect(testedEntity).to.be.an.entity(testModel,object,null);expect(retPromise).to.be.rejectedWith(Diaspora.components.Errors.EntityStateError);});it('Persist should change the entity',function(){var object={foo:'bar'};testedEntity=testModel.spawn(object);expect(testedEntity).to.be.an.entity(testModel,object,true);var retPromise=testedEntity.persist();expect(testedEntity.state).to.be.eql('syncing');expect(testedEntity).to.be.an.entity(testModel,object,null);return retPromise.then(function(){expect(testedEntity).to.be.an.entity(testModel,object,SOURCE);});});it('Fetch should change the entity',function(){var object={foo:'bar'};return testModel.find(object).then(function(entity){expect(entity).to.respondTo('fetch');expect(entity).to.be.an.entity(testModel,object,SOURCE);entity.attributes.foo='baz';expect(entity).to.be.an.entity(testModel,{foo:'baz'},SOURCE);var retPromise=entity.fetch();expect(entity.state).to.be.eql('syncing');return retPromise.then(function(){expect(testedEntity).to.be.an.entity(testModel,object,SOURCE);});});});it('Destroy should change the entity',function(){var object={foo:'bar'};return testModel.find(object).then(function(entity){expect(entity).to.respondTo('destroy');expect(entity).to.be.an.entity(testModel,object,SOURCE);var retPromise=entity.destroy();expect(entity.state).to.be.eql('syncing');return retPromise.then(function(){expect(entity.lastDataSource).to.be.eql(SOURCE);expect(entity.state).to.be.eql('orphan');expect(entity).to.be.an.entity(testModel,{},null);});});});});},{}],"/test/models/simple.js":[function(require,module,exports){'use strict';/* globals c: false, it: false, describe: false, require: false, expect: false, Diaspora: false */var testModel=void 0;var testedEntity=void 0;var MODEL_NAME='testModel';var SOURCE='inMemory-simple';it('Should create a model',function(){Diaspora.createNamedDataSource(SOURCE,'inMemory');testModel=Diaspora.declareModel(MODEL_NAME,{sources:[SOURCE],schema:false,attributes:{foo:{type:'string'}}});expect(testModel).to.be.an('object');if('undefined'===typeof window){expect(testModel.constructor.name).to.be.eql('Model');}});it('Should be able to create an entity of the defined model.',function(){var entity1=testModel.spawn();expect(entity1).to.be.an.entity(testModel,{},true);var entity2=testModel.spawn({foo:'bar'});expect(entity2).to.be.an.entity(testModel,{foo:'bar'},true);});it('Should be able to create multiple entities.',function(){var objects=[{foo:'bar'},undefined];var entities=testModel.spawnMany(objects);expect(entities).to.be.a.set.of.entity(testModel,objects,true).that.have.lengthOf(2);});describe('Should be able to use model methods to find, update, delete & create',function(){describe('- Create instances',function(){it('Create a single instance',function(){expect(testModel).to.respondTo('insert');var object={foo:'bar'};return testModel.insert(object).then(function(newEntity){expect(newEntity).to.be.an.entity(testModel,object,SOURCE);});});it('Create multiple instances',function(){expect(testModel).to.respondTo('insertMany');var objects=[{foo:'baz'},undefined,{foo:undefined},{foo:'baz'}];return testModel.insertMany(objects).then(function(newEntities){expect(newEntities).to.be.a.set.of.entity(testModel,objects,SOURCE).that.have.lengthOf(4);});});});describe('- Find instances',function(){var checkFind=function checkFind(query){var many=arguments.length>1&&arguments[1]!==undefined?arguments[1]:true;return testModel[many?'findMany':'find'](query).then(function(foundEntities){if(many){expect(foundEntities).to.be.a.set.of.entity(testModel,query,SOURCE);}else if(c.assigned(foundEntities)){expect(foundEntities).to.be.an.entity(testModel,query,SOURCE);}return Promise.resolve(foundEntities);});};it('Find a single instance',function(){expect(testModel).to.respondTo('find');return Promise.mapSeries([{foo:undefined},{foo:'baz'},{foo:'bar'}],function(item){return checkFind(item,false);});});it('Find multiple instances',function(){expect(testModel).to.respondTo('findMany');return Promise.mapSeries([{query:{foo:undefined},length:2},{query:{foo:'baz'},length:2},{query:{foo:'bar'},length:1}],function(item){return checkFind(item.query,true).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(item.length);});});});it('Find all instances',function(){return testModel.findMany({}).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(5);});});});describe('- Update instances',function(){var checkUpdate=function checkUpdate(query,update){var many=arguments.length>2&&arguments[2]!==undefined?arguments[2]:true;return testModel[many?'updateMany':'update'](query,update).then(function(updatedEntities){if(many){expect(updatedEntities).to.be.a.set.of.entity(testModel,update,SOURCE);}else if(c.assigned(updatedEntities)){expect(updatedEntities).to.be.an.entity(testModel,update,SOURCE);}return Promise.resolve(updatedEntities);});};it('Update a single instance',function(){expect(testModel).to.respondTo('update');return Promise.resolve().then(function(){return checkUpdate({foo:undefined},{foo:'qux'},false);}).then(function(){return checkUpdate({foo:'baz'},{foo:'qux'},false);}).then(function(){return checkUpdate({foo:'bar'},{foo:undefined},false);});});it('Update multiple instances',function(){//process.exit()
+expect(testModel).to.respondTo('updateMany');return Promise.resolve().then(function(){return checkUpdate({foo:undefined},{foo:'bar'},true).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(2);return Promise.resolve();});}).then(function(){return checkUpdate({foo:'baz'},{foo:undefined},true).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(1);return Promise.resolve();});}).then(function(){return checkUpdate({foo:'bat'},{foo:'twy'},true).then(function(foundEntities){expect(foundEntities).to.have.lengthOf(0);return Promise.resolve();});});});});describe('- Delete instances',function(){var checkDestroy=function checkDestroy(query){var many=arguments.length>1&&arguments[1]!==undefined?arguments[1]:true;return testModel.findMany(query).then(function(entities){return Promise.resolve(entities.length);}).then(function(beforeCount){return testModel[many?'deleteMany':'delete'](query).then(function(){return Promise.resolve(beforeCount);});}).then(function(beforeCount){return testModel.findMany(query).then(function(entities){return Promise.resolve({before:beforeCount,after:entities.length});});}).then(function(result){if(many||0===result.before){expect(result.after).to.be.equal(0);}else{expect(result.after).to.be.equal(result.before-1);}});};it('Delete a single instance',function(){expect(testModel).to.respondTo('delete');return Promise.resolve().then(function(){return checkDestroy({foo:undefined},false);}).then(function(){return checkDestroy({foo:'bar'},false);});});it('Delete multiple instances',function(){expect(testModel).to.respondTo('deleteMany');return Promise.resolve().then(function(){return checkDestroy({foo:undefined},true);}).then(function(){return checkDestroy({foo:'baz'},true);}).then(function(){return checkDestroy({foo:'qux'},true);});});it('Delete all instances',function(){return testModel.deleteMany({});});});});describe('Should be able to persist, fetch & delete an entity of the defined model.',function(){it('Fetch should be rejected with an error on orphan items',function(){var object={foo:'bar'};testedEntity=testModel.spawn(object);expect(testedEntity).to.be.an.entity(testModel,object,true);var retPromise=testedEntity.fetch();expect(testedEntity.state).to.be.eql('syncing');expect(testedEntity).to.be.an.entity(testModel,object,null);expect(retPromise).to.be.rejectedWith(Diaspora.components.Errors.EntityStateError);});it('Destroy should be rejected with an error on orphan items',function(){var object={foo:'bar'};testedEntity=testModel.spawn(object);expect(testedEntity).to.be.an.entity(testModel,object,true);var retPromise=testedEntity.destroy();expect(testedEntity.state).to.be.eql('syncing');expect(testedEntity).to.be.an.entity(testModel,object,null);expect(retPromise).to.be.rejectedWith(Diaspora.components.Errors.EntityStateError);});it('Persist should change the entity',function(){var object={foo:'bar'};testedEntity=testModel.spawn(object);expect(testedEntity).to.be.an.entity(testModel,object,true);var retPromise=testedEntity.persist();expect(testedEntity.state).to.be.eql('syncing');expect(testedEntity).to.be.an.entity(testModel,object,null);return retPromise.then(function(){expect(testedEntity).to.be.an.entity(testModel,object,SOURCE);});});it('Fetch should change the entity',function(){var object={foo:'bar'};return testModel.find(object).then(function(entity){expect(entity).to.respondTo('fetch');expect(entity).to.be.an.entity(testModel,object,SOURCE);entity.attributes.foo='baz';expect(entity).to.be.an.entity(testModel,{foo:'baz'},SOURCE);var retPromise=entity.fetch();expect(entity.state).to.be.eql('syncing');return retPromise.then(function(){expect(testedEntity).to.be.an.entity(testModel,object,SOURCE);});});});it('Destroy should change the entity',function(){var object={foo:'bar'};return testModel.find(object).then(function(entity){expect(entity).to.respondTo('destroy');expect(entity).to.be.an.entity(testModel,object,SOURCE);var retPromise=entity.destroy();expect(entity.state).to.be.eql('syncing');return retPromise.then(function(){expect(entity.lastDataSource).to.be.eql(SOURCE);expect(entity.state).to.be.eql('orphan');expect(entity).to.be.an.entity(testModel,{},null);});});});});},{}],"/test/models/validations.js":[function(require,module,exports){'use strict';/* globals it: false, require: false, expect: false, Diaspora: false */var testModel=void 0;var MODEL_NAME='validatedModel';var SOURCE='inMemory-validations';var _Diaspora$components$=Diaspora.components.Errors,EntityValidationError=_Diaspora$components$.EntityValidationError,SetValidationError=_Diaspora$components$.SetValidationError;it('Should create a model',function(){Diaspora.createNamedDataSource(SOURCE,'inMemory');testModel=Diaspora.declareModel(MODEL_NAME,{sources:[SOURCE],schema:false,attributes:{prop1:{type:'string'},prop2:{type:'integer',enum:[1,2,3,4,'foo'],required:true},prop3:{type:'float',default:0.1}}});expect(testModel).to.be.an('object');if('undefined'===typeof window){expect(testModel.constructor.name).to.be.eql('Model');}});it('Should reject persistance of badly configured entities (spawn).',function(){var fail1=testModel.spawn({prop1:1,prop2:2}).persist();var fail2=testModel.spawn({prop2:0}).persist();var fail3=testModel.spawn({prop2:'foo'}).persist();var fail4=testModel.spawn({}).persist();return Promise.all([expect(fail1).to.be.rejectedWith(EntityValidationError).and.eventually.have.property('message').that.eventually.match(/(\W|^)prop1\W(.|\s)*\Wstring(\W|$)/m),expect(fail2).to.be.rejectedWith(EntityValidationError).and.eventually.have.property('message').that.eventually.match(/(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m),expect(fail3).to.be.rejectedWith(EntityValidationError).and.eventually.have.property('message').that.eventually.match(/(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m),expect(fail4).to.be.rejectedWith(EntityValidationError).and.eventually.have.property('message').that.eventually.match(/(\W|^)prop2\W(?=(.|\s)*\Winteger(\W|$))(?=(.|\s)*\Wrequired(\W|$))/m)]);});it('Should reject persistance of badly configured entities (spawnMany).',function(){var fail1=testModel.spawnMany([{prop1:1,prop2:2},{prop2:2}]).persist();var fail2=testModel.spawnMany([{prop2:0},{prop2:'foo'}]).persist();return Promise.all([expect(fail1).to.be.rejectedWith(SetValidationError).and.eventually.satisfy(function(error){var validationErrors=error.validationErrors;expect(validationErrors[0]).to.be.instanceof(EntityValidationError);expect(validationErrors[0].message).to.match(/(\W|^)prop1\W(.|\s)*\Wstring(\W|$)/m);expect(validationErrors[1]).to.be.undefined;return true;}),expect(fail2).to.be.rejectedWith(SetValidationError).and.eventually.satisfy(function(error){var validationErrors=error.validationErrors;expect(validationErrors[0]).to.be.instanceof(EntityValidationError);expect(validationErrors[0].message).to.match(/(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m);expect(validationErrors[1]).to.be.instanceof(EntityValidationError);expect(validationErrors[1].message).to.match(/(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m);return true;})]);});it('Should define default values on valid items',function(){return Promise.all([testModel.spawn({prop2:2}).persist().then(function(entity){expect(entity).to.be.an.entity(testModel,{prop2:2,prop3:0.1},SOURCE);}),testModel.spawn({prop2:3,prop3:12}).persist().then(function(entity){expect(entity).to.be.an.entity(testModel,{prop2:3,prop3:12},SOURCE);})]);});},{}],"/test/validation.js":[function(require,module,exports){'use strict';/* globals l: false, it: false, describe: false, require: false, expect: false, Diaspora: false,  */var Validator=Diaspora.components.Validator;var date1=new Date();var date2=new Date(0);var obj1={};var obj2={foo:'bar'};var arr1=[];var arr2=[1,2,3];var exampleValues={any:[],string:['','foo'],integer:[0,1],float:[1.5,0,1],date:[date1,date2],object:[obj1,date1,arr1,obj2,date2,arr2],array:[arr1,arr2]};var getValues=function getValues(){var keys=arguments.length>0&&arguments[0]!==undefined?arguments[0]:[];keys=l.castArray(keys);var partition=[l.pick(exampleValues,keys),l.omit(exampleValues,keys)];var partedValues=l.map(partition,function(val){return l.reduce(val,function(acc,valSub){var vals=l.isArray(valSub)?valSub:l.values(valSub);return l.union(acc,vals);},[]);});var partedFiltered=[partedValues[0],l.difference(partedValues[1],partedValues[0])];if(keys.indexOf('any')>-1){var _l;return[(_l=l).union.apply(_l,partedFiltered),[]];}return partedFiltered;};var THROWING=function THROWING(desc,obj){return"Validation "+JSON.stringify(desc)+" throwing for "+JSON.stringify(obj);};var NOT_THROWING=function NOT_THROWING(desc,obj){return"Validation "+JSON.stringify(desc)+" NOT throwing correctly for "+JSON.stringify(obj);};var runTests=function runTests(validator,_ref){var _ref2=_slicedToArray(_ref,2),accepted=_ref2[0],rejected=_ref2[1];//console.log({validator, accepted, rejected});
+l.forEach(accepted,function(value){expect(function(){return validator.validate(value);},THROWING(validator.modelDesc,value)).to.not.throw();});l.forEach(rejected,function(value){expect(function(){return validator.validate(value);},NOT_THROWING(validator.modelDesc,value)).to.throw(Diaspora.components.Errors.EntityValidationError);});};var wrapTest=function wrapTest(partition){return partition.map(function(values){return values.map(function(value){return{test:value};});});};var canBeNil=function canBeNil(partition){partition[0]=l.concat(partition[0],[undefined,null]);return partition;};var cannotBeNil=function cannotBeNil(partition){partition[1]=l.concat(partition[1],[undefined,null]);return partition;};describe('"check" feature',function(){describe('Basic tests with types',function(){describe('Not required',function(){l.forEach(exampleValues,function(v,type){it("Check type \""+type+"\"",function(){var validator=new Validator({test:{type:type}});var partition=canBeNil(getValues(type));var testObjects=wrapTest(partition);return runTests(validator,testObjects);});});});describe('Required',function(){l.forEach(exampleValues,function(v,type){it("Check type \""+type+"\"",function(){var validator=new Validator({test:{type:type,required:true}});var partition=cannotBeNil(getValues(type));var testObjects=wrapTest(partition);return runTests(validator,testObjects);});});});});describe('Sub-elements checking',function(){describe('Objects',function(){it('Optional property in optional object',function(){var validator=new Validator({test:{type:'object',attributes:{string:{type:'string'}}}});var testObjects=wrapTest([[undefined,null,{string:'foo'},{},{string:''}],['foo']]);return runTests(validator,testObjects);});it('Optional property in required object',function(){var validator=new Validator({test:{type:'object',required:true,attributes:{string:{type:'string'}}}});var testObjects=wrapTest([[{string:'foo'},{},{string:''}],[undefined,null,'foo']]);return runTests(validator,testObjects);});it('Required property in optional object',function(){var validator=new Validator({test:{type:'object',attributes:{string:{type:'string',required:true}}}});var testObjects=wrapTest([[{string:'foo'},{string:''},undefined,null],[{},'foo']]);return runTests(validator,testObjects);});it('Required property in required object',function(){var validator=new Validator({test:{type:'object',required:true,attributes:{string:{type:'string',required:true}}}});var testObjects=wrapTest([[{string:'foo'},{string:''}],['foo',undefined,null,{}]]);return runTests(validator,testObjects);});it('In-depth required property in required object',function(){var validator=new Validator({test:{type:'object',required:true,attributes:{obj:{type:'object',required:true,attributes:{obj:{type:'object',required:true,attributes:{test:{type:'string',required:true}}}}}}}});var testObjects=wrapTest([[{obj:{obj:{test:'foo'}}}],[undefined,null,{},{obj:{}},{obj:{obj:{}}}]]);return runTests(validator,testObjects);});});describe('Arrays',function(){describe('Single definition',function(){it('Optional single definition in optional object',function(){var validator=new Validator({test:{type:'array',of:{type:'integer'}}});var testObjects=wrapTest([[undefined,null,[],[1],[1,2,3],[1,2,null,undefined]],[['foo'],[{}]]]);return runTests(validator,testObjects);});it('Optional single definition in required object',function(){var validator=new Validator({test:{type:'array',required:true,of:{type:'integer'}}});var testObjects=wrapTest([[[],[1],[1,2,3],[1,2,null,undefined]],[undefined,null,['foo'],[{}]]]);return runTests(validator,testObjects);});it('Required single definition in optional object',function(){var validator=new Validator({test:{type:'array',of:{type:'integer',required:true}}});var testObjects=wrapTest([[undefined,null,[],[1],[1,2,3]],[['foo'],[{}],[1,2,null,undefined]]]);return runTests(validator,testObjects);});it('Required single definition in required object',function(){var validator=new Validator({test:{type:'array',required:true,of:{type:'integer',required:true}}});var testObjects=wrapTest([[[],[1],[1,2,3]],[undefined,null,['foo'],[{}],[1,2,null,undefined]]]);return runTests(validator,testObjects);});it('In-depth required element in required arrays',function(){var validator=new Validator({test:{type:'array',required:true,of:{type:'array',required:true,of:{type:'array',required:true,of:{type:'string',required:true}}}}});var testObjects=wrapTest([[[[['foo']]],[[[]]],[[]],[]],[undefined,null,[[[['foo',1]]]],[1]]]);return runTests(validator,testObjects);});});describe('Multiple definition',function(){it('Optional multiple definitions in optional array',function(){var validator=new Validator({test:{type:'array',of:[{type:'integer'},{type:'date'}]}});var testObjects=wrapTest([[undefined,null,[],[1],[1,2,3],[1,2,null,undefined],[date1],[date1,undefined,date2],[date1,date2],[date1,1,undefined,null],[date1,1]],[['foo'],[{}]]]);return runTests(validator,testObjects);});it('Optional multiple definitions in required array',function(){var validator=new Validator({test:{type:'array',required:true,of:[{type:'integer'},{type:'date'}]}});var testObjects=wrapTest([[[],[1],[1,2,3],[1,2,null,undefined],[date1],[date1,undefined,date2],[date1,date2],[date1,1,undefined,null],[date1,1]],[undefined,null,['foo'],[{}]]]);return runTests(validator,testObjects);});it('Required multiple definitions in optional array',function(){var validator=new Validator({test:{type:'array',of:[{type:'integer',required:true},{type:'date',required:true}]}});var testObjects=wrapTest([[undefined,null,[],[1],[1,2,3],[date1],[date1,date2],[date1,1]],[['foo'],[{}],[1,2,null,undefined],[date1,undefined,date2],[date1,1,undefined,null]]]);return runTests(validator,testObjects);});it('Required multiple definitions in required array',function(){var validator=new Validator({test:{type:'array',required:true,of:[{type:'integer',required:true},{type:'date',required:true}]}});var testObjects=wrapTest([[[],[1],[1,2,3],[date1],[date1,date2],[date1,1]],[undefined,null,['foo'],[{}],[1,2,null,undefined],[date1,undefined,date2],[date1,1,undefined,null]]]);return runTests(validator,testObjects);});it('Required & optional definitions in array',function(){var validator=new Validator({test:{type:'array',of:[{type:'integer',required:true},{type:'date'}]}});var testObjects=wrapTest([[undefined,null,[],[1],[1,2,3],[1,2,null,undefined],[date1],[date1,undefined,date2],[date1,date2],[date1,1,undefined,null],[date1,1]],[['foo'],[{}]]]);return runTests(validator,testObjects);});it('In-depth required element in required arrays',function(){var validator=new Validator({test:{type:'array',required:true,of:[{type:'array',required:true,of:[{type:'array',required:true,of:[{type:'integer',required:true}]},{type:'integer',required:true}]},{type:'integer',required:true}]}});var testObjects=wrapTest([[[[[1]]],[[[1]]],[[]],[],[1]],[undefined,null,[[[['foo',1]]]]]]);return runTests(validator,testObjects);});});});});describe('"enum" property',function(){describe('Not required',function(){it('Not required enum of any type',function(){var validator=new Validator({test:{type:'any',enum:[1,2,'aze']}});var testObjects=wrapTest([[1,2,'aze',undefined,null],[3,4,5,[],{},new Date()]]);return runTests(validator,testObjects);});it('Not required enum of a specific type',function(){var validator=new Validator({test:{type:'integer',enum:[1,2,'aze']}});var testObjects=wrapTest([[1,2,undefined,null],['aze',3,4,5,[],{},new Date()]]);return runTests(validator,testObjects);});it('Not required enum matching with regex',function(){var validator=new Validator({test:{type:'string',enum:[/^foo/,/bar$/]}});var testObjects=wrapTest([['foobaz','bazbar','foobar',undefined,null],['aze','barfoo']]);return runTests(validator,testObjects);});});describe('Required',function(){it('Required enum of any type',function(){var validator=new Validator({test:{type:'any',required:true,enum:[1,2,'aze']}});var testObjects=wrapTest([[1,2,'aze'],[3,4,5,[],{},new Date(),undefined,null]]);return runTests(validator,testObjects);});it('Required enum of a specific type',function(){var validator=new Validator({test:{type:'integer',required:true,enum:[1,2,'aze']}});var testObjects=wrapTest([[1,2],['aze',3,4,5,[],{},new Date(),undefined,null]]);return runTests(validator,testObjects);});it('Required enum matching with regex',function(){var validator=new Validator({test:{type:'string',required:true,enum:[/^foo/,/bar$/]}});var testObjects=wrapTest([['foobaz','bazbar','foobar'],['aze','barfoo',undefined,null]]);return runTests(validator,testObjects);});});});});},{}]},{},[11,10,"/test/models/components.js","/test/models/index.js","/test/models/simple-remapping.js","/test/models/simple.js","/test/models/validations.js","/test/adapters/index.js","/test/adapters/inMemory.js","/test/adapters/webStorage.js",9,12,13]);

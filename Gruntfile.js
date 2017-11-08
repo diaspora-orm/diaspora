@@ -264,14 +264,6 @@ module.exports = function gruntInit( grunt ) {
 			},
 		},
 		copy: {
-			diaspora_to_docs_site: {
-				files: [{
-					expand: true,
-					cwd:    './build/standalone/dist/',
-					src:    [ './diaspora*.js*' ],
-					dest:   `${ baseDocPath }/assets/js/`,
-				}],
-			},
 			build_isolated_to_dist: {
 				files: [{
 					expand: true,
@@ -286,6 +278,30 @@ module.exports = function gruntInit( grunt ) {
 					cwd:    './build/standalone/dist/',
 					src:    [ './diaspora*.js*' ],
 					dest:   'dist/standalone',
+				}],
+			},
+			diaspora_to_docs_site: {
+				files: [{
+					expand: true,
+					cwd:    './dist/standalone',
+					src:    [ './diaspora.min.js*' ],
+					dest:   `${ baseDocPath }/assets/js/`,
+				}],
+			},
+			unit_tests: {
+				files: [{
+					expand: true,
+					cwd:    './test/browser',
+					src:    [ 'unit-tests.js' ],
+					dest:   `${ baseDocPath }/assets/js/tests`,
+				}],
+			},
+			diaspora_isolated_to_docs_site_tests: {
+				files: [{
+					expand: true,
+					cwd:    './dist/isolated',
+					src:    [ './diaspora.min.js*' ],
+					dest:   `${ baseDocPath }/assets/js/tests/isolated`,
 				}],
 			},
 		},
@@ -310,6 +326,10 @@ module.exports = function gruntInit( grunt ) {
 
 	require( 'load-grunt-tasks' )( grunt );
 
+	// ## Utils
+	grunt.registerTask( 'lint', [
+		'eslint:info',
+	]);
 	grunt.registerTask( 'documentate', [
 		'lint',
 		'clean:doc_jsdoc',
@@ -317,39 +337,49 @@ module.exports = function gruntInit( grunt ) {
 		'jsdoc',
 		'docco_husky',
 	]);
-	grunt.registerTask( 'dist', [
-		'lint',
-		'buildStandalone',
-		'buildIsolated',
+	grunt.registerTask( 'all', [
+		'build',
+		'documentate',
 	]);
+
+	// ## Builds
+	// ### Tests
+	grunt.registerTask( 'buildTests', [
+		'lint',
+		'browserify:test',
+		'babel:test',
+		'copy:unit_tests',
+	]);
+	// ### Dists
 	grunt.registerTask( 'buildDependencies', [
 		'browserify:deps',
 		'babel:deps',
 		'uglify:deps',
 	]);
 	grunt.registerTask( 'buildStandalone', [
-		//		'changed:buildDependencies',
+		'lint',
 		'browserify:standalone',
 		'babel:standalone',
 		'uglify:standalone',
-		'copy:diaspora_to_docs_site',
 		'copy:build_standalone_to_dist',
+		'copy:diaspora_to_docs_site',
 	]);
 	grunt.registerTask( 'buildIsolated', [
+		'lint',
 		'browserify:isolated',
 		'babel:isolated',
 		'uglify:isolated',
 		'copy:build_isolated_to_dist',
+		'copy:diaspora_isolated_to_docs_site_tests',
 	]);
-	grunt.registerTask( 'lint', [
-		'eslint:info',
+	// -----
+	// ### Combined
+	grunt.registerTask( 'buildNoTests', [
+		'buildStandalone',
+		'buildIsolated',
 	]);
-	grunt.registerTask( 'all', [
-		'refreshScripts',
-		'documentate',
-	]);
-	grunt.registerTask( 'refreshTests', [
-		'browserify:test',
-		'babel:test',
+	grunt.registerTask( 'build', [
+		'buildNoTests',
+		'buildTests',
 	]);
 };

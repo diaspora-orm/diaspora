@@ -16,9 +16,7 @@
 	"scripts": {
 		"test": "mocha test/index.js",
 		"test-coverage": "nyc --reporter=lcov mocha test/index.js",
-		"dist": "grunt dist && grunt documentate",
-		"build-tests": "grunt refreshTests",
-		"build-then-check": "npm run dist && npm run build-tests && npm run test",
+		"build-then-check": "grunt all && npm run test",
 		"preversion": "script/deploy",
 		"version": "npm run build-then-check && git add ."
 	},

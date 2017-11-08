@@ -26063,6 +26063,8 @@ module.exports = adapter => {
 },{}],"/test/adapters/baseAdapter.js":[function(require,module,exports){
 'use strict';
 
+/* globals Diaspora: false */
+
 const adapter = new Diaspora.components.Adapters.Adapter();
 const AdapterTestUtils = require( './utils' );
 
@@ -26446,8 +26448,8 @@ describe( 'Test errors', () => {
 		class SubError extends ExtendableError {}
 		const subError = new SubError();
 
-		expect(subError).to.be.an.instanceof( ExtendableError );
-		expect(subError).to.be.an.instanceof( Error );
+		expect( subError ).to.be.an.instanceof( ExtendableError );
+		expect( subError ).to.be.an.instanceof( Error );
 	});
 });
 
@@ -27166,12 +27168,11 @@ it( 'Should reject persistance of badly configured entities (spawn).', () => {
 		prop2: 'foo',
 	}).persist();
 	const fail4 = testModel.spawn({}).persist();
-	console.log([fail1, fail2, fail3, fail4]);
 	return Promise.all([
-		expect( fail1 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property('message').that.eventually.match( /(\W|^)prop1\W(.|\s)*\Wstring(\W|$)/m ),
-		expect( fail2 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property('message').that.eventually.match( /(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m ),
-		expect( fail3 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property('message').that.eventually.match( /(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m ),
-		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property('message').that.eventually.match( /(\W|^)prop2\W(?=(.|\s)*\Winteger(\W|$))(?=(.|\s)*\Wrequired(\W|$))/m ),
+		expect( fail1 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property( 'message' ).that.eventually.match( /(\W|^)prop1\W(.|\s)*\Wstring(\W|$)/m ),
+		expect( fail2 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property( 'message' ).that.eventually.match( /(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m ),
+		expect( fail3 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property( 'message' ).that.eventually.match( /(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m ),
+		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property( 'message' ).that.eventually.match( /(\W|^)prop2\W(?=(.|\s)*\Winteger(\W|$))(?=(.|\s)*\Wrequired(\W|$))/m ),
 	]);
 });
 it( 'Should reject persistance of badly configured entities (spawnMany).', () => {

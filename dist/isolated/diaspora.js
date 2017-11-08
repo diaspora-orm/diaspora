@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-11-08 02:35:33
+* Isolated build compiled on 2017-11-08 04:59:01
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -39,8 +39,6 @@ function _extendableBuiltin(cls) {
 	return ExtendableBuiltin;
 }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -48,6 +46,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 (function (f) {
 	if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) === "object" && typeof module !== "undefined") {
@@ -90,6 +90,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 			var _require = require('../../dependencies'),
 			    _ = _require._;
 
+			var getNum = function getNum(fullMatch, sign, val) {
+				if ('∞' === val) {
+					if ('-' === sign) {
+						return -Infinity;
+					} else {
+						return Infinity;
+					}
+				} else {
+					return parseInt(fullMatch);
+				}
+			};
+
+			var validateOption = function validateOption(key, val, config) {
+				if ('int' === config.type) {
+					if (_.isString(val)) {
+						val = parseInt(val);
+					}
+					if (!_.isInteger(val) && isFinite(val)) {
+						throw new TypeError("Expect \"" + key + "\" to be an integer");
+					}
+				}
+				if (config.rng) {
+					var range = config.rng.match(/^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/);
+					if (range) {
+						var lower = getNum.apply(undefined, _toConsumableArray(range.splice(2, 3)));
+						var upper = getNum.apply(undefined, _toConsumableArray(range.splice(2, 3)));
+						var isInRangeLower = '[' === range[1] ? val >= lower : val > lower;
+						var isInRangeUpper = ']' === range[2] ? val <= upper : val < upper;
+						if (!(isInRangeLower && isInRangeUpper)) {
+							throw new RangeError("Expect \"" + key + "\" to be within " + config.rng + ", have \"" + val + "\"");
+						}
+					}
+				}
+				return val;
+			};
+
 			module.exports = {
 				OPERATORS: {
 					$exists: function $exists(entityVal, targetVal) {
@@ -125,28 +161,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 				},
 				QUERY_OPTIONS_TRANSFORMS: {
 					limit: function limit(opts) {
-						var limitOpt = opts.limit;
-						if (_.isString(limitOpt)) {
-							limitOpt = parseInt(limitOpt);
-						}
-						if (!_.isInteger(limitOpt) && isFinite(limitOpt)) {
-							throw new TypeError('Expect "options.limit" to be a integer');
-						} else if (limitOpt < 0) {
-							throw new RangeError("Expect \"options.limit\" to be an integer equal to or above 0, have " + limitOpt);
-						}
-						opts.limit = limitOpt;
+						opts.limit = validateOption('limit', opts.limit, {
+							type: 'int',
+							rng: '[0,∞]'
+						});
 					},
 					skip: function skip(opts) {
-						var skipOpt = opts.skip;
-						if (_.isString(skipOpt)) {
-							skipOpt = parseInt(skipOpt);
-						}
-						if (!_.isInteger(skipOpt) && isFinite(skipOpt)) {
-							throw new TypeError('Expect "options.skip" to be a integer');
-						} else if (!isFinite(skipOpt) || skipOpt < 0) {
-							throw new RangeError("Expect \"options.skip\" to be a finite integer equal to or above 0, have " + skipOpt);
-						}
-						opts.skip = skipOpt;
+						opts.skip = validateOption('skip', opts.skip, {
+							type: 'int',
+							rng: '[0,∞['
+						});
 					},
 					page: function page(opts) {
 						if (!opts.hasOwnProperty('limit')) {
@@ -158,16 +182,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 						if (opts.hasOwnProperty('skip')) {
 							throw new ReferenceError('Use either "options.page" or "options.skip"');
 						}
-						var pageOpt = opts.page;
-						if (_.isString(pageOpt)) {
-							pageOpt = parseInt(pageOpt);
-						}
-						if (!_.isInteger(pageOpt) && isFinite(pageOpt)) {
-							throw new TypeError('Expect "options.page" to be a integer');
-						} else if (!isFinite(pageOpt) || pageOpt < 0) {
-							throw new RangeError("Expect \"options.page\" to be a finite integer equal to or above 0, have " + pageOpt);
-						}
-						opts.skip = pageOpt * opts.limit;
+						opts.skip = validateOption('page', opts.page, {
+							type: 'int',
+							rng: '[0,∞['
+						}) * opts.limit;
 						delete opts.page;
 					}
 				}
