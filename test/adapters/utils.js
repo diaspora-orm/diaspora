@@ -36,7 +36,7 @@ var AdapterTestUtils = {
 		});
 	},
 	checkInputFiltering( adapter ) {
-		describe( `${ getStyle( 'taskCategory', 'Check query inputs filtering' )  } with ${  adapter.name }`, () => {
+		describe( `${ getStyle( 'taskCategory', 'Check query inputs filtering' )  } with ${  adapter.__proto__.constructor.name }`, () => {
 			describe( 'Check options normalization', () => {
 				const no = adapter.normalizeOptions;
 				it( 'Default options', () => {

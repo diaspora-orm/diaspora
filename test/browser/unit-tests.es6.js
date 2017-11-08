@@ -24674,7 +24674,7 @@ var AdapterTestUtils = {
 		});
 	},
 	checkInputFiltering( adapter ) {
-		describe( `${ getStyle( 'taskCategory', 'Check query inputs filtering' )  } with ${  adapter.name }`, () => {
+		describe( `${ getStyle( 'taskCategory', 'Check query inputs filtering' )  } with ${  adapter.__proto__.constructor.name }`, () => {
 			describe( 'Check options normalization', () => {
 				const no = adapter.normalizeOptions;
 				it( 'Default options', () => {
@@ -25624,7 +25624,7 @@ global.importTest = ( name, modulePath ) => {
 global.l = require( 'lodash' );
 global.c = require( 'check-types' );
 global.CheckTypes = c;
-if ( 'undefined' === typeof window ) {
+if ( !process.browser ) {
 	global.chai = require( 'chai' );
 }
 const chaiAsPromised = require( 'chai-as-promised' );
@@ -26443,14 +26443,11 @@ describe( 'Test errors', () => {
 		/**
 		 * @ignore
 		 */
-		class subError extends ExtendableError {}
-		const saveCST = Error.captureStackTrace;
+		class SubError extends ExtendableError {}
+		const subError = new SubError();
 
-		Error.captureStackTrace = undefined;
-		expect( new subError()).to.be.an( 'Error' );
-		Error.captureStackTrace = saveCST;
-		//		console.log([Error.__proto__.captureStackTrace, Error.captureStackTrace, Error.prototype.captureStackTrace])
-		//		subError.captureStackTrace = Error.captureStackTrace;
+		expect(subError).to.be.an.instanceof( ExtendableError );
+		expect(subError).to.be.an.instanceof( Error );
 	});
 });
 
@@ -27169,11 +27166,12 @@ it( 'Should reject persistance of badly configured entities (spawn).', () => {
 		prop2: 'foo',
 	}).persist();
 	const fail4 = testModel.spawn({}).persist();
+	console.log([fail1, fail2, fail3, fail4]);
 	return Promise.all([
-		expect( fail1 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop1\W(.|\s)*\Wstring(\W|$)/m ),
-		expect( fail2 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m ),
-		expect( fail3 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m ),
-		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(?=(.|\s)*\Winteger(\W|$))(?=(.|\s)*\Wrequired(\W|$))/m ),
+		expect( fail1 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property('message').that.eventually.match( /(\W|^)prop1\W(.|\s)*\Wstring(\W|$)/m ),
+		expect( fail2 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property('message').that.eventually.match( /(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m ),
+		expect( fail3 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property('message').that.eventually.match( /(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m ),
+		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property('message').that.eventually.match( /(\W|^)prop2\W(?=(.|\s)*\Winteger(\W|$))(?=(.|\s)*\Wrequired(\W|$))/m ),
 	]);
 });
 it( 'Should reject persistance of badly configured entities (spawnMany).', () => {

@@ -48,10 +48,10 @@ it( 'Should reject persistance of badly configured entities (spawn).', () => {
 	}).persist();
 	const fail4 = testModel.spawn({}).persist();
 	return Promise.all([
-		expect( fail1 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop1\W(.|\s)*\Wstring(\W|$)/m ),
-		expect( fail2 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m ),
-		expect( fail3 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m ),
-		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.match( /(\W|^)prop2\W(?=(.|\s)*\Winteger(\W|$))(?=(.|\s)*\Wrequired(\W|$))/m ),
+		expect( fail1 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property( 'message' ).that.eventually.match( /(\W|^)prop1\W(.|\s)*\Wstring(\W|$)/m ),
+		expect( fail2 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property( 'message' ).that.eventually.match( /(\W|^)prop2\W(.|\s)*\Wenumerat(ed|ion)(\W|$)/m ),
+		expect( fail3 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property( 'message' ).that.eventually.match( /(\W|^)prop2\W(.|\s)*\Winteger(\W|$)/m ),
+		expect( fail4 ).to.be.rejectedWith( EntityValidationError ).and.eventually.have.property( 'message' ).that.eventually.match( /(\W|^)prop2\W(?=(.|\s)*\Winteger(\W|$))(?=(.|\s)*\Wrequired(\W|$))/m ),
 	]);
 });
 it( 'Should reject persistance of badly configured entities (spawnMany).', () => {

@@ -55,7 +55,7 @@ global.importTest = ( name, modulePath ) => {
 global.l = require( 'lodash' );
 global.c = require( 'check-types' );
 global.CheckTypes = c;
-if ( 'undefined' === typeof window ) {
+if ( !process.browser ) {
 	global.chai = require( 'chai' );
 }
 const chaiAsPromised = require( 'chai-as-promised' );

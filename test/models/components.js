@@ -303,13 +303,10 @@ describe( 'Test errors', () => {
 		/**
 		 * @ignore
 		 */
-		class subError extends ExtendableError {}
-		const saveCST = Error.captureStackTrace;
+		class SubError extends ExtendableError {}
+		const subError = new SubError();
 
-		Error.captureStackTrace = undefined;
-		expect( new subError()).to.be.an( 'Error' );
-		Error.captureStackTrace = saveCST;
-		//		console.log([Error.__proto__.captureStackTrace, Error.captureStackTrace, Error.prototype.captureStackTrace])
-		//		subError.captureStackTrace = Error.captureStackTrace;
+		expect( subError ).to.be.an.instanceof( ExtendableError );
+		expect( subError ).to.be.an.instanceof( Error );
 	});
 });

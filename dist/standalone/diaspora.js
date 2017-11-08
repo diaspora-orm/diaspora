@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Standalone build compiled on 2017-11-07 20:38:41
+* Standalone build compiled on 2017-11-08 02:23:10
 *
 * @license GPL-3.0
 * @version 0.2.0-rc.3
@@ -959,7 +959,7 @@ _.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEnt
 	 * @author gerkin
 	 * @param {string} message          - Message of this error.
 	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
-	 */function ExtendableError(message){_classCallCheck(this,ExtendableError);var _this30=_possibleConstructorReturn(this,(ExtendableError.__proto__||Object.getPrototypeOf(ExtendableError)).call(this,message));_this30.name=_this30.constructor.name;if('function'===typeof Error.captureStackTrace){Error.captureStackTrace(_this30,_this30.constructor);}else{_this30.stack=new Error(message).stack;}return _this30;}return ExtendableError;}(_extendableBuiltin(Error));module.exports=ExtendableError;},{}],15:[function(require,module,exports){'use strict';var _require9=require('../dependencies'),_=_require9._;var ExtendableError=require('./extendableError');/**
+	 */function ExtendableError(message){var _ref5;_classCallCheck(this,ExtendableError);for(var _len4=arguments.length,errorArgs=Array(_len4>1?_len4-1:0),_key4=1;_key4<_len4;_key4++){errorArgs[_key4-1]=arguments[_key4];}var _this30=_possibleConstructorReturn(this,(_ref5=ExtendableError.__proto__||Object.getPrototypeOf(ExtendableError)).call.apply(_ref5,[this,message].concat(errorArgs)));_this30.name=_this30.constructor.name;_this30.message=message;if('function'===typeof Error.captureStackTrace){Error.captureStackTrace(_this30,_this30.constructor);}else{_this30.stack=new Error(message).stack;}return _this30;}return ExtendableError;}(_extendableBuiltin(Error));module.exports=ExtendableError;},{}],15:[function(require,module,exports){'use strict';var _require9=require('../dependencies'),_=_require9._;var ExtendableError=require('./extendableError');/**
  * @module Errors/SetValidationError
  *//**
  * This class represents an error related to validation on a set.
@@ -973,7 +973,7 @@ _.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEnt
 	 * @param {string}                                                      message          - Message of this error.
 	 * @param {module:Errors/EntityValidationError~EntityValidationError[]} validationErrors - Array of validation errors.
 	 * @param {*}                                                           errorArgs        - Arguments to transfer to parent Error.
-	 */function SetValidationError(message,validationErrors){var _ref5;_classCallCheck(this,SetValidationError);message+="[\n"+_(validationErrors).map(function(error,index){if(_.isNil(error)){return false;}else{return index+": "+error.message.replace(/\n/g,'\n	');}}).filter(_.identity).join(',\n')+"\n]";for(var _len4=arguments.length,errorArgs=Array(_len4>2?_len4-2:0),_key4=2;_key4<_len4;_key4++){errorArgs[_key4-2]=arguments[_key4];}var _this31=_possibleConstructorReturn(this,(_ref5=SetValidationError.__proto__||Object.getPrototypeOf(SetValidationError)).call.apply(_ref5,[this,message].concat(errorArgs)));_this31.validationErrors=validationErrors;return _this31;}return SetValidationError;}(ExtendableError);module.exports=SetValidationError;},{"../dependencies":9,"./extendableError":14}],16:[function(require,module,exports){'use strict';var _require10=require('./dependencies'),_=_require10._,Promise=_require10.Promise;var EntityFactory=require('./entityFactory');var Diaspora=require('./diaspora');var Set=require('./set');var Validator=require('./validator');var entityPrototypeProperties=EntityFactory.entityPrototypeProperties;/**
+	 */function SetValidationError(message,validationErrors){var _ref6;_classCallCheck(this,SetValidationError);message+="[\n"+_(validationErrors).map(function(error,index){if(_.isNil(error)){return false;}else{return index+": "+error.message.replace(/\n/g,'\n	');}}).filter(_.identity).join(',\n')+"\n]";for(var _len5=arguments.length,errorArgs=Array(_len5>2?_len5-2:0),_key5=2;_key5<_len5;_key5++){errorArgs[_key5-2]=arguments[_key5];}var _this31=_possibleConstructorReturn(this,(_ref6=SetValidationError.__proto__||Object.getPrototypeOf(SetValidationError)).call.apply(_ref6,[this,message].concat(errorArgs)));_this31.validationErrors=validationErrors;return _this31;}return SetValidationError;}(ExtendableError);module.exports=SetValidationError;},{"../dependencies":9,"./extendableError":14}],16:[function(require,module,exports){'use strict';var _require10=require('./dependencies'),_=_require10._,Promise=_require10.Promise;var EntityFactory=require('./entityFactory');var Diaspora=require('./diaspora');var Set=require('./set');var Validator=require('./validator');var entityPrototypeProperties=EntityFactory.entityPrototypeProperties;/**
  * @module Model
  *//**
  * Object describing a model.
@@ -996,7 +996,7 @@ _.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEnt
 	 */function Model(name,modelDesc){_classCallCheck(this,Model);// Check model configuration
 var reservedPropIntersect=_.intersection(entityPrototypeProperties,_.keys(modelDesc.attributes));if(0!==reservedPropIntersect.length){throw new Error(JSON.stringify(reservedPropIntersect)+" is/are reserved property names. To match those column names in data source, please use the data source mapper property");}else if(!modelDesc.hasOwnProperty('sources')||!(_.isArrayLike(modelDesc.sources)||_.isObject(modelDesc.sources))){throw new TypeError("Expect model sources to be either an array or an object, had "+JSON.stringify(modelDesc.sources)+".");}// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
 var sourcesNormalized=normalizeRemaps(modelDesc);// List sources required by this model
-var _ref6=[_.keys(sourcesNormalized),Diaspora.dataSources],sourceNames=_ref6[0],scopeAvailableSources=_ref6[1];var modelSources=_.pick(scopeAvailableSources,sourceNames);var missingSources=_.difference(sourceNames,_.keys(modelSources));if(0!==missingSources.length){throw new Error("Missing data sources "+missingSources.map(function(v){return"\""+v+"\"";}).join(', '));}// Now, we are sure that config is valid. We can configure our datasources with model options, and set `this` properties.
+var _ref7=[_.keys(sourcesNormalized),Diaspora.dataSources],sourceNames=_ref7[0],scopeAvailableSources=_ref7[1];var modelSources=_.pick(scopeAvailableSources,sourceNames);var missingSources=_.difference(sourceNames,_.keys(modelSources));if(0!==missingSources.length){throw new Error("Missing data sources "+missingSources.map(function(v){return"\""+v+"\"";}).join(', '));}// Now, we are sure that config is valid. We can configure our datasources with model options, and set `this` properties.
 _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=modelSources[sourceName];sourceConfiguring.configureCollection(name,remap);});_.assign(this,{dataSources:modelSources,defaultDataSource:sourceNames[0],name:name,entityFactory:EntityFactory(name,modelDesc,this),validator:new Validator(modelDesc.attributes)});}/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
 	 *
@@ -1116,7 +1116,7 @@ _.forEach(sourcesNormalized,function(remap,sourceName){var sourceConfiguring=mod
 	 *
 	 * @param {Model}           model    - Model describing entities managed by this set.
 	 * @param {Entity|Entity[]} entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
-	 */function Set(model){for(var _len5=arguments.length,entities=Array(_len5>1?_len5-1:0),_key5=1;_key5<_len5;_key5++){entities[_key5-1]=arguments[_key5];}_classCallCheck(this,Set);// Flatten arguments
+	 */function Set(model){for(var _len6=arguments.length,entities=Array(_len6>1?_len6-1:0),_key6=1;_key6<_len6;_key6++){entities[_key6-1]=arguments[_key6];}_classCallCheck(this,Set);// Flatten arguments
 entities=_(entities).flatten();// Check if each entity is from the expected model
 Set.checkEntitiesFromModel(entities.value(),model);var defined=Utils.defineEnumerableProperties(this,{/**
 			 * List entities of this set.
@@ -1308,12 +1308,12 @@ if(!_.isNil(value)&&!_.isNil(fieldDesc.enum)){var result=_.some(fieldDesc.enum,f
 	 *
 	 * @param   {...string} prop - Properties to add.
 	 * @returns {module:Validator~PathStack} Returns `this`.
-	 */_createClass(PathStack,[{key:"pushEntityProp",value:function pushEntityProp(){for(var _len6=arguments.length,prop=Array(_len6),_key6=0;_key6<_len6;_key6++){prop[_key6]=arguments[_key6];}this.segmentsEntity=_(this.segmentsEntity).concat(prop).filter(_.isNil).value();return this;}/**
+	 */_createClass(PathStack,[{key:"pushEntityProp",value:function pushEntityProp(){for(var _len7=arguments.length,prop=Array(_len7),_key7=0;_key7<_len7;_key7++){prop[_key7]=arguments[_key7];}this.segmentsEntity=_(this.segmentsEntity).concat(prop).filter(_.isNil).value();return this;}/**
 	 * Add a path segment for model description navigation.
 	 *
 	 * @param   {...string} prop - Properties to add.
 	 * @returns {module:Validator~PathStack} Returns `this`.
-	 */},{key:"pushValidationProp",value:function pushValidationProp(){for(var _len7=arguments.length,prop=Array(_len7),_key7=0;_key7<_len7;_key7++){prop[_key7]=arguments[_key7];}this.segmentsValidation=_(this.segmentsValidation).concat(prop).filter(function(val){return!_.isNil(val);}).value();return this;}/**
+	 */},{key:"pushValidationProp",value:function pushValidationProp(){for(var _len8=arguments.length,prop=Array(_len8),_key8=0;_key8<_len8;_key8++){prop[_key8]=arguments[_key8];}this.segmentsValidation=_(this.segmentsValidation).concat(prop).filter(function(val){return!_.isNil(val);}).value();return this;}/**
 	 * Add a path segment for both entity & model description navigation.
 	 *
 	 * @param   {...string} prop - Properties to add.
@@ -11037,7 +11037,7 @@ if('function'===typeof handlers){return emitHandler(handlers,object,args);}else{
 	 * @param   {Any[]} [args] - Parameters to pass to handlers.
 	 * @returns {Promise} Returns a Promise resolved when then chain is done.
 	 * @author Gerkin
-	 */_createClass(SequentialEvent,[{key:"emit",value:function emit(type){var events=this.__events;var handler=events[type];if(!handler){return Promise.resolve();}for(var _len8=arguments.length,args=Array(_len8>1?_len8-1:0),_key8=1;_key8<_len8;_key8++){args[_key8-1]=arguments[_key8];}var retPromise=emitHandlers(handler,this,args);return retPromise;}/**
+	 */_createClass(SequentialEvent,[{key:"emit",value:function emit(type){var events=this.__events;var handler=events[type];if(!handler){return Promise.resolve();}for(var _len9=arguments.length,args=Array(_len9>1?_len9-1:0),_key9=1;_key9<_len9;_key9++){args[_key9-1]=arguments[_key9];}var retPromise=emitHandlers(handler,this,args);return retPromise;}/**
 	 * Remove one or many or all event handlers.
 	 *
 	 * @param   {string|Object} [events]   - Event name or hash of events.
