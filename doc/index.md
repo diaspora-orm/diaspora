@@ -65,7 +65,7 @@ Data sources are data stores we interact with through [adapters](). A store is, 
 
 ## Available adapters
 
-<table style="display:table;">
+<table style="display:table;" id="adapters">
 	<thead>
 		<tr>
 			<th>Adapter</th>
