@@ -2,10 +2,10 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-11-08 04:59:01
+* Isolated build compiled on 2017-11-14 04:56:15
 *
 * @license GPL-3.0
-* @version 0.2.0-rc.3
+* @version 0.2.0-rc.4
 * @author Gerkin
 */
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -102,26 +102,38 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				}
 			};
 
-			var validateOption = function validateOption(key, val, config) {
-				if ('int' === config.type) {
-					if (_.isString(val)) {
-						val = parseInt(val);
+			var validations = {
+				type: {
+					int: function int(key, val) {
+						if (_.isString(val)) {
+							val = parseInt(val);
+						}
+						if (!_.isInteger(val) && isFinite(val)) {
+							throw new TypeError("Expect \"" + key + "\" to be an integer");
+						}
+						return val;
 					}
-					if (!_.isInteger(val) && isFinite(val)) {
-						throw new TypeError("Expect \"" + key + "\" to be an integer");
-					}
-				}
-				if (config.rng) {
-					var range = config.rng.match(/^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/);
-					if (range) {
-						var lower = getNum.apply(undefined, _toConsumableArray(range.splice(2, 3)));
-						var upper = getNum.apply(undefined, _toConsumableArray(range.splice(2, 3)));
-						var isInRangeLower = '[' === range[1] ? val >= lower : val > lower;
-						var isInRangeUpper = ']' === range[2] ? val <= upper : val < upper;
+				},
+				rng: function rng(key, val, range) {
+					var rangeMatch = range.match(/^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/);
+					if (rangeMatch) {
+						var lower = getNum.apply(undefined, _toConsumableArray(rangeMatch.splice(2, 3)));
+						var upper = getNum.apply(undefined, _toConsumableArray(rangeMatch.splice(2, 3)));
+						var isInRangeLower = '[' === rangeMatch[1] ? val >= lower : val > lower;
+						var isInRangeUpper = ']' === rangeMatch[2] ? val <= upper : val < upper;
 						if (!(isInRangeLower && isInRangeUpper)) {
-							throw new RangeError("Expect \"" + key + "\" to be within " + config.rng + ", have \"" + val + "\"");
+							throw new RangeError("Expect \"" + key + "\" to be within " + range + ", have \"" + val + "\"");
 						}
 					}
+					return val;
+				}
+			};
+			var validateOption = function validateOption(key, val, config) {
+				if (validations.type[config.type]) {
+					val = validations.type[config.type](key, val);
+				}
+				if (config.rng) {
+					val = validations.rng(key, val, config.rng);
 				}
 				return val;
 			};
