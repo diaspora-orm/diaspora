@@ -14,7 +14,7 @@ const TABLE = 'test';
 var AdapterTestUtils = {
 	createDataSource( adapterLabel, config ){
 		const dataSourceLabel = getDataSourceLabel( adapterLabel );
-		const dataSource = Diaspora.createDataSource( adapterLabel, config );
+		const dataSource = Diaspora.createNamedDataSource( dataSourceLabel, adapterLabel, config );
 		dataSources[dataSourceLabel] = dataSource;
 		return dataSource;
 	},
@@ -915,8 +915,6 @@ var AdapterTestUtils = {
 	checkRegisterAdapter( adapterLabel ){
 		const dataSourceLabel = getDataSourceLabel( adapterLabel );
 		it( getStyle( 'taskCategory', `Register named ${ adapterLabel } dataSource` ), () => {
-			Diaspora.registerDataSource( dataSourceLabel, dataSources[getDataSourceLabel( adapterLabel )]);
-			//console.log(Diaspora.dataSources);
 			expect( Diaspora.dataSources[dataSourceLabel]).to.eql( dataSources[getDataSourceLabel( adapterLabel )]);
 		});
 	},
