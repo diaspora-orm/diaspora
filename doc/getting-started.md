@@ -14,7 +14,7 @@ Diaspora is available on both the browser & Node.JS. Follow these steps to inclu
 
 ### For Node.JS
 
-First, install the package (and add it to your project's *dependencies*)
+First, install the package (and add it to your project's *dependencies*). You can use either NPM or Yarn ([I won't judge](https://hackernoon.com/its-ok-to-not-use-yarn-f28dc766ef32)).
 
 <div class="tabs tabs-code">
 <div class="tab" data-ref="npm">
@@ -22,7 +22,7 @@ First, install the package (and add it to your project's *dependencies*)
 #### With NPM
 
 {% highlight shell %}
-npm install --save diaspora
+npm install diaspora
 {% endhighlight %}
 </div>
 

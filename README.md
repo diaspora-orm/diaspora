@@ -52,16 +52,16 @@ up to Specification level 2.
     <tbody>
         <tr>
             <td style="vertical-align: middle;">
-                <img width="100" alt="In memory" src="https://cdn.rawgit.com/GerkinDev/Diaspora/master/media/inMemory.svg"/><br/>
+                <img width="100" alt="In memory" src="https://cdn.rawgit.com/GerkinDev/diaspora/master/media/inMemory.svg"/><br/>
                 In Memory
             </td>
             <td colspan="2" style="vertical-align: middle;">Built-in</td>
             <td>Node + Browser</td>
-            <td rowspan="2" style="vertical-align: middle;">QL v2</td>
+            <td rowspan="2" style="vertical-align: middle;">[QL] v2</td>
         </tr>
         <tr>
             <td style="vertical-align: middle;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage">
-                <img width="100" alt="Browser storage" src="https://cdn.rawgit.com/GerkinDev/Diaspora/master/media/webStorage.svg"/><br/>
+                <img width="100" alt="Browser storage" src="https://cdn.rawgit.com/GerkinDev/diaspora/master/media/webStorage.svg"/><br/>
                 WebStorage</a>
             </td>
             <td colspan="2" style="vertical-align: middle;">Built-in</td>
@@ -69,17 +69,31 @@ up to Specification level 2.
         </tr>
         <tr>
             <td style="vertical-align: middle;"><a href="https://www.mongodb.com/">
-                <img width="100" alt="MongoDB" src="https://cdn.rawgit.com/GerkinDev/Diaspora-Mongo/master/media/mongo.svg"/><br/>
+                <img width="100" alt="MongoDB" src="https://cdn.rawgit.com/GerkinDev/diaspora-mongo/master/media/mongo.svg"/><br/>
                 MongoDB</a>
             </td>
             <td style="vertical-align: middle;">
-                <a href="https://github.com/GerkinDev/Diaspora-Mongo" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/GerkinDev/Diaspora-Mongo.svg?label=GitHub"/></a>
+                <a href="https://github.com/GerkinDev/diaspora-mongo" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/GerkinDev/diaspora-mongo.svg?label=GitHub"/></a>
                 <a href="https://www.npmjs.com/package/diaspora-mongo" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-mongo.svg"/></a>
                 <a href="yarnpkg.com/en/package/diaspora-mongo" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-mongo.svg?label=yarn"/></a>
             </td>
             <td style="vertical-align: middle;"><a href="https://github.com/GerkinDev" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev"/></a></td>
             <td>Node</td>
-            <td style="vertical-align: middle;">QL v2</td>
+            <td style="vertical-align: middle;">[QL] v2</td>
+        </tr>
+        <tr>
+            <td style="vertical-align: middle;"><a href="https://redis.io/">
+                <img width="100" alt="Redis" src="https://cdn.rawgit.com/GerkinDev/diaspora-redis/master/media/redis.svg"/><br/>
+                Redis</a>
+            </td>
+            <td style="vertical-align: middle;">
+                <a href="https://github.com/GerkinDev/diaspora-redis" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/GerkinDev/diaspora-redis.svg?label=GitHub"/></a>
+                <a href="https://www.npmjs.com/package/diaspora-redis" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-redis.svg"/></a>
+                <a href="yarnpkg.com/en/package/diaspora-redis" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-redis.svg?label=yarn"/></a>
+            </td>
+            <td style="vertical-align: middle;"><a href="https://github.com/GerkinDev" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev"/></a></td>
+            <td>Node</td>
+            <td style="vertical-align: middle;">[QL] v2</td>
         </tr>
     </tbody>
 </table>
@@ -191,6 +205,4 @@ modification, etc etc.
 *Unsure* > IndexedDB technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 *Note: Plan to show fallback implementations*
 
-> Auto-switch to API server/client
-
-*Planned* > Wait for at least Mongo & Localstorage adapters.
+[QL]: https://diaspora.ithoughts.io/query-language.html#match-queries
