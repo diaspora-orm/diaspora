@@ -648,10 +648,7 @@ var AdapterTestUtils = {
 							baz: 'qux',
 						};
 						return adapter.findOne( TABLE, object ).then( entity => {
-							return Promise.try(() => {
-								expect( entity ).to.be.a.dataStoreEntity( adapter, object );
-								return Promise.resolve();
-							});
+							expect( entity ).to.be.a.dataStoreEntity( adapter, object );
 						});
 					});
 					it( getTestLabel( 'findMany' ), () => {
@@ -660,11 +657,8 @@ var AdapterTestUtils = {
 							foo: 'bar',
 						};
 						return adapter.findMany( TABLE, objects ).then( entities => {
-							return Promise.try(() => {
-								expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, objects ).that.have.lengthOf( 2 );
-								findManyOk = true;
-								return Promise.resolve();
-							});
+							expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, objects ).that.have.lengthOf( 2 );
+							findManyOk = true;
 						});
 					});
 					it( 'Find all', function skippable() {
@@ -674,11 +668,8 @@ var AdapterTestUtils = {
 						}
 						expect( adapter ).to.respondTo( 'findMany' );
 						return adapter.findMany( TABLE, {}).then( entities => {
-							return Promise.try(() => {
-								expect( entities ).to.be.a.set.of.dataStoreEntity( adapter ).that.have.lengthOf( 4 );
-								findAllOk = true;
-								return Promise.resolve();
-							});
+							expect( entities ).to.be.a.set.of.dataStoreEntity( adapter ).that.have.lengthOf( 4 );
+							findAllOk = true;
 						});
 					});
 				});
