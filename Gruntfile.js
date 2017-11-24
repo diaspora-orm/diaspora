@@ -2,10 +2,9 @@
 
 /* global module: false */
 
-require( 'chalk' );
 const path = require( 'path' );
 
-module.exports = function gruntInit( grunt ) {
+module.exports = grunt => {
 	// Project configuration.
 
 	const baseDocPath = 'doc';
@@ -41,10 +40,14 @@ module.exports = function gruntInit( grunt ) {
 		globals:     [ 'Error', 'Array' ],
 		approximate: true,
 	}];
+	const browserifyOptionsDiaspora = {
+		standalone: 'Diaspora',
+		transform: [[require('browserify-ignore-code')]];
+	};
 
 	grunt.initConfig({
-		pkg:    grunt.file.readJSON( 'package.json' ),
-		eslint: {
+		pkg:         grunt.file.readJSON( 'package.json' ),
+		eslint:      {
 			options: {
 				format: 'stylish', //'node_modules/eslint-tap',
 				fix:    true,
@@ -70,7 +73,7 @@ module.exports = function gruntInit( grunt ) {
 			template_dir: 'node_modules/diaspora_doc/docco',
 			readme:       'README-docco.md',
 		},
-		jsdoc: {
+		jsdoc:       {
 			src:     /*['lib/adapters/baseAdapter.js'],*/jsAssets,
 			options: {
 				private:     true,
@@ -80,7 +83,7 @@ module.exports = function gruntInit( grunt ) {
 				readme:      'README-jsdoc.md',
 			},
 		},
-		browserify: {
+		browserify:  {
 			deps: {
 				options: {
 					shim: depsShim,
@@ -92,18 +95,14 @@ module.exports = function gruntInit( grunt ) {
 				src:     [ 'diaspora.js' ],
 				dest:    'build/standalone/src/diaspora.js',
 				options: {
-					browserifyOptions: {
-						standalone: 'Diaspora',
-					},
+					browserifyOptions: browserifyOptionsDiaspora,
 					shim:    depsShim,
 					exclude: [ 'winston' ],
 				},
 			},
 			isolated: {
 				options: {
-					browserifyOptions: {
-						standalone: 'Diaspora',
-					},
+					browserifyOptions: browserifyOptionsDiaspora,
 					exclude: [
 						'lodash',
 						'bluebird',
@@ -139,7 +138,7 @@ module.exports = function gruntInit( grunt ) {
 				},
 			},
 		},
-		babel: {
+		babel:       {
 			options: {
 				presets: [
 					[ 'env', {
@@ -227,7 +226,7 @@ module.exports = function gruntInit( grunt ) {
 				}],
 			},
 		},
-		uglify: {
+		uglify:      {
 			options: {
 				sourceMap: true,
 				output:    {
@@ -263,7 +262,7 @@ module.exports = function gruntInit( grunt ) {
 				}],
 			},
 		},
-		copy: {
+		copy:        {
 			build_isolated_to_dist: {
 				files: [{
 					expand: true,
@@ -305,7 +304,7 @@ module.exports = function gruntInit( grunt ) {
 				}],
 			},
 		},
-		clean: {
+		clean:       {
 			doc_jsdoc: {
 				src: [ `${ baseDocPath }/jsdoc` ],
 			},

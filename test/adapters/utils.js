@@ -5,24 +5,24 @@
 const Promise = require( 'bluebird' );
 const l = require( 'lodash' );
 
-const getDataSourceLabel = ( name, addName = '' ) => {
-	return `${ name }Adapter${ addName ? `.${ addName }` : '' }`;
+const getDataSourceLabel = name => {
+	return `${ name }Adapter`;
 };
 
 const TABLE = 'test';
 
 var AdapterTestUtils = {
-	createDataSource: ( adapterLabel, config, addName = '' ) => {
-		const dataSourceLabel = getDataSourceLabel( adapterLabel, addName );
-		const dataSource = Diaspora.createDataSource( adapterLabel, config );
+	createDataSource( adapterLabel, config ){
+		const dataSourceLabel = getDataSourceLabel( adapterLabel );
+		const dataSource = Diaspora.createNamedDataSource( dataSourceLabel, adapterLabel, config );
 		dataSources[dataSourceLabel] = dataSource;
 		return dataSource;
 	},
-	checkSpawnedAdapter: ( adapterLabel, baseName, addName = '' ) => {
+	checkSpawnedAdapter( adapterLabel ){
+		const baseName = adapterLabel[0].toUpperCase() + adapterLabel.substr(1);
+		const dataSourceLabel = getDataSourceLabel( adapterLabel );
 		it( getStyle( 'taskCategory', `Create ${ adapterLabel } adapter` ), done => {
-			const dataSourceLabel = getDataSourceLabel( adapterLabel, addName );
 			dataSources[dataSourceLabel].waitReady().then( adapter => {
-				adapter.baseName = baseName;
 				expect( adapter ).to.be.an( 'object' );
 				if ( 'undefined' === typeof window ) {
 					expect( adapter.constructor.name, 'Adapter name does not comply to naming convention' ).to.equal( `${ baseName }DiasporaAdapter` );
@@ -602,8 +602,8 @@ var AdapterTestUtils = {
 			});
 		});
 	},
-	checkEachStandardMethods: ( adapterLabel, addName = '' ) => {
-		const adapter = dataSources[getDataSourceLabel( adapterLabel, addName )];
+	checkEachStandardMethods( adapterLabel ){
+		const adapter = dataSources[getDataSourceLabel( adapterLabel )];
 		const getTestLabel = fctName => {
 			if ( adapter.__proto__.hasOwnProperty( fctName )) {
 				return fctName;
@@ -648,10 +648,7 @@ var AdapterTestUtils = {
 							baz: 'qux',
 						};
 						return adapter.findOne( TABLE, object ).then( entity => {
-							return Promise.try(() => {
-								expect( entity ).to.be.a.dataStoreEntity( adapter, object );
-								return Promise.resolve();
-							});
+							expect( entity ).to.be.a.dataStoreEntity( adapter, object );
 						});
 					});
 					it( getTestLabel( 'findMany' ), () => {
@@ -660,11 +657,8 @@ var AdapterTestUtils = {
 							foo: 'bar',
 						};
 						return adapter.findMany( TABLE, objects ).then( entities => {
-							return Promise.try(() => {
-								expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, objects ).that.have.lengthOf( 2 );
-								findManyOk = true;
-								return Promise.resolve();
-							});
+							expect( entities ).to.be.a.set.of.dataStoreEntity( adapter, objects ).that.have.lengthOf( 2 );
+							findManyOk = true;
 						});
 					});
 					it( 'Find all', function skippable() {
@@ -674,11 +668,8 @@ var AdapterTestUtils = {
 						}
 						expect( adapter ).to.respondTo( 'findMany' );
 						return adapter.findMany( TABLE, {}).then( entities => {
-							return Promise.try(() => {
-								expect( entities ).to.be.a.set.of.dataStoreEntity( adapter ).that.have.lengthOf( 4 );
-								findAllOk = true;
-								return Promise.resolve();
-							});
+							expect( entities ).to.be.a.set.of.dataStoreEntity( adapter ).that.have.lengthOf( 4 );
+							findAllOk = true;
 						});
 					});
 				});
@@ -905,18 +896,17 @@ var AdapterTestUtils = {
 			});
 		});
 	},
-	checkApplications: ( adapterLabel, addName = '' ) => {
+	checkApplications( adapterLabel ){
 		if ( 'undefined' !== typeof window ) {
 			return;
 		}
-		const adapter = dataSources[getDataSourceLabel( adapterLabel, addName )];
+		const adapter = dataSources[getDataSourceLabel( adapterLabel )];
 		require( '../testApps/adapters/index' )( adapter );
 	},
-	checkRegisterAdapter: ( adapterLabel, dataSourceName, addName = '' ) => {
+	checkRegisterAdapter( adapterLabel ){
+		const dataSourceLabel = getDataSourceLabel( adapterLabel );
 		it( getStyle( 'taskCategory', `Register named ${ adapterLabel } dataSource` ), () => {
-			Diaspora.registerDataSource( dataSourceName, dataSources[getDataSourceLabel( adapterLabel, addName )]);
-			//console.log(Diaspora.dataSources);
-			expect( Diaspora.dataSources[dataSourceName]).to.eql( dataSources[getDataSourceLabel( adapterLabel, addName )]);
+			expect( Diaspora.dataSources[dataSourceLabel]).to.eql( dataSources[getDataSourceLabel( adapterLabel )]);
 		});
 	},
 };
