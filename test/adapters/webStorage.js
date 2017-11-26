@@ -10,13 +10,13 @@ sessionStorage.clear();
 
 var AdapterTestUtils = require( './utils' );
 
-AdapterTestUtils.createDataSource( ADAPTER_LABEL, {} );
+AdapterTestUtils.createDataSource( ADAPTER_LABEL, {});
 AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL );
 AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
 AdapterTestUtils.checkApplications( ADAPTER_LABEL );
 AdapterTestUtils.checkRegisterAdapter( ADAPTER_LABEL );
 if ( 'undefined' !== typeof window ) {
-	AdapterTestUtils.createDataSource( ADAPTER_LABEL, { session: true  );
+	AdapterTestUtils.createDataSource( ADAPTER_LABEL, { session: true });
 	AdapterTestUtils.checkSpawnedAdapter( ADAPTER_LABEL );
 	AdapterTestUtils.checkEachStandardMethods( ADAPTER_LABEL );
 	AdapterTestUtils.checkApplications( ADAPTER_LABEL );

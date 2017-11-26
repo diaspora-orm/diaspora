@@ -36,18 +36,28 @@ module.exports = grunt => {
 			exports: 'Promise',
 		},
 	};
-	const babelPluginExtend = [ 'babel-plugin-transform-builtin-extend', {
-		globals:     [ 'Error', 'Array' ],
-		approximate: true,
-	}];
+	const babelPluginExtend = [
+		/*		'babel-plugin-syntax-async-functions',
+		[ 'babel-plugin-transform-async-to-module-method', {
+			module: 'bluebird',
+			method: 'coroutine',
+		}],
+		'babel-plugin-transform-regenerator',
+		'babel-plugin-transform-runtime',*/
+
+		[ 'transform-builtin-extend', {
+			globals:     [ 'Error' ],
+			approximate: true,
+		}],
+	];
 	const browserifyOptionsDiaspora = {
 		standalone: 'Diaspora',
-		transform: [[require('browserify-ignore-code')]];
+		//transform:  [[ require( 'browserify-ignore-code' ) ]],
 	};
 
 	grunt.initConfig({
-		pkg:         grunt.file.readJSON( 'package.json' ),
-		eslint:      {
+		pkg:    grunt.file.readJSON( 'package.json' ),
+		eslint: {
 			options: {
 				format: 'stylish', //'node_modules/eslint-tap',
 				fix:    true,
@@ -73,7 +83,7 @@ module.exports = grunt => {
 			template_dir: 'node_modules/diaspora_doc/docco',
 			readme:       'README-docco.md',
 		},
-		jsdoc:       {
+		jsdoc: {
 			src:     /*['lib/adapters/baseAdapter.js'],*/jsAssets,
 			options: {
 				private:     true,
@@ -83,7 +93,7 @@ module.exports = grunt => {
 				readme:      'README-jsdoc.md',
 			},
 		},
-		browserify:  {
+		browserify: {
 			deps: {
 				options: {
 					shim: depsShim,
@@ -96,14 +106,14 @@ module.exports = grunt => {
 				dest:    'build/standalone/src/diaspora.js',
 				options: {
 					browserifyOptions: browserifyOptionsDiaspora,
-					shim:    depsShim,
-					exclude: [ 'winston' ],
+					shim:              depsShim,
+					exclude:           [ 'winston', 'request-promise' ],
 				},
 			},
 			isolated: {
 				options: {
 					browserifyOptions: browserifyOptionsDiaspora,
-					exclude: [
+					exclude:           [
 						'lodash',
 						'bluebird',
 						'sequential-event',
@@ -138,15 +148,21 @@ module.exports = grunt => {
 				},
 			},
 		},
-		babel:       {
+		babel: {
 			options: {
 				presets: [
 					[ 'env', {
-						modules: false,
+						modules: 'umd',
+						//modules: 'systemjs',
 						targets: {
-							browsers: '>= 1%',
+							browsers: [ 'last 2 Chrome versions', '>= 1%' ],
 						},
+						//						uglify:      false,
+						loose:       false,
+						debug:       true,
+						useBuiltIns: 'usage',
 					}],
+					//					'es2017',
 				],
 				//				plugins: [ 'babel-plugin-proxy' ],
 			},
@@ -164,7 +180,7 @@ module.exports = grunt => {
 			},
 			standalone: {
 				options: {
-					plugins: [
+					plugins: babelPluginExtend.concat([
 						[ '@comandeer/babel-plugin-banner', {
 							banner: `/**
 * @file <%= pkg.name %>
@@ -177,8 +193,7 @@ module.exports = grunt => {
 * @author <%= pkg.author %>
 */`,
 						}],
-						babelPluginExtend,
-					],
+					]),
 				},
 				files: [{
 					expand: true,
@@ -190,7 +205,7 @@ module.exports = grunt => {
 			},
 			isolated: {
 				options: {
-					plugins: [
+					plugins: babelPluginExtend.concat([
 						[ '@comandeer/babel-plugin-banner', {
 							banner: `/**
 * @file <%= pkg.name %>
@@ -203,8 +218,7 @@ module.exports = grunt => {
 * @author <%= pkg.author %>
 */`,
 						}],
-						babelPluginExtend,
-					],
+					]),
 				},
 				files: [{
 					expand: true,
@@ -226,7 +240,7 @@ module.exports = grunt => {
 				}],
 			},
 		},
-		uglify:      {
+		uglify: {
 			options: {
 				sourceMap: true,
 				output:    {
@@ -262,7 +276,7 @@ module.exports = grunt => {
 				}],
 			},
 		},
-		copy:        {
+		copy: {
 			build_isolated_to_dist: {
 				files: [{
 					expand: true,
@@ -304,7 +318,7 @@ module.exports = grunt => {
 				}],
 			},
 		},
-		clean:       {
+		clean: {
 			doc_jsdoc: {
 				src: [ `${ baseDocPath }/jsdoc` ],
 			},

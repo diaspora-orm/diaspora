@@ -98,7 +98,7 @@ chai.use( function chaiUse( _chai, utils ) {
 					throw new Error();
 				}
 				if ( 'undefined' === typeof window ) {
-					const baseName = (adapter.name[0].toUpperCase() + adapter.name.substr(1)).replace(/Adapter$/, '');
+					const baseName = ( adapter.name[0].toUpperCase() + adapter.name.substr( 1 )).replace( /Adapter$/, '' );
 					expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${ baseName }Entity` );
 				}
 				l.forEach( props, ( val, key ) => {

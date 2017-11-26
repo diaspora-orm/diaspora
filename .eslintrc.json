@@ -1,14 +1,15 @@
 {
-    "plugins": [
-        "jsdoc"
-    ],
+	"plugins": [
+		"jsdoc"
+	],
 	"env": {
 		"es6": true,
 		"node": true
 	},
 	"extends": "eslint:recommended",
 	"parserOptions": {
-		"sourceType": "script"
+		"sourceType": "script",
+		"ecmaVersion": 8
 	},
 	"globals": {
 		"global": false
@@ -60,26 +61,26 @@
 			"nonwords": false
 		}],
 		"one-var": ["error", "never"],
-		
-		
-        "jsdoc/check-param-names": 1,
-        "jsdoc/check-tag-names": 1,
-        "jsdoc/check-types": 1,
-        "jsdoc/newline-after-description": 1,
-        "jsdoc/require-description-complete-sentence": 1,
-        "jsdoc/require-hyphen-before-param-description": 1,
-        "jsdoc/require-param": 1,
-        "jsdoc/require-param-description": 1,
-        "jsdoc/require-param-type": 1,
-        "jsdoc/require-returns-description": 1,
-        "jsdoc/require-returns-type": 1
+
+
+		"jsdoc/check-param-names": 1,
+		"jsdoc/check-tag-names": 1,
+		"jsdoc/check-types": 1,
+		"jsdoc/newline-after-description": 1,
+		"jsdoc/require-description-complete-sentence": 1,
+		"jsdoc/require-hyphen-before-param-description": 1,
+		"jsdoc/require-param": 1,
+		"jsdoc/require-param-description": 1,
+		"jsdoc/require-param-type": 1,
+		"jsdoc/require-returns-description": 1,
+		"jsdoc/require-returns-type": 1
 	},
-    "settings": {
-        "jsdoc": {
-            "tagNamePreference": {
-                "augments": "extends",
-                "function": "method"
-            }
-        }
-    }
+	"settings": {
+		"jsdoc": {
+			"tagNamePreference": {
+				"augments": "extends",
+				"function": "method"
+			}
+		}
+	}
 }

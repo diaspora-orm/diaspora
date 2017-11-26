@@ -12,14 +12,14 @@ const getDataSourceLabel = name => {
 const TABLE = 'test';
 
 var AdapterTestUtils = {
-	createDataSource( adapterLabel, config ){
+	createDataSource( adapterLabel, config ) {
 		const dataSourceLabel = getDataSourceLabel( adapterLabel );
 		const dataSource = Diaspora.createNamedDataSource( dataSourceLabel, adapterLabel, config );
 		dataSources[dataSourceLabel] = dataSource;
 		return dataSource;
 	},
-	checkSpawnedAdapter( adapterLabel ){
-		const baseName = adapterLabel[0].toUpperCase() + adapterLabel.substr(1);
+	checkSpawnedAdapter( adapterLabel ) {
+		const baseName = adapterLabel[0].toUpperCase() + adapterLabel.substr( 1 );
 		const dataSourceLabel = getDataSourceLabel( adapterLabel );
 		it( getStyle( 'taskCategory', `Create ${ adapterLabel } adapter` ), done => {
 			dataSources[dataSourceLabel].waitReady().then( adapter => {
@@ -602,7 +602,7 @@ var AdapterTestUtils = {
 			});
 		});
 	},
-	checkEachStandardMethods( adapterLabel ){
+	checkEachStandardMethods( adapterLabel ) {
 		const adapter = dataSources[getDataSourceLabel( adapterLabel )];
 		const getTestLabel = fctName => {
 			if ( adapter.__proto__.hasOwnProperty( fctName )) {
@@ -896,14 +896,14 @@ var AdapterTestUtils = {
 			});
 		});
 	},
-	checkApplications( adapterLabel ){
+	checkApplications( adapterLabel ) {
 		if ( 'undefined' !== typeof window ) {
 			return;
 		}
 		const adapter = dataSources[getDataSourceLabel( adapterLabel )];
 		require( '../testApps/adapters/index' )( adapter );
 	},
-	checkRegisterAdapter( adapterLabel ){
+	checkRegisterAdapter( adapterLabel ) {
 		const dataSourceLabel = getDataSourceLabel( adapterLabel );
 		it( getStyle( 'taskCategory', `Register named ${ adapterLabel } dataSource` ), () => {
 			expect( Diaspora.dataSources[dataSourceLabel]).to.eql( dataSources[getDataSourceLabel( adapterLabel )]);
