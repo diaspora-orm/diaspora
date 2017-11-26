@@ -7,7 +7,7 @@ if ( !process.browser ) {
 	});
 	if ( !_.isEmpty( _.get( cachedDiaspora, 'exports' ))) {
 		console.log( 'Retrieving loaded diaspora' );
-		return module.exports = cachedDiaspora;
+		return module.exports = cachedDiaspora.exports;
 	}
 } else {
 	require( 'babel-polyfill' );
