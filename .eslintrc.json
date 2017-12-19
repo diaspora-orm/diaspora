@@ -80,6 +80,10 @@
 			"tagNamePreference": {
 				"augments": "extends",
 				"function": "method"
+			},
+			"additionalTagNames": {
+				"closureTags": true,
+				"customTags": ["async"]
 			}
 		}
 	}
