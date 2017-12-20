@@ -15,8 +15,6 @@ matrix:
         - BROWSER_NAME=firefox
     - node_js: "node"
       env: SAUCE=no
-    - node_js: "iojs"
-      env: SAUCE=no
     - node_js: "lts/*"
       env: SAUCE=no
     - node_js: "9"
