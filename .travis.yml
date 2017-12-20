@@ -13,15 +13,13 @@ matrix:
       env:
         - SAUCE=yes
         - BROWSER_NAME=firefox
+    - node_js: "latest"
+      env: SAUCE=no
+    - node_js: "9"
+      env: SAUCE=no
     - node_js: "8"
       env: SAUCE=no
     - node_js: "7"
-      env: SAUCE=no
-    - node_js: "6.4"
-      env: SAUCE=no
-    - node_js: "6.3"
-      env: SAUCE=no
-    - node_js: "6.0"
       env: SAUCE=no
 env: 
   global:
