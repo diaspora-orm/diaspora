@@ -34,6 +34,8 @@ notifications:
       - altenter-project:Pc8sMyCuHNPBCg1TOw0weD9S#tech
 before_install:
   - rm npm-shrinkwrap.json
+after_install:
+  - npm i https://github.com/GerkinDev/diaspora.git
 before_script:
   - |
     if [ $SAUCE == "yes" ]; then
