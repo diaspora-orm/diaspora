@@ -9,8 +9,6 @@ if ( !process.browser ) {
 		console.log( 'Retrieving loaded diaspora' );
 		return module.exports = cachedDiaspora.exports;
 	}
-} else {
-	require( 'babel-polyfill' );
 }
 
 const Diaspora = require( './lib/diaspora' );

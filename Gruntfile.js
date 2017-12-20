@@ -107,7 +107,11 @@ module.exports = grunt => {
 				options: {
 					browserifyOptions: browserifyOptionsDiaspora,
 					shim:              depsShim,
-					exclude:           [ 'winston', 'request-promise' ],
+					exclude:           [
+						'winston',
+						'request',
+						'request-promise'
+					],
 				},
 			},
 			isolated: {
@@ -118,6 +122,8 @@ module.exports = grunt => {
 						'bluebird',
 						'sequential-event',
 						'winston',
+						'request',
+						'request-promise',
 					],
 				},
 				src:  [ 'diaspora.js' ],
@@ -132,6 +138,7 @@ module.exports = grunt => {
 						'/test/adapters/baseAdapter.js':    './test/adapters/baseAdapter.js',
 						'/test/adapters/inMemory.js':       './test/adapters/inMemory.js',
 						'/test/adapters/webStorage.js':     './test/adapters/webStorage.js',
+						'/test/adapters/webApi.js':         './test/adapters/webApi.js',
 						'/test/models/index.js':            './test/models/index.js',
 						'/test/models/simple.js':           './test/models/simple.js',
 						'/test/models/simple-remapping.js': './test/models/simple-remapping.js',
@@ -150,15 +157,15 @@ module.exports = grunt => {
 		},
 		babel: {
 			options: {
-				presets: [
-					[ 'env', {
-						modules: 'umd',
-						//modules: 'systemjs',
+				sourceMap: true,
+				presets:   [
+					[ '@babel/env', {
+						modules: 'commonjs', //"amd" | "umd" | "systemjs" | "commonjs" | false
 						targets: {
 							browsers: [ 'last 2 Chrome versions', '>= 1%' ],
 						},
 						//						uglify:      false,
-						loose:       false,
+						loose:       true,
 						debug:       true,
 						useBuiltIns: 'usage',
 					}],
