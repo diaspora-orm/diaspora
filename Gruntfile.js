@@ -110,7 +110,7 @@ module.exports = grunt => {
 					exclude:           [
 						'winston',
 						'request',
-						'request-promise'
+						'request-promise',
 					],
 				},
 			},
