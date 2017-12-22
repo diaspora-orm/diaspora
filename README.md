@@ -4,9 +4,6 @@
 
 ## Build status
 
-> Below status reflect the last development commit status. Releases require all
-tests to pass successfully
-
 Fancy badges:
 [![Build Status](https://travis-ci.org/GerkinDev/diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/diaspora)
 [![Dependency Status](https://gemnasium.com/badges/github.com/GerkinDev/diaspora.svg)](https://gemnasium.com/github.com/GerkinDev/diaspora)
@@ -16,7 +13,6 @@ Fancy badges:
 [![npm version](https://badge.fury.io/js/diaspora.svg)](https://badge.fury.io/js/diaspora)
 [![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora)
 [![license](https://img.shields.io/github/license/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora)
-[![Build Status](https://saucelabs.com/browser-matrix/Gerkin.svg)](https://saucelabs.com/beta/builds/f5a220edee214a9b81d09239a6314e12)
 
 ## Documentation & important notes
 
@@ -28,16 +24,13 @@ Welcome on the GitHub repository of Diaspora. Please visit the
 > ***Important note***: Diaspora is very young and under heavy development. You
 are totally free to use it or contribute, but be aware that some important
 features are incomplete or absent:
->
-> * *Relations*: Not implemented
-> * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported
-up to Specification level 2.
-> * *Multi sources*: not tested
->
+ * *Relations*: Not implemented
+ * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2.
+ * *Multi sources*: not tested
 
----
+## Diaspora extensions
 
-## Available adapters
+### Available adapters
 
 <table style="display:table;">
     <thead>
@@ -55,16 +48,21 @@ up to Specification level 2.
                 <img width="100" alt="In memory" src="https://cdn.rawgit.com/GerkinDev/diaspora/master/media/inMemory.svg"/><br/>
                 In Memory
             </td>
-            <td colspan="2" style="vertical-align: middle;">Built-in</td>
-            <td>Node + Browser</td>
-            <td rowspan="2" style="vertical-align: middle;">[QL] v2</td>
+            <td colspan="2" rowspan="3" style="vertical-align: middle;">Built-in</td>
+            <td rowspan="2">Node + Browser</td>
+            <td rowspan="3" style="vertical-align: middle;">[QL] v2</td>
+        </tr>
+        <tr>
+            <td style="vertical-align: middle;">
+                <img width="100" alt="Web API" src=""/><br/>
+                WebApi
+            </td>
         </tr>
         <tr>
             <td style="vertical-align: middle;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage">
                 <img width="100" alt="Browser storage" src="https://cdn.rawgit.com/GerkinDev/diaspora/master/media/webStorage.svg"/><br/>
                 WebStorage</a>
             </td>
-            <td colspan="2" style="vertical-align: middle;">Built-in</td>
             <td>Browser</td>
         </tr>
         <tr>
@@ -97,6 +95,10 @@ up to Specification level 2.
         </tr>
     </tbody>
 </table>
+
+### Other modules
+
+[Diaspora-Server](https://www.npmjs.com/package/diaspora-server): a package to easily create APIs for Diaspora models
 
 ## Compatibility
 

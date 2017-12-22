@@ -79,8 +79,7 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome'
 
 	it( 'Isolated version should pass tests', () => {
 		browser.currentBuild = 'isolated';
-		passed = true;
-		/*return browser.get( getTestPath( `${ browser.currentBuild  }.html` )).then(() => {
+		return browser.get( getTestPath( `${ browser.currentBuild  }.html` )).then(() => {
 			return browser.findElements( webdriver.By.xpath( '//*[@id="mocha-report"]/*' ));
 		}).then( reportChildren => {
 			expect( reportChildren ).to.have.lengthOf.above( 0 );
@@ -88,6 +87,6 @@ describe( `Test Diaspora in the browser (${ process.env.BROWSER_NAME || 'chrome'
 		}).then( failed => {
 			expect( failed ).to.have.lengthOf( 0 );
 			passed = true;
-		});*/
+		});
 	});
 });

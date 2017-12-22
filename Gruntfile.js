@@ -73,7 +73,7 @@ module.exports = grunt => {
 				src:     jsFilesWTests,
 			},
 		},
-		docco_husky: {
+		/*		docco_husky: {
 			files: {
 				expand: true,
 				src:    jsFilesWTests,
@@ -82,7 +82,7 @@ module.exports = grunt => {
 			project_name: 'Diaspora',
 			template_dir: 'node_modules/diaspora_doc/docco',
 			readme:       'README-docco.md',
-		},
+		},*/
 		jsdoc: {
 			src:     /*['lib/adapters/baseAdapter.js'],*/jsAssets,
 			options: {
@@ -336,7 +336,7 @@ module.exports = grunt => {
 	});
 
 	grunt.loadNpmTasks( 'grunt-jsdoc' );
-	grunt.loadNpmTasks( 'grunt-docco-husky' );
+	//	grunt.loadNpmTasks( 'grunt-docco-husky' );
 	grunt.loadNpmTasks( 'gruntify-eslint' );
 	grunt.loadNpmTasks( 'grunt-changed' );
 	grunt.loadNpmTasks( 'grunt-browserify' );
@@ -355,7 +355,7 @@ module.exports = grunt => {
 		'clean:doc_jsdoc',
 		'clean:doc_docco',
 		'jsdoc',
-		'docco_husky',
+		//		'docco_husky',
 	]);
 	grunt.registerTask( 'all', [
 		'build',

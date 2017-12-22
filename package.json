@@ -44,11 +44,11 @@
 	"homepage": "https://github.com/GerkinDev/diaspora#readme",
 	"devDependencies": {
 		"@babel/core": "^7.0.0-beta.35",
+		"@babel/helper-module-imports": "^7.0.0-beta.35",
+		"@babel/polyfill": "^7.0.0-beta.35",
 		"@babel/preset-env": "^7.0.0-beta.35",
 		"@comandeer/babel-plugin-banner": "^1.0.0",
-		"babel-loader": "^7.1.2",
 		"babel-plugin-transform-builtin-extend": "^1.1.2",
-		"babel-polyfill": "^6.26.0",
 		"body-parser": "^1.18.2",
 		"chai": "^4.1.2",
 		"chai-as-promised": "^7.1.1",
@@ -87,7 +87,7 @@
 		"sequential-event": "^0.3.1",
 		"winston": "^3.0.0-rc0"
 	},
-	"engines" : {
-		"node" : ">=7.0.0"
+	"engines": {
+		"node": ">=7.0.0"
 	}
 }
