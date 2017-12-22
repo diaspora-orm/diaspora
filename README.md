@@ -54,7 +54,7 @@ features are incomplete or absent:
         </tr>
         <tr>
             <td style="vertical-align: middle;">
-                <img width="100" alt="Web API" src=""/><br/>
+                <img width="100" alt="Web API" src="https://cdn.rawgit.com/GerkinDev/diaspora/master/media/webApi.svg"/><br/>
                 WebApi
             </td>
         </tr>

@@ -12,4 +12,10 @@ module.exports = {
 	localstorage: {
 		data_dir: '.localStorageTest',
 	},
+	webApi: {
+		host:   'localhost',
+		port:   12345,
+		scheme: 'http',
+		path:   '/api',
+	},
 };
