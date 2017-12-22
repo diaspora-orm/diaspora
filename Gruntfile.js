@@ -49,6 +49,7 @@ module.exports = grunt => {
 			globals:     [ 'Error' ],
 			approximate: true,
 		}],
+		//		'@babel/transform-runtime',
 	];
 	const browserifyOptionsDiaspora = {
 		standalone: 'Diaspora',
@@ -160,7 +161,7 @@ module.exports = grunt => {
 				sourceMap: true,
 				presets:   [
 					[ '@babel/env', {
-						modules: 'commonjs', //"amd" | "umd" | "systemjs" | "commonjs" | false
+						modules: 'umd', //"amd" | "umd" | "systemjs" | "commonjs" | false
 						targets: {
 							browsers: [ 'last 2 Chrome versions', '>= 1%' ],
 						},

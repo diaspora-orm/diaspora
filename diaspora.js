@@ -1,6 +1,8 @@
 'use strict';
 
-if ( !process.browser ) {
+if ( process.browser ) {
+	require( 'regenerator-runtime/runtime' );
+} else {
 	const _ = require( 'lodash' );
 	const cachedDiaspora = _.find( require.cache, ( module, path ) => {
 		return path.endsWith( `${ require( 'path' ).sep }diaspora.js` );
