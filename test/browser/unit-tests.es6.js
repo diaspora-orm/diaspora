@@ -84110,22 +84110,16 @@ if ( 'undefined' !== typeof window ) {
 (function (process){
 'use strict';
 
-/* globals it: false, require: false, getConfig: false */
+/* globals require: false, getConfig: false */
 
 const ADAPTER_LABEL = 'webApi';
-const PORT = 12345;
 const adapterConfig = getConfig( ADAPTER_LABEL );
 
 const AdapterTestUtils = require( './utils' );
 
 let server;
 
-AdapterTestUtils.createDataSource( ADAPTER_LABEL, {
-	host:   'localhost',
-	port:   PORT,
-	scheme: 'http',
-	path:   '/api',
-});
+AdapterTestUtils.createDataSource( ADAPTER_LABEL, adapterConfig );
 
 before(() => {
 	if ( !process.browser ) {
@@ -84229,8 +84223,8 @@ before(() => {
 
 		// console.log(require('util').inspect(req, {colors: true}));
 		return new Promise(( resolve, reject ) => {
-			server = app.listen( PORT, () => {
-				console.log( `Example app listening on port ${ PORT }!` );
+			server = app.listen( adapterConfig.port, () => {
+				console.log( `Example app listening on port ${ adapterConfig.port }!` );
 				return resolve();
 			});
 		});
