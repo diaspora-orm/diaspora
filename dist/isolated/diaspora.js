@@ -2,10 +2,10 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-12-23 00:18:45
+* Isolated build compiled on 2017-12-23 10:24:33
 *
 * @license GPL-3.0
-* @version 0.2.0-rc.5
+* @version 0.2.0
 * @author Gerkin
 */
 
