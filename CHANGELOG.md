@@ -1,6 +1,6 @@
 # Diaspora changelog
 
-## v0.2.0 ()
+## v0.2.0 (12/23/2017, Merry Christmas)
 
 ### New features
 
