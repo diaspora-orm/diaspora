@@ -103,8 +103,8 @@ module.exports = grunt => {
 				dest: 'build/dependencies/src/dependencies.js',
 			},
 			standalone: {
-				src:     [ 'diaspora.js' ],
-				dest:    'build/standalone/src/diaspora.js',
+				src:     [ 'build/diaspora.js' ],
+				dest:    'dist/standalone/diaspora.js',
 				options: {
 					browserifyOptions: browserifyOptionsDiaspora,
 					shim:              depsShim,
@@ -186,53 +186,19 @@ module.exports = grunt => {
 					ext:    '.js',
 				}],
 			},
-			standalone: {
+			lib: {
 				options: {
-					plugins: babelPluginExtend.concat([
-						[ '@comandeer/babel-plugin-banner', {
-							banner: `/**
-* @file <%= pkg.name %>
-*
-* <%= pkg.description %>
-* Standalone build compiled on <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %>
-*
-* @license <%= pkg.license %>
-* @version <%= pkg.version %>
-* @author <%= pkg.author %>
-*/`,
+					plugins: [
+						["transform-async-to-module-method", {
+							"module": "bluebird",
+							"method": "coroutine"
 						}],
-					]),
+					],
 				},
 				files: [{
 					expand: true,
-					cwd:    'build/standalone/src',
-					src:    [ 'diaspora.js' ],
-					dest:   'build/standalone/dist',
-					ext:    '.js',
-				}],
-			},
-			isolated: {
-				options: {
-					plugins: babelPluginExtend.concat([
-						[ '@comandeer/babel-plugin-banner', {
-							banner: `/**
-* @file <%= pkg.name %>
-*
-* <%= pkg.description %>
-* Isolated build compiled on <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %>
-*
-* @license <%= pkg.license %>
-* @version <%= pkg.version %>
-* @author <%= pkg.author %>
-*/`,
-						}],
-					]),
-				},
-				files: [{
-					expand: true,
-					cwd:    'build/isolated/src',
-					src:    [ 'diaspora.js' ],
-					dest:   'build/isolated/dist',
+					src:    [ 'lib/**/*.js', 'diaspora.js' ],
+					dest:   'build',
 					ext:    '.js',
 				}],
 			},
@@ -367,28 +333,28 @@ module.exports = grunt => {
 	// ### Tests
 	grunt.registerTask( 'buildTests', [
 		'lint',
-		'browserify:test',
 		'babel:test',
+		'browserify:test',
 		'copy:unit_tests',
 	]);
 	// ### Dists
 	grunt.registerTask( 'buildDependencies', [
-		'browserify:deps',
 		'babel:deps',
+		'browserify:deps',
 		'uglify:deps',
 	]);
 	grunt.registerTask( 'buildStandalone', [
 		'lint',
+		'babel:lib',
 		'browserify:standalone',
-		'babel:standalone',
 		'uglify:standalone',
 		'copy:build_standalone_to_dist',
 		'copy:diaspora_to_docs_site',
 	]);
 	grunt.registerTask( 'buildIsolated', [
 		'lint',
+		'babel:lib',
 		'browserify:isolated',
-		'babel:isolated',
 		'uglify:isolated',
 		'copy:build_isolated_to_dist',
 		'copy:diaspora_isolated_to_docs_site_tests',

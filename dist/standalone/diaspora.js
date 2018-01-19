@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Standalone build compiled on 2017-12-23 10:24:10
+* Standalone build compiled on 2017-12-26 11:50:30
 *
 * @license GPL-3.0
 * @version 0.2.0
@@ -1162,13 +1162,23 @@ _.forEach(modelDesc.staticMethods,function(staticMethodName,staticMethod){SubEnt
  */ /**
  * Object describing a model.
  *
- * @typedef  {Object} ModelConfiguration.ModelDescription
+ * @typedef  {Object} ModelDescription
  * @author gerkin
- * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
- * @property {ModelConfiguration.AttributesDescriptor} attributes      - Attributes of the model.
- * @property {Object<string, Function>}                methods         - Methods to add to entities prototype.
- * @property {Object<string, Function>}                staticMethods   - Static methods to add to entities.
- * @property {Object<string, Function|Function[]>}     lifecycleEvents - Events to bind on entities.
+ * @property {module:Model~SourcesDescriptor}                    sources         - List of sources to use with this model.
+ * @property {Object<string, module:Model~AttributesDescriptor>} attributes      - Attributes of the model.
+ * @property {Object<string, Function>}                                methods         - Methods to add to entities prototype.
+ * @property {Object<string, Function>}                                staticMethods   - Static methods to add to entities.
+ * @property {Object<string, Function|Function[]>}                     lifecycleEvents - Events to bind on entities.
+ */ /**
+ * Object describing the attributes of a {@link Model~Model}.
+ *
+ * @typedef  {Object} AttributesDescriptor
+ * @author gerkin
+ * @property {string} [type]           - Expected type of the value. Either `type` or `model` should be defined, or none.
+ * @property {string} [model]          - Expected model of the value. Either `type` or `model` should be defined, or none.
+ * @property {module:Model~AttributesDescriptor|module:Model~AttributesDescriptor[]} [of] - Description (or array of descriptions) of possible values for this field
+ * @property {boolean} [required=false] - Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
+ * @property {module:Model~CustomValidator} [validate] - Custom validation callback.
  */var findArgs=function findArgs(model,queryFind,options,dataSourceName){if(queryFind===void 0){queryFind={};}if(options===void 0){options={};}var ret;if(_.isString(options)&&_.isNil(dataSourceName)){ret={dataSourceName:options,options:{}};}else if(_.isString(queryFind)&&_.isNil(options)&&_.isNil(dataSourceName)){ret={dataSourceName:queryFind,queryFind:{},options:{}};}else{ret={queryFind:queryFind,options:options,dataSourceName:dataSourceName};}ret.dataSource=model.getDataSource(ret.dataSourceName);return ret;};var makeSet=function makeSet(model){return function(dataSourceEntities){var newEntities=_.map(dataSourceEntities,function(dataSourceEntity){return new model.entityFactory(dataSourceEntity);});var set=new Set(model,newEntities);return Promise.resolve(set);};};var makeEntity=function makeEntity(model){return function(dataSourceEntity){if(_.isNil(dataSourceEntity)){return Promise.resolve();}var newEntity=new model.entityFactory(dataSourceEntity);return Promise.resolve(newEntity);};};var doDelete=function doDelete(methodName,model){return function(queryFind,options,dataSourceName){if(queryFind===void 0){queryFind={};}if(options===void 0){options={};}// Sort arguments
 var args=findArgs(model,queryFind,options,dataSourceName);return args.dataSource[methodName](model.name,args.queryFind,args.options);};};var doFindUpdate=function doFindUpdate(model,plural,queryFind,options,dataSourceName,update){var _queryComponents$data;// Sort arguments
 var queryComponents=findArgs(model,queryFind,options,dataSourceName);var args=_([model.name,queryComponents.queryFind]).push(update).push(queryComponents.options).compact().value();return(_queryComponents$data=queryComponents.dataSource)[(update?'update':'find')+(plural?'Many':'One')].apply(_queryComponents$data,args).then((plural?makeSet:makeEntity)(model));};var normalizeRemaps=function normalizeRemaps(modelDesc){var sources=modelDesc.sources;if(_.isString(sources)){var _sources;sources=(_sources={},_sources[modelDesc.sources]=true,_sources);}else if(_.isArrayLike(sources)){sources=_.zipObject(sources,_.times(sources.length,_.constant({})));}else{sources=_.mapValues(sources,function(remap,dataSourceName){if(true===remap){return{};}else if(_.isObject(remap)){return remap;}else{throw new TypeError("Datasource \""+dataSourceName+"\" value is invalid: expect `true` or a remap hash, but have "+JSON.stringify(remap));}});}return sources;};/**
@@ -1405,7 +1415,7 @@ if(global.performance&&'function'===typeof global.performance.now){d+=global.per
  * @param   {Object}                     fieldDesc - Description of the field to check.
  * @param   {module:Validator~PathStack} keys      - Keys so far.
  * @returns {Function} Function to execute to validate array items.
- */var validateArrayItems=function validateArrayItems(validator,fieldDesc,keys){return function(propVal,index){if(fieldDesc.hasOwnProperty('of')){var ofArray=_.castArray(fieldDesc.of);var subErrors=_(ofArray).map(function(desc,subIndex){return validator.check(propVal,keys.clone().pushValidationProp('of',_.isArray(fieldDesc.of)?subIndex:undefined).pushEntityProp(index),{getProps:false});});if(!_.isArray(fieldDesc.of)){return subErrors.get(0);}else if(subErrors.compact().value().length===ofArray.length){return subErrors.toPlainObject().omitBy(_.isNil).value();}}return{};};};/**
+ */var validateArrayItems=function validateArrayItems(validator,fieldDesc,keys){return function(propVal,index){if(fieldDesc.hasOwnProperty('of')){var ofArray=_.castArray(fieldDesc.of);var subErrors=_(ofArray).map(function(desc,subIndex){return validator.check(propVal,keys.clone().pushValidationProp('of',_.isArray(fieldDesc.of)?subIndex:undefined).pushEntityProp(index),{getProps:false});});if(!_.isArray(fieldDesc.of)){return subErrors.get(0);}else if(subErrors.compact().value().length===ofArray.length){return subErrors.toPlainObject().omitBy(_.isNil).value();}}return{};};};var messageRequired=function messageRequired(keys,fieldDesc){return keys.toValidatePath()+" is a required property of "+(fieldDesc.type?"type \""+fieldDesc.type+"\"":"model \""+fieldDesc.model+"\"");};/**
  * A checker is a function that can return an error component with provided standard args.
  *
  * @callback Checker
@@ -1457,9 +1467,9 @@ var validateFcts=_(fieldDesc.validate).castArray().compact();validateFcts.forEac
 	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
 	 * @returns {undefined} This function returns nothing.
 	 */function checkTypeRequired(validationArgs){var error=validationArgs.error,fieldDesc=validationArgs.fieldDesc,keys=validationArgs.keys,value=validationArgs.value;// Check the type and the required status
-if(!_.isNil(fieldDesc.type)&&!_.isNil(fieldDesc.model)){error.spec=keys.toValidatePath()+" spec can't have both a type and a model";// Apply the `required` modifier
-}else if(true===fieldDesc.required&&_.isNil(value)){error.required=keys.toValidatePath()+" is a required property of type \""+fieldDesc.type+"\"";}else if(!_.isNil(value)){if(_.isString(fieldDesc.type)){_.assign(error,// Get the validator. Default to unhandled type
-_.get(VALIDATIONS,['TYPE',fieldDesc.type],VALIDATIONS.TYPE._).call(this,keys,fieldDesc,value));}else{error.spec=keys.toValidatePath()+" spec \"type\" must be a string";}}},/**
+var typeKeys=_.intersection(_.keys(fieldDesc),['type','model']);if(typeKeys.length>1){error.spec=keys.toValidatePath()+" spec can't have multiple keys from "+typeKeys.join(',');// Apply the `required` modifier
+}else if(true===fieldDesc.required&&_.isNil(value)){error.required=messageRequired(keys,fieldDesc);}else if(!_.isNil(value)){if(fieldDesc.hasOwnProperty('type')){if(_.isString(fieldDesc.type)){_.assign(error,// Get the validator. Default to unhandled type
+_.get(VALIDATIONS,['TYPE',fieldDesc.type],VALIDATIONS.TYPE._).call(this,keys,fieldDesc,value));}else{error.spec=keys.toValidatePath()+" spec \"type\" must be a string";}}else if(fieldDesc.hasOwnProperty('model')){if(_.isString(fieldDesc.model)){var tester=_.get(VALIDATIONS,['TYPE',fieldDesc.model],fieldDesc.model._);_.assign(error,tester.call(this,keys,fieldDesc,value));}else{error.spec=keys.toValidatePath()+" spec \"model\" must be a string";}}}},/**
 	 * Verify if the value correspond to a value in the `enum` property.
 	 *
 	 * @function module:Validator~checkEnum

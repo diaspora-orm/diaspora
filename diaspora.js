@@ -9,10 +9,9 @@ if ( process.browser ) {
 	});
 	if ( !_.isEmpty( _.get( cachedDiaspora, 'exports' ))) {
 		console.log( 'Retrieving loaded diaspora' );
-		return module.exports = cachedDiaspora.exports;
+		module.exports = cachedDiaspora.exports;
 	}
 }
-
-const Diaspora = require( './lib/diaspora' );
-
-module.exports = Diaspora;
+if(Object.keys(module.exports).length === 0){
+	module.exports = require( './lib/diaspora' );
+}

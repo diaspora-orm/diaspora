@@ -2,7 +2,7 @@
 * @file diaspora
 *
 * Multi-Layer ORM for Javascript Client+Server
-* Isolated build compiled on 2017-12-23 10:24:33
+* Isolated build compiled on 2017-12-26 11:50:56
 *
 * @license GPL-3.0
 * @version 0.2.0
@@ -3924,13 +3924,25 @@
         /**
          * Object describing a model.
          *
-         * @typedef  {Object} ModelConfiguration.ModelDescription
+         * @typedef  {Object} ModelDescription
          * @author gerkin
-         * @property {ModelConfiguration.SourcesDescriptor}    sources         - List of sources to use with this model.
-         * @property {ModelConfiguration.AttributesDescriptor} attributes      - Attributes of the model.
-         * @property {Object<string, Function>}                methods         - Methods to add to entities prototype.
-         * @property {Object<string, Function>}                staticMethods   - Static methods to add to entities.
-         * @property {Object<string, Function|Function[]>}     lifecycleEvents - Events to bind on entities.
+         * @property {module:Model~SourcesDescriptor}                    sources         - List of sources to use with this model.
+         * @property {Object<string, module:Model~AttributesDescriptor>} attributes      - Attributes of the model.
+         * @property {Object<string, Function>}                                methods         - Methods to add to entities prototype.
+         * @property {Object<string, Function>}                                staticMethods   - Static methods to add to entities.
+         * @property {Object<string, Function|Function[]>}                     lifecycleEvents - Events to bind on entities.
+         */
+
+        /**
+         * Object describing the attributes of a {@link Model~Model}.
+         *
+         * @typedef  {Object} AttributesDescriptor
+         * @author gerkin
+         * @property {string} [type]           - Expected type of the value. Either `type` or `model` should be defined, or none.
+         * @property {string} [model]          - Expected model of the value. Either `type` or `model` should be defined, or none.
+         * @property {module:Model~AttributesDescriptor|module:Model~AttributesDescriptor[]} [of] - Description (or array of descriptions) of possible values for this field
+         * @property {boolean} [required=false] - Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
+         * @property {module:Model~CustomValidator} [validate] - Custom validation callback.
          */
 
         var findArgs = function findArgs(model, queryFind, options, dataSourceName) {
@@ -4857,6 +4869,10 @@
             return {};
           };
         };
+
+        var messageRequired = function messageRequired(keys, fieldDesc) {
+          return keys.toValidatePath() + " is a required property of " + (fieldDesc.type ? "type \"" + fieldDesc.type + "\"" : "model \"" + fieldDesc.model + "\"");
+        };
         /**
          * A checker is a function that can return an error component with provided standard args.
          *
@@ -5006,16 +5022,28 @@
               keys = validationArgs.keys,
               value = validationArgs.value; // Check the type and the required status
 
-          if (!_.isNil(fieldDesc.type) && !_.isNil(fieldDesc.model)) {
-            error.spec = keys.toValidatePath() + " spec can't have both a type and a model"; // Apply the `required` modifier
+          var typeKeys = _.intersection(_.keys(fieldDesc), ['type', 'model']);
+
+          if (typeKeys.length > 1) {
+            error.spec = keys.toValidatePath() + " spec can't have multiple keys from " + typeKeys.join(','); // Apply the `required` modifier
           } else if (true === fieldDesc.required && _.isNil(value)) {
-            error.required = keys.toValidatePath() + " is a required property of type \"" + fieldDesc.type + "\"";
+            error.required = messageRequired(keys, fieldDesc);
           } else if (!_.isNil(value)) {
-            if (_.isString(fieldDesc.type)) {
-              _.assign(error, // Get the validator. Default to unhandled type
-              _.get(VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._).call(this, keys, fieldDesc, value));
-            } else {
-              error.spec = keys.toValidatePath() + " spec \"type\" must be a string";
+            if (fieldDesc.hasOwnProperty('type')) {
+              if (_.isString(fieldDesc.type)) {
+                _.assign(error, // Get the validator. Default to unhandled type
+                _.get(VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._).call(this, keys, fieldDesc, value));
+              } else {
+                error.spec = keys.toValidatePath() + " spec \"type\" must be a string";
+              }
+            } else if (fieldDesc.hasOwnProperty('model')) {
+              if (_.isString(fieldDesc.model)) {
+                var tester = _.get(VALIDATIONS, ['TYPE', fieldDesc.model], fieldDesc.model._);
+
+                _.assign(error, tester.call(this, keys, fieldDesc, value));
+              } else {
+                error.spec = keys.toValidatePath() + " spec \"model\" must be a string";
+              }
             }
           }
         },

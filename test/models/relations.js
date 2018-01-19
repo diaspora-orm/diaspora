@@ -20,9 +20,9 @@ it( 'Should create a model', () => {
 			},
 			rel1toX: {
 				type: 'array',
-				of: {
+				of:   {
 					model: MODEL_NAME_2,
-				}
+				},
 			},
 		},
 	});
@@ -31,8 +31,8 @@ it( 'Should create a model', () => {
 		schema:     false,
 		attributes: {
 			foo: {
-				type: 'string'
-			}
+				type: 'string',
+			},
 		},
 	});
 	expect( testModel1 ).to.be.an( 'object' );
@@ -163,49 +163,49 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'update' );
 			return Promise.resolve()
 				.then(() => checkUpdate({
-				foo: undefined,
-			}, {
-				foo: 'qux',
-			}, false ))
+					foo: undefined,
+				}, {
+					foo: 'qux',
+				}, false ))
 				.then(() => checkUpdate({
-				foo: 'baz',
-			}, {
-				foo: 'qux',
-			}, false ))
+					foo: 'baz',
+				}, {
+					foo: 'qux',
+				}, false ))
 				.then(() => checkUpdate({
-				foo: 'bar',
-			}, {
-				foo: undefined,
-			}, false ));
+					foo: 'bar',
+				}, {
+					foo: undefined,
+				}, false ));
 		});
 		it( 'Update multiple instances', () => {
 			//process.exit()
 			expect( testModel ).to.respondTo( 'updateMany' );
 			return Promise.resolve()
 				.then(() => checkUpdate({
-				foo: undefined,
-			}, {
-				foo: 'bar',
-			}, true ).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( 2 );
-				return Promise.resolve();
-			}))
+					foo: undefined,
+				}, {
+					foo: 'bar',
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 2 );
+					return Promise.resolve();
+				}))
 				.then(() => checkUpdate({
-				foo: 'baz',
-			}, {
-				foo: undefined,
-			}, true ).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( 1 );
-				return Promise.resolve();
-			}))
+					foo: 'baz',
+				}, {
+					foo: undefined,
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 1 );
+					return Promise.resolve();
+				}))
 				.then(() => checkUpdate({
-				foo: 'bat',
-			}, {
-				foo: 'twy',
-			}, true ).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( 0 );
-				return Promise.resolve();
-			}));
+					foo: 'bat',
+				}, {
+					foo: 'twy',
+				}, true ).then( foundEntities => {
+					expect( foundEntities ).to.have.lengthOf( 0 );
+					return Promise.resolve();
+				}));
 		});
 	});
 	describe( '- Delete instances', () => {
@@ -233,11 +233,11 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 			expect( testModel ).to.respondTo( 'delete' );
 			return Promise.resolve()
 				.then(() => checkDestroy({
-				foo: undefined,
-			}, false ))
+					foo: undefined,
+				}, false ))
 				.then(() => checkDestroy({
-				foo: 'bar',
-			}, false ));
+					foo: 'bar',
+				}, false ));
 		});
 		it( 'Delete multiple instances', () => {
 			expect( testModel ).to.respondTo( 'deleteMany' );
