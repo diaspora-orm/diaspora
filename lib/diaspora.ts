@@ -1,8 +1,6 @@
 import * as dependencies from './dependencies';
 const { _, Promise } = dependencies;
-//@ts-ignore
-import { winston } from 'winston';
-//@ts-ignore
+import { Winston } from 'winston';
 
 /**
  * Event emitter that can execute async handlers in sequence
@@ -35,7 +33,7 @@ interface IQueryTypeDescriptor{
 
 const logger = (() => {
 	if ( !process.browser ) {
-		const winston: Winston = require('winston');
+		const winston = require('winston');
 		const log = winston.createLogger({
 			level:      'silly',
 			format:     winston.format.json(),
@@ -421,7 +419,7 @@ const Diaspora: DiaspoNS.Module = {
 	logger,
 } as DiaspoNS.Module;
 
-export default Diaspora;
+export {Diaspora};
 
 // Load components after export, so requires of Diaspora returns a complete object
 /**

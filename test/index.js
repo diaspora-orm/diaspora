@@ -6,7 +6,8 @@ require( './defineGlobals' );
 
 if ( 'no' === process.env.SAUCE || 'undefined' === typeof process.env.SAUCE ) {
 	if ( 'undefined' === typeof window && 'object' === typeof exports && typeof exports.nodeName !== 'string' ) {
-		global.Diaspora = require( '../diaspora' );
+		const {Diaspora} = require( '../diaspora' );
+		global.Diaspora = Diaspora;
 	}
 	global.dataSources = {};
 	
