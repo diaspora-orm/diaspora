@@ -3,6 +3,7 @@
 	"version": "0.2.0",
 	"description": "Multi-Layer ORM for Javascript Client+Server",
 	"main": "diaspora.js",
+	"typings": "./typings/diaspora.d.ts",
 	"files": [
 		"dist",
 		"lib",
@@ -48,6 +49,7 @@
 		"@babel/polyfill": "^7.0.0-beta.35",
 		"@babel/preset-env": "^7.0.0-beta.35",
 		"@comandeer/babel-plugin-banner": "^1.0.0",
+		"@types/node": "^9.3.0",
 		"babel-plugin-transform-async-to-module-method": "^6.24.1",
 		"babel-plugin-transform-builtin-extend": "^1.1.2",
 		"body-parser": "^1.18.2",
@@ -76,6 +78,9 @@
 		"saucelabs": "^1.4.0",
 		"selenium-webdriver": "^3.6.0",
 		"stack-trace": "0.0.10",
+		"ts-node": "~3.2.0",
+		"tslint": "~5.7.0",
+		"typescript": "~2.4.2",
 		"webpack": "^3.10.0"
 	},
 	"dependencies": {

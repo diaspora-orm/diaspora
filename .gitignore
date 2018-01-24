@@ -64,3 +64,5 @@ site/\.sass-cache/
 .DS_Store
 *~
 build/
+
+transtyped/

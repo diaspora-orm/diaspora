@@ -8,7 +8,8 @@
 	},
 	"extends": "eslint:recommended",
 	"parserOptions": {
-		"sourceType": "script",
+		//		"sourceType": "script",
+		"sourceType": "module",
 		"ecmaVersion": 8
 	},
 	"globals": {
@@ -86,5 +87,9 @@
 				"customTags": ["async"]
 			}
 		}
-	}
+	},
+  "overrides": [
+    {
+      "files": [ "bin/*.js", "lib/*.js" ],
+      "excludedFiles": "*.test.js",
 }
