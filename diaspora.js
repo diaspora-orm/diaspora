@@ -13,5 +13,5 @@ if ( process.browser ) {
 	}
 }
 if(Object.keys(module.exports).length === 0){
-	module.exports = require( './lib/diaspora' );
+	module.exports = require( './src/diaspora' );
 }

@@ -1,17 +1,22 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "es6",
 		"sourceMap": true,
 		"allowJs": true,
 		"moduleResolution": "node",
+		"declaration": false,
 		"noImplicitReturns": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"noImplicitThis": true,
 
-		"target": "es5",
 		"typeRoots": [
-			"node_modules/@types"
+			"./node_modules/@types",
+			"./typings"
+		],
+		"types": [
+			"winston",
+			"diaspora"
 		],
 		"lib": [
 			"es2017",
@@ -20,14 +25,10 @@
 			"dom"
 		],
 		"watch": true,
-		"outDir": "./transtyped"
+		"outDir": "./lib"
 	},
-	"typeRoots": [
-		"./node_modules/@types",
-		"./typings"
-	],
-	"types": [
-		"winston",
-		"diaspora"
+	"compileOnSave": true,
+	"include": [
+		"src/**/*.ts"
 	]
 }

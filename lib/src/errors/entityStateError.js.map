@@ -1,0 +1,1 @@
+{"version":3,"file":"entityStateError.js","sourceRoot":"","sources":["../../../src/errors/entityStateError.js"],"names":[],"mappings":"AAAA,YAAY,CAAC;AAEb,MAAM,eAAe,GAAG,OAAO,CAAE,mBAAmB,CAAE,CAAC;AAEvD;;GAEG;AAEH;;;GAGG;AACH,sBAAuB,SAAQ,eAAe;IAC7C;;;;;OAKG;IACH,YAAa,GAAG,SAAS;QACxB,KAAK,CAAE,GAAG,SAAS,CAAE,CAAC;IACvB,CAAC;CACD;AAED,MAAM,CAAC,OAAO,GAAG,gBAAgB,CAAC"}
