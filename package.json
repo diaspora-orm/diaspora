@@ -2,7 +2,6 @@
 	"name": "diaspora",
 	"version": "0.2.0",
 	"description": "Multi-Layer ORM for Javascript Client+Server",
-	"keywords": [],
 	"main": "dist/diaspora.umd.js",
 	"module": "dist/diaspora.es5.js",
 	"typings": "dist/types/diaspora.d.ts",
@@ -13,9 +12,10 @@
 		"doc": "doc",
 		"lib": "lib",
 		"test": "test"
-	"author": "Gerkin <nihilivin@gmail.com>",
-	"engines": {
-		"node": ">=6.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/GerkinDev/diaspora.git"
 	},
 	"scripts": {
 		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
@@ -32,16 +32,6 @@
 		"semantic-release-prepare": "ts-node tools/semantic-release-prepare",
 		"precommit": "lint-staged"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/GerkinDev/diaspora.git"
-	"prettifier": {
-		"printWidth": 80,
-		"useTabs": true,
-		"tabWidth": 1,
-		"singleQuote": true,
-		"trailingComma": "es5"
-	},
 	"keywords": [
 		"ORM",
 		"db",
@@ -53,6 +43,20 @@
 		"mvc",
 		"query",
 		"object"
+	],
+	"author": "Gerkin",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/GerkinDev/diaspora/issues"
+	},
+	"homepage": "https://github.com/GerkinDev/diaspora#readme",
+	"prettier": {
+		"printWidth": 80,
+		"useTabs": true,
+		"tabWidth": 1,
+		"singleQuote": true,
+		"trailingComma": "es5"
+	},
 	"lint-staged": {
 		"{src,test}/**/*.ts": [
 			"prettier --write",
@@ -78,10 +82,6 @@
 			"tsx",
 			"js"
 		],
-	"author": "Gerkin",
-	"license": "GPL-3.0",
-	"bugs": {
-		"url": "https://github.com/GerkinDev/diaspora/issues"
 		"coveragePathIgnorePatterns": [
 			"/node_modules/",
 			"/test/"
@@ -98,44 +98,6 @@
 		"mapCoverage": true
 	},
 	"devDependencies": {
-		"@babel/core": "^7.0.0-beta.35",
-		"@babel/helper-module-imports": "^7.0.0-beta.35",
-		"@babel/polyfill": "^7.0.0-beta.35",
-		"@babel/preset-env": "^7.0.0-beta.35",
-		"@comandeer/babel-plugin-banner": "^1.0.0",
-		"@types/node": "^9.3.0",
-		"babel-plugin-transform-async-to-module-method": "^6.24.1",
-		"babel-plugin-transform-builtin-extend": "^1.1.2",
-		"body-parser": "^1.18.2",
-		"chai": "^4.1.2",
-		"chai-as-promised": "^7.1.1",
-		"chalk": "^2.3.0",
-		"check-types": "^7.3.0",
-		"diaspora-server": "0.0.1",
-		"eslint-plugin-jsdoc": "^3.3.0",
-		"express": "^4.16.2",
-		"grunt": "^1.0.1",
-		"grunt-babel": "^7.0.0",
-		"grunt-browserify": "^5.2.0",
-		"grunt-changed": "^1.1.1",
-		"grunt-contrib-clean": "^1.1.0",
-		"grunt-contrib-copy": "^1.0.0",
-		"grunt-contrib-uglify": "^3.1.0",
-		"grunt-docco-husky": "git+https://github.com/GerkinDev/grunt-docco-husky.git",
-		"grunt-jsdoc": "^2.2.0",
-		"gruntify-eslint": "^4.0.0",
-		"ink-docstrap": "^1.3.2",
-		"load-grunt-tasks": "^3.5.2",
-		"mocha": "^4.0.1",
-		"node-localstorage": "^1.3.0",
-		"nyc": "^11.3.0",
-		"saucelabs": "^1.4.0",
-		"selenium-webdriver": "^3.6.0",
-		"stack-trace": "0.0.10",
-		"ts-node": "~3.2.0",
-		"tslint": "~5.7.0",
-		"typescript": "~2.4.2",
-		"webpack": "^3.10.0"
 		"@types/jest": "^22.0.0",
 		"@types/node": "^8.0.0",
 		"colors": "^1.1.2",
@@ -167,18 +129,10 @@
 		"validate-commit-msg": "^2.12.2"
 	},
 	"dependencies": {
-		"bluebird": "^3.5.1",
-		"lodash": "^4.17.4",
-		"request": "^2.83.0",
-		"request-promise": "^4.2.2",
 		"@types/bluebird": "^3.5.20",
 		"@types/lodash": "^4.14.96",
 		"@types/winston": "^2.3.7",
 		"sequential-event": "^0.3.1",
-		"winston": "^3.0.0-rc0"
-	},
-	"engines": {
-		"node": ">=7.0.0"
 		"winston": "^2.4.0"
 	}
 }
