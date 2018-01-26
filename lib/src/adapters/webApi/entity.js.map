@@ -1,1 +1,0 @@
-{"version":3,"file":"entity.js","sourceRoot":"","sources":["../../../../src/adapters/webApi/entity.js"],"names":[],"mappings":"AAAA,YAAY,CAAC;AAEb,MAAM,eAAe,GAAG,OAAO,CAAE,mBAAmB,CAAE,CAAC;AAEvD;;;;GAIG;AACH,kBAAmB,SAAQ,eAAe;IACzC;;;;;;OAMG;IACH,YAAa,MAAM,EAAE,UAAU;QAC9B,KAAK,CAAE,MAAM,EAAE,UAAU,CAAE,CAAC;IAC7B,CAAC;CACD;AAED,MAAM,CAAC,OAAO,GAAG,YAAY,CAAC"}

@@ -1,3 +1,6 @@
+/// <reference path="./global.d.ts"/>
+/// <reference path="./diaspora.d.ts"/>
+
 import * as dependencies from './dependencies';
 const { _, Promise } = dependencies;
 import { Winston } from 'winston';
@@ -14,29 +17,12 @@ import { Winston } from 'winston';
  * @module Diaspora
  */
 
-interface RemapIterator { (entity: DiaspoNS.Entity): void }
-interface EntityObject {
-	[key: string]: any;
-}
-interface IFieldDescriptor {
-	type: string;
-	attributes: object;
-	default: Function | string;
-}
-interface IAdapterRegistry{
-	[key: string]: DiaspoNS.Adapter;
-}
-interface IQueryTypeDescriptor{
-	query: string;
-}
-
-
 const logger = (() => {
-	if ( !process.browser ) {
+	if (!process.browser) {
 		const winston = require('winston');
 		const log = winston.createLogger({
-			level:      'silly',
-			format:     winston.format.json(),
+			level: 'silly',
+			format: winston.format.json(),
 			transports: [
 				//
 				// - Write to all logs with level `info` and below to `combined.log`
@@ -49,10 +35,12 @@ const logger = (() => {
 		// If we're not in production then log to the `console` with the format:
 		// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
 		//
-		if ( process.env.NODE_ENV !== 'production' ) {
-			log.add( new winston.transports.Console({
-				format: winston.format.simple(),
-			}));
+		if (process.env.NODE_ENV !== 'production') {
+			log.add(
+				new winston.transports.Console({
+					format: winston.format.simple(),
+				})
+			);
 		}
 		return log;
 	} else {
@@ -60,114 +48,131 @@ const logger = (() => {
 	}
 })();
 
-const adapters: IAdapterRegistry = {};
+const adapters: Diaspora.IAdapterRegistry = {};
 const dataSources = {};
 const models = {};
 
-const ensureAllEntities = ( adapter: DiaspoNS.Adapter, table: string ) => {
+const ensureAllEntities = (adapter: Diaspora.Adapter, table: string) => {
 	// Filter our results
 	const filterResults = (entity: any): any => {
 		// Remap fields
-		entity = adapter.remapOutput( table, entity );
+		entity = adapter.remapOutput(table, entity);
 		// Force results to be class instances
-		if ( entity instanceof adapter.classEntity ) {
-			return new adapter.classEntity( entity, adapter );
+		if (entity instanceof adapter.classEntity) {
+			return new adapter.classEntity(entity, adapter);
 		}
 		return entity;
 	};
 
-	return (results: DiaspoNS.EntityOrCollection): DiaspoNS.EntityOrCollection => {
-		if ( _.isNil( results )) {
+	return (results: Diaspora.EntityOrCollection): Diaspora.EntityOrCollection => {
+		if (_.isNil(results)) {
 			return Promise.resolve();
-		} else if ( _.isArrayLike( results )) {
-			return Promise.resolve( _.map( results, filterResults ));
+		} else if (_.isArrayLike(results)) {
+			return Promise.resolve(_.map(results, filterResults));
 		} else {
-			return Promise.resolve( filterResults( results ));
+			return Promise.resolve(filterResults(results));
 		}
 	};
 };
 
-const remapArgs = ( args: any[], optIndex: number | false, update: boolean, queryType: any, remapFunction: RemapIterator ) => {
-	if ( false !== optIndex ) {
+const remapArgs = (
+	args: any[],
+	optIndex: number | false,
+	update: boolean,
+	queryType: any,
+	remapFunction: Diaspora.RemapIterator
+) => {
+	if (false !== optIndex) {
 		// Remap input objects
-		if ( true === args[optIndex].remapInput ) {
-			args[0] = remapFunction( args[0]);
+		if (true === args[optIndex].remapInput) {
+			args[0] = remapFunction(args[0]);
 
-			if ( true === update ) {
-				args[1] = remapFunction( args[1]);
+			if (true === update) {
+				args[1] = remapFunction(args[1]);
 			}
 		}
 		args[optIndex].remapInput = false;
-	} else if ( 'insert' === queryType.query ) {
+	} else if ('insert' === queryType.query) {
 		// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
-		if ( 'many' === queryType.number ) {
+		if ('many' === queryType.number) {
 			// If inserting *several* entities, map the array to remap each entity objects...
-			args[0] = _.map( args[0], (insertion: DiaspoNS.Entity) => remapFunction( insertion ));
+			args[0] = _.map(args[0], (insertion: Diaspora.Entity) =>
+				remapFunction(insertion)
+			);
 		} else {
 			// ... or we are inserting a *single* one. We still need to remap entity.
-			args[0] = remapFunction( args[0]);
+			args[0] = remapFunction(args[0]);
 		}
 	}
 };
 
-const getRemapFunction = ( adapter: DiaspoNS.Adapter, table: string ) => {
+const getRemapFunction = (adapter: Diaspora.Adapter, table: string) => {
 	return (query: object) => {
-		return adapter.remapInput( table, query );
+		return adapter.remapInput(table, query);
 	};
 };
 
-const wrapDataSourceAction = ( callback: Function, queryType: string, adapter: DiaspoNS.Adapter ) => {
-	return ( table: string, ...args: any[] ) => {
-
+const wrapDataSourceAction = (
+	callback: Function,
+	queryType: string,
+	adapter: Diaspora.Adapter
+) => {
+	return (table: string, ...args: any[]) => {
 		// Transform arguments for find, update & delete
 		let optIndex: number | false = false;
 		let upd = false;
-		if ([ 'find', 'delete' ].includes(queryType) ) {
+		if (['find', 'delete'].includes(queryType)) {
 			// For find & delete, options are 3rd argument (so 2nd item in `args`)
 			optIndex = 1;
-		} else if ( 'update' === queryType ) {
+		} else if ('update' === queryType) {
 			// For update, options are 4th argument (so 3nd item in `args`), and `upd` flag is toggled on.
 			optIndex = 2;
 			upd = true;
 		}
 		try {
-			if ( false !== optIndex ) {
+			if (false !== optIndex) {
 				// Options to canonical
-				args[optIndex] = adapter.normalizeOptions( args[optIndex]);
+				args[optIndex] = adapter.normalizeOptions(args[optIndex]);
 				// Query search to cannonical
-				args[0] = adapter.normalizeQuery( args[0], args[optIndex]);
+				args[0] = adapter.normalizeQuery(args[0], args[optIndex]);
 			}
-			remapArgs( args, optIndex, upd, queryType, getRemapFunction( adapter, table ));
-		} catch ( err ) {
-			return Promise.reject( err );
+			remapArgs(args, optIndex, upd, queryType, getRemapFunction(adapter, table));
+		} catch (err) {
+			return Promise.reject(err);
 		}
 
 		// Hook after promise resolution
-		return callback.call( adapter, table, ...args ).then( ensureAllEntities( adapter, table ));
+		return callback
+			.call(adapter, table, ...args)
+			.then(ensureAllEntities(adapter, table));
 	};
 };
 
 const ERRORS = {
-	NON_EMPTY_STR: _.template( '<%= c %> <%= p %> must be a non empty string, had "<%= v %>"' ),
+	NON_EMPTY_STR: _.template(
+		'<%= c %> <%= p %> must be a non empty string, had "<%= v %>"'
+	),
 };
 
-const requireName = ( classname: string, value: any ) => {
-	if ( !_.isString( value ) && value.length > 0 ) {
-		throw new Error( ERRORS.NON_EMPTY_STR({
-			c: classname,
-			p: 'name',
-			v: value,
-		}));
+const requireName = (classname: string, value: any) => {
+	if (!_.isString(value) && value.length > 0) {
+		throw new Error(
+			ERRORS.NON_EMPTY_STR({
+				c: classname,
+				p: 'name',
+				v: value,
+			})
+		);
 	}
 };
 
 const getDefaultFunction = (identifier: any | Function) => {
-	if ( _.isString( identifier )) {
-		const match = identifier.match( /^(.+?)(?:::(.+?))+$/ );
-		if ( match ) {
-			const parts = identifier.split( '::' );
-			const namedFunction = _.get( Diaspora.namedFunctions, parts );
-			if ( _.isFunction( namedFunction )) {
+	if (_.isString(identifier)) {
+		const match = identifier.match(/^(.+?)(?:::(.+?))+$/);
+		if (match) {
+			const parts = identifier.split('::');
+			const namedFunction = _.get(_Diaspora.namedFunctions, parts);
+			if (_.isFunction(namedFunction)) {
 				return namedFunction();
 			}
 		}
@@ -181,7 +186,7 @@ const getDefaultFunction = (identifier: any | Function) => {
  * @public
  * @author gerkin
  */
-const Diaspora: DiaspoNS.Module = {
+const _Diaspora: Diaspora.Diaspora = {
 	namedFunctions: {
 		Diaspora: {
 			'Date.now()': () => new Date(),
@@ -196,16 +201,12 @@ const Diaspora: DiaspoNS.Module = {
 	 * @param   {ModelPrototype} modelDesc - Model description.
 	 * @returns {Object} Entity merged with default values.
 	 */
-	default( entity: EntityObject, modelDesc: object ) {
+	default(entity: Diaspora.EntityObject, modelDesc: object) {
 		// Apply method `defaultField` on each field described
 		return _.defaults(
 			entity,
-			_.mapValues(
-				modelDesc,
-				( fieldDesc: object, field: string ) => this.defaultField(
-					entity[field],
-					fieldDesc
-				)
+			_.mapValues(modelDesc, (fieldDesc: object, field: string) =>
+				this.defaultField(entity[field], fieldDesc)
 			)
 		);
 	},
@@ -218,15 +219,22 @@ const Diaspora: DiaspoNS.Module = {
 	 * @param   {FieldDescriptor} fieldDesc - Description of the field to default.
 	 * @returns {Any} Defaulted value.
 	 */
-	defaultField( value: any, fieldDesc: IFieldDescriptor ) {
+	defaultField(value: any, fieldDesc: Diaspora.IFieldDescriptor) {
 		let out;
-		if ( !_.isUndefined( value )) {
+		if (!_.isUndefined(value)) {
 			out = value;
 		} else {
-			out = _.isFunction( fieldDesc.default ) ? (fieldDesc.default as Function)() : getDefaultFunction( fieldDesc.default );
+			out = _.isFunction(fieldDesc.default)
+				? (fieldDesc.default as Function)()
+				: getDefaultFunction(fieldDesc.default);
 		}
-		if ( 'object' === fieldDesc.type && _.isObject( fieldDesc.attributes ) && _.keys( fieldDesc.attributes ).length > 0 && !_.isNil( out )) {
-			return this.default( out, fieldDesc.attributes );
+		if (
+			'object' === fieldDesc.type &&
+			_.isObject(fieldDesc.attributes) &&
+			_.keys(fieldDesc.attributes).length > 0 &&
+			!_.isNil(out)
+		) {
+			return this.default(out, fieldDesc.attributes);
 		} else {
 			return out;
 		}
@@ -241,32 +249,46 @@ const Diaspora: DiaspoNS.Module = {
 	 * @param   {Object} config       - Configuration hash. This configuration hash depends on the adapter we want to use.
 	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
 	 */
-	createDataSource( adapterLabel: string, config: object ) {
-		if ( !adapters.hasOwnProperty( adapterLabel )) {
-			const moduleName = `diaspora-${  adapterLabel }`;
+	createDataSource(adapterLabel: string, config: object) {
+		if (!adapters.hasOwnProperty(adapterLabel)) {
+			const moduleName = `diaspora-${adapterLabel}`;
 			try {
-				try{
+				try {
 					require.resolve(moduleName);
-				} catch(e){
-					throw new Error( `Unknown adapter "${ adapterLabel }" (expected in module "${moduleName}"). Available currently are ${ Object.keys( adapters ).join( ', ' ) }. Additionnaly, an error was thrown: ${ e }` );
+				} catch (e) {
+					throw new Error(
+						`Unknown adapter "${adapterLabel}" (expected in module "${moduleName}"). Available currently are ${Object.keys(
+							adapters
+						).join(', ')}. Additionnaly, an error was thrown: ${e}`
+					);
 				}
-				require( moduleName );
-			} catch ( e ) {
-				throw new Error( `Could not load adapter "${adapterLabel}" (expected in module "${moduleName}"), an error was thrown: ${ e }` );
+				require(moduleName);
+			} catch (e) {
+				throw new Error(
+					`Could not load adapter "${adapterLabel}" (expected in module "${moduleName}"), an error was thrown: ${e}`
+				);
 			}
 		}
-		const baseAdapter = new ((adapters[adapterLabel]) as any)( config );
-		const newDataSource = new Proxy( baseAdapter, {
-			get( target, key: string ) {
+		const baseAdapter = new (adapters[adapterLabel] as any)(config);
+		const newDataSource = new Proxy(baseAdapter, {
+			get(target, key: string) {
 				// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
-				if ( _.isString( key )) {
-					let method = key.match( /^(find|update|insert|delete)(Many|One)$/ );
-					if ( null !== method ) {
+				if (_.isString(key)) {
+					let method = key.match(/^(find|update|insert|delete)(Many|One)$/);
+					if (null !== method) {
 						method = method as RegExpMatchArray;
 						method[2] = method[2].toLowerCase();
 						// Cast regex match to object like this: {full: 'findMany', query: 'find', number: 'many'}
-						const methodObj = _.mapKeys( method.slice( 0, 3 ), ( val: void, key: number ) => ([ 'full', 'query', 'number' ][key])) as IQueryTypeDescriptor;
-						return wrapDataSourceAction( target[key], methodObj.query as string, target );
+						const methodObj: Diaspora.IQueryTypeDescriptor = {
+							full: method[0],
+							query: method[1],
+							number: method[2],
+						};
+						return wrapDataSourceAction(
+							target[key],
+							methodObj.query as string,
+							target
+						);
 					}
 				}
 				return target[key];
@@ -284,16 +306,16 @@ const Diaspora: DiaspoNS.Module = {
 	 * @param   {DiasporaAdapter} dataSource - Datasource itself.
 	 * @returns {undefined} This function does not return anything.
 	 */
-	registerDataSource( name: string, dataSource: DiaspoNS.Adapter ) {
-		requireName( 'DataSource', name );
-		if ( dataSources.hasOwnProperty( name )) {
-			throw new Error( `DataSource name already used, had "${ name }"` );
+	registerDataSource(name: string, dataSource: Diaspora.Adapter) {
+		requireName('DataSource', name);
+		if (dataSources.hasOwnProperty(name)) {
+			throw new Error(`DataSource name already used, had "${name}"`);
 		}
 		/*		if ( !( dataSource instanceof Diaspora.components.Adapters.Adapter )) {
 			throw new Error( 'DataSource must be an instance inheriting "DiasporaAdapter"' );
 		}*/
 		dataSource.name = name;
-		_.merge( dataSources, {
+		_.merge(dataSources, {
 			[name]: dataSource,
 		});
 		return dataSource;
@@ -309,9 +331,13 @@ const Diaspora: DiaspoNS.Module = {
 	 * @param   {Object} configHash   - Configuration hash. This configuration hash depends on the adapter we want to use.
 	 * @returns {Adapters.DiasporaAdapter} New adapter spawned.
 	 */
-	createNamedDataSource( sourceName: string, adapterLabel: string, configHash: object ) {
-		const dataSource = Diaspora.createDataSource( adapterLabel, configHash );
-		return Diaspora.registerDataSource( sourceName, dataSource );
+	createNamedDataSource(
+		sourceName: string,
+		adapterLabel: string,
+		configHash: object
+	) {
+		const dataSource = _Diaspora.createDataSource(adapterLabel, configHash);
+		return _Diaspora.registerDataSource(sourceName, dataSource);
 	},
 
 	/**
@@ -323,15 +349,15 @@ const Diaspora: DiaspoNS.Module = {
 	 * @param   {Object} modelDesc - Description of the model to define.
 	 * @returns {Model} Model created.
 	 */
-	declareModel( name: string, modelDesc: object ) {
-		if ( !_.isString( name ) && name.length > 0 ) {
-			requireName( 'Model', name );
+	declareModel(name: string, modelDesc: object) {
+		if (_.isString(name) && name.length > 0) {
+			requireName('Model', name);
 		}
-		if ( !_.isObject( modelDesc )) {
-			throw new Error( '"modelDesc" must be an object' );
+		if (!_.isObject(modelDesc)) {
+			throw new Error('"modelDesc" must be an object');
 		}
-		const model = new Diaspora.components.Model( name, modelDesc );
-		_.assign( models, {
+		const model = new _Diaspora.components.Model(name, modelDesc);
+		_.assign(models, {
 			[name]: model,
 		});
 		return model;
@@ -347,9 +373,9 @@ const Diaspora: DiaspoNS.Module = {
 	 * @param   {Adapters.DiasporaAdapter} adapter - The adapter to register.
 	 * @returns {undefined} This function does not return anything.
 	 */
-	registerAdapter( label: string, adapter: DiaspoNS.Adapter ) {
-		if ( adapters.hasOwnProperty( label )) {
-			throw new Error( `Adapter with label "${ label }" already exists.` );
+	registerAdapter(label: string, adapter: Diaspora.Adapter) {
+		if (adapters.hasOwnProperty(label)) {
+			throw new Error(`Adapter with label "${label}" already exists.`);
 		}
 		// Check inheritance of adapter
 		/*if ( !( adapter.prototype instanceof Diaspora.components.Adapters.Adapter )) {
@@ -417,9 +443,9 @@ const Diaspora: DiaspoNS.Module = {
 	 * @author gerkin
 	 */
 	logger,
-} as DiaspoNS.Module;
+} as Diaspora.Diaspora;
 
-export {Diaspora};
+export const Diaspora = _Diaspora;
 
 // Load components after export, so requires of Diaspora returns a complete object
 /**
@@ -432,32 +458,35 @@ export {Diaspora};
  */
 Diaspora.components = {
 	Errors: {
-		ExtendableError:       require( './errors/extendableError' ),
-		ValidationError:       require( './errors/validationError' ),
-		EntityValidationError: require( './errors/entityValidationError' ),
-		SetValidationError:    require( './errors/setValidationError' ),
-		EntityStateError:      require( './errors/entityStateError' ),
+		ExtendableError: require('./errors/extendableError'),
+		ValidationError: require('./errors/validationError'),
+		EntityValidationError: require('./errors/entityValidationError'),
+		SetValidationError: require('./errors/setValidationError'),
+		EntityStateError: require('./errors/entityStateError'),
 	},
 };
-_.assign( Diaspora.components, {
+_.assign(Diaspora.components, {
 	Adapters: {
-		Adapter: require( './adapters/base/adapter' ),
-		Entity:  require( './adapters/base/entity' ),
+		Adapter: require('./adapters/base/adapter'),
+		Entity: require('./adapters/base/entity'),
 	},
 });
-_.assign( Diaspora.components, {
-	Model:         require( './model' ),
-	EntityFactory: require( './entityFactory' ),
-	Entity:        require( './entityFactory' ).Entity,
-	Set:           require( './set' ),
-	Validator:     require( './validator' ),
-	Utils:         require( './utils' ),
+_.assign(Diaspora.components, {
+	Model: require('./model'),
+	EntityFactory: require('./entityFactory'),
+	Entity: require('./entityFactory').Entity,
+	Set: require('./set'),
+	Validator: require('./validator'),
+	Utils: require('./utils'),
 });
 
 // Register available built-in adapters
-Diaspora.registerAdapter( 'inMemory', require( './adapters/inMemory/adapter' ));
-Diaspora.registerAdapter( 'webApi', require( './adapters/webApi/adapter' ));
+Diaspora.registerAdapter('inMemory', require('./adapters/inMemory/adapter'));
+Diaspora.registerAdapter('webApi', require('./adapters/webApi/adapter'));
 // Register webStorage only if in browser
-if ( process.browser ) {
-	Diaspora.registerAdapter( 'webStorage', require( './adapters/webStorage/adapter' ));
+if (process.browser) {
+	Diaspora.registerAdapter(
+		'webStorage',
+		require('./adapters/webStorage/adapter')
+	);
 }

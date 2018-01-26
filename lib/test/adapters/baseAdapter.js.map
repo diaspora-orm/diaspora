@@ -1,1 +1,0 @@
-{"version":3,"file":"baseAdapter.js","sourceRoot":"","sources":["../../../test/adapters/baseAdapter.js"],"names":[],"mappings":"AAAA,YAAY,CAAC;AAEb,6BAA6B;AAE7B,MAAM,OAAO,GAAG,IAAI,QAAQ,CAAC,UAAU,CAAC,QAAQ,CAAC,OAAO,EAAE,CAAC;AAC3D,MAAM,gBAAgB,GAAG,OAAO,CAAE,SAAS,CAAE,CAAC;AAE9C,gBAAgB,CAAC,mBAAmB,CAAE,OAAO,CAAE,CAAC"}

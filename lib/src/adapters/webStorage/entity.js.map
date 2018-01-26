@@ -1,1 +1,0 @@
-{"version":3,"file":"entity.js","sourceRoot":"","sources":["../../../../src/adapters/webStorage/entity.js"],"names":[],"mappings":"AAAA,YAAY,CAAC;AAEb,MAAM,eAAe,GAAG,OAAO,CAAE,mBAAmB,CAAE,CAAC;AAEvD;;;;;GAKG;AACH,sBAAuB,SAAQ,eAAe;IAC7C;;;;;;OAMG;IACH,YAAa,MAAM,EAAE,UAAU;QAC9B,KAAK,CAAE,MAAM,EAAE,UAAU,CAAE,CAAC;IAC7B,CAAC;CACD;AAED,MAAM,CAAC,OAAO,GAAG,gBAAgB,CAAC"}
