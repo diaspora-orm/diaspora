@@ -11,11 +11,6 @@ declare module '.' {
 	interface EntityObject {
 		[key: string]: any;
 	}
-	interface IFieldDescriptor {
-		type: string;
-		attributes: object;
-		default: Function | string;
-	}
 	interface IAdapterRegistry {
 		[key: string]: Diaspora.Adapters.BaseAdapter.Adapter;
 	}
