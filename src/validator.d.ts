@@ -4,6 +4,9 @@ import { EntityObject } from '.';
 declare module '.' {
 	export namespace Validation {
 		interface ErrorObject {}
+		interface ErrorObjectFinal {
+			value: any;
+		}
 		export type CheckFunction = (
 			keys: PathStack,
 			fieldDesc: { type: string },
