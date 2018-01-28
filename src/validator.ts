@@ -24,7 +24,7 @@ import { EntityValidationError } from './errors';
 const validateWrongType: (tester: TypeChecker) => CheckFunction = (
 	tester: TypeChecker
 ) => {
-	return (keys: PathStack, fieldDesc: FieldDescriptor, value: any) => {
+	return (keys: Validation.PathStack, fieldDesc: FieldDescriptor, value: any) => {
 		if (!tester(value)) {
 			return {
 				type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
@@ -55,10 +55,10 @@ const validateArrayItems = (
 					propVal,
 					keys
 						.clone()
-						.pushValidationProp('of', _.isArray(fieldDesc.of) ? subIndex : undefined)
+						.pushValidationProp('of', (_.isArray(fieldDesc.of) ? string(subIndex) : undefined) as string)
 						.pushEntityProp(index),
 					{ getProps: false }
-				)
+				
 			);
 			if (!_.isArray(fieldDesc.of)) {
 				return subErrors.get(0);
