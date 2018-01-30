@@ -83,7 +83,7 @@
 		"lodash": "^4.17.4",
 		"request": "^2.83.0",
 		"request-promise": "^4.2.2",
-		"sequential-event": "^0.3.1",
+		"sequential-event": "^0.4.0",
 		"winston": "^3.0.0-rc0"
 	},
 	"engines": {
