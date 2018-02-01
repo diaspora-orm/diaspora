@@ -62,7 +62,7 @@ const chaiAsPromised = require( 'chai-as-promised' );
 chai.use( chaiAsPromised );
 global.assert = chai.assert;
 global.expect = chai.expect;
-global.SequentialEvent = require( 'sequential-event' );
+global.SequentialEvent = require( 'sequential-event' ).SequentialEvent;
 global.Promise = require( 'bluebird' );
 
 chai.use( function chaiUse( _chai, utils ) {
