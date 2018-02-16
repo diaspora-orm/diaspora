@@ -25,7 +25,7 @@ On a new NodeJS project, install Diaspora from both the development configuratio
 
 {% highlight bash %}
 # Install latest dev version
-npm install --save-dev {{ site.github.clone.ssh }}
+npm install -D {{ site.github.clone.ssh }}
 {% endhighlight %}
 
 </div>
@@ -42,7 +42,7 @@ yarn add {{ site.github.clone.ssh }}
 </div>
 
 Then, because your adapter is a *plugin* for Diaspora, add **Diaspora** as a [peerDependency](https://nodejs.org/en/blog/npm/peer-dependencies/).
-Note that the first version of Diaspora that supports adding an adapter is version `0.2.0`, so your `package.json` should be something like:
+Note that the first version of Diaspora that supports adding an adapter is version `0.2.0`. Your `package.json` should be something like:
 
 {% highlight json %}
 {
@@ -55,6 +55,8 @@ Note that the first version of Diaspora that supports adding an adapter is versi
 }
 {% endhighlight %}
 
+Of course, you should idealy check the latest stable version.
+
 ## Write the adapter
 
 {% highlight javascript %}
@@ -62,10 +64,10 @@ Note that the first version of Diaspora that supports adding an adapter is versi
 
 const {
 	_, Promise,
-} = require( 'diaspora/lib/dependencies' );
+} = require( '@diaspora/diaspora/lib/dependencies' );
 
-const DiasporaAdapter = require( 'diaspora/lib/adapters/baseAdapter.js' );
-const DataStoreEntity = require( 'diaspora/lib/dataStoreEntities/baseEntity.js' );
+const DiasporaAdapter = require( '@diaspora/diaspora/lib/adapters/baseAdapter.js' );
+const DataStoreEntity = require( '@diaspora/diaspora/lib/dataStoreEntities/baseEntity.js' );
 
 // This class allows you to define custom logic with your datastore entity
 class MyEntity extends DataStoreEntity {
@@ -114,7 +116,7 @@ if( !process.env.DISABLE_AUTOLOAD_DIASPORA_ADAPTERS ){
 module.exports = MyDiasporaAdapter;
 {% endhighlight %}
 
-If you are planning to deploy your adapter on the client side, note that async functions are not really [widely supported](http://caniuse.com/#feat=async-functions), and you probably should either transform your adapter using [Babel](https://babeljs.io/) or use [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) instead.
+If you are planning to deploy your adapter on the client side, note that async functions are not really [widely supported](http://caniuse.com/#feat=async-functions), and you probably should either transform your adapter using bundlers or transscripters like [Babel](https://babeljs.io/) or use [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) instead.
 
 You are ready to go! Don't hesitate to post your adapters link on this page, or edit the Diaspora's README at the [Adapters section](https://github.com/GerkinDev/Diaspora#available-adapters).
 
@@ -126,7 +128,7 @@ Now that your adapter is ready, you need to test it. Diaspora provides some ways
 {% highlight javascript %}
 'use strict';
 
-const AdapterTestUtils = require( 'diaspora/test/adapters/utils' );
+const AdapterTestUtils = require( '@diaspora/diaspora/test/adapters/utils' );
 const ADAPTER_LABEL = 'myAdapter';
 const CONFIG_HASH = {/* Configure your adapter here */};
 const ADAPTER_PREFIX_CAPITALIZED = 'MyAdapter';

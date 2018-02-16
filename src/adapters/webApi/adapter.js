@@ -11,15 +11,15 @@ const WebApiEntity = require( './entity.js' );
 const queryObjectToString = queryObject => {
 	return _( queryObject ).chain( _.cloneDeep ).omitBy( val => _.isObject( val ) && _.isEmpty( val ))
 	// { foo: 1, bar: { baz: 2 } }
-		.mapValues( JSON.stringify )
+	.mapValues( JSON.stringify )
 	// { foo: '1', bar: '{"baz": "2"}' }
-		.toPairs()
+	.toPairs()
 	// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
-		.map( _.partial( _.map, _, encodeURIComponent ))
+	.map( _.partial( _.map, _, encodeURIComponent ))
 	// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
-		.map( arr => `${ arr[0]  }=${  arr[1] }` )
+	.map( arr => `${ arr[0]  }=${  arr[1] }` )
 	// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
-		.join( '&' ).value();
+	.join( '&' ).value();
 };
 
 const getMessage = xhr => _.get(xhr, 'response.message') ? `"${xhr.response.message}"`: 'NULL';
@@ -43,14 +43,14 @@ const defineXhrEvents = ( xhr, resolve, reject ) => {
 	};
 };
 
-const httpRequest = async( method, endPoint, data, queryObject ) => {
+const httpRequest = async( method, endPoint, data, queryObject) => {
 	if ( !process.browser ) {
 		if ( _.isNil( data )) {
 			data = true;
 		}
 		return await require( 'request-promise' )[method.toLowerCase()]( endPoint, {
 			json: data,
-			qs:   _.mapValues( queryObject, JSON.stringify ),
+			qs:   _.mapValues( queryObject, data => typeof data === 'object' ? JSON.stringify(data) : data ),
 		});
 	} else {
 		return new Promise(( resolve, reject ) => {
@@ -91,43 +91,43 @@ const checkWebApiAdapterConfig = config => {
 };
 
 /**
- * Adapter for RESTful HTTP APIs.
- *
- * @see https://www.npmjs.com/package/diaspora-server Diaspora-Server: Package built on Diaspora & Express.js to easily configure HTTP APIs compatible with this adapter.
- * @extends Adapters.DiasporaAdapter
- * @memberof Adapters
- */
+* Adapter for RESTful HTTP APIs.
+*
+* @see https://www.npmjs.com/package/diaspora-server Diaspora-Server: Package built on Diaspora & Express.js to easily configure HTTP APIs compatible with this adapter.
+* @extends Adapters.DiasporaAdapter
+* @memberof Adapters
+*/
 class WebApiDiasporaAdapter extends DiasporaAdapter {
 	/**
-	 * Create a new instance of web api adapter.
-	 *
-	 * @param {Object}         [config]                 - Configuration of this adapter.
-	 * @param {string|false}   [config.scheme = false]  - Scheme to use. On server environment, this parameter is *required*. On browser environment, it defaults to a relative scheme (IE ``). Note that it will be suffixed with `//`.
-	 * @param {string|false}   [config.host = false]    - Hostname of the endpoint. On server environment, this parameter is *required*.
-	 * @param {number|false}   [config.port = false]    - Port of the endpoint.
-	 * @param {number|false}   [config.path = '']       - Path to the endpoint.
-	 * @param {Object<string>} [config.pluralApis = {}] - Hash with keys being the singular name of the endpoint, and values being the associated plural name of the same endpoint.
-	 * @author gerkin
-	 */
-	constructor( config = {}) {
+	* Create a new instance of web api adapter.
+	*
+	* @param {Object}         [config]                 - Configuration of this adapter.
+	* @param {string|false}   [config.scheme = false]  - Scheme to use. On server environment, this parameter is *required*. On browser environment, it defaults to a relative scheme (IE ``). Note that it will be suffixed with `//`.
+	* @param {string|false}   [config.host = false]    - Hostname of the endpoint. On server environment, this parameter is *required*.
+	* @param {number|false}   [config.port = false]    - Port of the endpoint.
+	* @param {number|false}   [config.path = '']       - Path to the endpoint.
+	* @param {Object<string>} [config.pluralApis = {}] - Hash with keys being the singular name of the endpoint, and values being the associated plural name of the same endpoint.
+	* @author gerkin
+	*/
+	constructor( config = {}, eventProviders = []) {
 		/**
-		 * Link to the WebApiEntity.
-		 *
-		 * @name classEntity
-		 * @type {DataStoreEntities.WebApiEntity}
-		 * @memberof Adapters.WebApiDiasporaAdapter
-		 * @instance
-		 * @author Gerkin
-		 */
+		* Link to the WebApiEntity.
+		*
+		* @name classEntity
+		* @type {DataStoreEntities.WebApiEntity}
+		* @memberof Adapters.WebApiDiasporaAdapter
+		* @instance
+		* @author Gerkin
+		*/
 		super( WebApiEntity );
 
 		/**
-		 * Base URL to the REST API
-		 *
-		 * @name baseEndPoint
-		 * @type {string}
-		 * @author Gerkin
-		 */
+		* Base URL to the REST API
+		*
+		* @name baseEndPoint
+		* @type {string}
+		* @author Gerkin
+		*/
 		_.defaults( config, {
 			scheme:     false,
 			host:       false,
@@ -144,60 +144,66 @@ class WebApiDiasporaAdapter extends DiasporaAdapter {
 			const schemeString = config.scheme ? `${ config.scheme }:` : '';
 			this.baseEndPoint = `${ schemeString }//${ config.host }${ portString }${ config.path }`;
 		}
-		this.state = 'ready';
 
 		/**
-		 * Hash mapping singular API names to plural API names
-		 *
-		 * @name pluralApis
-		 * @type {Object<string>}
-		 * @author Gerkin
-		 */
+		* Hash mapping singular API names to plural API names
+		*
+		* @name pluralApis
+		* @type {Object<string>}
+		* @author Gerkin
+		*/
 		this.pluralApis = config.pluralApis;
-	}
 
-	/**
-	 * Send an http query to the targeted `endPoint` using `method` as verb.
-	 * 
-	 * @async
-	 * @param   {string} verb          - Valid HTTP verb. This adapter uses `GET`, `POST`, `PATCH` & `DELETE`.
-	 * @param   {string} endPoint      - Name of the endpoint to interact with. It will be prepended with {@link Adapters.WebApiDiasporaAdapter#baseEndPoint}.
-	 * @param   {Object} [data]        - Optionnal data to send within the body of the request.
-	 * @param   {Object} [queryObject] - Optionnal query object to send along with the request.
-	 * @returns {Promise<Object>} Promise resolved with the resulting data.
-	 */
-	httpQuery( verb, endPoint, data, queryObject ) {
-		return httpRequest( verb, `${ this.baseEndPoint }/${  endPoint.toLowerCase() }`, data, queryObject );
-	}
+		// Bind lifecycle events
+		_.map(eventProviders, eventProvider => _.forIn(eventProvider, (listener, event) => this.on(event, listener)));
 
-	/**
-	 * Get the plural name of an endpoint.
-	 * 
-	 * @param   {string} endPoint - Name of the endpoint.
-	 * @returns {string} Plural version of the endpoint name.
-	 */
-	getPluralEndpoint( endPoint ) {
-		if ( this.pluralApis.hasOwnProperty( endPoint )) {
-			return this.pluralApis[endPoint];
+		if(this.has('initialize')){
+			this.emit('initialize').then(() => this.emit('ready')).catch(err => this.emit('error', err))
 		} else {
-			return `${ endPoint  }s`;
+			this.emit('ready');
 		}
+	}
+
+	async sendRequest(verb, endPoint, body, queryString){
+		Diaspora.logger.verbose(`Sending ${verb} HTTP request to "${endPoint}" with data:`, {body, queryString});
+		const response = await httpRequest(verb, endPoint, body, queryString);
+		Diaspora.logger.silly('HTTP Request response:', response);
+		return response;
+	};
+
+	/**
+	* Send an http query to the targeted `endPoint` using `method` as verb.
+	*
+	* @async
+	* @param   {string} verb          - Valid HTTP verb. This adapter uses `GET`, `POST`, `PATCH` & `DELETE`.
+	* @param   {string} endPoint      - Name of the endpoint to interact with. It will be prepended with {@link Adapters.WebApiDiasporaAdapter#baseEndPoint}.
+	* @param   {Object} [data]        - Optionnal data to send within the body of the request.
+	* @param   {Object} [queryObject] - Optionnal query object to send along with the request.
+	* @returns {Promise<Object>} Promise resolved with the resulting data.
+	*/
+	apiQuery( verb, endPoint, data, queryObject ) {
+		return this.sendRequest(
+			verb,
+			`${ this.baseEndPoint }/${  endPoint.toLowerCase() }`,
+			data,
+			queryObject
+		);
 	}
 
 	// -----
 	// ### Insert
 
 	/**
-	 * Insert a single entity through an HTTP API.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for use of web api.
-	 * @author gerkin
-	 * @param   {string} table  - Name of the table to insert data in.
-	 * @param   {Object} entity - Hash representing the entity to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link WebApiEntity}* `entity`).
-	 */
+	* Insert a single entity through an HTTP API.
+	*
+	* @summary This reimplements {@link Adapters.DiasporaAdapter#insertOne}, modified for use of web api.
+	* @author gerkin
+	* @param   {string} table  - Name of the table to insert data in.
+	* @param   {Object} entity - Hash representing the entity to insert.
+	* @returns {Promise} Promise resolved once insertion is done. Called with (*{@link WebApiEntity}* `entity`).
+	*/
 	async insertOne( table, entity ) {
-		entity = await this.httpQuery( 'POST', table, entity );
+		entity = await this.apiQuery( 'POST', table, entity );
 		if ( !_.isNil( entity )) {
 			this.setIdHash( entity );
 		}
@@ -205,16 +211,16 @@ class WebApiDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * Insert several entities through an HTTP API.
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for use of web api.
-	 * @author gerkin
-	 * @param   {string}   table    - Name of the table to insert data in.
-	 * @param   {Object[]} entities - Hash representing entities to insert.
-	 * @returns {Promise} Promise resolved once insertion is done. Called with (*{@link WebApiEntity[]}* `entities`).
-	 */
+	* Insert several entities through an HTTP API.
+	*
+	* @summary This reimplements {@link Adapters.DiasporaAdapter#insertMany}, modified for use of web api.
+	* @author gerkin
+	* @param   {string}   table    - Name of the table to insert data in.
+	* @param   {Object[]} entities - Hash representing entities to insert.
+	* @returns {Promise} Promise resolved once insertion is done. Called with (*{@link WebApiEntity[]}* `entities`).
+	*/
 	async insertMany( table, entities ) {
-		entities = await this.httpQuery( 'POST', this.getPluralEndpoint( table ), entities );
+		entities = await this.apiQuery( 'POST', this.getPluralEndpoint( table ), entities );
 		entities = maybeAddIdHashToEntities( entities, this );
 		return this.maybeCastSet( entities );
 	}
@@ -223,17 +229,18 @@ class WebApiDiasporaAdapter extends DiasporaAdapter {
 	// ### Find
 
 	/**
-	 * 
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for use of web api.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`).
-	 */
+	*
+	*
+	* @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for use of web api.
+	* @author gerkin
+	* @param   {string}                               table        - Name of the table to retrieve data from.
+	* @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	* @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	* @returns {Promise} Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`).
+	*/
 	async findOne( table, queryFind, options = {}) {
-		let entity = await this.httpQuery( 'GET', table, null, getQueryObject( queryFind, options ));
+		const apiDesc = await this.emit('beforeQuery', 'find', 'one', table, queryFind, null, options);
+		let entities = await this.apiQuery( apiDesc.method, apiDesc.endPoint, apiDesc.body, apiDesc.queryString);
 		if ( !_.isNil( entity )) {
 			this.setIdHash( entity );
 		}
@@ -241,17 +248,18 @@ class WebApiDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * 
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for use of web api.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to retrieve data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`).
-	 */
+	*
+	*
+	* @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for use of web api.
+	* @author gerkin
+	* @param   {string}                               table        - Name of the table to retrieve data from.
+	* @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	* @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	* @returns {Promise} Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`).
+	*/
 	async findMany( table, queryFind, options = {}) {
-		let entities = await this.httpQuery( 'GET', this.getPluralEndpoint( table ), null, getQueryObject( queryFind, options ));
+		const apiDesc = await this.emit('beforeQuery', 'find', 'many', table, queryFind, null, options);
+		let entities = await this.apiQuery( apiDesc.method, apiDesc.endPoint, apiDesc.body, apiDesc.queryString);
 		entities = maybeAddIdHashToEntities( entities, this );
 		return this.maybeCastSet( entities );
 	}
@@ -260,18 +268,18 @@ class WebApiDiasporaAdapter extends DiasporaAdapter {
 	// ### Update
 
 	/**
-	 * 
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for use of web api.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to update data in.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {Object}                               update       - Object properties to set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`).
-	 */
+	*
+	*
+	* @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for use of web api.
+	* @author gerkin
+	* @param   {string}                               table        - Name of the table to update data in.
+	* @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	* @param   {Object}                               update       - Object properties to set.
+	* @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	* @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`).
+	*/
 	async updateOne( table, queryFind, update, options = {}) {
-		let entity = await this.httpQuery( 'PATCH', table, update, getQueryObject( queryFind, options ));
+		let entity = await this.apiQuery( 'PATCH', table, update, getQueryObject( queryFind, options ));
 		if ( !_.isNil( entity )) {
 			entity.idHash = {
 				[this.name]: entity.id,
@@ -281,18 +289,18 @@ class WebApiDiasporaAdapter extends DiasporaAdapter {
 	}
 
 	/**
-	 * 
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for use of web api.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to update data in.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {Object}                               update       - Object properties to set.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`).
-	 */
+	*
+	*
+	* @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for use of web api.
+	* @author gerkin
+	* @param   {string}                               table        - Name of the table to update data in.
+	* @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	* @param   {Object}                               update       - Object properties to set.
+	* @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	* @returns {Promise} Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`).
+	*/
 	async updateMany( table, queryFind, update, options = {}) {
-		let entities = await this.httpQuery( 'PATCH', this.getPluralEndpoint( table ), update, getQueryObject( queryFind, options ));
+		let entities = await this.apiQuery( 'PATCH', this.getPluralEndpoint( table ), update, getQueryObject( queryFind, options ));
 		entities = maybeAddIdHashToEntities( entities, this );
 		return this.maybeCastSet( entities );
 	}
@@ -301,31 +309,31 @@ class WebApiDiasporaAdapter extends DiasporaAdapter {
 	// ### Delete
 
 	/**
-	 * 
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for use of web api.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once item is found. Called with (*undefined*).
-	 */
+	*
+	*
+	* @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for use of web api.
+	* @author gerkin
+	* @param   {string}                               table        - Name of the table to delete data from.
+	* @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing the entity to find.
+	* @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	* @returns {Promise} Promise resolved once item is found. Called with (*undefined*).
+	*/
 	async deleteOne( table, queryFind, options = {}) {
-		return await this.httpQuery( 'DELETE', table, null, getQueryObject( queryFind, options ));
+		return await this.apiQuery( 'DELETE', table, null, getQueryObject( queryFind, options ));
 	}
 
 	/**
-	 * 
-	 *
-	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for use of web api.
-	 * @author gerkin
-	 * @param   {string}                               table        - Name of the table to delete data from.
-	 * @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
-	 * @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
-	 * @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
-	 */
+	*
+	*
+	* @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for use of web api.
+	* @author gerkin
+	* @param   {string}                               table        - Name of the table to delete data from.
+	* @param   {QueryLanguage#SelectQueryOrCondition} queryFind    - Hash representing entities to find.
+	* @param   {QueryLanguage#QueryOptions}           [options={}] - Hash of options.
+	* @returns {Promise} Promise resolved once items are deleted. Called with (*undefined*).
+	*/
 	async deleteMany( table, queryFind, options = {}) {
-		return await this.httpQuery( 'DELETE', this.getPluralEndpoint( table ), null, getQueryObject( queryFind, options ));
+		return await this.apiQuery( 'DELETE', this.getPluralEndpoint( table ), null, getQueryObject( queryFind, options ));
 	}
 }
 

@@ -8900,11 +8900,18 @@
 				"get-stdin": "4.0.1"
 			}
 		},
+<<<<<<< HEAD
 		"strip-json-comments": {
 			"version": "2.0.1",
 			"resolved": "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-2.0.1.tgz",
 			"integrity": "sha1-PFMZQukIwml8DsNEhYwobHygpgo=",
 			"dev": true
+=======
+		"sequential-event": {
+			"version": "0.4.0",
+			"resolved": "https://registry.npmjs.org/sequential-event/-/sequential-event-0.4.0.tgz",
+			"integrity": "sha512-40hUPPA2NAht2BojSDWC1m8Bt6D++X5PZiyG8QxZKANaI0Jarp9mY+erkaVvYD/oz1LayPrpHOv98qzfiOFpnw=="
+>>>>>>> webApi-flex
 		},
 		"subarg": {
 			"version": "1.0.0",
