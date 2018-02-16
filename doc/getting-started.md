@@ -22,7 +22,7 @@ First, install the package (and add it to your project's *dependencies*). You ca
 #### With NPM
 
 {% highlight shell %}
-npm install diaspora
+npm install @diaspora/diaspora
 {% endhighlight %}
 </div>
 
@@ -31,7 +31,7 @@ npm install diaspora
 #### With Yarn
 
 {% highlight shell %}
-yarn add diaspora
+yarn add @diaspora/diaspora
 {% endhighlight %}
 </div>
 </div>
@@ -39,7 +39,13 @@ yarn add diaspora
 Once installed, simply load it using *Node*'s `require`
 
 {% highlight javascript %}
-const Diaspora = require( 'diaspora' );
+const Diaspora = require( '@diaspora/diaspora' ).Diaspora;
+{% endhighlight %}
+
+If you are using Typescript (which I personaly recommend), do the following:
+
+{% highlight typescript %}
+import { Diaspora } from '@diaspora/diaspora';
 {% endhighlight %}
 
 ### For the browser
@@ -61,7 +67,7 @@ This build contains Diaspora and all of its dependencies, packaged in a single (
 </html>
 {% endhighlight %}
 
-> This build export following libraries through the `Diaspora.dependencies` hash:  
+> This build export following libraries through the `Diaspora.dependencies` hash:
   * [lodash](https://lodash.com/)
   * [bluebird](http://bluebirdjs.com/docs/getting-started.html)
   * [sequential-event](https://www.npmjs.com/package/sequential-event)
@@ -180,15 +186,15 @@ Entities are objects with a status, some data sources related informations, and 
    1. `sync`: The entity exists in at least one data source.
  * You can check your entity status in each data sources it is aware of by inspecting the `dataSources` property. This hash contains the `DataSourceEntity` for each sources. You can also know which data source was lastly used by using `lastDataSource()`
  * You can use methods to help you working with your Entities. Custom methods can be added by setting the `methods` hash in the model configuration.
- 
+
 #### Create, retrieve & manage entities
 
 ##### Entities
 
 You can get Entities from model methods. Query methods `insert`, `find` and `update` will return an [entity](jsdoc/Entity.html) in a *sync* status. You can also create *orphan* entities with `spawn`.
 
-Entities can be saved to a specific data source with **[persist](jsdoc/Entity.html#persist)**([*string* `sourceName`]) ► *Promise*  
-You can reload your entity from a specific data source by using **[fetch](jsdoc/Entity.html#fetch)**([*string* `sourceName`]) ► *Promise*  
+Entities can be saved to a specific data source with **[persist](jsdoc/Entity.html#persist)**([*string* `sourceName`]) ► *Promise*
+You can reload your entity from a specific data source by using **[fetch](jsdoc/Entity.html#fetch)**([*string* `sourceName`]) ► *Promise*
 Lastly, you can decide to remove your entity from your data source with **[destroy](jsdoc/Entity.html#destroy)**([*string* `sourceName`]) ► *Promise*
 
 ##### Sets

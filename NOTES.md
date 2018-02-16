@@ -7,3 +7,4 @@
 ## Todo:
 
 * Rewrite documentation
+* Auto cast ISODate string to Date object
