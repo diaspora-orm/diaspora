@@ -9,7 +9,7 @@ import * as _Diaspora from '../../';
  * AdapterEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
  * @memberof DataStoreEntities
  */
-class AdapterEntity {
+export class AdapterEntity {
 	/**
 	 * Construct a new data source entity with specified content & parent.
 	 *
@@ -43,9 +43,7 @@ class AdapterEntity {
 	 * @author gerkin
 	 * @returns {Object} Plain object representing this entity.
 	 */
-	toObject() {
+	toObject(): object {
 		return _.omit(this, ['dataSource', 'id']);
 	}
 }
-
-module.exports = AdapterEntity;

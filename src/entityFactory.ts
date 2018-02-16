@@ -1,81 +1,89 @@
 'use strict';
 
-const {
-	_, Promise, SequentialEvent,
-} = require( './dependencies' );
-const {Diaspora} = require( './diaspora' );
+const { _, Promise, SequentialEvent } = require('./dependencies');
+const { Diaspora } = require('./diaspora');
 const DataStoreEntity = Diaspora.components.Adapters.Entity;
-const EntityStateError = require( './errors/entityStateError' );
+const EntityStateError = require('./errors/entityStateError');
 
 /**
  * @module EntityFactory
  */
 
 const DEFAULT_OPTIONS = { skipEvents: false };
-const PRIVATE = Symbol( 'PRIVATE' );
+const PRIVATE = Symbol('PRIVATE');
 
-const maybeEmit = ( entity, options, eventsArgs, events ) => {
-	events = _.castArray( events );
-	if ( options.skipEvents ) {
-		return Promise.resolve( entity );
+const maybeEmit = (entity, options, eventsArgs, events) => {
+	events = _.castArray(events);
+	if (options.skipEvents) {
+		return Promise.resolve(entity);
 	} else {
-		return entity.emit( events[0], ...eventsArgs ).then(() => {
-			if ( events.length > 1 ) {
-				return maybeEmit( entity, options, eventsArgs, _.slice( events, 1 ));
+		return entity.emit(events[0], ...eventsArgs).then(() => {
+			if (events.length > 1) {
+				return maybeEmit(entity, options, eventsArgs, _.slice(events, 1));
 			} else {
-				return Promise.resolve( entity );
+				return Promise.resolve(entity);
 			}
 		});
 	}
 };
-const maybeThrowInvalidEntityState = ( entity, beforeState, dataSource, method ) => {
+const maybeThrowInvalidEntityState = (
+	entity,
+	beforeState,
+	dataSource,
+	method
+) => {
 	return () => {
 		// Depending on state, we are going to perform a different operation
-		if ( 'orphan' === beforeState ) {
-			return Promise.reject( new EntityStateError( 'Can\'t fetch an orphan entity.' ));
+		if ('orphan' === beforeState) {
+			return Promise.reject(new EntityStateError("Can't fetch an orphan entity."));
 		} else {
 			entity[PRIVATE].lastDataSource = dataSource.name;
-			return dataSource[method]( entity.table( dataSource.name ), entity.uidQuery( dataSource ));
+			return dataSource[method](
+				entity.table(dataSource.name),
+				entity.uidQuery(dataSource)
+			);
 		}
 	};
 };
 
 const entityCtrSteps = {
-	castTypes( source, modelDesc ) {
+	castTypes(source, modelDesc) {
 		const attrs = modelDesc.attributes;
-		_.forEach( source, ( currentVal, attrName ) => {
+		_.forEach(source, (currentVal, attrName) => {
 			const attrDesc = attrs[attrName];
-			if ( _.isObject( attrDesc )) {
-				switch ( attrDesc.type ) {
-					case 'date': {
-						if ( _.isString( currentVal ) || _.isInteger( currentVal )) {
-							source[attrName] = new Date( currentVal );
+			if (_.isObject(attrDesc)) {
+				switch (attrDesc.type) {
+					case 'date':
+						{
+							if (_.isString(currentVal) || _.isInteger(currentVal)) {
+								source[attrName] = new Date(currentVal);
+							}
 						}
-					} break;
+						break;
 				}
 			}
 		});
 		return source;
 	},
-	loadSource( entity, source ) {
+	loadSource(entity, source) {
 		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
-		if ( source instanceof DataStoreEntity ) {
+		if (source instanceof DataStoreEntity) {
 			const _entity = entity[PRIVATE];
-			_.assign( _entity, {
-				state:          'sync',
+			_.assign(_entity, {
+				state: 'sync',
 				lastDataSource: source.dataSource.name,
 			});
 			_entity.dataSources[_entity.lastDataSource] = source;
-			source = entity.deserialize( _.omit( source.toObject(), [ 'id' ]));
+			source = entity.deserialize(_.omit(source.toObject(), ['id']));
 		}
 		return source;
 	},
-	bindLifecycleEvents( entity, modelDesc ) {
+	bindLifecycleEvents(entity, modelDesc) {
 		// Bind lifecycle events
-		_.forEach( modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
+		_.forEach(modelDesc.lifecycleEvents, (eventFunctions, eventName) => {
 			// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
-			_.forEach( _.castArray( eventFunctions ), eventFunction => {
-				entity.on( eventName, eventFunction );
+			_.forEach(_.castArray(eventFunctions), eventFunction => {
+				entity.on(eventName, eventFunction);
 			});
 		});
 	},
@@ -87,7 +95,7 @@ const entityCtrSteps = {
  *
  * @extends SequentialEvent
  */
-class Entity extends SequentialEvent {
+export abstract class Entity extends SequentialEvent {
 	/**
 	 * Create a new entity.
 	 *
@@ -98,14 +106,16 @@ class Entity extends SequentialEvent {
 	 * @param {Object|DataStoreEntities.DataStoreEntity} [source={}] - Hash with properties to copy on the new object.
 	 *        If provided object inherits DataStoreEntity, the constructed entity is built in `sync` state.
 	 */
-	constructor( name, modelDesc, model, source = {}) {
-		const modelAttrsKeys = _.keys( modelDesc.attributes );
+	constructor(name, modelDesc, model, source = {}) {
+		const modelAttrsKeys = _.keys(modelDesc.attributes);
 		super();
 
 		// ### Init defaults
-		const dataSources = Object.seal( _.mapValues( model.dataSources, () => undefined ));
+		const dataSources = Object.seal(
+			_.mapValues(model.dataSources, () => undefined)
+		);
 		const _this = {
-			state:          'orphan',
+			state: 'orphan',
 			lastDataSource: null,
 			dataSources,
 			name,
@@ -115,25 +125,33 @@ class Entity extends SequentialEvent {
 		this[PRIVATE] = _this;
 
 		// ### Cast types if required
-		source = entityCtrSteps.castTypes( source, modelDesc );
+		source = entityCtrSteps.castTypes(source, modelDesc);
 
 		// ### Load datas from source
-		source = entityCtrSteps.loadSource( this, source );
+		source = entityCtrSteps.loadSource(this, source);
 
 		// ### Final validation
 		// Check keys provided in source
-		const sourceDModel = _.difference( source, modelAttrsKeys );
-		if ( 0 !== sourceDModel.length ) { // Later, add a criteria for schemaless models
-			throw new Error( `Source has unknown keys: ${ JSON.stringify( sourceDModel ) } in ${ JSON.stringify( source ) }` );
+		const sourceDModel = _.difference(source, modelAttrsKeys);
+		if (0 !== sourceDModel.length) {
+			// Later, add a criteria for schemaless models
+			throw new Error(
+				`Source has unknown keys: ${JSON.stringify(
+					sourceDModel
+				)} in ${JSON.stringify(source)}`
+			);
 		}
 
 		// ### Generate prototype & attributes
 		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
-		_this.attributes = Diaspora.default( _.cloneDeep( source ), modelDesc.attributes );
+		_this.attributes = Diaspora.default(
+			_.cloneDeep(source),
+			modelDesc.attributes
+		);
 		source = null;
 
 		// ### Load events
-		entityCtrSteps.bindLifecycleEvents( this, modelDesc );
+		entityCtrSteps.bindLifecycleEvents(this, modelDesc);
 	}
 
 	/**
@@ -143,7 +161,7 @@ class Entity extends SequentialEvent {
 	 * @param   {Adapters.DiasporaAdapter} dataSource - Name of the data source to get query for.
 	 * @returns {Object} Query to find this entity.
 	 */
-	uidQuery( dataSource ) {
+	uidQuery(dataSource) {
 		return {
 			id: this[PRIVATE].attributes.idHash[dataSource.name],
 		};
@@ -155,7 +173,7 @@ class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @returns {string} Name of the table.
 	 */
-	table( /*sourceName*/ ) {
+	table(/*sourceName*/) {
 		// Will be used later
 		return this[PRIVATE].name;
 	}
@@ -169,7 +187,7 @@ class Entity extends SequentialEvent {
 	 * @see Validator.Validator#validate
 	 */
 	validate() {
-		this.constructor.model.validator.validate( this[PRIVATE].attributes );
+		this.constructor.model.validator.validate(this[PRIVATE].attributes);
 	}
 
 	/**
@@ -179,7 +197,7 @@ class Entity extends SequentialEvent {
 	 * @param   {Object} [newContent={}] - Replacement content.
 	 * @returns {module:EntityFactory~Entity} Returns `this`.
 	 */
-	replaceAttributes( newContent = {}) {
+	replaceAttributes(newContent = {}) {
 		newContent.idHash = this[PRIVATE].attributes.idHash;
 		this[PRIVATE].attributes = newContent;
 		return this;
@@ -192,13 +210,20 @@ class Entity extends SequentialEvent {
 	 * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
 	 * @returns {Object} Diff query.
 	 */
-	getDiff( dataSource ) {
+	getDiff(dataSource) {
 		const dataStoreEntity = this[PRIVATE].dataSources[dataSource.name];
 		const dataStoreObject = dataStoreEntity.toObject();
 
-		const keys = _( this[PRIVATE].attributes ).keys().concat( _.keys( dataStoreObject )).uniq().difference([ 'idHash' ]).value();
-		const values = _.map( keys, key => this[PRIVATE].attributes[key]);
-		const diff = _.omitBy( _.zipObject( keys, values ), ( val, key ) => _.isEqual( this[PRIVATE].attributes[key], dataStoreObject[key]));
+		const keys = _(this[PRIVATE].attributes)
+			.keys()
+			.concat(_.keys(dataStoreObject))
+			.uniq()
+			.difference(['idHash'])
+			.value();
+		const values = _.map(keys, key => this[PRIVATE].attributes[key]);
+		const diff = _.omitBy(_.zipObject(keys, values), (val, key) =>
+			_.isEqual(this[PRIVATE].attributes[key], dataStoreObject[key])
+		);
 		return diff;
 	}
 
@@ -219,8 +244,8 @@ class Entity extends SequentialEvent {
 	 * @param   {Object} data - Data to convert to primitive types.
 	 * @returns {Object} Object with Primitives-only types.
 	 */
-	serialize( data ) {
-		return _.cloneDeep( data );
+	serialize(data) {
+		return _.cloneDeep(data);
 	}
 
 	/**
@@ -230,8 +255,8 @@ class Entity extends SequentialEvent {
 	 * @param   {Object} data - Data to convert from primitive types.
 	 * @returns {Object} Object with Primitives & non primitives types.
 	 */
-	deserialize( data ) {
-		return _.cloneDeep( data );
+	deserialize(data) {
+		return _.cloneDeep(data);
 	}
 
 	/**
@@ -245,37 +270,41 @@ class Entity extends SequentialEvent {
 	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
 	 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
 	 */
-	persist( sourceName, options = {}) {
-		_.defaults( options, DEFAULT_OPTIONS );
+	persist(sourceName, options = {}) {
+		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this[PRIVATE].state;
 		this[PRIVATE].state = 'syncing';
 		// Generate events args
-		const dataSource = this.constructor.model.getDataSource( sourceName );
-		const eventsArgs = [ dataSource.name ];
-		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
+		const dataSource = this.constructor.model.getDataSource(sourceName);
+		const eventsArgs = [dataSource.name];
+		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 
 		// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
 		const suffix = 'orphan' === beforeState ? 'Create' : 'Update';
-		return _maybeEmit([ 'beforePersist', 'beforeValidate' ])
+		return _maybeEmit(['beforePersist', 'beforeValidate'])
 			.then(() => this.validate())
-			.then(() => _maybeEmit([ 'afterValidate', `beforePersist${ suffix }` ]))
+			.then(() => _maybeEmit(['afterValidate', `beforePersist${suffix}`]))
 			.then(() => {
 				this[PRIVATE].lastDataSource = dataSource.name;
 				// Depending on state, we are going to perform a different operation
-				if ( 'orphan' === beforeState ) {
-					return dataSource.insertOne( this.table( sourceName ), this.toObject());
+				if ('orphan' === beforeState) {
+					return dataSource.insertOne(this.table(sourceName), this.toObject());
 				} else {
-					return dataSource.updateOne( this.table( sourceName ), this.uidQuery( dataSource ), this.getDiff( dataSource ));
+					return dataSource.updateOne(
+						this.table(sourceName),
+						this.uidQuery(dataSource),
+						this.getDiff(dataSource)
+					);
 				}
 			})
-			.then( dataStoreEntity => {
-				entityCtrSteps.castTypes( dataStoreEntity, this[PRIVATE].modelDesc );
+			.then(dataStoreEntity => {
+				entityCtrSteps.castTypes(dataStoreEntity, this[PRIVATE].modelDesc);
 				this[PRIVATE].state = 'sync';
 				this[PRIVATE].attributes = dataStoreEntity.toObject();
 				this[PRIVATE].dataSources[dataSource.name] = dataStoreEntity;
 
-				return _maybeEmit([ `afterPersist${ suffix }`, 'afterPersist' ]);
+				return _maybeEmit([`afterPersist${suffix}`, 'afterPersist']);
 			});
 	}
 
@@ -290,24 +319,27 @@ class Entity extends SequentialEvent {
 	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeFind` and `afterFind`.
 	 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
 	 */
-	fetch( sourceName, options = {}) {
-		_.defaults( options, DEFAULT_OPTIONS );
+	fetch(sourceName, options = {}) {
+		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this[PRIVATE].state;
 		this[PRIVATE].state = 'syncing';
 		// Generate events args
-		const dataSource = this.constructor.model.getDataSource( sourceName );
-		const eventsArgs = [ dataSource.name, this.serialize( this[PRIVATE].attributes ) ];
-		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
-		return _maybeEmit( 'beforeFetch' )
-			.then( maybeThrowInvalidEntityState( this, beforeState, dataSource, 'findOne' ))
-			.then( dataStoreEntity => {
-				entityCtrSteps.castTypes( dataStoreEntity, this[PRIVATE].modelDesc );
+		const dataSource = this.constructor.model.getDataSource(sourceName);
+		const eventsArgs = [
+			dataSource.name,
+			this.serialize(this[PRIVATE].attributes),
+		];
+		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
+		return _maybeEmit('beforeFetch')
+			.then(maybeThrowInvalidEntityState(this, beforeState, dataSource, 'findOne'))
+			.then(dataStoreEntity => {
+				entityCtrSteps.castTypes(dataStoreEntity, this[PRIVATE].modelDesc);
 				this[PRIVATE].state = 'sync';
 				this[PRIVATE].attributes = dataStoreEntity.toObject();
 				this[PRIVATE].dataSources[dataSource.name] = dataStoreEntity;
 
-				return _maybeEmit( 'afterFetch' );
+				return _maybeEmit('afterFetch');
 			});
 	}
 
@@ -322,38 +354,42 @@ class Entity extends SequentialEvent {
 	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeDelete` and `afterDelete`.
 	 * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`.
 	 */
-	destroy( sourceName, options = {}) {
-		_.defaults( options, DEFAULT_OPTIONS );
+	destroy(sourceName, options = {}) {
+		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this[PRIVATE].state;
 		this[PRIVATE].state = 'syncing';
 		// Generate events args
-		const dataSource = this.constructor.model.getDataSource( sourceName );
-		const eventsArgs = [ dataSource.name ];
-		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
-		return _maybeEmit( 'beforeDestroy' )
-			.then( maybeThrowInvalidEntityState( this, beforeState, dataSource, 'deleteOne' ))
+		const dataSource = this.constructor.model.getDataSource(sourceName);
+		const eventsArgs = [dataSource.name];
+		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
+		return _maybeEmit('beforeDestroy')
+			.then(
+				maybeThrowInvalidEntityState(this, beforeState, dataSource, 'deleteOne')
+			)
 			.then(() => {
-			// If this was our only data source, then go back to orphan state
-				if ( 0 === _.without( this[PRIVATE].model.dataSources, dataSource.name ).length ) {
+				// If this was our only data source, then go back to orphan state
+				if (
+					0 === _.without(this[PRIVATE].model.dataSources, dataSource.name).length
+				) {
 					this[PRIVATE].state = 'orphan';
 				} else {
 					this[PRIVATE].state = 'sync';
 					delete this[PRIVATE].attributes.idHash[dataSource.name];
 				}
 				this[PRIVATE].dataSources[dataSource.name] = undefined;
-				return _maybeEmit( 'afterDestroy' );
+				return _maybeEmit('afterDestroy');
 			});
 	}
 
 	/**
 	 * Get the ID for the given source name.
-	 * 
+	 *
 	 * @param   {string} sourceName - Name of the source to get ID from.
 	 * @returns {string} Id of this entity in requested data source.
 	 */
-	getId( sourceName ) {
-		const dataSource = this.constructor.model.getDataSource( sourceName );
+	getId(sourceName) {
+		const dataSource = this.constructor.model.getDataSource(sourceName);
 		return this[PRIVATE].dataSources[dataSource.name].id;
 	}
 
@@ -396,6 +432,22 @@ class Entity extends SequentialEvent {
 	get lastDataSource() {
 		return this[PRIVATE].lastDataSource;
 	}
+
+	/**
+	 * Name of the class.
+	 *
+	 * @type {string}
+	 * @author gerkin
+	 */
+	abstract get name();
+
+	/**
+	 * Reference to this entity's model.
+	 *
+	 * @type {Model}
+	 * @author gerkin
+	 */
+	abstract get model();
 }
 
 /**
@@ -410,7 +462,12 @@ class Entity extends SequentialEvent {
  * @returns {module:EntityFactory~Entity} Entity constructor to use with this model.
  * @property {module:EntityFactory~Entity} Entity Entity constructor
  */
-const EntityFactory = ( name, modelDesc, model ) => {
+interface IEntityFactory {
+	(name: string, modelDesc: ModelDescription, model: Model): Function;
+	Entity: Entity;
+}
+// We init the function as any to define the Entity property later.
+const ef: any = (name, modelDesc, model) => {
 	/**
 	 * @ignore
 	 */
@@ -422,7 +479,7 @@ const EntityFactory = ( name, modelDesc, model ) => {
 		 * @author gerkin
 		 */
 		static get name() {
-			return `${ name  }Entity`;
+			return `${name}Entity`;
 		}
 
 		/**
@@ -437,16 +494,18 @@ const EntityFactory = ( name, modelDesc, model ) => {
 	}
 	// We use keys `methods` and not `functions` as explained in this [StackOverflow thread](https://stackoverflow.com/a/155655/4839162).
 	// Extend prototype with methods in our model description
-	_.forEach( modelDesc.methods, ( method, methodName ) => {
+	_.forEach(modelDesc.methods, (method, methodName) => {
 		SubEntity.prototype[methodName] = method;
 	});
 	// Add static methods
-	_.forEach( modelDesc.staticMethods, ( staticMethodName, staticMethod ) => {
+	_.forEach(modelDesc.staticMethods, (staticMethodName, staticMethod) => {
 		SubEntity[staticMethodName] = staticMethod;
 	});
-	return SubEntity.bind( SubEntity, name, modelDesc, model );
+	return SubEntity.bind(SubEntity, name, modelDesc, model);
 };
-EntityFactory.Entity = Entity;
+ef.Entity = Entity;
+export const EntityFactory: IEntityFactory = ef;
+
 // =====
 // ## Lifecycle Events
 
@@ -519,4 +578,6 @@ EntityFactory.Entity = Entity;
  * @type {String}
  */
 
-module.exports = EntityFactory;
+export interface EntityObject {
+	[key: string]: any;
+}

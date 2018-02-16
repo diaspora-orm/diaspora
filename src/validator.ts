@@ -1,38 +1,8 @@
 import { _ } from './dependencies';
-import { Validation, Model, EntityObject } from '.';
 
-import FieldDescriptor = Model.FieldDescriptor;
-
-import CheckFunction = Validation.CheckFunction;
-import TypeChecker = Validation.TypeChecker;
-import TypeErrorObject = Validation.TypeErrorObject;
-
-import ValidationStepArgs = Validation.ValidationStepArgs;
-
+import { FieldDescriptor } from './model';
+import { Entity, EntityObject } from './entityFactory';
 import { EntityValidationError } from './errors';
-
-/**
- * @module Validator
- */
-
-/**
- * Execute the simple tester and return an error component if it returns falsey.
- *
- * @param   {Function} tester - The test function to invoke.
- * @returns {module:Validator~Checker} Function to execute to validate the type.
- */
-const validateWrongType: (tester: TypeChecker) => CheckFunction = (
-	tester: TypeChecker
-) => {
-	return (keys: Validation.PathStack, fieldDesc: FieldDescriptor, value: any) => {
-		if (!tester(value)) {
-			return {
-				type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
-			};
-		}
-		return undefined;
-	};
-};
 
 /**
  * Prepare the check of each items in the array.
@@ -55,10 +25,12 @@ const validateArrayItems = (
 					propVal,
 					keys
 						.clone()
-						.pushValidationProp('of', (_.isArray(fieldDesc.of) ? string(subIndex) : undefined) as string)
-						.pushEntityProp(index),
+						.pushValidationProp('of', (_.isArray(fieldDesc.of)
+							? String(subIndex)
+							: undefined) as string)
+						.pushEntityProp(String(index)),
 					{ getProps: false }
-				
+				)
 			);
 			if (!_.isArray(fieldDesc.of)) {
 				return subErrors.get(0);
@@ -79,29 +51,74 @@ const messageRequired = (keys: PathStack, fieldDesc: FieldDescriptor) => {
 	}`;
 };
 
+export interface ErrorObject {
+	validate?: string;
+	type?: string;
+	spec?: string;
+	required?: string;
+	enum?: string;
+	//	children?:
+}
+
+export interface ErrorObjectFinal extends ErrorObject {
+	value: any;
+}
+
+export type TypeChecker = (value: any) => boolean;
+
+export interface TypeErrorObject extends ErrorObject {
+	type: string;
+}
+
 /**
  * A checker is a function that can return an error component with provided standard args.
  *
  * @callback Checker
- * @param   {module:Validator~PathStack} keys      - Pathstack so far.
- * @param   {Object}                     fieldDesc - Description of the field.
- * @param   {Any}                        value     - Value to check.
- * @returns {Object} Error component.
+ * @param   keys      - Pathstack so far.
+ * @param   fieldDesc - Description of the field.
+ * @param   value     - Value to check.
+ * @returns Error component.
  */
+type CheckFunction = (
+	this: Validator,
+	keys: PathStack,
+	fieldDesc: FieldDescriptor,
+	value: any
+) => ErrorObject | undefined;
+
+/**
+ * Execute the simple tester and return an error component if it returns falsey.
+ *
+ * @param   tester - The test function to invoke.
+ * @returns Function to execute to validate the type.
+ */
+const validateWrongType = (tester: TypeChecker): CheckFunction => {
+	return (
+		keys: PathStack,
+		fieldDesc: FieldDescriptor,
+		value: any
+	): ErrorObject | undefined => {
+		if (!tester(value)) {
+			return {
+				type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
+			};
+		}
+		return undefined;
+	};
+};
 
 /**
  * Store for validation functions.
  *
- * @type {object}
- * @property {object<string, module:Validator~Checker>} TYPE - Type checkers.
- * @property {module:Validator~Checker} TYPE.string - String type checker.
- * @property {module:Validator~Checker} TYPE.integer - Integer type checker.
- * @property {module:Validator~Checker} TYPE.float - Float type checker.
- * @property {module:Validator~Checker} TYPE.date - Date type checker.
- * @property {module:Validator~Checker} TYPE.object - Object type checker.
- * @property {module:Validator~Checker} TYPE.array - Array type checker.
- * @property {module:Validator~Checker} TYPE.any - Type checker for type 'any'.
- * @property {module:Validator~Checker} TYPE._ - Default function for unhandled type.
+ * @property TYPE - Type checkers.
+ * @property TYPE.string - String type checker.
+ * @property TYPE.integer - Integer type checker.
+ * @property TYPE.float - Float type checker.
+ * @property TYPE.date - Date type checker.
+ * @property TYPE.object - Object type checker.
+ * @property TYPE.array - Array type checker.
+ * @property TYPE.any - Type checker for type 'any'.
+ * @property TYPE._ - Default function for unhandled type.
  */
 const VALIDATIONS = {
 	TYPE: {
@@ -110,7 +127,12 @@ const VALIDATIONS = {
 		float: validateWrongType(_.isNumber),
 		date: validateWrongType(_.isDate),
 		boolean: validateWrongType(_.isBoolean),
-		object(keys: PathStack, fieldDesc: FieldDescriptor, value: any) {
+		object(
+			this: Validator,
+			keys: PathStack,
+			fieldDesc: FieldDescriptor,
+			value: any
+		): ErrorObject | undefined {
 			if (!_.isObject(value)) {
 				return {
 					type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
@@ -134,10 +156,17 @@ const VALIDATIONS = {
 					: {};
 				if (!_.isEmpty(deepTest)) {
 					return { children: deepTest };
+				} else {
+					return undefined;
 				}
 			}
 		},
-		array(keys: PathStack, fieldDesc: FieldDescriptor, value: any) {
+		array(
+			this: Validator,
+			keys: PathStack,
+			fieldDesc: FieldDescriptor,
+			value: any
+		): ErrorObject | undefined {
 			if (!_.isArray(value)) {
 				return {
 					type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
@@ -151,15 +180,26 @@ const VALIDATIONS = {
 					: {};
 				if (!_.isEmpty(deepTest)) {
 					return { children: deepTest };
+				} else {
+					return undefined;
 				}
 			}
 		},
-		any(keys: PathStack, fieldDesc: FieldDescriptor, value: any) {
+		any(
+			this: Validator,
+			keys: PathStack,
+			fieldDesc: FieldDescriptor,
+			value: any
+		): ErrorObject | undefined {
 			return {
 				type: `${keys.toValidatePath()} expected to be assigned with any type`,
 			};
 		},
-		_(keys: PathStack, fieldDesc: FieldDescriptor) {
+		_(
+			this: Validator,
+			keys: PathStack,
+			fieldDesc: FieldDescriptor
+		): ErrorObject | undefined {
 			return {
 				type: `${keys.toValidatePath()} requires to be unhandled type "${
 					fieldDesc.type
@@ -168,7 +208,6 @@ const VALIDATIONS = {
 		},
 	},
 };
-
 // Add aliases
 _.assign(VALIDATIONS.TYPE, {
 	bool: VALIDATIONS.TYPE.boolean,
@@ -194,6 +233,12 @@ _.assign(VALIDATIONS.TYPE, {
  * @property {module:Validator~PathStack} keys      - Pathstack representing keys so far.
  * @property {*}                          value     - Value to check.
  */
+interface ValidationStepArgs {
+	error: ErrorObject;
+	fieldDesc: FieldDescriptor;
+	keys: PathStack;
+	value: any;
+}
 
 const VALIDATION_STEPS = [
 	/**
@@ -204,7 +249,7 @@ const VALIDATION_STEPS = [
 	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
 	 * @returns {undefined} This function returns nothing.
 	 */
-	function checkCustoms(validationArgs: ValidationStepArgs) {
+	function checkCustoms(this: Validator, validationArgs: ValidationStepArgs) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// It the field has a `validate` property, try to use it
 		const validateFcts = _(fieldDesc.validate as Function[])
@@ -225,7 +270,10 @@ const VALIDATION_STEPS = [
 	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
 	 * @returns {undefined} This function returns nothing.
 	 */
-	function checkTypeRequired(validationArgs: ValidationStepArgs) {
+	function checkTypeRequired(
+		this: Validator,
+		validationArgs: ValidationStepArgs
+	) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// Check the type and the required status
 		const typeKeys = _.intersection(_.keys(fieldDesc), ['type', 'model']);
@@ -254,10 +302,11 @@ const VALIDATION_STEPS = [
 				}
 			} else if (fieldDesc.hasOwnProperty('model')) {
 				if (_.isString(fieldDesc.model)) {
+					// TODO Wrong so far: fallback to another type of check.
 					const tester = _.get(
 						VALIDATIONS,
 						['TYPE', fieldDesc.model],
-						fieldDesc.model._
+						VALIDATIONS.TYPE._
 					);
 					_.assign(error, tester.call(this, keys, fieldDesc, value));
 				} else {
@@ -275,7 +324,7 @@ const VALIDATION_STEPS = [
 	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
 	 * @returns {undefined} This function returns nothing.
 	 */
-	function checkEnum(validationArgs: ValidationStepArgs) {
+	function checkEnum(this: Validator, validationArgs: ValidationStepArgs) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// Check enum values
 		if (!_.isNil(value) && !_.isNil(fieldDesc.enum)) {
@@ -307,7 +356,7 @@ const VALIDATION_STEPS = [
 /**
  * The PathStack class allows model validation to follow different paths in model description & entity.
  */
-class PathStack {
+export class PathStack {
 	/**
 	 * Constructs a pathstack.
 	 *
@@ -385,7 +434,7 @@ class PathStack {
 /**
  * The Validator class is used to check an entity or its fields against a model description.
  */
-class Validator {
+export class Validator {
 	/**
 	 * Construct a Validator configured for the provided model.
 	 *
@@ -427,7 +476,7 @@ class Validator {
 		value: any,
 		keys: PathStack | string[],
 		options: { getProps: boolean } = { getProps: false }
-	) {
+	): ErrorObjectFinal | null {
 		_.defaults(options, { getProps: true });
 		if (!(keys instanceof PathStack)) {
 			keys = new PathStack(keys);
@@ -435,12 +484,13 @@ class Validator {
 
 		const val = options.getProps ? _.get(value, keys.segmentsEntity) : value;
 		const fieldDesc = _.get(this.modelDesc, keys.segmentsValidation);
+		// TODO: Add checks for strict models (like if we are using MySQL)
 		if (!_.isObject(fieldDesc)) {
-			return;
+			return null;
 		}
 		_.defaults(fieldDesc, { required: false });
 
-		const error = {};
+		const error: ErrorObject = {};
 
 		const stepsArgs = {
 			error,
@@ -454,8 +504,8 @@ class Validator {
 		);
 
 		if (!_.isEmpty(error)) {
-			error.value = value;
-			return error;
+			const finalError = _.defaults({ value } as ErrorObjectFinal, error);
+			return finalError;
 		} else {
 			return null;
 		}
@@ -475,5 +525,3 @@ class Validator {
 		return PathStack;
 	}
 }
-
-module.exports = Validator;

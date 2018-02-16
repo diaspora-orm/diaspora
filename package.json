@@ -98,6 +98,7 @@
 		"mapCoverage": true
 	},
 	"devDependencies": {
+		"@types/bluebird": "^3.5.20",
 		"@types/jest": "^22.0.0",
 		"@types/node": "^8.0.0",
 		"colors": "^1.1.2",
@@ -129,7 +130,6 @@
 		"validate-commit-msg": "^2.12.2"
 	},
 	"dependencies": {
-		"@types/bluebird": "^3.5.20",
 		"@types/lodash": "^4.14.96",
 		"@types/winston": "^2.3.7",
 		"sequential-event": "^0.3.1",

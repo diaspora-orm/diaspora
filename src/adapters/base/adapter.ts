@@ -1,8 +1,7 @@
 import { _, Promise, SequentialEvent } from '../../dependencies';
-import * as _Diaspora from '../../';
 
-import AdapterEntity = _Diaspora.Adapters.BaseAdapter.AdapterEntity;
-import QueryLanguage = _Diaspora.QueryLanguage;
+import { AdapterEntity } from './entity';
+import { QueryLanguage } from './queryLanguage';
 import { Diaspora } from '../../diaspora';
 import Bluebird from 'bluebird';
 
@@ -40,7 +39,7 @@ const {
  * @memberof Adapters
  * @author gerkin
  */
-class Adapter extends SequentialEvent {
+export class Adapter extends SequentialEvent {
 	public name: string;
 
 	/**
@@ -181,14 +180,14 @@ class Adapter extends SequentialEvent {
 	/**
 	 * Cast the provided data to an adapter entity if the data is not nil.
 	 */
-	maybeCastEntity(data?: object): AdapterEntity<any> {
+	maybeCastEntity(data?: object): AdapterEntity {
 		return _.isNil(data) ? undefined : new this.classEntity(data, this);
 	}
 
 	/**
 	 * Cast the provided array of datas to adapter entities if the data is not nil. Note that {@link Adapters.Nil nil values} aren't filtered out from the resulting array.
 	 */
-	maybeCastSet(datas?: object[]): AdapterEntity<any> {
+	maybeCastSet(datas?: object[]): Array<AdapterEntity> {
 		return _.isNil(datas) ? [] : _.map(datas, this.maybeCastEntity.bind(this));
 	}
 
@@ -302,9 +301,9 @@ class Adapter extends SequentialEvent {
 										// ... check for conflict with canonical operation name...
 										if (obj.hasOwnProperty(CANONICAL_OPERATORS[operator])) {
 											throw new Error(
-												`Search can't have both "${operator}" and "${CANONICAL_OPERATORS[
-													operator
-												]}" keys, as they are synonyms`
+												`Search can't have both "${operator}" and "${
+													CANONICAL_OPERATORS[operator]
+												}" keys, as they are synonyms`
 											);
 										}
 										return CANONICAL_OPERATORS[operator];
@@ -318,8 +317,7 @@ class Adapter extends SequentialEvent {
 										if (
 											attrSearch.hasOwnProperty(operation) &&
 											!(
-												_.isNumber(attrSearch[operation]) ||
-												_.isDate(attrSearch[operation])
+												_.isNumber(attrSearch[operation]) || _.isDate(attrSearch[operation])
 											)
 										) {
 											throw new TypeError(
@@ -512,5 +510,3 @@ class Adapter extends SequentialEvent {
 		return loopFind();
 	}
 }
-
-export default Adapter;
