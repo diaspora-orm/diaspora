@@ -1,5 +1,6 @@
 import { _ } from '../../dependencies';
-import * as _Diaspora from '../../';
+import { EntityUid, IRawEntityAttributes } from '../../entityFactory';
+import { Adapter } from '.';
 
 /**
  * @namespace DataStoreEntities
@@ -10,15 +11,14 @@ import * as _Diaspora from '../../';
  * @memberof DataStoreEntities
  */
 export class AdapterEntity {
+	public readonly id: EntityUid;
+	public readonly dataSource: Adapter;
 	/**
 	 * Construct a new data source entity with specified content & parent.
 	 *
 	 * @author gerkin
 	 */
-	constructor(
-		entity: object,
-		dataSource: _Diaspora.Adapters.BaseAdapter.Adapter
-	) {
+	constructor(entity: IRawEntityAttributes, dataSource: Adapter) {
 		if (_.isNil(entity)) {
 			throw new Error("Can't construct entity from nil value");
 		}
@@ -27,14 +27,13 @@ export class AdapterEntity {
 				`Expect 2nd argument to be the parent of this entity, have "${dataSource}"`
 			);
 		}
-		Object.defineProperties(this, {
-			dataSource: {
-				value: dataSource,
-				enumerable: false,
-				configurable: false,
-			},
-		});
+		if (!entity.id) {
+			throw new Error('Entity from adapter should have an id.');
+		}
+
 		_.assign(this, entity);
+		this.id = entity.id;
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -43,7 +42,7 @@ export class AdapterEntity {
 	 * @author gerkin
 	 * @returns {Object} Plain object representing this entity.
 	 */
-	toObject(): object {
+	toObject(): IRawEntityAttributes {
 		return _.omit(this, ['dataSource', 'id']);
 	}
 }

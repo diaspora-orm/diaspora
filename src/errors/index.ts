@@ -1,3 +1,3 @@
-export { default as EntityStateError } from './entityStateError';
-export { default as EntityValidationError } from './entityValidationError';
-export { default as SetValidationError } from './setValidationError';
+export * from './entityStateError';
+export * from './entityValidationError';
+export * from './setValidationError';

@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird';
 
 import { _, Promise } from './dependencies';
-import { EntityFactory } from './entityFactory';
+import { EntityFactory, EntitySpawner } from './entityFactory';
 import { Diaspora } from './diaspora';
 import { Set } from './set';
 import { Validator } from './validator';
@@ -13,8 +13,6 @@ import {
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
 import { EntityObject } from './index';
-
-const { entityPrototypeProperties } = EntityFactory;
 
 /**
  * @module Model
@@ -42,7 +40,8 @@ export interface ModelDescriptionRaw {
 	// TODO: To improve
 	lifecycleEvents: { [key: string]: Function };
 }
-interface ModelDescription extends ModelDescriptionRaw {
+export interface ModelDescription extends ModelDescriptionRaw {
+	attributes: { [key: string]: FieldDescriptor };
 	sources: SourcesHash;
 }
 
@@ -203,13 +202,19 @@ const deepFreeze = <T>(object: T) => {
 /**
  * The model class is used to interact with the population of all data of the same type.
  */
-class Model {
+export class Model {
 	public attributes: { [key: string]: FieldDescriptor };
 
-	private dataSources: { [key: string]: Adapter };
+	private _dataSources: { [key: string]: Adapter };
+	public get dataSources() {
+		return this._dataSources;
+	}
 	private defaultDataSource: string;
-	private entityFactory: EntityFactory;
-	private validator: Validator;
+	private entityFactory: EntitySpawner;
+	private _validator: Validator;
+	public get validator() {
+		return this._validator;
+	}
 	/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
 	 *
@@ -247,7 +252,7 @@ class Model {
 		const sourcesNormalized = normalizeRemaps(modelDesc);
 		// List sources required by this model
 		const sourceNames = _.keys(sourcesNormalized);
-		const modelSources = _.pick(Diaspora.dataSources, sourceNames);
+		const modelSources = _.pick(Diaspora._dataSources, sourceNames);
 		const missingSources = _.difference(sourceNames, _.keys(modelSources));
 		if (0 !== missingSources.length) {
 			throw new Error(
@@ -262,16 +267,17 @@ class Model {
 				)}`
 			);
 		}
-		// Now, we are sure that config is valid. We can configure our datasources with model options, and set `this` properties.
+		// Now, we are sure that config is valid. We can configure our _dataSources with model options, and set `this` properties.
+		const modelDescNormalized = modelDesc as ModelDescription;
 		_.forEach(sourcesNormalized, (remap, sourceName) =>
 			modelSources[sourceName].configureCollection(name, remap)
 		);
-		this.dataSources = modelSources;
+		this._dataSources = modelSources;
 		this.defaultDataSource = _(modelSources)
 			.keys()
 			.first() as string;
-		this.entityFactory = EntityFactory(name, modelDesc, this);
-		this.validator = new Validator(modelDesc.attributes);
+		this.entityFactory = EntityFactory(name, modelDescNormalized, this);
+		this._validator = new Validator(modelDesc.attributes);
 		// TODO: Normalize attributes before
 		this.attributes = deepFreeze(modelDesc.attributes) as {
 			[key: string]: FieldDescriptor;
@@ -289,16 +295,16 @@ class Model {
 	getDataSource(sourceName: string = this.defaultDataSource): Adapter {
 		if (_.isNil(sourceName)) {
 			sourceName = this.defaultDataSource;
-		} else if (!this.dataSources.hasOwnProperty(sourceName)) {
+		} else if (!this._dataSources.hasOwnProperty(sourceName)) {
 			throw new Error(
 				`Unknown data source "${sourceName}" in model "${
 					this.name
-				}", available are ${_.keys(this.dataSources)
+				}", available are ${_.keys(this._dataSources)
 					.map(v => `"${v}"`)
 					.join(', ')}`
 			);
 		}
-		return this.dataSources[sourceName];
+		return this._dataSources[sourceName];
 	}
 
 	/**

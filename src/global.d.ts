@@ -11,8 +11,8 @@ declare global {
 			browser: boolean;
 		}
 		interface Global {
-			_: LoDash.LoDashStatic;
-			SequentialEvent: any;
+			_?: LoDash.LoDashStatic;
+			SequentialEvent?: any;
 		}
 	}
 }

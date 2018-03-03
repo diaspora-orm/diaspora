@@ -1,10 +1,8 @@
 import BluebirdType from 'bluebird';
 import LoDashType from 'lodash';
-import SequentialEventType from 'sequential-event';
+import { SequentialEvent as SequentialEventType } from 'sequential-event';
 
-export const _: typeof LoDashType = (() => {
-	return global._ || require('lodash');
-})();
+export const _: LoDashType = (global._ || require('lodash')) as LoDashType;
 
 export const SequentialEvent: typeof SequentialEventType = (() => {
 	return global.SequentialEvent || require('sequential-event');
