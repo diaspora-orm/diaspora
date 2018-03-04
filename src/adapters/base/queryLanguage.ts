@@ -1,4 +1,4 @@
-import { ConstrainedTypes } from './constrainedTypes';
+import * as ConstrainedTypes from './constrainedTypes';
 
 /**
  * All properties are optional

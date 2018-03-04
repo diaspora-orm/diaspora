@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import SequentialEvent from 'sequential-event';
+import { SequentialEvent } from 'sequential-event';
 import Bluebird from 'bluebird';
 
 import { AdapterEntity } from './entity';

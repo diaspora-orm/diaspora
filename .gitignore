@@ -66,3 +66,5 @@ site/\.sass-cache/
 build/
 
 transtyped/
+
+dist/
