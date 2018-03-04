@@ -1,10 +1,9 @@
 import _ from 'lodash';
 import { Winston } from 'winston';
 
-import { Adapter, AdapterEntity } from './adapters/base';
+import { Adapter, AdapterEntity, QueryLanguage } from './adapters/base';
 import { Entity, IRawEntityAttributes, EntityUid } from './entityFactory';
 import { Set } from './set';
-import { QueryOptions } from './adapters/base/queryLanguage';
 import {
 	ModelDescription,
 	FieldDescriptor,
@@ -69,7 +68,7 @@ const remapArgs = (
 	remapFunction: IRemapIterator
 ) => {
 	if (false !== optIndex) {
-		const options = args[optIndex] as QueryOptions;
+		const options = args[optIndex] as QueryLanguage.QueryOptions;
 		// Remap input objects
 		if (true === options.remapInput) {
 			// Remap the query
@@ -197,7 +196,7 @@ export class DiasporaStatic {
 	 *
 	 * @author gerkin
 	 */
-	private _logger: Winston | Console = (() => {
+	private _logger: Winston | Console | any = (() => {
 		if (!process.browser) {
 			const winston = require('winston');
 			const { createLogger, format, transports } = winston;

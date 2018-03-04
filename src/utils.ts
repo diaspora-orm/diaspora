@@ -44,7 +44,7 @@ export const defineEnumerableProperties = (
 export const applyUpdateEntity = (
 	update: IRawEntityAttributes,
 	entity: IRawEntityAttributes
-): object => {
+): IRawEntityAttributes => {
 	_.forEach(update, (val, key) => {
 		if (_.isUndefined(val)) {
 			delete entity[key];
@@ -85,9 +85,9 @@ export const generateUUID = (): string => {
  * @returns Set with options applied.
  */
 export const applyOptionsToSet = (
-	set: Array<object>,
+	set: Array<IRawEntityAttributes>,
 	options: QueryOptions
-): Array<object> => {
+): Array<IRawEntityAttributes> => {
 	_.defaults(options, {
 		limit: Infinity,
 		skip: 0,

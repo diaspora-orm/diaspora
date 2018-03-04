@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import Bluebird from 'bluebird';
 
-import * as QueryLanguage from './queryLanguage';
-import { AdapterEntity, Adapter } from '.';
+import { AdapterEntity, Adapter, QueryLanguage } from '.';
+import { IRawEntityAttributes } from '../../entityFactory';
 
 function getNum(fullMatch: string, sign: string, val: string): number;
 function getNum([fullMatch, sign, val]: string[]): number;
@@ -63,18 +63,20 @@ const validateOption = (
 	return val;
 };
 
-export const iterateLimit = async (
+export const iterateLimit = async <TAdapter extends Adapter>(
 	options: QueryLanguage.QueryOptions,
-	query: (options: QueryLanguage.QueryOptions) => Bluebird<AdapterEntity>
-): Bluebird<AdapterEntity[]> => {
-	const foundEntities: AdapterEntity[] = [];
+	query: (
+		options: QueryLanguage.QueryOptions
+	) => Bluebird<AdapterEntity<TAdapter>>
+): Bluebird<AdapterEntity<TAdapter>[]> => {
+	const foundEntities: AdapterEntity<TAdapter>[] = [];
 	let foundCount = 0;
 	let origSkip = options.skip;
 
 	// We are going to loop until we find enough items
 	const loopFind = async (
-		found?: AdapterEntity | true
-	): Bluebird<AdapterEntity[]> => {
+		found?: AdapterEntity<TAdapter> | true
+	): Bluebird<AdapterEntity<TAdapter>[]> => {
 		// If the search returned nothing, then just finish the findMany
 		if (_.isNil(found)) {
 			return Promise.resolve(foundEntities);
@@ -104,9 +106,9 @@ export const iterateLimit = async (
 export const remapIO = (
 	adapter: Adapter,
 	tableName: string,
-	query: object,
+	query: QueryLanguage.SelectQuery,
 	input: boolean
-): object => {
+): QueryLanguage.SelectQueryRemapped => {
 	if (_.isNil(query)) {
 		return query;
 	}
@@ -129,7 +131,14 @@ export const remapIO = (
 	return remaped;
 };
 
-export const OPERATORS = {
+export interface IQueryCheckFunction {
+	(entityVal: any, targetVal: any): boolean;
+}
+
+export interface IEnumeratedHash<T> {
+	[key: string]: T;
+}
+export const OPERATORS: IEnumeratedHash<IQueryCheckFunction | undefined> = {
 	$exists: (entityVal: any, targetVal: any) =>
 		targetVal === !_.isUndefined(entityVal),
 	$equal: (entityVal: any, targetVal: any) =>
@@ -145,7 +154,7 @@ export const OPERATORS = {
 	$greaterEqual: (entityVal: any, targetVal: any) =>
 		!_.isUndefined(entityVal) && entityVal >= targetVal,
 };
-export const CANONICAL_OPERATORS = {
+export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'~': '$exists',
 	'==': '$equal',
 	'!=': '$diff',
@@ -154,7 +163,9 @@ export const CANONICAL_OPERATORS = {
 	'>': '$greater',
 	'>=': '$greaterEqual',
 };
-export const QUERY_OPTIONS_TRANSFORMS = {
+export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
+	((ops: QueryLanguage.QueryOptionsRaw) => void)
+> = {
 	limit(opts: QueryLanguage.QueryOptionsRaw) {
 		opts.limit = validateOption('limit', opts.limit as number, {
 			type: 'int',

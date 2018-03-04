@@ -16,6 +16,8 @@ try {
 	}
 	process.exit();
 }
+export const conf = config;
+
 const styles =
 	'undefined' === typeof window
 		? {
