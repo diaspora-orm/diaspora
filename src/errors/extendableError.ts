@@ -20,5 +20,6 @@ export class ExtendableError extends Error {
 		} else {
 			this.stack = new Error(message).stack;
 		}
+		Object.setPrototypeOf(this, ExtendableError.prototype);
 	}
 }

@@ -276,5 +276,3 @@ export class Set {
 		return this.entities.map(entity => entity.toObject()).value();
 	}
 }
-
-module.exports = Set;

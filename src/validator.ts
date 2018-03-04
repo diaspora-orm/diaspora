@@ -20,7 +20,7 @@ const validateArrayItems = (
 	return (
 		propVal: any,
 		index: number
-	): ErrorObjectFinal[] | ErrorObjectFinal => {
+	): ErrorObjectFinal[] | ErrorObjectFinal | null => {
 		if (fieldDesc.hasOwnProperty('of')) {
 			const ofArray = _.castArray(fieldDesc.of);
 			const subErrors = _(ofArray).map((desc, subIndex) =>
@@ -37,12 +37,10 @@ const validateArrayItems = (
 			) as LoDashImplicitArrayWrapper<ErrorObjectFinal | null>;
 
 			if (!_.isArray(fieldDesc.of)) {
-				return subErrors.get(0) || [];
-			} else if (subErrors.compact().value().length > 0) {
-				return subErrors
-					.toPlainObject()
-					.omitBy(_.isNil)
-					.value() as ErrorObjectFinal[];
+				// Just get the first or default to null
+				return subErrors.get(0) || null;
+			} else if (subErrors.every(subError => !_.isNil(subError))) {
+				return subErrors.compact().value() as ErrorObjectFinal[];
 			}
 		}
 		return [];
@@ -197,11 +195,13 @@ const VALIDATIONS = {
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
-		): ErrorObjectFinal {
-			return {
-				type: `${keys.toValidatePath()} expected to be assigned with any type`,
-				value,
-			};
+		): ErrorObjectFinal | undefined {
+			return _.isNil(value)
+				? {
+						type: `${keys.toValidatePath()} expected to be assigned with any type`,
+						value,
+				  }
+				: undefined;
 		},
 		_(
 			this: Validator,

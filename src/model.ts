@@ -19,17 +19,13 @@ import {
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
 
-/**
- * @module Model
- */
-
 export interface SourcesHash {
 	[key: string]: object;
 }
+
 /**
  * Object describing a model.
  *
- * @typedef  {Object} ModelDescription
  * @author gerkin
  * @property sources         - List of sources to use with this model.
  * @property attributes      - Attributes of the model.
@@ -43,7 +39,7 @@ export interface ModelDescriptionRaw {
 	methods: { [key: string]: Function };
 	staticMethods: { [key: string]: Function };
 	// TODO: To improve
-	lifecycleEvents: { [key: string]: IEventHandler };
+	lifecycleEvents: { [key: string]: IEventHandler | IEventHandler[] };
 }
 export interface ModelDescription extends ModelDescriptionRaw {
 	attributes: { [key: string]: FieldDescriptor };
@@ -53,7 +49,7 @@ export interface ModelDescription extends ModelDescriptionRaw {
 /**
  * Object describing the attributes of a {@link Model~Model}.
  *
- * @typedef  FieldDescriptor
+ * @typedef FieldDescriptor
  * @author gerkin
  * @property [type]           - Expected type of the value. Either `type` or `model` should be defined, or none.
  * @property [model]          - Expected model of the value. Either `type` or `model` should be defined, or none.
@@ -69,7 +65,7 @@ export interface FieldDescriptor {
 	required?: boolean;
 	attributes?: { [key: string]: FieldDescriptor };
 	default?: Function | string;
-	enum: Array<any>;
+	enum?: Array<any>;
 }
 
 interface IQueryParamsRaw {
@@ -521,5 +517,3 @@ export class Model {
 		);
 	}
 }
-
-module.exports = Model;

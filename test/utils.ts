@@ -1,71 +1,51 @@
-'use strict';
+import _ from 'lodash';
+import { resolve } from 'path';
+import * as chalk from 'chalk';
 
-/* globals l: false, c: false, describe: false, require: false, expect: false, chalk: false, chai: false, path: false */
-
-let config = {};
-
-let styles = {};
-
-if ( 'undefined' === typeof window ) {
-	global.path = require( 'path' );
-	global.projectPath = path.resolve( '../' );
-	global.chalk = require( 'chalk' );
-
-	global.chalk = require( 'chalk' );
-	try {
-		config = require( './config.js' );
-	} catch ( err ) {
-		if ( 'MODULE_NOT_FOUND' === err.code ) {
-			console.error( 'Missing required file "config.js", please copy "config-sample.js" and edit it.' );
-		} else {
-			console.error( err );
-		}
-		process.exit();
+const projectPath = resolve('../');
+let config;
+try {
+	config = require('./config.js');
+} catch (err) {
+	if ('MODULE_NOT_FOUND' === err.code) {
+		console.error(
+			'Missing required file "config.js", please copy "config-sample.js" and edit it.'
+		);
+	} else {
+		console.error(err);
 	}
-
-	styles = {
-		category:     chalk.bold.underline.blue,
-		taskCategory: chalk.underline.white,
-		bold:         chalk.bold,
-		adapter:      chalk.bold.red,
-		model:        chalk.bold.red,
-	};
-} else {
-	config = {};
+	process.exit();
 }
+const styles =
+	'undefined' === typeof window
+		? {
+				category: chalk.bold.underline.blue,
+				taskCategory: chalk.underline.white,
+				bold: chalk.bold,
+				adapter: chalk.bold.red,
+				model: chalk.bold.red,
+		  }
+		: {};
 
-global.getStyle = ( styleName, text ) => {
+export const getStyle = (styleName: string, text: string) => {
 	const styleFct = styles[styleName];
-	if ( l.isFunction( styleFct )) {
-		return styleFct( text );
+	if (_.isFunction(styleFct)) {
+		return styleFct(text);
 	}
 	return text;
 };
 
-global.getConfig = adapterName => {
-	return ( config && config[adapterName]) || {};
+export const getConfig = (adapterName: string): object => {
+	return (config && config[adapterName]) || {};
 };
 
-global.importTest = ( name, modulePath ) => {
-	describe( name, () => {
-		require( modulePath );
+export const importTest = (name: string, modulePath: string) => {
+	describe(name, () => {
+		require(modulePath);
 	});
 };
 
-global.l = require( 'lodash' );
-global.c = require( 'check-types' );
-global.CheckTypes = c;
-if ( !process.browser ) {
-	global.chai = require( 'chai' );
-}
-const chaiAsPromised = require( 'chai-as-promised' );
-chai.use( chaiAsPromised );
-global.assert = chai.assert;
-global.expect = chai.expect;
-global.SequentialEvent = require( 'sequential-event' ).SequentialEvent;
-global.Promise = require( 'bluebird' );
-
-chai.use( function chaiUse( _chai, utils ) {
+/* chai.use( function chaiUse( _chai, utils ) {
 	utils.addProperty( chai.Assertion.prototype, 'set', function chaiSet() {
 		this.assert(
 			c.array( this._obj ) || this._obj.hasOwnProperty( 'entities' ),
@@ -206,4 +186,4 @@ chai.use( function chaiUse( _chai, utils ) {
 			`expected #{this} to not be a${ collection ? ' collection of' : 'n' } Entity: failed because of ${ errorOut }`
 		);
 	});
-});
+}) */

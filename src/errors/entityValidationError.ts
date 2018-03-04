@@ -36,5 +36,6 @@ export class EntityValidationError extends ValidationError {
 ${stringifyValidationObject(validationErrors)}`;
 		super(message, ...errorArgs);
 		this.validationErrors = validationErrors;
+		Object.setPrototypeOf(this, EntityValidationError.prototype);
 	}
 }

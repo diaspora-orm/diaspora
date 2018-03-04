@@ -187,8 +187,8 @@ export abstract class Entity extends SequentialEvent {
 	 * Generate the query to get this unique entity in the desired data source.
 	 *
 	 * @author gerkin
-	 * @param   {Adapters.DiasporaAdapter} dataSource - Name of the data source to get query for.
-	 * @returns {Object} Query to find this entity.
+	 * @param   dataSource - Name of the data source to get query for.
+	 * @returns Query to find this entity.
 	 */
 	uidQuery(dataSource: Adapter): object {
 		// Todo: precise return type
@@ -201,7 +201,7 @@ export abstract class Entity extends SequentialEvent {
 	 * Return the table of this entity in the specified data source.
 	 *
 	 * @author gerkin
-	 * @returns {string} Name of the table.
+	 * @returns Name of the table.
 	 */
 	table(sourceName: string) {
 		// Will be used later
@@ -213,7 +213,7 @@ export abstract class Entity extends SequentialEvent {
 	 *
 	 * @author gerkin
 	 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
-	 * @returns {undefined} This function does not return anything.
+	 * @returns This function does not return anything.
 	 * @see Validator.Validator#validate
 	 */
 	validate() {
@@ -224,8 +224,8 @@ export abstract class Entity extends SequentialEvent {
 	 * Remove all editable properties & replace them with provided object.
 	 *
 	 * @author gerkin
-	 * @param   {Object} [newContent={}] - Replacement content.
-	 * @returns {module:EntityFactory~Entity} Returns `this`.
+	 * @param   newContent - Replacement content.
+	 * @returns Returns `this`.
 	 */
 	replaceAttributes(newContent: IRawEntityAttributes = {}) {
 		newContent.idHash = this.attributes.idHash;
@@ -237,8 +237,8 @@ export abstract class Entity extends SequentialEvent {
 	 * Generate a diff update query by checking deltas with last source interaction.
 	 *
 	 * @author gerkin
-	 * @param   {Adapters.DiasporaAdapter} dataSource - Data source to diff with.
-	 * @returns {Object} Diff query.
+	 * @param   dataSource - Data source to diff with.
+	 * @returns Diff query.
 	 */
 	getDiff(dataSource: Adapter) {
 		const dataStoreEntity = this.dataSources.get(dataSource);
@@ -266,7 +266,7 @@ export abstract class Entity extends SequentialEvent {
 	 * Returns a copy of this entity attributes.
 	 *
 	 * @author gerkin
-	 * @returns {Object} Attributes of this entity.
+	 * @returns Attributes of this entity.
 	 */
 	toObject(): IEntityAttributes {
 		return this.attributes;
@@ -276,8 +276,8 @@ export abstract class Entity extends SequentialEvent {
 	 * Applied before persisting the entity, this function is in charge to convert entity convinient attributes to a raw entity.
 	 *
 	 * @author gerkin
-	 * @param   {Object} data - Data to convert to primitive types.
-	 * @returns {Object} Object with Primitives-only types.
+	 * @param   data - Data to convert to primitive types.
+	 * @returns Object with Primitives-only types.
 	 */
 	static serialize(data: IRawEntityAttributes): IRawEntityAttributes {
 		return _.cloneDeep(data);
@@ -287,8 +287,8 @@ export abstract class Entity extends SequentialEvent {
 	 * Applied after retrieving the entity, this function is in charge to convert entity raw attributes to convinient types.
 	 *
 	 * @author gerkin
-	 * @param   {Object} data - Data to convert from primitive types.
-	 * @returns {Object} Object with Primitives & non primitives types.
+	 * @param   data - Data to convert from primitive types.
+	 * @returns Object with Primitives & non primitives types.
 	 */
 	static deserialize(data: IRawEntityAttributes): IRawEntityAttributes {
 		return _.cloneDeep(data);
@@ -300,10 +300,9 @@ export abstract class Entity extends SequentialEvent {
 	 * @fires EntityFactory.Entity#beforeUpdate
 	 * @fires EntityFactory.Entity#afterUpdate
 	 * @author gerkin
-	 * @param   {string}  sourceName                 - Name of the data source to persist entity in.
-	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
-	 * @returns {Bluebird} Bluebird resolved once entity is saved. Resolved with `this`.
+	 * @param   sourceName - Name of the data source to persist entity in.
+	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @returns Bluebird resolved once entity is saved. Resolved with `this`.
 	 */
 	async persist(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
@@ -352,10 +351,9 @@ export abstract class Entity extends SequentialEvent {
 	 * @fires EntityFactory.Entity#beforeFind
 	 * @fires EntityFactory.Entity#afterFind
 	 * @author gerkin
-	 * @param   {string}  sourceName                 - Name of the data source to fetch entity from.
-	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeFind` and `afterFind`.
-	 * @returns {Bluebird} Bluebird resolved once entity is reloaded. Resolved with `this`.
+	 * @param   sourceName         - Name of the data source to fetch entity from.
+	 * @param   options            - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @returns Bluebird resolved once entity is reloaded. Resolved with `this`.
 	 */
 	async fetch(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
@@ -394,10 +392,9 @@ export abstract class Entity extends SequentialEvent {
 	 * @fires EntityFactory.Entity#beforeDelete
 	 * @fires EntityFactory.Entity#afterDelete
 	 * @author gerkin
-	 * @param   {string}  sourceName                 - Name of the data source to delete entity from.
-	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeDelete` and `afterDelete`.
-	 * @returns {Bluebird} Bluebird resolved once entity is destroyed. Resolved with `this`.
+	 * @param   sourceName - Name of the data source to delete entity from.
+	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @returns Bluebird resolved once entity is destroyed. Resolved with `this`.
 	 */
 	async destroy(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
@@ -429,8 +426,8 @@ export abstract class Entity extends SequentialEvent {
 	/**
 	 * Get the ID for the given source name.
 	 *
-	 * @param   {string} sourceName - Name of the source to get ID from.
-	 * @returns {string} Id of this entity in requested data source.
+	 * @param   sourceName - Name of the source to get ID from.
+	 * @returns Id of this entity in requested data source.
 	 */
 	getId(sourceName: string): EntityUid | null {
 		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
@@ -448,14 +445,10 @@ export abstract class Entity extends SequentialEvent {
 /**
  * This factory function generate a new class constructor, prepared for a specific model.
  *
- * @method EntityFactory
- * @public
- * @static
- * @param   {string}           name       - Name of this model.
- * @param   {ModelDescription} modelDesc  - Model configuration that generated the associated `model`.
- * @param   {Model}            model      - Model that will spawn entities.
- * @returns {module:EntityFactory~Entity} Entity constructor to use with this model.
- * @property {module:EntityFactory~Entity} Entity Entity constructor
+ * @param   name      - Name of this model.
+ * @param   modelDesc - Model configuration that generated the associated `model`.
+ * @param   model     - Model that will spawn entities.
+ * @returns Entity constructor to use with this model.
  */
 export interface IEntityFactory {
 	(name: string, modelDesc: ModelDescription, model: Model): EntitySpawner;
