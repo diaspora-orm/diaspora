@@ -15,10 +15,10 @@ import { Adapter } from '.';
  * AdapterEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
  * @memberof DataStoreEntities
  */
-export class AdapterEntity<T extends Adapter> {
+export class AdapterEntity {
 	public readonly id: EntityUid;
 	public readonly idHash: { [key: string]: EntityUid };
-	public readonly dataSource: T;
+	public readonly dataSource: Adapter<AdapterEntity>;
 
 	[key: string]: any;
 
@@ -27,7 +27,7 @@ export class AdapterEntity<T extends Adapter> {
 	 *
 	 * @author gerkin
 	 */
-	constructor(entity: IRawEntityAttributes, dataSource: T) {
+	constructor(entity: IRawEntityAttributes, dataSource: Adapter<AdapterEntity>) {
 		if (_.isNil(entity)) {
 			throw new Error("Can't construct entity from nil value");
 		}

@@ -11,13 +11,9 @@ import {
 import { Diaspora } from './diaspora';
 import { Set } from './set';
 import { Validator } from './validator';
-import {
-	SelectQuery,
-	QueryOptionsRaw,
-	QueryOptions,
-} from './adapters/base/queryLanguage';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
+import { QueryLanguage } from './adapters/base';
 
 export interface SourcesHash {
 	[key: string]: object;
@@ -69,15 +65,18 @@ export interface FieldDescriptor {
 }
 
 interface IQueryParamsRaw {
-	queryFind?: SelectQuery;
-	options: QueryOptionsRaw;
+	queryFind?: QueryLanguage.SelectQuery;
+	options: QueryLanguage.QueryOptionsRaw;
 	dataSourceName: string;
 }
-interface IQueryParams extends IQueryParamsRaw {
-	dataSource: Adapter;
+interface IQueryParams<T extends AdapterEntity> extends IQueryParamsRaw {
+	dataSource: Adapter<T>;
 }
 
-const findArgs = (model: Model, ...argsLeft: Array<any>): IQueryParams => {
+const findArgs = (
+	model: Model,
+	...argsLeft: Array<any>
+): IQueryParams<AdapterEntity> => {
 	let paramsRaw: IQueryParamsRaw;
 	if (_.isString(argsLeft[1]) && _.isNil(argsLeft[2])) {
 		// TODO: Elude case...
@@ -136,8 +135,8 @@ enum EDeleteMethod {
 }
 const doDelete = (methodName: EDeleteMethod, model: Model) => {
 	return (
-		queryFind: SelectQuery = {},
-		options: QueryOptionsRaw = {},
+		queryFind: QueryLanguage.SelectQuery = {},
+		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string
 	): Bluebird<void> => {
 		// Sort arguments
@@ -153,24 +152,24 @@ const doDelete = (methodName: EDeleteMethod, model: Model) => {
 async function doFindUpdate(
 	model: Model,
 	plural: true,
-	queryFind: SelectQuery,
-	options: QueryOptionsRaw,
+	queryFind: QueryLanguage.SelectQuery,
+	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
 ): Bluebird<Set>;
 async function doFindUpdate(
 	model: Model,
 	plural: false,
-	queryFind: SelectQuery,
-	options: QueryOptionsRaw,
+	queryFind: QueryLanguage.SelectQuery,
+	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
 ): Bluebird<Entity | undefined>;
 async function doFindUpdate(
 	model: Model,
 	plural: boolean,
-	queryFind: SelectQuery,
-	options: QueryOptionsRaw,
+	queryFind: QueryLanguage.SelectQuery,
+	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
 ): Bluebird<Entity | undefined | Set> {
@@ -235,7 +234,7 @@ const deepFreeze = <T>(object: T) => {
 export class Model {
 	public attributes: { [key: string]: FieldDescriptor };
 
-	private _dataSources: { [key: string]: Adapter };
+	private _dataSources: { [key: string]: Adapter<AdapterEntity> };
 	public get dataSources() {
 		return this._dataSources;
 	}
@@ -316,7 +315,9 @@ export class Model {
 	 * @param   sourceName - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.Sources.
 	 * @returns Source adapter with requested name.
 	 */
-	getDataSource(sourceName: string = this.defaultDataSource): Adapter {
+	getDataSource(
+		sourceName: string = this.defaultDataSource
+	): Adapter<AdapterEntity> {
 		if (_.isNil(sourceName)) {
 			sourceName = this.defaultDataSource;
 		} else if (!this._dataSources.hasOwnProperty(sourceName)) {
@@ -398,8 +399,8 @@ export class Model {
 	 * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */
 	async find(
-		queryFind: SelectQuery,
-		options: QueryOptionsRaw = {},
+		queryFind: QueryLanguage.SelectQuery,
+		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Bluebird<Entity | null> {
 		const updated = await doFindUpdate(
@@ -422,8 +423,8 @@ export class Model {
 	 * @returns Promise resolved with a {@link Set set} of found entities in *sync* state.
 	 */
 	async findMany(
-		queryFind: SelectQuery,
-		options: QueryOptionsRaw = {},
+		queryFind: QueryLanguage.SelectQuery,
+		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Bluebird<Set> {
 		return doFindUpdate(this, true, queryFind, options, dataSourceName);
@@ -440,9 +441,9 @@ export class Model {
 	 * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */
 	async update(
-		queryFind: SelectQuery,
+		queryFind: QueryLanguage.SelectQuery,
 		update: object,
-		options: QueryOptionsRaw = {},
+		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Bluebird<Entity | null> {
 		const updated = await doFindUpdate(
@@ -467,9 +468,9 @@ export class Model {
 	 * @returns Promise resolved with the {@link Set set} of found entities in *sync* state.
 	 */
 	async updateMany(
-		queryFind: SelectQuery,
+		queryFind: QueryLanguage.SelectQuery,
 		update: object,
-		options: QueryOptionsRaw = {},
+		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Bluebird<Set> {
 		return doFindUpdate(this, true, queryFind, options, dataSourceName, update);
@@ -485,8 +486,8 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	async delete(
-		queryFind: SelectQuery,
-		options: QueryOptionsRaw = {},
+		queryFind: QueryLanguage.SelectQuery,
+		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Bluebird<void> {
 		return doDelete(EDeleteMethod.deleteOne, this)(
@@ -506,8 +507,8 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	async deleteMany(
-		queryFind: SelectQuery = {},
-		options: QueryOptionsRaw = {},
+		queryFind: QueryLanguage.SelectQuery = {},
+		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Bluebird<void> {
 		return doDelete(EDeleteMethod.deleteMany, this)(

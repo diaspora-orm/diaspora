@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { IRawEntityAttributes } from './entityFactory';
-import { QueryOptions } from './adapters/base/queryLanguage';
+import { QueryLanguage } from './adapters/base';
 
 /**
  * @module Utils
@@ -86,7 +86,7 @@ export const generateUUID = (): string => {
  */
 export const applyOptionsToSet = (
 	set: Array<IRawEntityAttributes>,
-	options: QueryOptions
+	options: QueryLanguage.QueryOptions
 ): Array<IRawEntityAttributes> => {
 	_.defaults(options, {
 		limit: Infinity,

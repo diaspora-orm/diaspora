@@ -23,7 +23,7 @@ interface IAdapterRegistry {
 	[key: string]: typeof Adapter;
 }
 export interface IDataSourceRegistry {
-	[key: string]: Adapter;
+	[key: string]: Adapter<AdapterEntity>;
 }
 interface IModelRegistry {
 	[key: string]: Model;
@@ -37,7 +37,7 @@ interface IQueryTypeDescriptor {
 	number: string;
 }
 
-const ensureAllEntities = (adapter: Adapter, table: string) => {
+const ensureAllEntities = (adapter: Adapter<AdapterEntity>, table: string) => {
 	// Filter our results
 	const filterResults = (entity: any): any => {
 		// Remap fields
@@ -95,7 +95,7 @@ const remapArgs = (
 	}
 };
 
-const getRemapFunction = (adapter: Adapter, table: string) => {
+const getRemapFunction = (adapter: Adapter<AdapterEntity>, table: string) => {
 	return (query: IRawEntityAttributes) => {
 		return adapter.remapInput(table, query);
 	};
@@ -104,7 +104,7 @@ const getRemapFunction = (adapter: Adapter, table: string) => {
 const wrapDataSourceAction = (
 	callback: Function,
 	queryType: string,
-	adapter: Adapter
+	adapter: Adapter<AdapterEntity>
 ) => {
 	return (table: string, ...args: any[]) => {
 		// Transform arguments for find, update & delete
@@ -419,7 +419,7 @@ export class DiasporaStatic {
 	 * @param   dataSource - Datasource itself.
 	 * @returns
 	 */
-	registerDataSource(dataSource: Adapter) {
+	registerDataSource(dataSource: Adapter<AdapterEntity>) {
 		// TODO Oh that's bad....
 		requireName('DataSource', name);
 		if (this.dataSources.hasOwnProperty(name)) {

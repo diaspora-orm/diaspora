@@ -22,7 +22,7 @@ export interface IWebStorageAdapterConfig {
 /**
  * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
  */
-export class WebStorageAdapter extends Adapter {
+export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	/**
 	 * {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage Storage api} where to store data.
 	 *
@@ -67,7 +67,7 @@ export class WebStorageAdapter extends Adapter {
 	 * @param remaps    - Associative hash that links entity field names with data source field names.
 	 * @returns This function does not return anything.
 	 */
-	protected configureCollection(
+	public configureCollection(
 		tableName: string,
 		remaps: IRemapsHash,
 		filters: IFiltersHash

@@ -35,6 +35,8 @@ export interface EntitySpawner {
 	model: Model;
 	name: string;
 }
+interface IDataSourceMap<T extends AdapterEntity>
+	extends WeakMap<Adapter<T>, T | null> {}
 
 const maybeEmit = async (
 	entity: Entity,
@@ -55,15 +57,15 @@ const maybeEmit = async (
 	}
 };
 
-const execIfOkState = (
+const execIfOkState = <T extends AdapterEntity>(
 	entity: Entity,
 	beforeState: State,
-	dataSource: Adapter,
+	dataSource: Adapter<T>,
 	// TODO: precise it
 	method: string
-): Bluebird<AdapterEntity> => {
+): Bluebird<T> => {
 	// Depending on state, we are going to perform a different operation
-	if ('orphan' === beforeState) {
+	if (State.ORPHAN === beforeState) {
 		return Bluebird.reject(new EntityStateError("Can't fetch an orphan entity."));
 	} else {
 		// Skip scoping :/
@@ -71,7 +73,7 @@ const execIfOkState = (
 		const execMethod: (
 			table: string,
 			query: object
-		) => Bluebird<AdapterEntity> = (dataSource as any)[method];
+		) => Bluebird<T> = (dataSource as any)[method];
 		return execMethod(entity.table(dataSource.name), entity.uidQuery(dataSource));
 	}
 };
@@ -113,8 +115,8 @@ export abstract class Entity extends SequentialEvent {
 	public get state() {
 		return this._state;
 	}
-	protected lastDataSource?: Adapter;
-	private dataSources: WeakMap<Adapter, AdapterEntity | null>;
+	protected lastDataSource?: Adapter<AdapterEntity>;
+	private dataSources: IDataSourceMap<AdapterEntity>;
 
 	/**
 	 * Create a new entity.
@@ -138,7 +140,7 @@ export abstract class Entity extends SequentialEvent {
 		// ### Init defaults
 		const sources = _.reduce(
 			model.dataSources,
-			(acc: WeakMap<Adapter, AdapterEntity | null>, adapter: Adapter) =>
+			(acc: IDataSourceMap<AdapterEntity>, adapter: Adapter<AdapterEntity>) =>
 				acc.set(adapter, null),
 			new WeakMap()
 		);
@@ -190,7 +192,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Name of the data source to get query for.
 	 * @returns Query to find this entity.
 	 */
-	uidQuery(dataSource: Adapter): object {
+	uidQuery<T extends AdapterEntity>(dataSource: Adapter<T>): object {
 		// Todo: precise return type
 		return {
 			id: this.attributes.idHash[dataSource.name],
@@ -240,9 +242,19 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Data source to diff with.
 	 * @returns Diff query.
 	 */
-	getDiff(dataSource: Adapter) {
-		const dataStoreEntity = this.dataSources.get(dataSource);
+	public getDiff(dataSource: string): object;
+	public getDiff<TCheck extends AdapterEntity>(
+		dataSource: Adapter<TCheck>
+	): object;
+	public getDiff<TCheck extends AdapterEntity>(
+		dataSource: Adapter<TCheck> | string
+	): object {
+		const dataSourceFixed: Adapter<AdapterEntity> =
+			typeof dataSource === 'string'
+				? (this.constructor as EntitySpawner).model.getDataSource(dataSource)
+				: (dataSource as any);
 
+		const dataStoreEntity = this.dataSources.get(dataSourceFixed);
 		// All is diff if not present
 		if (!dataStoreEntity) {
 			return this.attributes;

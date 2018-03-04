@@ -63,20 +63,16 @@ const validateOption = (
 	return val;
 };
 
-export const iterateLimit = async <TAdapter extends Adapter>(
+export const iterateLimit = async <TEntity extends AdapterEntity>(
 	options: QueryLanguage.QueryOptions,
-	query: (
-		options: QueryLanguage.QueryOptions
-	) => Bluebird<AdapterEntity<TAdapter>>
-): Bluebird<AdapterEntity<TAdapter>[]> => {
-	const foundEntities: AdapterEntity<TAdapter>[] = [];
+	query: (options: QueryLanguage.QueryOptions) => Bluebird<TEntity>
+): Bluebird<TEntity[]> => {
+	const foundEntities: TEntity[] = [];
 	let foundCount = 0;
 	let origSkip = options.skip;
 
 	// We are going to loop until we find enough items
-	const loopFind = async (
-		found?: AdapterEntity<TAdapter> | true
-	): Bluebird<AdapterEntity<TAdapter>[]> => {
+	const loopFind = async (found?: TEntity | true): Bluebird<TEntity[]> => {
 		// If the search returned nothing, then just finish the findMany
 		if (_.isNil(found)) {
 			return Promise.resolve(foundEntities);
@@ -103,8 +99,8 @@ export const iterateLimit = async <TAdapter extends Adapter>(
  * @author gerkin
  * @see TODO remapping.
  */
-export const remapIO = (
-	adapter: Adapter,
+export const remapIO = <T extends AdapterEntity>(
+	adapter: Adapter<T>,
 	tableName: string,
 	query: QueryLanguage.SelectQuery,
 	input: boolean

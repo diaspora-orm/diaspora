@@ -28,10 +28,11 @@ export enum EAdapterState {
  * @memberof Adapters
  * @author gerkin
  */
-export abstract class Adapter extends SequentialEvent {
+export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	public get classEntity() {
 		return this._classEntity;
 	}
+
 	/**
 	 * Hash of functions to cast data store values to JSON standard values in entity.
 	 *
@@ -87,7 +88,9 @@ export abstract class Adapter extends SequentialEvent {
 	 * @param classEntity - Entity to spawn with this adapter.
 	 */
 	constructor(
-		protected _classEntity: typeof AdapterEntity,
+		protected _classEntity: {
+			new (data: IRawEntityAttributes, adapter: Adapter<T>): T;
+		},
 		public readonly name: string
 	) {
 		super();
@@ -115,7 +118,7 @@ export abstract class Adapter extends SequentialEvent {
 	 *
 	 * @author gerkin
 	 */
-	protected configureCollection(
+	public configureCollection(
 		tableName: string,
 		remaps: IRemapsHash,
 		filters: IFiltersHash = {}
@@ -176,14 +179,14 @@ export abstract class Adapter extends SequentialEvent {
 	/**
 	 * Cast the provided data to an adapter entity if the data is not nil.
 	 */
-	maybeCastEntity(data?: object): AdapterEntity<this> | undefined {
-		return _.isNil(data) ? undefined : new this.classEntity(data, this);
+	maybeCastEntity(data?: object): T | undefined {
+		return _.isNil(data) ? undefined : new this._classEntity(data, this);
 	}
 
 	/**
 	 * Cast the provided array of datas to adapter entities if the data is not nil. Note that {@link Adapters.Nil nil values} aren't filtered out from the resulting array.
 	 */
-	maybeCastSet(datas?: object[]): Array<AdapterEntity<this>> {
+	maybeCastSet(datas?: object[]): Array<T> {
 		return _.isNil(datas) ? [] : _.map(datas, this.maybeCastEntity.bind(this));
 	}
 
@@ -369,7 +372,7 @@ export abstract class Adapter extends SequentialEvent {
 	async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
-	): Bluebird<AdapterEntity<this> | undefined> {
+	): Bluebird<AdapterEntity | undefined> {
 		return _.first(await this.insertMany(table, [entity]));
 	}
 
@@ -382,7 +385,7 @@ export abstract class Adapter extends SequentialEvent {
 	async insertMany(
 		table: string,
 		entities: IRawEntityAttributes[]
-	): Bluebird<AdapterEntity<this>[]> {
+	): Bluebird<AdapterEntity[]> {
 		const mapped = await Bluebird.resolve(entities).mapSeries(entity =>
 			this.insertOne(table, entity || {})
 		);
@@ -402,7 +405,7 @@ export abstract class Adapter extends SequentialEvent {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<AdapterEntity<this> | undefined> {
+	): Bluebird<AdapterEntity | undefined> {
 		options.limit = 1;
 		return _.first(await this.findMany(table, queryFind, options));
 	}
@@ -417,10 +420,10 @@ export abstract class Adapter extends SequentialEvent {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<AdapterEntity<this>[]> {
+	): Bluebird<AdapterEntity[]> {
 		const optionsNormalized = this.normalizeOptions(options);
 		const boundQuery = this.findOne.bind(this, table, queryFind);
-		return iterateLimit<this>(optionsNormalized, boundQuery);
+		return iterateLimit(optionsNormalized, boundQuery);
 	}
 
 	// -----
@@ -437,7 +440,7 @@ export abstract class Adapter extends SequentialEvent {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<AdapterEntity<this> | undefined> {
+	): Bluebird<AdapterEntity | undefined> {
 		options = this.normalizeOptions(options);
 		options.limit = 1;
 		return _.first(await this.updateMany(table, queryFind, update, options));
@@ -454,9 +457,9 @@ export abstract class Adapter extends SequentialEvent {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<AdapterEntity<this>[]> {
+	): Bluebird<AdapterEntity[]> {
 		const optionsNormalized = this.normalizeOptions(options);
-		return iterateLimit<this>(
+		return iterateLimit(
 			optionsNormalized,
 			this.updateOne.bind(this, table, queryFind, update)
 		);

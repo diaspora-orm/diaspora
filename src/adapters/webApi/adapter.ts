@@ -180,7 +180,7 @@ const checkWebApiAdapterConfig = (config: IWebApiAdapterConfig) => {
  * @extends Adapters.DiasporaAdapter
  * @memberof Adapters
  */
-export class WebApiAdapter extends Adapter {
+export class WebApiAdapter extends Adapter<WebApiEntity> {
 	private baseEndPoint: string;
 
 	/**

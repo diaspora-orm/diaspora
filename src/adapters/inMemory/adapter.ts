@@ -31,7 +31,7 @@ interface IDataStoreHash {
  * @extends Adapters.DiasporaAdapter
  * @memberof Adapters
  */
-export class InMemoryAdapter extends Adapter {
+export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	/**
 	 * Plain old javascript object used as data store.
 	 *
@@ -57,7 +57,7 @@ export class InMemoryAdapter extends Adapter {
 	 * @param   remaps    - Associative hash that links entity field names with data source field names.
 	 * @returns This function does not return anything.
 	 */
-	protected configureCollection(
+	public configureCollection(
 		tableName: string,
 		remaps: IRemapsHash,
 		filters: IFiltersHash
