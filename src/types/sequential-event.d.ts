@@ -1,3 +1,4 @@
+/*
 declare module 'sequential-event' {
 	type EventCallback = (arg: any) => any;
 	export default class SequentialEvent {
@@ -5,3 +6,4 @@ declare module 'sequential-event' {
 		on(eventName: string, handler: EventCallback): this;
 	}
 }
+*/

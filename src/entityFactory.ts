@@ -1,4 +1,7 @@
-import { _, Promise, SequentialEvent } from './dependencies';
+import Bluebird from 'bluebird';
+import _ from 'lodash';
+import { SequentialEvent } from 'sequential-event';
+
 import { Diaspora } from './diaspora';
 import { EntityStateError } from './errors';
 
@@ -28,7 +31,7 @@ export enum State {
 export type EntityUid = string | number;
 
 export interface EntitySpawner {
-	(source: IRawEntityAttributes): Entity;
+	new (source?: IRawEntityAttributes): Entity;
 	model: Model;
 	name: string;
 }
@@ -38,7 +41,7 @@ const maybeEmit = async (
 	options: IOptions,
 	eventsArgs: any[],
 	events: string | string[]
-): Promise<Entity> => {
+): Bluebird<Entity> => {
 	events = _.castArray(events);
 	if (options.skipEvents) {
 		return entity;
@@ -58,17 +61,18 @@ const execIfOkState = (
 	dataSource: Adapter,
 	// TODO: precise it
 	method: string
-): Promise<AdapterEntity> => {
+): Bluebird<AdapterEntity> => {
 	// Depending on state, we are going to perform a different operation
 	if ('orphan' === beforeState) {
-		return Promise.reject(new EntityStateError("Can't fetch an orphan entity."));
+		return Bluebird.reject(new EntityStateError("Can't fetch an orphan entity."));
 	} else {
 		// Skip scoping :/
 		(entity as any).lastDataSource = dataSource;
-		return dataSource[method](
-			entity.table(dataSource.name),
-			entity.uidQuery(dataSource)
-		);
+		const execMethod: (
+			table: string,
+			query: object
+		) => Bluebird<AdapterEntity> = (dataSource as any)[method];
+		return execMethod(entity.table(dataSource.name), entity.uidQuery(dataSource));
 	}
 };
 
@@ -105,7 +109,10 @@ const entityCtrSteps = {
  */
 export abstract class Entity extends SequentialEvent {
 	private attributes: IEntityAttributes;
-	private state: State = State.ORPHAN;
+	private _state: State = State.ORPHAN;
+	public get state() {
+		return this._state;
+	}
 	protected lastDataSource?: Adapter;
 	private dataSources: WeakMap<Adapter, AdapterEntity | null>;
 
@@ -129,13 +136,10 @@ export abstract class Entity extends SequentialEvent {
 		const modelAttrsKeys = _.keys(modelDesc.attributes);
 
 		// ### Init defaults
-		const sources = _.transform(
+		const sources = _.reduce(
 			model.dataSources,
-			(
-				adapter: Adapter,
-				adapterName: string,
-				acc: WeakMap<Adapter, AdapterEntity | null>
-			) => acc.set(adapter, null),
+			(acc: WeakMap<Adapter, AdapterEntity | null>, adapter: Adapter) =>
+				acc.set(adapter, null),
 			new WeakMap()
 		);
 		this.dataSources = Object.seal(sources);
@@ -146,7 +150,7 @@ export abstract class Entity extends SequentialEvent {
 		// ### Load datas from source
 		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 		if (source instanceof AdapterEntity) {
-			this.state = State.SYNC;
+			this._state = State.SYNC;
 			this.lastDataSource = source.dataSource;
 			this.dataSources.set(this.lastDataSource, source);
 			source = (<typeof Entity>this.constructor).deserialize(
@@ -156,7 +160,7 @@ export abstract class Entity extends SequentialEvent {
 
 		// ### Final validation
 		// Check keys provided in source
-		const sourceDModel = _.difference(source, modelAttrsKeys);
+		const sourceDModel = _.difference(_.keys(source), modelAttrsKeys);
 		if (0 !== sourceDModel.length) {
 			// Later, add a criteria for schemaless models
 			throw new Error(
@@ -171,15 +175,12 @@ export abstract class Entity extends SequentialEvent {
 		this.attributes = Diaspora.default(_.cloneDeep(source), modelDesc.attributes);
 
 		// ### Load events
-		_.forEach(
-			modelDesc.lifecycleEvents,
-			(eventFunctions: Function | Function[], eventName: string) => {
-				// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
-				_.forEach(_.castArray(eventFunctions), (eventFunction: Function) => {
-					this.on(eventName, eventFunction);
-				});
-			}
-		);
+		_.forEach(modelDesc.lifecycleEvents, (eventFunctions, eventName) => {
+			// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
+			_.forEach(_.castArray(eventFunctions), eventFunction => {
+				this.on(eventName, eventFunction);
+			});
+		});
 	}
 
 	/**
@@ -302,13 +303,13 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   {string}  sourceName                 - Name of the data source to persist entity in.
 	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeUpdate` and `afterUpdate`.
-	 * @returns {Promise} Promise resolved once entity is saved. Resolved with `this`.
+	 * @returns {Bluebird} Bluebird resolved once entity is saved. Resolved with `this`.
 	 */
 	async persist(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this.state;
-		this.state = State.SYNCING;
+		this._state = State.SYNCING;
 		// Generate events args
 		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
 			sourceName
@@ -325,18 +326,21 @@ export abstract class Entity extends SequentialEvent {
 		await _maybeEmit(['afterValidate', `beforePersist${suffix}`]);
 
 		// Depending on state, we are going to perform a different operation
-		const dataStoreEntity = (await ('orphan' === beforeState))
+		const dataStoreEntity = await ('orphan' === beforeState
 			? dataSource.insertOne(this.table(sourceName), this.toObject())
 			: dataSource.updateOne(
 					this.table(sourceName),
 					this.uidQuery(dataSource),
 					this.getDiff(dataSource)
-				);
+			  ));
+		if (!dataStoreEntity) {
+			throw new Error('Insert/Update returned nothing.');
+		}
 		// We have used data source, store it
 		this.lastDataSource = dataSource;
 
 		entityCtrSteps.castTypes(dataStoreEntity, this.modelDesc);
-		this.state = State.SYNC;
+		this._state = State.SYNC;
 		this.attributes = dataStoreEntity.toObject();
 		this.dataSources.set(dataSource, dataStoreEntity);
 		return _maybeEmit([`afterPersist${suffix}`, 'afterPersist']);
@@ -351,13 +355,13 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   {string}  sourceName                 - Name of the data source to fetch entity from.
 	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeFind` and `afterFind`.
-	 * @returns {Promise} Promise resolved once entity is reloaded. Resolved with `this`.
+	 * @returns {Bluebird} Bluebird resolved once entity is reloaded. Resolved with `this`.
 	 */
 	async fetch(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this.state;
-		this.state = State.SYNCING;
+		this._state = State.SYNCING;
 		// Generate events args
 		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
 			sourceName
@@ -378,7 +382,7 @@ export abstract class Entity extends SequentialEvent {
 		);
 
 		entityCtrSteps.castTypes(dataStoreEntity, this.modelDesc);
-		this.state = State.SYNC;
+		this._state = State.SYNC;
 		this.attributes = dataStoreEntity.toObject() as IEntityAttributes;
 		this.dataSources.set(dataSource, dataStoreEntity);
 		return _maybeEmit('afterFetch');
@@ -393,13 +397,13 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   {string}  sourceName                 - Name of the data source to delete entity from.
 	 * @param   {Object}  [options]                  - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @param   {boolean} [options.skipEvents=false] - If true, won't trigger events `beforeDelete` and `afterDelete`.
-	 * @returns {Promise} Promise resolved once entity is destroyed. Resolved with `this`.
+	 * @returns {Bluebird} Bluebird resolved once entity is destroyed. Resolved with `this`.
 	 */
 	async destroy(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this.state;
-		this.state = State.SYNCING;
+		this._state = State.SYNCING;
 		// Generate events args
 		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
 			sourceName
@@ -412,10 +416,10 @@ export abstract class Entity extends SequentialEvent {
 		await execIfOkState(this, beforeState, dataSource, 'deleteOne');
 
 		// If this was our only data source, then go back to orphan state
-		if (0 === _.without(this.model.dataSources, dataSource.name).length) {
-			this.state = State.ORPHAN;
+		if (0 === _.without(_.values(this.model.dataSources), dataSource).length) {
+			this._state = State.ORPHAN;
 		} else {
-			this.state = State.SYNC;
+			this._state = State.SYNC;
 			delete this.attributes.idHash[dataSource.name];
 		}
 		this.dataSources.set(dataSource, null);
@@ -470,7 +474,7 @@ const ef: any = (name: string, modelDesc: ModelDescription, model: Model) => {
 		 * @type {string}
 		 * @author gerkin
 		 */
-		static get name() {
+		static get modelName() {
 			return `${name}Entity`;
 		}
 

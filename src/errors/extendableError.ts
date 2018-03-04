@@ -8,11 +8,11 @@ export class ExtendableError extends Error {
 	 * Construct a new extendable error.
 	 *
 	 * @author gerkin
-	 * @param {string} message          - Message of this error.
-	 * @param {*}      errorArgs        - Arguments to transfer to parent Error.
+	 * @param message   - Message of this error.
+	 * @param errorArgs - Arguments to transfer to parent Error.
 	 */
 	constructor(message: string, ...errorArgs: any[]) {
-		super(message, ...errorArgs);
+		super(message);
 		this.name = this.constructor.name;
 		this.message = message;
 		if ('function' === typeof Error.captureStackTrace) {

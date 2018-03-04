@@ -1,9 +1,11 @@
-import { _, Promise, SequentialEvent } from '../../dependencies';
+import _ from 'lodash';
+import SequentialEvent from 'sequential-event';
+import Bluebird from 'bluebird';
 
 import { AdapterEntity } from './entity';
-import { QueryLanguage } from './queryLanguage';
 import { Diaspora } from '../../diaspora';
-import Bluebird from 'bluebird';
+import * as QueryLanguage from './queryLanguage';
+import { IRawEntityAttributes } from '../../entityFactory';
 
 /**
  * @namespace Adapters
@@ -39,9 +41,10 @@ const {
  * @memberof Adapters
  * @author gerkin
  */
-export class Adapter extends SequentialEvent {
-	public name: string;
-
+export abstract class Adapter extends SequentialEvent {
+	public get classEntity() {
+		return this._classEntity;
+	}
 	/**
 	 * Hash of functions to cast data store values to JSON standard values in entity.
 	 *
@@ -85,7 +88,6 @@ export class Adapter extends SequentialEvent {
 	 *
 	 * @author Gerkin
 	 */
-	private classEntity: typeof AdapterEntity;
 
 	// -----
 	// ### Initialization
@@ -95,23 +97,25 @@ export class Adapter extends SequentialEvent {
 	 *
 	 * @public
 	 * @author gerkin
-	 * @param {DataStoreEntities.DataStoreEntity} classEntity - Entity to spawn with this adapter.
+	 * @param classEntity - Entity to spawn with this adapter.
 	 */
-	constructor(classEntity: typeof AdapterEntity) {
+	constructor(
+		protected _classEntity: typeof AdapterEntity,
+		public readonly name: string
+	) {
 		super();
 		this.filters = {};
 		this.remaps = {};
 		this.remapsInverted = {};
 		this.error = undefined;
 		this.state = 'preparing';
-		this.classEntity = classEntity;
 
 		// Bind events
 		this.on('ready', () => {
 			this.state = 'ready';
 		}).on('error', (err: Error) => {
 			this.state = 'error';
-			Diaspora.logger.error(
+			(Diaspora.logger as any).error(
 				'Error while initializing:',
 				_.pick(err, Object.getOwnPropertyNames(err))
 			);
@@ -180,7 +184,7 @@ export class Adapter extends SequentialEvent {
 	/**
 	 * Cast the provided data to an adapter entity if the data is not nil.
 	 */
-	maybeCastEntity(data?: object): AdapterEntity {
+	maybeCastEntity(data?: object): AdapterEntity | undefined {
 		return _.isNil(data) ? undefined : new this.classEntity(data, this);
 	}
 
@@ -198,7 +202,10 @@ export class Adapter extends SequentialEvent {
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	remapInput(tableName: string, query: object): object {
+	remapInput(
+		tableName: string,
+		query: IRawEntityAttributes
+	): IRawEntityAttributes {
 		return remapIO(this, tableName, query, true);
 	}
 
@@ -209,7 +216,10 @@ export class Adapter extends SequentialEvent {
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	remapOutput(tableName: string, query: object): object {
+	remapOutput(
+		tableName: string,
+		query: IRawEntityAttributes
+	): IRawEntityAttributes {
 		return remapIO(this, tableName, query, false);
 	}
 
@@ -360,10 +370,11 @@ export class Adapter extends SequentialEvent {
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	insertOne(table: string, entity: object): Bluebird<any> {
-		return this.insertMany(table, [entity]).then(entities =>
-			Promise.resolve(_.first(entities))
-		);
+	async insertOne(
+		table: string,
+		entity: object
+	): Bluebird<AdapterEntity | undefined> {
+		return _.first(await this.insertMany(table, [entity]));
 	}
 
 	/**
@@ -372,8 +383,11 @@ export class Adapter extends SequentialEvent {
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	insertMany(table: string, entities: object[]): Bluebird<any> {
-		return Promise.mapSeries(entities, entity =>
+	async insertMany(
+		table: string,
+		entities: object[]
+	): Bluebird<(AdapterEntity | undefined)[]> {
+		return Promise.resolve(entities).mapSeries(entity =>
 			this.insertOne(table, entity || {})
 		);
 	}
@@ -387,15 +401,13 @@ export class Adapter extends SequentialEvent {
 	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	findOne(
+	async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptionsRaw = {}
-	): Bluebird<any> {
+	): Bluebird<AdapterEntity | undefined> {
 		options.limit = 1;
-		return this.findMany(table, queryFind, options).then(entities =>
-			Promise.resolve(_.first(entities))
-		);
+		return _.first(await this.findMany(table, queryFind, options));
 	}
 
 	/**
@@ -404,11 +416,11 @@ export class Adapter extends SequentialEvent {
 	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	findMany(
+	async findMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptionsRaw = {}
-	): Bluebird<any> {
+	): Bluebird<AdapterEntity[]> {
 		options = this.normalizeOptions(options);
 		return iterateLimit(options, this.findOne.bind(this, table, queryFind))(true);
 	}
@@ -422,17 +434,15 @@ export class Adapter extends SequentialEvent {
 	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	updateOne(
+	async updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {}
-	): Bluebird<any> {
+	): Bluebird<AdapterEntity | undefined> {
 		options = this.normalizeOptions(options);
 		options.limit = 1;
-		return this.updateMany(table, queryFind, update, options).then(entities =>
-			Promise.resolve(_.first(entities))
-		);
+		return _.first(await this.updateMany(table, queryFind, update, options));
 	}
 
 	/**
@@ -441,12 +451,12 @@ export class Adapter extends SequentialEvent {
 	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	updateMany(
+	async updateMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {}
-	): Bluebird<any> {
+	): Bluebird<AdapterEntity[]> {
 		options = this.normalizeOptions(options);
 		return iterateLimit(
 			options,
@@ -463,11 +473,11 @@ export class Adapter extends SequentialEvent {
 	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	deleteOne(
+	async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptionsRaw = {}
-	): Bluebird<any> {
+	): Bluebird<void> {
 		options.limit = 1;
 		return this.deleteMany(table, queryFind, options);
 	}
@@ -482,11 +492,11 @@ export class Adapter extends SequentialEvent {
 	 * @param   {QueryLanguage.QueryOptions}           [options={}] - Hash of options.
 	 * @returns {Promise} Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
-	deleteMany(
+	async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptionsRaw = {}
-	): Bluebird<any> {
+	): Bluebird<void> {
 		let count = 0;
 		// We are going to loop until we find enough items
 		const loopFind = (): Bluebird<void> => {

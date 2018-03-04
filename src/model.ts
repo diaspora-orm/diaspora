@@ -1,7 +1,13 @@
-import * as Bluebird from 'bluebird';
+import Bluebird from 'bluebird';
+import _ from 'lodash';
+import { IEventHandler } from 'sequential-event';
 
-import { _, Promise } from './dependencies';
-import { EntityFactory, EntitySpawner } from './entityFactory';
+import {
+	EntityFactory,
+	EntitySpawner,
+	Entity,
+	IRawEntityAttributes,
+} from './entityFactory';
 import { Diaspora } from './diaspora';
 import { Set } from './set';
 import { Validator } from './validator';
@@ -12,7 +18,6 @@ import {
 } from './adapters/base/queryLanguage';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
-import { EntityObject } from './index';
 
 /**
  * @module Model
@@ -38,7 +43,7 @@ export interface ModelDescriptionRaw {
 	methods: { [key: string]: Function };
 	staticMethods: { [key: string]: Function };
 	// TODO: To improve
-	lifecycleEvents: { [key: string]: Function };
+	lifecycleEvents: { [key: string]: IEventHandler };
 }
 export interface ModelDescription extends ModelDescriptionRaw {
 	attributes: { [key: string]: FieldDescriptor };
@@ -62,7 +67,7 @@ export interface FieldDescriptor {
 	of?: FieldDescriptor | FieldDescriptor[];
 	model?: string;
 	required?: boolean;
-	attributes?: object;
+	attributes?: { [key: string]: FieldDescriptor };
 	default?: Function | string;
 	enum: Array<any>;
 }
@@ -107,24 +112,26 @@ const findArgs = (model: Model, ...argsLeft: Array<any>): IQueryParams => {
 	);
 };
 
-const makeSet = (model: Model) => {
-	return (dataSourceEntities: Array<AdapterEntity>): Set => {
-		const newEntities = _.map(
-			dataSourceEntities,
-			dataSourceEntity => new model.entityFactory(dataSourceEntity)
-		);
-		const set = new Set(model, newEntities);
-		return set;
-	};
+const makeSet = (
+	model: Model,
+	dataSourceEntities: Array<AdapterEntity | undefined>
+): Set => {
+	const newEntities = _.map(
+		dataSourceEntities,
+		dataSourceEntity => new model.entityFactory(dataSourceEntity)
+	);
+	const set = new Set(model, newEntities);
+	return set;
 };
-const makeEntity = (model: Model) => {
-	return (dataSourceEntity: AdapterEntity): AdapterEntity | void => {
-		if (_.isNil(dataSourceEntity)) {
-			return;
-		}
-		const newEntity = new model.entityFactory(dataSourceEntity);
-		return newEntity;
-	};
+const makeEntity = (
+	model: Model,
+	dataSourceEntity: AdapterEntity
+): Entity | void => {
+	if (_.isNil(dataSourceEntity)) {
+		return;
+	}
+	const newEntity = new model.entityFactory(dataSourceEntity);
+	return newEntity;
 };
 
 enum EDeleteMethod {
@@ -139,18 +146,38 @@ const doDelete = (methodName: EDeleteMethod, model: Model) => {
 	): Bluebird<void> => {
 		// Sort arguments
 		const args = findArgs(model, queryFind, options, dataSourceName);
-		return args.dataSource[methodName](model.name, args.queryFind, args.options);
+		return (args.dataSource as any)[methodName](
+			model.name,
+			args.queryFind,
+			args.options
+		);
 	};
 };
 
-const doFindUpdate = async (
+async function doFindUpdate(
+	model: Model,
+	plural: true,
+	queryFind: SelectQuery,
+	options: QueryOptionsRaw,
+	dataSourceName: string,
+	update?: IRawEntityAttributes
+): Bluebird<Set>;
+async function doFindUpdate(
+	model: Model,
+	plural: false,
+	queryFind: SelectQuery,
+	options: QueryOptionsRaw,
+	dataSourceName: string,
+	update?: IRawEntityAttributes
+): Bluebird<Entity | undefined>;
+async function doFindUpdate(
 	model: Model,
 	plural: boolean,
 	queryFind: SelectQuery,
 	options: QueryOptionsRaw,
 	dataSourceName: string,
-	update?: EntityObject
-) => {
+	update?: IRawEntityAttributes
+): Bluebird<Entity | undefined | Set> {
 	// Sort arguments
 	const queryComponents = findArgs(model, queryFind, options, dataSourceName);
 	const args = _([model.name, queryComponents.queryFind])
@@ -159,9 +186,16 @@ const doFindUpdate = async (
 		.compact()
 		.value();
 	const queryMethod = (update ? 'update' : 'find') + (plural ? 'Many' : 'One');
-	const queryResults = await queryComponents.dataSource[queryMethod](...args);
-	return (plural ? makeSet : makeEntity)(queryResults);
-};
+	const queryResults = (await (queryComponents.dataSource as any)[queryMethod](
+		...args
+	)) as AdapterEntity | AdapterEntity[];
+	if (queryResults instanceof Array) {
+		return makeSet(model, queryResults);
+	} else {
+		const entity = makeEntity(model, queryResults);
+		return entity ? entity : undefined;
+	}
+}
 
 const normalizeRemaps = (modelDesc: ModelDescriptionRaw) => {
 	const sourcesRaw = modelDesc.sources;
@@ -210,7 +244,10 @@ export class Model {
 		return this._dataSources;
 	}
 	private defaultDataSource: string;
-	private entityFactory: EntitySpawner;
+	private _entityFactory: EntitySpawner;
+	public get entityFactory() {
+		return this._entityFactory;
+	}
 	private _validator: Validator;
 	public get validator() {
 		return this._validator;
@@ -224,17 +261,7 @@ export class Model {
 	 */
 	constructor(public name: string, modelDesc: ModelDescriptionRaw) {
 		// Check model configuration
-		const reservedPropIntersect = _.intersection(
-			entityPrototypeProperties,
-			_.keys(modelDesc.attributes)
-		);
-		if (0 !== reservedPropIntersect.length) {
-			throw new Error(
-				`${JSON.stringify(
-					reservedPropIntersect
-				)} is/are reserved property names. To match those column names in data source, please use the data source mapper property`
-			);
-		} else if (
+		if (
 			!modelDesc.hasOwnProperty('sources') ||
 			!(
 				_.isArrayLike(modelDesc.sources) ||
@@ -252,7 +279,7 @@ export class Model {
 		const sourcesNormalized = normalizeRemaps(modelDesc);
 		// List sources required by this model
 		const sourceNames = _.keys(sourcesNormalized);
-		const modelSources = _.pick(Diaspora._dataSources, sourceNames);
+		const modelSources = _.pick(Diaspora.dataSources, sourceNames);
 		const missingSources = _.difference(sourceNames, _.keys(modelSources));
 		if (0 !== missingSources.length) {
 			throw new Error(
@@ -267,6 +294,7 @@ export class Model {
 				)}`
 			);
 		}
+
 		// Now, we are sure that config is valid. We can configure our _dataSources with model options, and set `this` properties.
 		const modelDescNormalized = modelDesc as ModelDescription;
 		_.forEach(sourcesNormalized, (remap, sourceName) =>
@@ -276,8 +304,8 @@ export class Model {
 		this.defaultDataSource = _(modelSources)
 			.keys()
 			.first() as string;
-		this.entityFactory = EntityFactory(name, modelDescNormalized, this);
-		this._validator = new Validator(modelDesc.attributes);
+		this._entityFactory = EntityFactory(name, modelDescNormalized, this);
+		this._validator = new Validator(modelDescNormalized.attributes);
 		// TODO: Normalize attributes before
 		this.attributes = deepFreeze(modelDesc.attributes) as {
 			[key: string]: FieldDescriptor;
@@ -341,7 +369,7 @@ export class Model {
 	async insert(
 		source: object,
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity> {
+	): Bluebird<Entity> {
 		const dataSource = this.getDataSource(dataSourceName);
 		const entity = await dataSource.insertOne(this.name, source);
 		return new this.entityFactory(entity);
@@ -358,10 +386,10 @@ export class Model {
 	async insertMany(
 		sources: object[],
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Bluebird<Set> {
 		const dataSource = this.getDataSource(dataSourceName);
 		const entities = await dataSource.insertMany(this.name, sources);
-		return makeSet(this)(entities);
+		return makeSet(this, entities);
 	}
 
 	/**
@@ -377,8 +405,15 @@ export class Model {
 		queryFind: SelectQuery,
 		options: QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity> {
-		return doFindUpdate(this, false, queryFind, options, dataSourceName);
+	): Bluebird<Entity | null> {
+		const updated = await doFindUpdate(
+			this,
+			false,
+			queryFind,
+			options,
+			dataSourceName
+		);
+		return updated ? updated : null;
 	}
 
 	/**
@@ -394,7 +429,7 @@ export class Model {
 		queryFind: SelectQuery,
 		options: QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Bluebird<Set> {
 		return doFindUpdate(this, true, queryFind, options, dataSourceName);
 	}
 
@@ -413,8 +448,16 @@ export class Model {
 		update: object,
 		options: QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity> {
-		return doFindUpdate(this, false, queryFind, options, dataSourceName, update);
+	): Bluebird<Entity | null> {
+		const updated = await doFindUpdate(
+			this,
+			false,
+			queryFind,
+			options,
+			dataSourceName,
+			update
+		);
+		return updated ? updated : null;
 	}
 
 	/**
@@ -432,7 +475,7 @@ export class Model {
 		update: object,
 		options: QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Bluebird<Set> {
 		return doFindUpdate(this, true, queryFind, options, dataSourceName, update);
 	}
 
@@ -449,7 +492,7 @@ export class Model {
 		queryFind: SelectQuery,
 		options: QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<void> {
+	): Bluebird<void> {
 		return doDelete(EDeleteMethod.deleteOne, this)(
 			queryFind,
 			options,
@@ -470,7 +513,7 @@ export class Model {
 		queryFind: SelectQuery = {},
 		options: QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<void> {
+	): Bluebird<void> {
 		return doDelete(EDeleteMethod.deleteMany, this)(
 			queryFind,
 			options,

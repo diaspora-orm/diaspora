@@ -1,4 +1,5 @@
-import { _ } from '../dependencies';
+import _ from 'lodash';
+
 import { ValidationError } from './validationError';
 import { EntityValidationError } from './entityValidationError';
 
@@ -13,9 +14,9 @@ export class SetValidationError extends ValidationError {
 	 *
 	 * @author gerkin
 	 * @see Diaspora.check
-	 * @param {string}                                                      message          - Message of this error.
-	 * @param {module:Errors/EntityValidationError~EntityValidationError[]} validationErrors - Array of validation errors.
-	 * @param {*}                                                           errorArgs        - Arguments to transfer to parent Error.
+	 * @param message          - Message of this error.
+	 * @param validationErrors - Array of validation errors.
+	 * @param errorArgs        - Arguments to transfer to parent Error.
 	 */
 	constructor(
 		message: string,

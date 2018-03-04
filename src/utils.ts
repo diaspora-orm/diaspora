@@ -1,6 +1,6 @@
-import { _ } from './dependencies';
+import _ from 'lodash';
 
-import { EntityObject } from './entityFactory';
+import { IRawEntityAttributes } from './entityFactory';
 import { QueryOptions } from './adapters/base/queryLanguage';
 
 /**
@@ -42,8 +42,8 @@ export const defineEnumerableProperties = (
  * @returns Entity modified.
  */
 export const applyUpdateEntity = (
-	update: EntityObject,
-	entity: EntityObject
+	update: IRawEntityAttributes,
+	entity: IRawEntityAttributes
 ): object => {
 	_.forEach(update, (val, key) => {
 		if (_.isUndefined(val)) {

@@ -1,10 +1,11 @@
-import { _ } from '../dependencies';
+import _ from 'lodash';
+
 import { ValidationError } from './validationError';
-import { Validation } from '../';
+import { ErrorObjectFinal } from '../validator';
 
-import ErrorObjectFinal = Validation.ErrorObjectFinal;
-
-const stringifyValidationObject = (validationErrors: ErrorObjectFinal[]) => {
+const stringifyValidationObject = (validationErrors: {
+	[key: string]: ErrorObjectFinal;
+}) => {
 	return _(validationErrors)
 		.mapValues((error: ErrorObjectFinal, key) => {
 			return `${key} => ${JSON.stringify(error.value)}
@@ -22,12 +23,12 @@ const stringifyValidationObject = (validationErrors: ErrorObjectFinal[]) => {
  * This class represents an error related to validation on an entity.
  */
 export class EntityValidationError extends ValidationError {
-	private validationErrors: ErrorObjectFinal[];
+	private validationErrors: { [key: string]: ErrorObjectFinal };
 	/**
 	 * Construct a new validation error.
 	 */
 	constructor(
-		validationErrors: ErrorObjectFinal[],
+		validationErrors: { [key: string]: ErrorObjectFinal },
 		message: string,
 		...errorArgs: any[]
 	) {

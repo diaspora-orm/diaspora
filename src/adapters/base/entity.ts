@@ -1,5 +1,10 @@
-import { _ } from '../../dependencies';
-import { EntityUid, IRawEntityAttributes } from '../../entityFactory';
+import _ from 'lodash';
+
+import {
+	EntityUid,
+	IRawEntityAttributes,
+	IEntityAttributes,
+} from '../../entityFactory';
 import { Adapter } from '.';
 
 /**
@@ -42,7 +47,8 @@ export class AdapterEntity {
 	 * @author gerkin
 	 * @returns {Object} Plain object representing this entity.
 	 */
-	toObject(): IRawEntityAttributes {
-		return _.omit(this, ['dataSource', 'id']);
+	toObject(): IEntityAttributes {
+		// TODO WARNING! Cast not OK
+		return _.omit(this, ['dataSource', 'id']) as any;
 	}
 }

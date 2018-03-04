@@ -1,9 +1,14 @@
-import { _ } from '../../dependencies';
-import { QueryLanguage, Adapters } from '../../index';
-import Adapter = Adapters.BaseAdapter.Adapter;
-import AdapterEntity = Adapters.BaseAdapter.AdapterEntity;
+import _ from 'lodash';
+import Bluebird from 'bluebird';
 
-const getNum = (fullMatch: string, sign: string, val: string) => {
+import * as QueryLanguage from './queryLanguage';
+import { AdapterEntity, Adapter } from '.';
+
+function getNum(fullMatch: string, sign: string, val: string): number;
+function getNum([fullMatch, sign, val]: string[]): number;
+function getNum(...params: (string | string[])[]) {
+	const flatten = _.flattenDeep(params) as string[];
+	const [fullMatch, sign, val] = flatten;
 	if ('∞' === val) {
 		if ('-' === sign) {
 			return -Infinity;
@@ -13,7 +18,7 @@ const getNum = (fullMatch: string, sign: string, val: string) => {
 	} else {
 		return parseInt(fullMatch, 10);
 	}
-};
+}
 
 const validations = {
 	type: {
@@ -30,8 +35,8 @@ const validations = {
 	rng(key: string, val: string | number, range: string) {
 		const rangeMatch = range.match(/^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/);
 		if (rangeMatch) {
-			const lower = getNum(...rangeMatch.splice(2, 3));
-			const upper = getNum(...rangeMatch.splice(2, 3));
+			const lower = getNum(rangeMatch.splice(2, 3));
+			const upper = getNum(rangeMatch.splice(2, 3));
 			const isInRangeLower = '[' === rangeMatch[1] ? val >= lower : val > lower;
 			const isInRangeUpper = ']' === rangeMatch[2] ? val <= upper : val < upper;
 			if (!(isInRangeLower && isInRangeUpper)) {
@@ -58,21 +63,23 @@ const validateOption = (
 	return val;
 };
 
-export const iterateLimit = (
+export const iterateLimit = async (
 	options: QueryLanguage.QueryOptions,
-	query: QueryLanguage.SelectQuery
-): Function => {
-	const foundEntities: AdapterEntity<Adapter>[] = [];
+	query: (options: QueryLanguage.QueryOptions) => Bluebird<AdapterEntity>
+): Bluebird<AdapterEntity[]> => {
+	const foundEntities: AdapterEntity[] = [];
 	let foundCount = 0;
 	let origSkip = options.skip;
 
 	// We are going to loop until we find enough items
-	const loopFind = (found: object | boolean) => {
+	const loopFind = async (
+		found?: AdapterEntity | true
+	): Bluebird<AdapterEntity[]> => {
 		// If the search returned nothing, then just finish the findMany
 		if (_.isNil(found)) {
 			return Promise.resolve(foundEntities);
 			// Else, if this is a value and not the initial `true`, add it to the list
-		} else if (found !== true) {
+		} else if (found instanceof AdapterEntity) {
 			foundEntities.push(found);
 		}
 		// If we found enough items, return them
@@ -83,9 +90,9 @@ export const iterateLimit = (
 		// Next time we'll skip 1 more item
 		foundCount++;
 		// Do the query & loop
-		return query(options).then(loopFind);
+		return loopFind(await query(options));
 	};
-	return loopFind;
+	return loopFind(true);
 };
 
 /**

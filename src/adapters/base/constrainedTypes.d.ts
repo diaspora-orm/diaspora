@@ -1,5 +1,3 @@
-import * as Diaspora from '../..';
-
 /**
  * @description Namespace for types with constraints, like <code>[0, Infinity]</code>, <code>]0, Infinity[</code>, etc etc
  */

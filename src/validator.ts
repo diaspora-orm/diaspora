@@ -1,23 +1,26 @@
-import { _ } from './dependencies';
+import _, { LoDashImplicitArrayWrapper } from 'lodash';
 
-import { FieldDescriptor } from './model';
-import { Entity, EntityObject } from './entityFactory';
+import { FieldDescriptor, ModelDescription } from './model';
+import { Entity, IRawEntityAttributes } from './entityFactory';
 import { EntityValidationError } from './errors';
 
 /**
  * Prepare the check of each items in the array.
  *
- * @param   {module:Validator~Validator} validator - Validator instance that do this call.
- * @param   {Object}                     fieldDesc - Description of the field to check.
- * @param   {module:Validator~PathStack} keys      - Keys so far.
- * @returns {Function} Function to execute to validate array items.
+ * @param   validator - Validator instance that do this call.
+ * @param   fieldDesc - Description of the field to check.
+ * @param   keys      - Keys so far.
+ * @returns Function to execute to validate array items.
  */
 const validateArrayItems = (
 	validator: Validator,
 	fieldDesc: FieldDescriptor,
 	keys: PathStack
 ) => {
-	return (propVal: any, index: number) => {
+	return (
+		propVal: any,
+		index: number
+	): ErrorObjectFinal[] | ErrorObjectFinal => {
 		if (fieldDesc.hasOwnProperty('of')) {
 			const ofArray = _.castArray(fieldDesc.of);
 			const subErrors = _(ofArray).map((desc, subIndex) =>
@@ -31,17 +34,18 @@ const validateArrayItems = (
 						.pushEntityProp(String(index)),
 					{ getProps: false }
 				)
-			);
+			) as LoDashImplicitArrayWrapper<ErrorObjectFinal | null>;
+
 			if (!_.isArray(fieldDesc.of)) {
-				return subErrors.get(0);
-			} else if (subErrors.compact().value().length === ofArray.length) {
+				return subErrors.get(0) || [];
+			} else if (subErrors.compact().value().length > 0) {
 				return subErrors
 					.toPlainObject()
 					.omitBy(_.isNil)
-					.value();
+					.value() as ErrorObjectFinal[];
 			}
 		}
-		return {};
+		return [];
 	};
 };
 
@@ -57,7 +61,7 @@ export interface ErrorObject {
 	spec?: string;
 	required?: string;
 	enum?: string;
-	//	children?:
+	children?: ErrorObjectFinal[] | { [key: string]: ErrorObjectFinal };
 }
 
 export interface ErrorObjectFinal extends ErrorObject {
@@ -84,7 +88,7 @@ type CheckFunction = (
 	keys: PathStack,
 	fieldDesc: FieldDescriptor,
 	value: any
-) => ErrorObject | undefined;
+) => ErrorObjectFinal | undefined;
 
 /**
  * Execute the simple tester and return an error component if it returns falsey.
@@ -97,10 +101,11 @@ const validateWrongType = (tester: TypeChecker): CheckFunction => {
 		keys: PathStack,
 		fieldDesc: FieldDescriptor,
 		value: any
-	): ErrorObject | undefined => {
+	): ErrorObjectFinal | undefined => {
 		if (!tester(value)) {
 			return {
 				type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
+				value,
 			};
 		}
 		return undefined;
@@ -132,13 +137,14 @@ const VALIDATIONS = {
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
-		): ErrorObject | undefined {
+		): ErrorObjectFinal | undefined {
 			if (!_.isObject(value)) {
 				return {
 					type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
+					value,
 				};
 			} else {
-				const deepTest = _.isObject(fieldDesc.attributes)
+				const deepTest = (_.isObject(fieldDesc.attributes)
 					? _(_.assign({}, fieldDesc.attributes, value))
 							.mapValues((pv, propName) => {
 								const propVal = value[propName];
@@ -153,9 +159,9 @@ const VALIDATIONS = {
 							})
 							.omitBy(_.isEmpty)
 							.value()
-					: {};
+					: {}) as { [key: string]: ErrorObjectFinal };
 				if (!_.isEmpty(deepTest)) {
-					return { children: deepTest };
+					return { children: deepTest, value };
 				} else {
 					return undefined;
 				}
@@ -166,20 +172,21 @@ const VALIDATIONS = {
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
-		): ErrorObject | undefined {
+		): ErrorObjectFinal | undefined {
 			if (!_.isArray(value)) {
 				return {
 					type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
+					value,
 				};
 			} else {
-				const deepTest = _.isObject(fieldDesc.of)
+				const deepTest = (_.isObject(fieldDesc.of)
 					? _(value)
 							.map(validateArrayItems(this, fieldDesc, keys))
 							.omitBy(_.isEmpty)
 							.value()
-					: {};
+					: []) as ErrorObjectFinal[];
 				if (!_.isEmpty(deepTest)) {
-					return { children: deepTest };
+					return { children: deepTest, value };
 				} else {
 					return undefined;
 				}
@@ -190,20 +197,23 @@ const VALIDATIONS = {
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
-		): ErrorObject | undefined {
+		): ErrorObjectFinal {
 			return {
 				type: `${keys.toValidatePath()} expected to be assigned with any type`,
+				value,
 			};
 		},
 		_(
 			this: Validator,
 			keys: PathStack,
-			fieldDesc: FieldDescriptor
-		): ErrorObject | undefined {
+			fieldDesc: FieldDescriptor,
+			value: any
+		): ErrorObjectFinal | undefined {
 			return {
 				type: `${keys.toValidatePath()} requires to be unhandled type "${
 					fieldDesc.type
 				}"`,
+				value,
 			};
 		},
 	},
@@ -438,25 +448,25 @@ export class Validator {
 	/**
 	 * Construct a Validator configured for the provided model.
 	 *
-	 * @param {ModelConfiguration.AttributesDescriptor} modelDesc - Model description to validate.
+	 * @param modelAttributes - Model description to validate.
 	 */
-	constructor(private _modelDesc: object) {}
+	constructor(private _modelAttributes: { [key: string]: FieldDescriptor }) {}
 
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
 	 * @author gerkin
 	 */
-	validate(entity: EntityObject) {
+	validate(entity: IRawEntityAttributes) {
 		// Apply method `checkField` on each field described
-		const checkResults = _(this._modelDesc)
+		const checkResults = _(this._modelAttributes)
 			.mapValues((fieldDesc, field) =>
 				this.check(entity[field], new PathStack().pushProp(field), {
 					getProps: false,
 				})
 			)
 			.omitBy(_.isEmpty)
-			.value();
+			.value() as { [key: string]: ErrorObjectFinal };
 		if (!_.isNil(checkResults) && !_.isEmpty(checkResults)) {
 			throw new EntityValidationError(checkResults, 'Validation failed');
 		}
@@ -483,7 +493,7 @@ export class Validator {
 		}
 
 		const val = options.getProps ? _.get(value, keys.segmentsEntity) : value;
-		const fieldDesc = _.get(this.modelDesc, keys.segmentsValidation);
+		const fieldDesc = _.get(this.modelAttributes, keys.segmentsValidation);
 		// TODO: Add checks for strict models (like if we are using MySQL)
 		if (!_.isObject(fieldDesc)) {
 			return null;
@@ -514,8 +524,8 @@ export class Validator {
 	/**
 	 * Get the model description provided in constructor.
 	 */
-	get modelDesc(): object {
-		return _.cloneDeep(this._modelDesc);
+	get modelAttributes(): object {
+		return _.cloneDeep(this._modelAttributes);
 	}
 
 	/**
