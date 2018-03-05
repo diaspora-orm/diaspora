@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird';
 import _ from 'lodash';
 
 import {
@@ -101,7 +100,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
-	): Bluebird<InMemoryEntity | undefined> {
+	): Promise<InMemoryEntity | undefined> {
 		entity = _.cloneDeep(entity);
 		const storeTable = this.ensureCollectionExists(table);
 		entity.id = Utils.generateUUID();
@@ -130,7 +129,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<InMemoryEntity | undefined> {
+	): Promise<InMemoryEntity | undefined> {
 		const storeTable = this.ensureCollectionExists(table);
 		const matches = _.filter(
 			storeTable.items,
@@ -154,7 +153,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<InMemoryEntity[]> {
+	): Promise<InMemoryEntity[]> {
 		const storeTable = this.ensureCollectionExists(table);
 		const matches = _.filter(
 			storeTable.items,
@@ -183,7 +182,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<InMemoryEntity | undefined> {
+	): Promise<InMemoryEntity | undefined> {
 		const found = await this.findOne(table, queryFind, options);
 
 		if (!_.isNil(found)) {
@@ -215,7 +214,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<InMemoryEntity[]> {
+	): Promise<InMemoryEntity[]> {
 		const foundEntity = await this.findMany(table, queryFind, options);
 
 		if (!_.isNil(foundEntity) && foundEntity.length > 0) {
@@ -253,7 +252,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<void> {
+	): Promise<void> {
 		const storeTable = this.ensureCollectionExists(table);
 		const entityToDelete = await this.findOne(table, queryFind, options);
 
@@ -279,7 +278,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<void> {
+	): Promise<void> {
 		const storeTable = this.ensureCollectionExists(table);
 		return this.findMany(table, queryFind, options).then(entitiesToDelete => {
 			const entitiesIds = _.map(entitiesToDelete, entity =>

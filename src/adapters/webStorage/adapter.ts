@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import Bluebird from 'bluebird';
 
 import {
 	Adapter,
@@ -14,7 +13,7 @@ import * as Utils from '../../utils';
 
 export interface IWebStorageAdapterConfig {
 	/**
-	 * @param [config.session=false] - Set to true to use sessionStorage instead of localStorage.
+	 * @param config - Set to true to use sessionStorage instead of localStorage.
 	 */
 	session: boolean;
 }
@@ -124,7 +123,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
-	): Bluebird<WebStorageEntity | undefined> {
+	): Promise<WebStorageEntity | undefined> {
 		entity = _.cloneDeep(entity || {});
 		entity.id = Utils.generateUUID();
 		this.setIdHash(entity);
@@ -150,7 +149,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	async insertMany(
 		table: string,
 		entities: IRawEntityAttributes[]
-	): Bluebird<WebStorageEntity[]> {
+	): Promise<WebStorageEntity[]> {
 		entities = _.cloneDeep(entities);
 		try {
 			const tableIndex = this.ensureCollectionExists(table);
@@ -204,7 +203,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<WebStorageEntity | undefined> {
+	): Promise<WebStorageEntity | undefined> {
 		_.defaults(options, {
 			skip: 0,
 		});
@@ -260,7 +259,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<WebStorageEntity | undefined> {
+	): Promise<WebStorageEntity | undefined> {
 		_.defaults(options, {
 			skip: 0,
 		});
@@ -294,7 +293,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<void> {
+	): Promise<void> {
 		const entityToDelete = await this.findOne(table, queryFind, options);
 
 		if (!entityToDelete) {
@@ -322,7 +321,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<void> {
+	): Promise<void> {
 		const entitiesToDelete = (await this.findMany(
 			table,
 			queryFind,

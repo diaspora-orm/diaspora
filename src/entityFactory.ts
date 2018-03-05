@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird';
 import _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
@@ -43,7 +42,7 @@ const maybeEmit = async (
 	options: IOptions,
 	eventsArgs: any[],
 	events: string | string[]
-): Bluebird<Entity> => {
+): Promise<Entity> => {
 	events = _.castArray(events);
 	if (options.skipEvents) {
 		return entity;
@@ -63,17 +62,17 @@ const execIfOkState = <T extends AdapterEntity>(
 	dataSource: Adapter<T>,
 	// TODO: precise it
 	method: string
-): Bluebird<T> => {
+): Promise<T> => {
 	// Depending on state, we are going to perform a different operation
 	if (State.ORPHAN === beforeState) {
-		return Bluebird.reject(new EntityStateError("Can't fetch an orphan entity."));
+		return Promise.reject(new EntityStateError("Can't fetch an orphan entity."));
 	} else {
 		// Skip scoping :/
 		(entity as any).lastDataSource = dataSource;
 		const execMethod: (
 			table: string,
 			query: object
-		) => Bluebird<T> = (dataSource as any)[method];
+		) => Promise<T> = (dataSource as any)[method];
 		return execMethod(entity.table(dataSource.name), entity.uidQuery(dataSource));
 	}
 };
@@ -314,7 +313,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @param   sourceName - Name of the data source to persist entity in.
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @returns Bluebird resolved once entity is saved. Resolved with `this`.
+	 * @returns Promise resolved once entity is saved. Resolved with `this`.
 	 */
 	async persist(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
@@ -365,7 +364,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @param   sourceName         - Name of the data source to fetch entity from.
 	 * @param   options            - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @returns Bluebird resolved once entity is reloaded. Resolved with `this`.
+	 * @returns Promise resolved once entity is reloaded. Resolved with `this`.
 	 */
 	async fetch(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
@@ -406,7 +405,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @param   sourceName - Name of the data source to delete entity from.
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-	 * @returns Bluebird resolved once entity is destroyed. Resolved with `this`.
+	 * @returns Promise resolved once entity is destroyed. Resolved with `this`.
 	 */
 	async destroy(sourceName: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);

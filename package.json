@@ -105,7 +105,6 @@
 	"devDependencies": {
 		"@types/lodash": "^4.14.104",
 		"@types/winston": "^2.3.8",
-		"@types/bluebird": "^3.5.20",
 		"@types/jest": "^22.1.4",
 		"@types/node": "^9.4.6",
 		"@types/logform": "^1.2.0",
@@ -122,7 +121,7 @@
 		"prompt": "^1.0.0",
 		"replace-in-file": "^3.1.1",
 		"rimraf": "^2.6.2",
-		"rollup": "^0.56.3",
+		"rollup": "^0.56.4",
 		"rollup-plugin-commonjs": "^8.3.0",
 		"rollup-plugin-node-resolve": "^3.0.3",
 		"rollup-plugin-sourcemaps": "^0.4.2",
@@ -133,16 +132,15 @@
 		"tslint": "^5.9.1",
 		"tslint-config-prettier": "^1.9.0",
 		"tslint-config-standard": "^7.0.0",
-		"typedoc": "^0.10.0",
+		"typedoc": "^0.11.0",
 		"typescript": "^2.7.2",
 		"validate-commit-msg": "^2.14.0"
 	},
 	"dependencies": {
-		"bluebird": "^3.5.1",
-		"lodash": "^4.17.4",
+		"lodash": "^4.17.5",
 		"request": "^2.83.0",
 		"request-promise": "^4.2.2",
-		"sequential-event": "^0.4.0",
+		"sequential-event": "^0.4.1",
 		"winston": "^3.0.0-rc0"
 	},
 	"engines": {

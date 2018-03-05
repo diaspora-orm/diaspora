@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird';
 import _ from 'lodash';
 import { IEventHandler } from 'sequential-event';
 
@@ -138,7 +137,7 @@ const doDelete = (methodName: EDeleteMethod, model: Model) => {
 		queryFind: QueryLanguage.SelectQuery = {},
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string
-	): Bluebird<void> => {
+	): Promise<void> => {
 		// Sort arguments
 		const args = findArgs(model, queryFind, options, dataSourceName);
 		return (args.dataSource as any)[methodName](
@@ -156,7 +155,7 @@ async function doFindUpdate(
 	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
-): Bluebird<Set>;
+): Promise<Set>;
 async function doFindUpdate(
 	model: Model,
 	plural: false,
@@ -164,7 +163,7 @@ async function doFindUpdate(
 	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
-): Bluebird<Entity | undefined>;
+): Promise<Entity | undefined>;
 async function doFindUpdate(
 	model: Model,
 	plural: boolean,
@@ -172,7 +171,7 @@ async function doFindUpdate(
 	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
-): Bluebird<Entity | undefined | Set> {
+): Promise<Entity | undefined | Set> {
 	// Sort arguments
 	const queryComponents = findArgs(model, queryFind, options, dataSourceName);
 	const args = _([model.name, queryComponents.queryFind])
@@ -366,7 +365,7 @@ export class Model {
 	async insert(
 		source: object,
 		dataSourceName: string = this.defaultDataSource
-	): Bluebird<Entity> {
+	): Promise<Entity> {
 		const dataSource = this.getDataSource(dataSourceName);
 		const entity = await dataSource.insertOne(this.name, source);
 		return new this.entityFactory(entity);
@@ -383,7 +382,7 @@ export class Model {
 	async insertMany(
 		sources: object[],
 		dataSourceName: string = this.defaultDataSource
-	): Bluebird<Set> {
+	): Promise<Set> {
 		const dataSource = this.getDataSource(dataSourceName);
 		const entities = await dataSource.insertMany(this.name, sources);
 		return makeSet(this, entities);
@@ -402,7 +401,7 @@ export class Model {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Bluebird<Entity | null> {
+	): Promise<Entity | null> {
 		const updated = await doFindUpdate(
 			this,
 			false,
@@ -426,7 +425,7 @@ export class Model {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Bluebird<Set> {
+	): Promise<Set> {
 		return doFindUpdate(this, true, queryFind, options, dataSourceName);
 	}
 
@@ -445,7 +444,7 @@ export class Model {
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Bluebird<Entity | null> {
+	): Promise<Entity | null> {
 		const updated = await doFindUpdate(
 			this,
 			false,
@@ -472,7 +471,7 @@ export class Model {
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Bluebird<Set> {
+	): Promise<Set> {
 		return doFindUpdate(this, true, queryFind, options, dataSourceName, update);
 	}
 
@@ -489,7 +488,7 @@ export class Model {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Bluebird<void> {
+	): Promise<void> {
 		return doDelete(EDeleteMethod.deleteOne, this)(
 			queryFind,
 			options,
@@ -510,7 +509,7 @@ export class Model {
 		queryFind: QueryLanguage.SelectQuery = {},
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
-	): Bluebird<void> {
+	): Promise<void> {
 		return doDelete(EDeleteMethod.deleteMany, this)(
 			queryFind,
 			options,

@@ -1,6 +1,5 @@
 import { SequentialEvent } from 'sequential-event';
 import _, { LoDashImplicitArrayWrapper, PropertyName } from 'lodash';
-import Bluebird from 'bluebird';
 
 import { Model } from './model';
 import {
@@ -55,7 +54,7 @@ async function wrapEventsAction(
 	action: string,
 	verb: string | string[]
 ): Promise<void> {
-	const _allEmit: _.Function1<string, Bluebird<SequentialEvent[]>> = _.partial(
+	const _allEmit: _.Function1<string, Promise<SequentialEvent[]>> = _.partial(
 		allEmit,
 		this.entities,
 		verb
@@ -183,7 +182,7 @@ export class Set {
 	 * @returns Promise resolved once all items are persisted.
 	 * @see {@link EntityFactory.Entity#persist}
 	 */
-	async persist(sourceName: string): Bluebird<Set> {
+	async persist(sourceName: string): Promise<Set> {
 		const suffixes = this.entities
 			.map(entity => ('orphan' === entity.state ? 'Create' : 'Update'))
 			.value();
@@ -232,7 +231,7 @@ export class Set {
 	 * @returns Promise resolved once all items are reloaded.
 	 * @see {@link EntityFactory.Entity#fetch}
 	 */
-	async fetch(sourceName: string): Bluebird<Set> {
+	async fetch(sourceName: string): Promise<Set> {
 		await wrapEventsAction.call(this, sourceName, 'fetch', 'Fetch');
 		return this;
 	}
@@ -247,7 +246,7 @@ export class Set {
 	 * @returns Promise resolved once all items are destroyed.
 	 * @see {@link EntityFactory.Entity#destroy}
 	 */
-	async destroy(sourceName: string): Bluebird<Set> {
+	async destroy(sourceName: string): Promise<Set> {
 		await wrapEventsAction.call(this, sourceName, 'destroy', 'Destroy');
 		return this;
 	}

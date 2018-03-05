@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import Bluebird from 'bluebird';
 
 import { Adapter, QueryLanguage } from '../base';
 import { WebApiEntity } from '.';
@@ -111,7 +110,7 @@ const httpRequest = async (
 	endPoint: string,
 	data?: object | true,
 	queryObject?: object
-): Bluebird<any> => {
+): Promise<any> => {
 	if (!process.browser) {
 		if (_.isNil(data)) {
 			data = true;
@@ -124,7 +123,7 @@ const httpRequest = async (
 			),
 		});
 	} else {
-		return new Bluebird((resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			/* globals XMLHttpRequest: false */
 			const xhr = new XMLHttpRequest();
 			defineXhrEvents(xhr, resolve, reject);
@@ -309,7 +308,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
-	): Bluebird<WebApiEntity | undefined> {
+	): Promise<WebApiEntity | undefined> {
 		let newEntity = await this.apiQuery(EHttpVerb.POST, table, entity);
 		if (!_.isNil(newEntity)) {
 			this.setIdHash(newEntity);
@@ -329,7 +328,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	async insertMany(
 		table: string,
 		entities: IRawEntityAttributes[]
-	): Bluebird<WebApiEntity[]> {
+	): Promise<WebApiEntity[]> {
 		let newEntities = await this.apiQuery(
 			EHttpVerb.POST,
 			this.getPluralEndpoint(table),
@@ -356,7 +355,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<WebApiEntity | undefined> {
+	): Promise<WebApiEntity | undefined> {
 		const apiDesc: IApiDescription = await this.emit(
 			'beforeQuery',
 			'find',
@@ -392,7 +391,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<WebApiEntity[]> {
+	): Promise<WebApiEntity[]> {
 		const apiDesc = await this.emit(
 			'beforeQuery',
 			'find',
@@ -431,7 +430,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<WebApiEntity | undefined> {
+	): Promise<WebApiEntity | undefined> {
 		let entity = await this.apiQuery(
 			EHttpVerb.PATCH,
 			table,
@@ -462,7 +461,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<WebApiEntity[]> {
+	): Promise<WebApiEntity[]> {
 		let entities = await this.apiQuery(
 			EHttpVerb.PATCH,
 			this.getPluralEndpoint(table),
@@ -490,7 +489,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<void> {
+	): Promise<void> {
 		await this.apiQuery(
 			EHttpVerb.DELETE,
 			table,
@@ -513,7 +512,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<void> {
+	): Promise<void> {
 		await this.apiQuery(
 			EHttpVerb.DELETE,
 			this.getPluralEndpoint(table),

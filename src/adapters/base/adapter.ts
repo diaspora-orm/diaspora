@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
-import Bluebird from 'bluebird';
 
 import { AdapterEntity, QueryLanguage } from '.';
 import { Diaspora } from '../../diaspora';
@@ -156,8 +155,8 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	 * @listens Adapters.Adapter#ready
 	 * @returns Promise resolved when adapter is ready, and rejected if an error occured.
 	 */
-	waitReady(): Bluebird<this> {
-		return new Bluebird((resolve, reject) => {
+	waitReady(): Promise<this> {
+		return new Promise((resolve, reject) => {
 			if (EAdapterState.READY === this.state) {
 				return resolve(this);
 			} else if (EAdapterState.ERROR === this.state) {
@@ -368,7 +367,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
-	): Bluebird<AdapterEntity | undefined> {
+	): Promise<AdapterEntity | undefined> {
 		return _.first(await this.insertMany(table, [entity]));
 	}
 
@@ -381,8 +380,8 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	async insertMany(
 		table: string,
 		entities: IRawEntityAttributes[]
-	): Bluebird<AdapterEntity[]> {
-		const mapped = await Bluebird.resolve(entities).mapSeries(entity =>
+	): Promise<AdapterEntity[]> {
+		const mapped = await Promise.resolve(entities).mapSeries(entity =>
 			this.insertOne(table, entity || {})
 		);
 		return _.compact(mapped);
@@ -401,7 +400,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<AdapterEntity | undefined> {
+	): Promise<AdapterEntity | undefined> {
 		options.limit = 1;
 		return _.first(await this.findMany(table, queryFind, options));
 	}
@@ -416,7 +415,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<AdapterEntity[]> {
+	): Promise<AdapterEntity[]> {
 		const optionsNormalized = this.normalizeOptions(options);
 		const boundQuery = this.findOne.bind(this, table, queryFind);
 		return iterateLimit(optionsNormalized, boundQuery);
@@ -436,7 +435,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<AdapterEntity | undefined> {
+	): Promise<AdapterEntity | undefined> {
 		options = this.normalizeOptions(options);
 		options.limit = 1;
 		return _.first(await this.updateMany(table, queryFind, update, options));
@@ -453,7 +452,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<AdapterEntity[]> {
+	): Promise<AdapterEntity[]> {
 		const optionsNormalized = this.normalizeOptions(options);
 		return iterateLimit(
 			optionsNormalized,
@@ -474,7 +473,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<void> {
+	): Promise<void> {
 		options.limit = 1;
 		return this.deleteMany(table, queryFind, options);
 	}
@@ -493,10 +492,10 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Bluebird<void> {
+	): Promise<void> {
 		let count = 0;
 		// We are going to loop until we find enough items
-		const loopFind = (): Bluebird<void> => {
+		const loopFind = (): Promise<void> => {
 			// First, search for the item.
 			return this.findOne(table, queryFind, options).then(found => {
 				// If the search returned nothing, then just finish the findMany

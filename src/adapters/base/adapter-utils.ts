@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import Bluebird from 'bluebird';
 
 import { AdapterEntity, Adapter, QueryLanguage } from '.';
 import { IRawEntityAttributes } from '../../entityFactory';
@@ -65,14 +64,14 @@ const validateOption = (
 
 export const iterateLimit = async <TEntity extends AdapterEntity>(
 	options: QueryLanguage.QueryOptions,
-	query: (options: QueryLanguage.QueryOptions) => Bluebird<TEntity>
-): Bluebird<TEntity[]> => {
+	query: (options: QueryLanguage.QueryOptions) => Promise<TEntity>
+): Promise<TEntity[]> => {
 	const foundEntities: TEntity[] = [];
 	let foundCount = 0;
 	let origSkip = options.skip;
 
 	// We are going to loop until we find enough items
-	const loopFind = async (found?: TEntity | true): Bluebird<TEntity[]> => {
+	const loopFind = async (found?: TEntity | true): Promise<TEntity[]> => {
 		// If the search returned nothing, then just finish the findMany
 		if (_.isNil(found)) {
 			return Promise.resolve(foundEntities);
