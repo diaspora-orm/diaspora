@@ -2,6 +2,11 @@ import _ from 'lodash';
 import { Validator } from '../src/validator';
 import { EntityValidationError } from '../src/errors';
 
+interface IPartition<T> extends Array<T[]> {
+	0: Array<T>;
+	1: Array<T>;
+}
+
 export const explain = (expectation: () => void, ...explanation: any[]) => {
 	try {
 		expectation();
@@ -18,13 +23,13 @@ const obj2 = { foo: 'bar' };
 const arr1 = [];
 const arr2 = [1, 2, 3];
 const exampleValues = {
-	any: [],
-	string: ['', 'foo'],
-	integer: [0, 1],
-	float: [1.5, 0, 1],
-	date: [date1, date2],
-	object: [obj1, date1, arr1, obj2, date2, arr2],
-	array: [arr1, arr2],
+	any: ['', 'foo', 0, 1, 1.5, date1, obj1, arr1] as any[],
+	string: ['', 'foo'] as string[],
+	integer: [0, 1] as number[],
+	float: [1.5, 0, 1] as number[],
+	date: [date1, date2] as Date[],
+	object: [obj1, date1, arr1, obj2, date2, arr2] as object[],
+	array: [arr1, arr2] as any[][],
 };
 const getValues = (keys: string | string[] = []): [any[], any[]] => {
 	keys = _.castArray(keys);
@@ -80,11 +85,6 @@ const runTests = (
 		);
 	});
 };
-
-interface IPartition<T> extends Array<T[]> {
-	0: Array<T>;
-	1: Array<T>;
-}
 
 const wrapTest = (partition: IPartition<any>): IPartition<{ test: any }> => {
 	const partitionMapped = partition.map((values: any[]) => {

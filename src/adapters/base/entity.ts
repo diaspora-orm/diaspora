@@ -50,7 +50,7 @@ export class AdapterEntity {
 	 * Returns a plain object corresponding to this entity attributes.
 	 *
 	 * @author gerkin
-	 * @returns {Object} Plain object representing this entity.
+	 * @returns Plain object representing this entity.
 	 */
 	toObject(): IEntityAttributes {
 		// TODO WARNING! Cast not OK

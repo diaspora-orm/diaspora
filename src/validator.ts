@@ -230,8 +230,8 @@ _.assign(VALIDATIONS.TYPE, {
  * Standard function that can be used to add steps to the validation process..
  *
  * @callback ValidationStep
- * @param   {module:Validator~ValidationStepsArgs} validationArgs - Object of arguments.
- * @returns {undefined} This function returns nothing.
+ * @param   validationArgs - Object of arguments.
+ * @returns This function returns nothing.
  */
 
 /**
@@ -256,8 +256,8 @@ const VALIDATION_STEPS = [
 	 *
 	 * @function module:Validator~checkCustoms
 	 * @type {module:Validator~ValidationStep}
-	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
-	 * @returns {undefined} This function returns nothing.
+	 * @param   validationArgs - Validation step argument.
+	 * @returns This function returns nothing.
 	 */
 	function checkCustoms(this: Validator, validationArgs: ValidationStepArgs) {
 		const { error, fieldDesc, keys, value } = validationArgs;
@@ -277,8 +277,8 @@ const VALIDATION_STEPS = [
 	 *
 	 * @function module:Validator~checkTypeRequired
 	 * @type {module:Validator~ValidationStep}
-	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
-	 * @returns {undefined} This function returns nothing.
+	 * @param   validationArgs - Validation step argument.
+	 * @returns This function returns nothing.
 	 */
 	function checkTypeRequired(
 		this: Validator,
@@ -331,8 +331,8 @@ const VALIDATION_STEPS = [
 	 *
 	 * @function module:Validator~checkEnum
 	 * @type {module:Validator~ValidationStep}
-	 * @param   {module:Validator~ValidationStepsArgs} validationArgs - Validation step argument.
-	 * @returns {undefined} This function returns nothing.
+	 * @param   validationArgs - Validation step argument.
+	 * @returns This function returns nothing.
 	 */
 	function checkEnum(this: Validator, validationArgs: ValidationStepArgs) {
 		const { error, fieldDesc, keys, value } = validationArgs;
@@ -380,8 +380,8 @@ export class PathStack {
 	/**
 	 * Add a path segment for entity navigation.
 	 *
-	 * @param   {...string} prop - Properties to add.
-	 * @returns {module:Validator~PathStack} Returns `this`.
+	 * @param   prop - Properties to add.
+	 * @returns Returns `this`.
 	 */
 	pushEntityProp(...prop: string[]): this {
 		this.segmentsEntity = _(this.segmentsEntity)
@@ -394,8 +394,8 @@ export class PathStack {
 	/**
 	 * Add a path segment for model description navigation.
 	 *
-	 * @param   {...string} prop - Properties to add.
-	 * @returns {module:Validator~PathStack} Returns `this`.
+	 * @param   prop - Properties to add.
+	 * @returns Returns `this`.
 	 */
 	pushValidationProp(...prop: string[]): this {
 		this.segmentsValidation = _(this.segmentsValidation)
@@ -408,8 +408,8 @@ export class PathStack {
 	/**
 	 * Add a path segment for both entity & model description navigation.
 	 *
-	 * @param   {...string} prop - Properties to add.
-	 * @returns {module:Validator~PathStack} Returns `this`.
+	 * @param   prop - Properties to add.
+	 * @returns Returns `this`.
 	 */
 	pushProp(...prop: string[]): this {
 		return this.pushEntityProp(...prop).pushValidationProp(...prop);
@@ -418,7 +418,7 @@ export class PathStack {
 	/**
 	 * Get a string version of entity segments.
 	 *
-	 * @returns {string} String representation of path in entity.
+	 * @returns String representation of path in entity.
 	 */
 	toValidatePath(): string {
 		return this.segmentsEntity.join('.');
@@ -434,7 +434,7 @@ export class PathStack {
 	/**
 	 * Duplicate this PathStack, detaching its state from the new.
 	 *
-	 * @returns {module:Validator~PathStack} Clone of caller PathStack.
+	 * @returns Clone of caller PathStack.
 	 */
 	clone(): PathStack {
 		return new PathStack(...this.toArray());
@@ -476,11 +476,11 @@ export class Validator {
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
 	 * @author gerkin
-	 * @param   {Any}                        value                  - Value to check.
-	 * @param   {module:Validator~PathStack} keys                   - Pathstack representing path to this validation.
-	 * @param   {Object}                     [options=(})]          - Hash of options.
-	 * @param   {boolean}                    options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
-	 * @returns {Object} Hash describing errors.
+	 * @param   value                  - Value to check.
+	 * @param   keys                   - Pathstack representing path to this validation.
+	 * @param   [options=(})]          - Hash of options.
+	 * @param   options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
+	 * @returns Hash describing errors.
 	 */
 	check(
 		value: any,

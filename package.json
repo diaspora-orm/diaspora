@@ -19,8 +19,9 @@
 	},
 	"scripts": {
 		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+		"doc": "typedoc --out dist/docs --target es6 --theme minimal --mode file src",
 		"prebuild": "rimraf dist",
-		"build": "tsc --module commonjs --outDir dist/lib && rollup -c rollup.config.ts && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
+		"build": "tsc --module commonjs --outDir dist/lib && rollup -c rollup.config.ts && npm run doc",
 		"start": "rollup -c rollup.config.ts -w",
 		"test": "jest",
 		"test:watch": "jest --watch",

@@ -14,7 +14,7 @@ import * as Utils from '../../utils';
 
 export interface IWebStorageAdapterConfig {
 	/**
-	 * @param {boolean} [config.session=false] - Set to true to use sessionStorage instead of localStorage.
+	 * @param [config.session=false] - Set to true to use sessionStorage instead of localStorage.
 	 */
 	session: boolean;
 }

@@ -22,10 +22,10 @@ import * as Utils from './utils';
  *
  * @author Gerkin
  * @inner
- * @param   {SequentialEvent[]} entities - Items to iterate over.
- * @param   {string|string[]}   verb     - Verb of the action to emit.
- * @param   {string}            prefix   - Prefix to prepend to the verb.
- * @returns {Promise} Promise resolved once all promises are done.
+ * @param   entities - Items to iterate over.
+ * @param   verb     - Verb of the action to emit.
+ * @param   prefix   - Prefix to prepend to the verb.
+ * @returns Promise resolved once all promises are done.
  */
 const allEmit = (
 	entities: SequentialEvent[],
@@ -44,10 +44,10 @@ const allEmit = (
  * @author Gerkin
  * @inner
  * @this Set
- * @param   {string} sourceName    - Name of the data source to interact with.
- * @param   {string} action        - Name of the entity function to apply.
- * @param   {string|string[]} verb - String or array of strings to map for events suffix.
- * @returns {Promise} Promise resolved once events are finished.
+ * @param   sourceName    - Name of the data source to interact with.
+ * @param   action        - Name of the entity function to apply.
+ * @param   verb - String or array of strings to map for events suffix.
+ * @returns Promise resolved once events are finished.
  */
 async function wrapEventsAction(
 	this: Set,

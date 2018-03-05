@@ -47,11 +47,11 @@ export interface ModelDescription extends ModelDescriptionRaw {
  *
  * @typedef FieldDescriptor
  * @author gerkin
- * @property [type]           - Expected type of the value. Either `type` or `model` should be defined, or none.
- * @property [model]          - Expected model of the value. Either `type` or `model` should be defined, or none.
- * @property [of] - Description (or array of descriptions) of possible values for this field
- * @property [required=false] - Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
- * @property [validate] - Custom validation callback.
+ * @property type     - Expected type of the value. Either `type` or `model` should be defined, or none.
+ * @property model    - Expected model of the value. Either `type` or `model` should be defined, or none.
+ * @property of       - Description (or array of descriptions) of possible values for this field
+ * @property required - Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
+ * @property validate - Custom validation callback.
  */
 export interface FieldDescriptor {
 	type?: string;

@@ -36,7 +36,6 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	/**
 	 * Hash of functions to cast data store values to JSON standard values in entity.
 	 *
-	 * @property {Function} * - Filter to execute to get standard JSON value.
 	 * @author Gerkin
 	 */
 	protected filters: object;
@@ -44,7 +43,6 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	/**
 	 * Hash to transform entity fields to data store fields.
 	 *
-	 * @property {string} * - Data store field associated with this entity field.
 	 * @author Gerkin
 	 */
 	protected remaps: object;
@@ -52,7 +50,6 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	/**
 	 * Hash to transform data store fields to entity fields.
 	 *
-	 * @property {string} * - Entity field associated with this data store field.
 	 * @author Gerkin
 	 */
 	protected remapsInverted: object;
@@ -60,13 +57,13 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	/**
 	 * Error triggered by adapter initialization.
 	 *
-	 * @type {Error}
 	 * @author Gerkin
 	 */
 	protected error?: Error;
 
 	/**
 	 * Describe current adapter status.
+	 *
 	 * @author Gerkin
 	 */
 	protected state: EAdapterState;
@@ -83,7 +80,6 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	/**
 	 * Create a new instance of adapter. This base class should be used by all other adapters.
 	 *
-	 * @public
 	 * @author gerkin
 	 * @param classEntity - Entity to spawn with this adapter.
 	 */
@@ -158,7 +154,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	 * @author gerkin
 	 * @listens Adapters.Adapter#error
 	 * @listens Adapters.Adapter#ready
-	 * @returns {Promise} Promise resolved when adapter is ready, and rejected if an error occured.
+	 * @returns Promise resolved when adapter is ready, and rejected if an error occured.
 	 */
 	waitReady(): Bluebird<this> {
 		return new Bluebird((resolve, reject) => {
@@ -348,7 +344,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 	/**
 	 * Returns a POJO representing the current adapter.
 	 *
-	 * @returns {Object} JSON representation of the adapter.
+	 * @returns JSON representation of the adapter.
 	 */
 	toJSON(): object {
 		return _.pick(this, [
