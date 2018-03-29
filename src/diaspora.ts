@@ -1,5 +1,4 @@
-import _ from 'lodash';
-import { Winston } from 'winston';
+import * as _ from 'lodash';
 
 import { Adapter, AdapterEntity, QueryLanguage } from './adapters/base';
 import { Entity, IRawEntityAttributes, EntityUid } from './entityFactory';
@@ -10,6 +9,7 @@ import {
 	Model,
 	ModelDescriptionRaw,
 } from './model';
+import { logger } from './logger';
 
 /**
  * Event emitter that can execute async handlers in sequence
@@ -37,138 +37,6 @@ interface IQueryTypeDescriptor {
 	number: string;
 }
 
-const ensureAllEntities = (adapter: Adapter<AdapterEntity>, table: string) => {
-	// Filter our results
-	const filterResults = (entity: any): any => {
-		// Remap fields
-		entity = adapter.remapOutput(table, entity);
-		// Force results to be class instances
-		if (entity instanceof adapter.classEntity) {
-			return new adapter.classEntity(entity, adapter);
-		}
-		return entity;
-	};
-
-	return (results: Entity | Entity[]): Entity | Entity[] | void => {
-		if (_.isNil(results)) {
-			return;
-		} else if (_.isArrayLike(results)) {
-			return _.map(results, filterResults);
-		} else {
-			return filterResults(results);
-		}
-	};
-};
-
-const remapArgs = (
-	args: any[],
-	optIndex: number | false,
-	update: boolean,
-	queryType: any,
-	remapFunction: IRemapIterator
-) => {
-	if (false !== optIndex) {
-		const options = args[optIndex] as QueryLanguage.QueryOptions;
-		// Remap input objects
-		if (true === options.remapInput) {
-			// Remap the query
-			args[0] = remapFunction(args[0]);
-
-			// Remap also the update if there are some
-			if (true === update) {
-				args[1] = remapFunction(args[1]);
-			}
-		}
-		options.remapInput = false;
-	} else if ('insert' === queryType.query) {
-		// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
-		if ('many' === queryType.number) {
-			// If inserting *several* entities, map the array to remap each entity objects...
-			args[0] = _.map(
-				args[0] as IRawEntityAttributes[],
-				(insertion: IRawEntityAttributes) => remapFunction(insertion)
-			);
-		} else {
-			// ... or we are inserting a *single* one. We still need to remap entity.
-			args[0] = remapFunction(args[0]);
-		}
-	}
-};
-
-const getRemapFunction = (adapter: Adapter<AdapterEntity>, table: string) => {
-	return (query: IRawEntityAttributes) => {
-		return adapter.remapInput(table, query);
-	};
-};
-
-const wrapDataSourceAction = (
-	callback: Function,
-	queryType: string,
-	adapter: Adapter<AdapterEntity>
-) => {
-	return (table: string, ...args: any[]) => {
-		// Transform arguments for find, update & delete
-		let optIndex: number | false = false;
-		let upd = false;
-		if (['find', 'delete'].includes(queryType)) {
-			// For find & delete, options are 3rd argument (so 2nd item in `args`)
-			optIndex = 1;
-		} else if ('update' === queryType) {
-			// For update, options are 4th argument (so 3nd item in `args`), and `upd` flag is toggled on.
-			optIndex = 2;
-			upd = true;
-		}
-		try {
-			if (false !== optIndex) {
-				// Options to canonical
-				args[optIndex] = adapter.normalizeOptions(args[optIndex]);
-				// Query search to cannonical
-				args[0] = adapter.normalizeQuery(args[0], args[optIndex]);
-			}
-			remapArgs(args, optIndex, upd, queryType, getRemapFunction(adapter, table));
-		} catch (err) {
-			return Promise.reject(err);
-		}
-
-		// Hook after promise resolution
-		return callback
-			.call(adapter, table, ...args)
-			.then(ensureAllEntities(adapter, table));
-	};
-};
-
-const ERRORS = {
-	NON_EMPTY_STR: _.template(
-		'<%= c %> <%= p %> must be a non empty string, had "<%= v %>"'
-	),
-};
-
-const requireName = (classname: string, value: any) => {
-	if (!_.isString(value) && value.length > 0) {
-		throw new Error(
-			ERRORS.NON_EMPTY_STR({
-				c: classname,
-				p: 'name',
-				v: value,
-			})
-		);
-	}
-};
-
-const getDefaultFunction = (identifier: any | Function) => {
-	if (_.isString(identifier)) {
-		const match = identifier.match(/^(.+?)(?:::(.+?))+$/);
-		if (match) {
-			const parts = identifier.split('::');
-			const namedFunction = _.get(DiasporaStatic.namedFunctions, parts);
-			if (_.isFunction(namedFunction)) {
-				return namedFunction();
-			}
-		}
-	}
-	return identifier;
-};
-
 /**
  * Diaspora main namespace
  * @namespace Diaspora
@@ -176,12 +44,6 @@ const getDefaultFunction = (identifier: any | Function) => {
  * @author gerkin
  */
 export class DiasporaStatic {
-	static namedFunctions = {
-		Diaspora: {
-			'Date.now()': () => new Date(),
-		},
-	};
-
 	private static _instance: DiasporaStatic;
 	public static get instance() {
 		if (DiasporaStatic._instance) {
@@ -196,79 +58,8 @@ export class DiasporaStatic {
 	 *
 	 * @author gerkin
 	 */
-	private _logger: Winston | Console | any = (() => {
-		if (!process.browser) {
-			const winston = require('winston');
-			const { createLogger, format, transports } = winston;
-			const { combine, timestamp, label, prettyPrint, json, simple } = format;
-
-			const log = createLogger({
-				level: 'silly',
-				format: json(),
-				transports: [
-					//
-					// - Write to all logs with level `info` and below to `combined.log`
-					// - Write all logs error (and below) to `error.log`.
-					//
-				],
-			});
-
-			//
-			// If we're not in production then log to the `console` with the format:
-			// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-			//
-			if (process.env.NODE_ENV !== 'production') {
-				const trimToLength = (
-					str: string | number,
-					len: number,
-					filler = ' ',
-					left = true
-				) => {
-					filler = filler.repeat(len);
-					str = left ? filler + str : str + filler;
-					return str.slice(left ? -len : len);
-				};
-				const td = _.partialRight(trimToLength, 2, '0') as (
-					str: string | number
-				) => string;
-				const formatDate = (date = new Date()) => {
-					return `${td(date.getFullYear())}/${td(date.getMonth() + 1)}/${td(
-						date.getDay()
-					)} ${td(date.getHours())}:${td(date.getMinutes())}:${td(
-						date.getSeconds()
-					)}`;
-				};
-
-				log.add(
-					new transports.Console({
-						format: combine(
-							format.colorize(),
-							// TODO: replace with logform TransformableInfos when Winston typings updated to 3.x
-							format((infos: any, opts: any) => {
-								const MESSAGE = Symbol.for('message');
-								const LEVEL = Symbol.for('level');
-								const level = infos[LEVEL];
-								let message = `${infos.level.replace(level, 'Diaspora: ' + level)}${
-									log.paddings[level]
-								}@${formatDate()} => ${infos.message}`;
-								const omittedKeys = ['level', 'message', 'splat'];
-								if (!_.isEmpty(_.difference(_.keys(infos), omittedKeys))) {
-									message += ' ' + JSON.stringify(_.omit(infos, omittedKeys));
-								}
-								infos[MESSAGE] = message;
-								return infos;
-							})()
-						),
-					})
-				);
-			}
-			return log;
-		} else {
-			return console;
-		}
-	})();
 	public get logger() {
-		return this._logger;
+		return logger;
 	}
 
 	/**
@@ -298,58 +89,134 @@ export class DiasporaStatic {
 	 */
 	private models: IModelRegistry = {};
 
-	/**
-	 * Set default values if required.
-	 *
-	 * @author gerkin
-	 * @param   entity    - Entity to set defaults in.
-	 * @param   modelDesc - Model description.
-	 * @returns  Entity merged with default values.
-	 */
-	default(
-		entity: IRawEntityAttributes,
-		modelDesc: { [key: string]: FieldDescriptor }
+	private static ensureAllEntities(
+		adapter: Adapter<AdapterEntity>,
+		table: string
 	) {
-		// Apply method `defaultField` on each field described
-		return _.defaults(
-			entity,
-			_.mapValues(modelDesc, (fieldDesc, field) =>
-				this.defaultField(entity[field], fieldDesc)
-			),
-			{ idHash: {} }
-		);
+		// Filter our results
+		const filterResults = (entity: any): any => {
+			// Remap fields
+			entity = adapter.remapOutput(table, entity);
+			// Force results to be class instances
+			if (entity instanceof adapter.classEntity) {
+				return new adapter.classEntity(entity, adapter);
+			}
+			return entity;
+		};
+
+		return (results: Entity | Entity[]): Entity | Entity[] | void => {
+			if (_.isNil(results)) {
+				return;
+			} else if (_.isArrayLike(results)) {
+				return _.map(results, filterResults);
+			} else {
+				return filterResults(results);
+			}
+		};
 	}
 
-	/**
-	 * Set the default on a single field according to its description.
-	 *
-	 * @author gerkin
-	 * @param   value     - Value to default.
-	 * @param   fieldDesc - Description of the field to default.
-	 * @returns Defaulted value.
-	 */
-	defaultField(value: any, fieldDesc: FieldDescriptor): any {
-		let out;
+	private static remapArgs(
+		args: any[],
+		optIndex: number | false,
+		update: boolean,
+		queryType: any,
+		remapFunction: IRemapIterator
+	) {
+		if (false !== optIndex) {
+			const options = args[optIndex] as QueryLanguage.QueryOptions;
+			// Remap input objects
+			if (true === options.remapInput) {
+				// Remap the query
+				args[0] = remapFunction(args[0]);
 
-		// Apply the `default` if value is undefined
-		if (!_.isUndefined(value)) {
-			out = value;
-		} else {
-			out = _.isFunction(fieldDesc.default)
-				? (fieldDesc.default as Function)()
-				: getDefaultFunction(fieldDesc.default);
+				// Remap also the update if there are some
+				if (true === update) {
+					args[1] = remapFunction(args[1]);
+				}
+			}
+			options.remapInput = false;
+		} else if ('insert' === queryType.query) {
+			// If inserting, then, we'll need to know if we are inserting *several* entities or a *single* one.
+			if ('many' === queryType.number) {
+				// If inserting *several* entities, map the array to remap each entity objects...
+				args[0] = _.map(
+					args[0] as IRawEntityAttributes[],
+					(insertion: IRawEntityAttributes) => remapFunction(insertion)
+				);
+			} else {
+				// ... or we are inserting a *single* one. We still need to remap entity.
+				args[0] = remapFunction(args[0]);
+			}
 		}
+	}
 
-		// Recurse if we are defaulting an object
-		if (
-			fieldDesc.attributes &&
-			'object' === fieldDesc.type &&
-			_.keys(fieldDesc.attributes).length > 0 &&
-			!_.isNil(out)
-		) {
-			return this.default(out, fieldDesc.attributes);
-		} else {
-			return out;
+	private static getRemapFunction(
+		adapter: Adapter<AdapterEntity>,
+		table: string
+	) {
+		return (query: IRawEntityAttributes) => {
+			return adapter.remapInput(table, query);
+		};
+	}
+
+	private static wrapDataSourceAction(
+		callback: Function,
+		queryType: string,
+		adapter: Adapter<AdapterEntity>
+	) {
+		return (table: string, ...args: any[]) => {
+			// Transform arguments for find, update & delete
+			let optIndex: number | false = false;
+			let upd = false;
+			if (['find', 'delete'].includes(queryType)) {
+				// For find & delete, options are 3rd argument (so 2nd item in `args`)
+				optIndex = 1;
+			} else if ('update' === queryType) {
+				// For update, options are 4th argument (so 3nd item in `args`), and `upd` flag is toggled on.
+				optIndex = 2;
+				upd = true;
+			}
+			try {
+				if (false !== optIndex) {
+					// Options to canonical
+					args[optIndex] = adapter.normalizeOptions(args[optIndex]);
+					// Query search to cannonical
+					args[0] = adapter.normalizeQuery(args[0], args[optIndex]);
+				}
+				DiasporaStatic.remapArgs(
+					args,
+					optIndex,
+					upd,
+					queryType,
+					DiasporaStatic.getRemapFunction(adapter, table)
+				);
+			} catch (err) {
+				return Promise.reject(err);
+			}
+
+			// Hook after promise resolution
+			console.log({ callback, table, args, adapter });
+			return callback
+				.call(adapter, table, ...args)
+				.then(DiasporaStatic.ensureAllEntities(adapter, table));
+		};
+	}
+
+	private static ERRORS = {
+		NON_EMPTY_STR: _.template(
+			'<%= c %> <%= p %> must be a non empty string, had "<%= v %>"'
+		),
+	};
+
+	private static requireName(classname: string, value: any) {
+		if (!_.isString(value) && value.length > 0) {
+			throw new Error(
+				DiasporaStatic.ERRORS.NON_EMPTY_STR({
+					c: classname,
+					p: 'name',
+					v: value,
+				})
+			);
 		}
 	}
 
@@ -382,6 +249,7 @@ export class DiasporaStatic {
 				);
 			}
 		}
+		console.log('Passed module require');
 		const baseAdapter = new (this.adapters[adapterLabel] as any)(...config);
 		const newDataSource = new Proxy(baseAdapter, {
 			get(target, key: string) {
@@ -397,7 +265,7 @@ export class DiasporaStatic {
 							query: method[1],
 							number: method[2],
 						};
-						return wrapDataSourceAction(
+						return DiasporaStatic.wrapDataSourceAction(
 							target[key],
 							methodObj.query as string,
 							target
@@ -421,7 +289,7 @@ export class DiasporaStatic {
 	 */
 	registerDataSource(dataSource: Adapter<AdapterEntity>) {
 		// TODO Oh that's bad....
-		requireName('DataSource', name);
+		DiasporaStatic.requireName('DataSource', name);
 		if (this.dataSources.hasOwnProperty(name)) {
 			throw new Error(`DataSource name already used, had "${name}"`);
 		}
@@ -466,12 +334,12 @@ export class DiasporaStatic {
 	 */
 	declareModel(name: string, modelDesc: ModelDescriptionRaw) {
 		if (_.isString(name) && name.length > 0) {
-			requireName('Model', name);
+			DiasporaStatic.requireName('Model', name);
 		}
 		if (!_.isObject(modelDesc)) {
 			throw new Error('"modelDesc" must be an object');
 		}
-		const model = new Model(name, modelDesc);
+		const model = new Model(this, name, modelDesc);
 		this.models[name] = model;
 		return model;
 	}

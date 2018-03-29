@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { IEventHandler } from 'sequential-event';
 
 import {
@@ -7,7 +7,7 @@ import {
 	Entity,
 	IRawEntityAttributes,
 } from './entityFactory';
-import { Diaspora } from './diaspora';
+import { DiasporaStatic, IDataSourceRegistry } from './diaspora';
 import { Set } from './set';
 import { Validator } from './validator';
 import { Adapter } from './adapters/base/adapter';
@@ -41,6 +41,28 @@ export interface ModelDescription extends ModelDescriptionRaw {
 	sources: SourcesHash;
 }
 
+export interface BaseFieldDescriptor {
+	type?: string;
+	validate?: Function | Function[];
+	required?: boolean;
+	default?: Function | string;
+}
+export interface ArrayFieldDescriptor extends BaseFieldDescriptor {
+	type: 'Array';
+	of?: FieldDescriptor | FieldDescriptor[];
+}
+export interface ObjectFieldDescriptor extends BaseFieldDescriptor {
+	type: 'Object';
+	attributes?: { [key: string]: FieldDescriptor };
+}
+export interface ValueFieldDescriptor extends BaseFieldDescriptor {
+	enum?: Array<any>;
+}
+export interface RelationalFieldDescriptor extends BaseFieldDescriptor {
+	type: 'Relation';
+	model?: string;
+}
+
 /**
  * Object describing the attributes of a {@link Model~Model}.
  *
@@ -52,16 +74,11 @@ export interface ModelDescription extends ModelDescriptionRaw {
  * @property required - Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
  * @property validate - Custom validation callback.
  */
-export interface FieldDescriptor {
-	type?: string;
-	validate?: Function | Function[];
-	of?: FieldDescriptor | FieldDescriptor[];
-	model?: string;
-	required?: boolean;
-	attributes?: { [key: string]: FieldDescriptor };
-	default?: Function | string;
-	enum?: Array<any>;
-}
+export type FieldDescriptor =
+	| ArrayFieldDescriptor
+	| ObjectFieldDescriptor
+	| ValueFieldDescriptor
+	| RelationalFieldDescriptor;
 
 interface IQueryParamsRaw {
 	queryFind?: QueryLanguage.SelectQuery;
@@ -174,7 +191,7 @@ async function doFindUpdate(
 ): Promise<Entity | undefined | Set> {
 	// Sort arguments
 	const queryComponents = findArgs(model, queryFind, options, dataSourceName);
-	const args = _([model.name, queryComponents.queryFind])
+	const args = _.chain([model.name, queryComponents.queryFind])
 		.push(update)
 		.push(queryComponents.options)
 		.compact()
@@ -253,7 +270,11 @@ export class Model {
 	 * @param name      - Name of the model.
 	 * @param modelDesc - Hash representing the configuration of the model.
 	 */
-	constructor(public name: string, modelDesc: ModelDescriptionRaw) {
+	constructor(
+		private Diaspora: DiasporaStatic,
+		public name: string,
+		modelDesc: ModelDescriptionRaw
+	) {
 		// Check model configuration
 		if (
 			!modelDesc.hasOwnProperty('sources') ||
@@ -273,7 +294,10 @@ export class Model {
 		const sourcesNormalized = normalizeRemaps(modelDesc);
 		// List sources required by this model
 		const sourceNames = _.keys(sourcesNormalized);
-		const modelSources = _.pick(Diaspora.dataSources, sourceNames);
+		const modelSources: IDataSourceRegistry = _.pick(
+			Diaspora.dataSources,
+			sourceNames
+		);
 		const missingSources = _.difference(sourceNames, _.keys(modelSources));
 		if (0 !== missingSources.length) {
 			throw new Error(
@@ -295,9 +319,10 @@ export class Model {
 			modelSources[sourceName].configureCollection(name, remap)
 		);
 		this._dataSources = modelSources;
-		this.defaultDataSource = _(modelSources)
+		this.defaultDataSource = _.chain(modelSources)
 			.keys()
-			.first() as string;
+			.head()
+			.value() as string;
 		this._entityFactory = EntityFactory(name, modelDescNormalized, this);
 		this._validator = new Validator(modelDescNormalized.attributes);
 		// TODO: Normalize attributes before

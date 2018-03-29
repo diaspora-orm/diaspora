@@ -1,8 +1,7 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
 import { AdapterEntity, QueryLanguage } from '.';
-import { Diaspora } from '../../diaspora';
 import { IRawEntityAttributes } from '../../entityFactory';
 import {
 	remapIO,
@@ -12,6 +11,7 @@ import {
 	iterateLimit,
 	IEnumeratedHash,
 } from './adapter-utils';
+import { logger } from '../../logger';
 
 export interface IRemapsHash extends IEnumeratedHash<any> {}
 export interface IFiltersHash extends IEnumeratedHash<any> {}
@@ -27,7 +27,9 @@ export enum EAdapterState {
  * @memberof Adapters
  * @author gerkin
  */
-export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
+export abstract class Adapter<
+	T extends AdapterEntity = AdapterEntity
+> extends SequentialEvent {
 	public get classEntity() {
 		return this._classEntity;
 	}
@@ -100,7 +102,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 			this.state = EAdapterState.READY;
 		}).on(EAdapterState.ERROR, (err: Error) => {
 			this.state = EAdapterState.ERROR;
-			(Diaspora.logger as any).error(
+			(logger as any).error(
 				'Error while initializing:',
 				_.pick(err, Object.getOwnPropertyNames(err))
 			);
@@ -292,7 +294,7 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 		}
 		const normalizedQuery =
 			true === options.remapInput
-				? _(_.cloneDeep(originalQuery))
+				? _.chain(_.cloneDeep(originalQuery))
 						.mapValues(attrSearch => {
 							if (_.isUndefined(attrSearch)) {
 								return { $exists: false };
@@ -381,9 +383,10 @@ export abstract class Adapter<T extends AdapterEntity> extends SequentialEvent {
 		table: string,
 		entities: IRawEntityAttributes[]
 	): Promise<AdapterEntity[]> {
-		const mapped = await Promise.resolve(entities).mapSeries(entity =>
-			this.insertOne(table, entity || {})
-		);
+		const mapped = [];
+		for (let i = 0; i < entities.length; i++) {
+			mapped.push(await this.insertOne(table, entities[i] || {}));
+		}
 		return _.compact(mapped);
 	}
 

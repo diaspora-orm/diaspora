@@ -1,9 +1,7 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
-import { Diaspora } from './diaspora';
 import { EntityStateError } from './errors';
-
 import { AdapterEntity, Adapter } from './adapters/base';
 import { ModelDescription, Model } from './model';
 
@@ -173,7 +171,7 @@ export abstract class Entity extends SequentialEvent {
 
 		// ### Generate prototype & attributes
 		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
-		this.attributes = Diaspora.default(_.cloneDeep(source), modelDesc.attributes);
+		this.attributes = model.validator.default(_.cloneDeep(source));
 
 		// ### Load events
 		_.forEach(modelDesc.lifecycleEvents, (eventFunctions, eventName) => {
@@ -260,7 +258,7 @@ export abstract class Entity extends SequentialEvent {
 		}
 		const dataStoreObject = dataStoreEntity.toObject() as IRawEntityAttributes;
 
-		const keys = _(this.attributes)
+		const keys = _.chain(this.attributes)
 			.keys()
 			.concat(_.keys(dataStoreObject))
 			.uniq()

@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { IRawEntityAttributes } from './entityFactory';
 import { QueryLanguage } from './adapters/base';

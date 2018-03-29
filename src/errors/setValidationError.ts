@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { ValidationError } from './validationError';
 import { EntityValidationError } from './entityValidationError';
@@ -23,7 +23,7 @@ export class SetValidationError extends ValidationError {
 		validationErrors: EntityValidationError[],
 		...errorArgs: any[]
 	) {
-		message += `[\n${_(validationErrors)
+		message += `[\n${_.chain(validationErrors)
 			.map((error, index) => {
 				if (_.isNil(error)) {
 					return false;

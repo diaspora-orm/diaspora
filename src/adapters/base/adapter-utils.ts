@@ -1,7 +1,9 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
-import { AdapterEntity, Adapter, QueryLanguage } from '.';
 import { IRawEntityAttributes } from '../../entityFactory';
+import { AdapterEntity } from './entity';
+import { QueryLanguage } from './queryLanguage';
+import { Adapter } from './adapter';
 
 function getNum(fullMatch: string, sign: string, val: string): number;
 function getNum([fullMatch, sign, val]: string[]): number;

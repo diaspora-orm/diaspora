@@ -1,17 +1,14 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { Adapter, QueryLanguage } from '../base';
 import { WebApiEntity } from '.';
 import { IRawEntityAttributes } from '../../entityFactory';
 import { Diaspora } from '../../diaspora';
 
-interface IXhrResponse {
-	response?: {
+interface IXhrResponse extends XMLHttpRequest {
+	response: {
 		message?: string;
 	};
-	status: number;
-	onload: Function;
-	onerror: Function;
 }
 export interface IWebApiAdapterConfig {
 	/**
@@ -50,128 +47,6 @@ interface IApiDescription {
 	queryString: object;
 }
 
-const queryObjectToString = (queryObject?: QueryLanguage.SelectQuery) => {
-	return (
-		_(queryObject)
-			.tap(_.cloneDeep)
-			.omitBy(val => _.isObject(val) && _.isEmpty(val))
-			// { foo: 1, bar: { baz: 2 } }
-			.mapValues(JSON.stringify)
-			// { foo: '1', bar: '{"baz": "2"}' }
-			.toPairs()
-			// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
-			.map(_.partial(_.map, _, encodeURIComponent))
-			// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
-			.map(arr => `${arr[0]}=${arr[1]}`)
-			// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
-			.join('&')
-	);
-};
-
-const getMessage = (xhr: IXhrResponse) =>
-	_.get(xhr, 'response.message')
-		? `"${(xhr as { response: { message: string } }).response.message}"`
-		: 'NULL';
-
-const httpErrorFactories = {
-	400: (xhr: IXhrResponse) =>
-		new Error(`Posted data through HTTP is invalid; message ${getMessage(xhr)}`),
-	404: (xhr: IXhrResponse) =>
-		new Error(`Reached 404, message is ${getMessage(xhr)}`),
-	_: (xhr: IXhrResponse) =>
-		new Error(
-			`Unhandled HTTP error with status code ${xhr.status} & message ${getMessage(
-				xhr
-			)}`
-		),
-};
-
-const defineXhrEvents = (
-	xhr: IXhrResponse,
-	resolve: (thenableOrResult?: {} | PromiseLike<{}> | undefined) => any,
-	reject: (thenableOrResult?: {} | PromiseLike<{}> | undefined) => any
-) => {
-	xhr.onload = () => {
-		if (_.inRange(xhr.status, 200, 299)) {
-			return resolve(xhr.response);
-		} else {
-			return reject(
-				_.get(httpErrorFactories, xhr.status, httpErrorFactories._)(xhr)
-			);
-		}
-	};
-	xhr.onerror = () => {
-		return reject(httpErrorFactories._(xhr));
-	};
-};
-
-const httpRequest = async (
-	method: EHttpVerb,
-	endPoint: string,
-	data?: object | true,
-	queryObject?: object
-): Promise<any> => {
-	if (!process.browser) {
-		if (_.isNil(data)) {
-			data = true;
-		}
-		return await require('request-promise')[method.toLowerCase()](endPoint, {
-			json: data,
-			qs: _.mapValues(
-				queryObject,
-				data => (typeof data === 'object' ? JSON.stringify(data) : data)
-			),
-		});
-	} else {
-		return new Promise((resolve, reject) => {
-			/* globals XMLHttpRequest: false */
-			const xhr = new XMLHttpRequest();
-			defineXhrEvents(xhr, resolve, reject);
-			const queryString = queryObjectToString(queryObject);
-			xhr.responseType = 'json';
-			xhr.open(method, `${endPoint}${queryString ? `?${queryString}` : ''}`);
-			xhr.setRequestHeader('Content-Type', 'application/json');
-			xhr.send(_.isNil(data) ? undefined : JSON.stringify(data));
-		});
-	}
-};
-
-const getQueryObject = (
-	queryFind: QueryLanguage.SelectQueryRemapped,
-	options: QueryLanguage.QueryOptions
-) => {
-	if (0 === options.skip) {
-		delete options.skip;
-	}
-
-	return _.assign({}, _.omit(options, ['remapInput', 'remapOutput']), {
-		where: queryFind,
-	});
-};
-
-const maybeAddIdHashToEntities = (
-	entities: IRawEntityAttributes[],
-	adapter: WebApiAdapter
-) => {
-	if (!_.isEmpty(entities)) {
-		entities = _.map(entities, _.unary(adapter.setIdHash.bind(adapter)));
-	}
-	return entities;
-};
-
-const checkWebApiAdapterConfig = (config: IWebApiAdapterConfig) => {
-	if (!process.browser && !_.isString(config.host)) {
-		throw new Error(
-			`"config.host" is not defined, or is not a string: had "${config.host}"`
-		);
-	}
-	if (!process.browser && !_.isString(config.scheme)) {
-		throw new Error(
-			`"config.scheme" is not defined, or is not a string: had "${config.scheme}"`
-		);
-	}
-};
-
 /**
  * Adapter for RESTful HTTP APIs.
  *
@@ -209,7 +84,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			path: '',
 			pluralApis: {},
 		});
-		checkWebApiAdapterConfig(defaultedConfig);
+		WebApiAdapter.checkWebApiAdapterConfig(defaultedConfig);
 		if (process.browser && false === defaultedConfig.host) {
 			// Endpoint is an absolute url
 			this.baseEndPoint = defaultedConfig.path;
@@ -238,6 +113,23 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		}
 	}
 
+	private static httpErrorFactories = {
+		400: (xhr: IXhrResponse) =>
+			new Error(
+				`Posted data through HTTP is invalid; message ${WebApiAdapter.getMessage(
+					xhr
+				)}`
+			),
+		404: (xhr: IXhrResponse) =>
+			new Error(`Reached 404, message is ${WebApiAdapter.getMessage(xhr)}`),
+		_: (xhr: IXhrResponse) =>
+			new Error(
+				`Unhandled HTTP error with status code ${
+					xhr.status
+				} & message ${WebApiAdapter.getMessage(xhr)}`
+			),
+	};
+
 	private async sendRequest(
 		verb: EHttpVerb,
 		endPoint: string,
@@ -248,13 +140,144 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			`Sending ${verb} HTTP request to "${endPoint}" with data:`,
 			{ body, queryString }
 		);
-		const response = await httpRequest(verb, endPoint, body, queryString);
+		const response = await WebApiAdapter.httpRequest(
+			verb,
+			endPoint,
+			body,
+			queryString
+		);
 		Diaspora.logger.silly('HTTP Request response:', response);
 		return response;
 	}
 
 	private getPluralEndpoint(table: string): PluralEndpoint {
 		return _.get(this.pluralApis, table, table + 's');
+	}
+
+	private static queryObjectToString(queryObject?: QueryLanguage.SelectQuery) {
+		return (
+			_.chain(queryObject)
+				.tap(_.cloneDeep)
+				.omitBy(val => _.isObject(val) && _.isEmpty(val))
+				// { foo: 1, bar: { baz: 2 } }
+				.mapValues(JSON.stringify)
+				// { foo: '1', bar: '{"baz": "2"}' }
+				.toPairs()
+				// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
+				.map(_.partial(_.map, _, encodeURIComponent))
+				// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
+				.map(arr => `${arr[0]}=${arr[1]}`)
+				// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
+				.join('&')
+		);
+	}
+
+	private static getMessage(xhr: IXhrResponse) {
+		return _.get(xhr, 'response.message')
+			? `"${(xhr as { response: { message: string } }).response.message}"`
+			: 'NULL';
+	}
+
+	/**
+	 * Binds `resolve` & `reject` to XHR events.
+	 *
+	 * @param	xhr		- XHR request to bind
+	 * @param	resolve	- Promise resolution function that will be triggered if `onload` is ran & the status is a 2xx.
+	 * @param	reject	- Promise rejection function to trigger if `onerror` is ran, or a non 2xx status is returned.
+	 * @returns XHR with resolution bound to a promise.
+	 */
+	private static defineXhrEvents(
+		xhr: XMLHttpRequest,
+		resolve: (thenableOrResult?: {} | PromiseLike<{}> | undefined) => any,
+		reject: (thenableOrResult?: {} | PromiseLike<{}> | undefined) => any
+	) {
+		xhr.onload = () => {
+			if (_.inRange(xhr.status, 200, 299)) {
+				return resolve(xhr.response);
+			} else {
+				// Retrieve the function that will generate the error
+				const errorBuilder = _.get(
+					WebApiAdapter.httpErrorFactories,
+					xhr.status,
+					WebApiAdapter.httpErrorFactories._
+				);
+				return reject(errorBuilder(xhr));
+			}
+		};
+		xhr.onerror = () => {
+			return reject(WebApiAdapter.httpErrorFactories._(xhr));
+		};
+		return xhr;
+	}
+
+	private static async httpRequest(
+		method: EHttpVerb,
+		endPoint: string,
+		data?: object | true,
+		queryObject?: object
+	): Promise<any> {
+		if (!process.browser) {
+			if (_.isNil(data)) {
+				data = true;
+			}
+			return await require('request-promise')[method.toLowerCase()](endPoint, {
+				json: data,
+				qs: _.mapValues(
+					queryObject,
+					data => (typeof data === 'object' ? JSON.stringify(data) : data)
+				),
+			});
+		} else {
+			return new Promise((resolve, reject) => {
+				/* globals XMLHttpRequest: false */
+				const xhr = WebApiAdapter.defineXhrEvents(
+					new XMLHttpRequest(),
+					resolve,
+					reject
+				);
+				const queryString = WebApiAdapter.queryObjectToString(queryObject);
+				xhr.responseType = 'json';
+				xhr.open(method, `${endPoint}${queryString ? `?${queryString}` : ''}`);
+				xhr.setRequestHeader('Content-Type', 'application/json');
+				xhr.send(_.isNil(data) ? undefined : JSON.stringify(data));
+			});
+		}
+	}
+
+	private static getQueryObject(
+		queryFind: QueryLanguage.SelectQueryRemapped,
+		options: QueryLanguage.QueryOptions
+	) {
+		if (0 === options.skip) {
+			delete options.skip;
+		}
+
+		return _.assign({}, _.omit(options, ['remapInput', 'remapOutput']), {
+			where: queryFind,
+		});
+	}
+
+	private static maybeAddIdHashToEntities(
+		entities: IRawEntityAttributes[],
+		adapter: WebApiAdapter
+	) {
+		if (!_.isEmpty(entities)) {
+			entities = _.map(entities, _.unary(adapter.setIdHash.bind(adapter)));
+		}
+		return entities;
+	}
+
+	private static checkWebApiAdapterConfig(config: IWebApiAdapterConfig) {
+		if (!process.browser && !_.isString(config.host)) {
+			throw new Error(
+				`"config.host" is not defined, or is not a string: had "${config.host}"`
+			);
+		}
+		if (!process.browser && !_.isString(config.scheme)) {
+			throw new Error(
+				`"config.scheme" is not defined, or is not a string: had "${config.scheme}"`
+			);
+		}
 	}
 
 	/**
@@ -334,7 +357,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			this.getPluralEndpoint(table),
 			entities
 		);
-		newEntities = maybeAddIdHashToEntities(newEntities, this);
+		newEntities = WebApiAdapter.maybeAddIdHashToEntities(newEntities, this);
 		return this.maybeCastSet(newEntities);
 	}
 
@@ -407,7 +430,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			apiDesc.body,
 			apiDesc.queryString
 		);
-		newEntities = maybeAddIdHashToEntities(newEntities, this);
+		newEntities = WebApiAdapter.maybeAddIdHashToEntities(newEntities, this);
 		return this.maybeCastSet(newEntities);
 	}
 
@@ -435,7 +458,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			EHttpVerb.PATCH,
 			table,
 			update,
-			getQueryObject(queryFind, options)
+			WebApiAdapter.getQueryObject(queryFind, options)
 		);
 		if (!_.isNil(entity)) {
 			entity.idHash = {
@@ -466,9 +489,9 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			EHttpVerb.PATCH,
 			this.getPluralEndpoint(table),
 			update,
-			getQueryObject(queryFind, options)
+			WebApiAdapter.getQueryObject(queryFind, options)
 		);
-		entities = maybeAddIdHashToEntities(entities, this);
+		entities = WebApiAdapter.maybeAddIdHashToEntities(entities, this);
 		return this.maybeCastSet(entities);
 	}
 
@@ -494,7 +517,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			EHttpVerb.DELETE,
 			table,
 			undefined,
-			getQueryObject(queryFind, options)
+			WebApiAdapter.getQueryObject(queryFind, options)
 		);
 	}
 
@@ -517,7 +540,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			EHttpVerb.DELETE,
 			this.getPluralEndpoint(table),
 			undefined,
-			getQueryObject(queryFind, options)
+			WebApiAdapter.getQueryObject(queryFind, options)
 		);
 	}
 }

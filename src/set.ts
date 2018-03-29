@@ -1,5 +1,10 @@
 import { SequentialEvent } from 'sequential-event';
-import _, { LoDashImplicitArrayWrapper, PropertyName } from 'lodash';
+import _, {
+	LoDashImplicitArrayWrapper,
+	PropertyName,
+	LoDashExplicitWrapper,
+	LoDashExplicitArrayWrapper,
+} from 'lodash';
 
 import { Model } from './model';
 import {
@@ -11,6 +16,7 @@ import {
 import { Diaspora } from './diaspora';
 import { SetValidationError } from './errors';
 import * as Utils from './utils';
+import { logger } from './logger';
 
 /**
  * @module Set
@@ -62,7 +68,7 @@ async function wrapEventsAction(
 	await _allEmit('before');
 	await Promise.all(
 		this.entities
-			.map((entity: Entity) =>
+			.map(entity =>
 				(entity as any)[action](sourceName, {
 					skipEvents: true,
 				})
@@ -91,7 +97,7 @@ const setProxyProps = {
 			throw new Error('Can\'t assign to read-only property "model".');
 		} else if ('entities' === prop) {
 			Set.checkEntitiesFromModel(val, target.model);
-			(target as any).entities = _(val);
+			(target as any).entities = _.chain(val);
 		}
 		return true;
 	},
@@ -106,7 +112,7 @@ export class Set {
 	 *
 	 * @author Gerkin
 	 */
-	private _entities: LoDashImplicitArrayWrapper<Entity>;
+	private _entities: LoDashExplicitArrayWrapper<Entity>;
 	public get entities() {
 		return this._entities;
 	}
@@ -138,7 +144,7 @@ export class Set {
 	 */
 	constructor(model: Model, ...entities: (Entity | Entity[])[]) {
 		// Flatten arguments
-		const wrappedEntities = _(entities).flatten();
+		const wrappedEntities = _.chain(entities).flatten();
 		// Check if each entity is from the expected model
 		Set.checkEntitiesFromModel(wrappedEntities, model);
 
@@ -158,7 +164,7 @@ export class Set {
 	 * @returns This function does not return anything.
 	 */
 	static checkEntitiesFromModel(
-		entities: LoDashImplicitArrayWrapper<Entity>,
+		entities: LoDashExplicitArrayWrapper<Entity>,
 		model: Model
 	): void {
 		entities.forEach((entity, index) => {
@@ -195,7 +201,7 @@ export class Set {
 					entity.validate();
 				} catch (error) {
 					console.error(error);
-					(Diaspora.logger.error as any)('Validation failed:', {
+					(logger.error as any)('Validation failed:', {
 						entity,
 						error,
 					});
