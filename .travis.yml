@@ -36,26 +36,14 @@ before_install:
   - rm npm-shrinkwrap.json
 before_script:
   - |
-    if [ $SAUCE == "yes" ]; then
-        python -m SimpleHTTPServer &
-        sleep 2
-    else
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-        ./cc-test-reporter before-build
-    fi
+    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    chmod +x ./cc-test-reporter
+    ./cc-test-reporter before-build
 script:
-  - |
-    if [ $SAUCE == "yes" ]; then
-        npm run test
-    else
-        npm run test-coverage
-    fi
+  - npm run test:prod
 after_script:
   - |
-    if [ $SAUCE == "no" ]; then
-        ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-    fi
+    ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 cache:
   directories:
     - "node_modules"
