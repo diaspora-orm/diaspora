@@ -76,9 +76,9 @@
 	},
 	"jest": {
 		"transform": {
-			".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+			"^.+\\.tsx?$": "ts-jest"
 		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.[jt]sx?$",
+		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",
@@ -101,7 +101,12 @@
 				"statements": 95
 			}
 		},
-		"collectCoverage": true
+		"collectCoverage": true,
+		"globals": {
+			"ts-jest": {
+				"tsConfigFile": "tsconfig.jest.json"
+			}
+		}
 	},
 	"devDependencies": {
 		"@types/express": "^4.11.1",
