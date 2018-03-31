@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { IRawEntityAttributes } from './entityFactory';
-import { QueryLanguage } from './adapters/base';
+import { QueryLanguage, IRawAdapterEntityAttributes } from './adapters/base';
 
 /**
  * @module Utils
@@ -85,9 +85,9 @@ export const generateUUID = (): string => {
  * @returns Set with options applied.
  */
 export const applyOptionsToSet = (
-	set: Array<IRawEntityAttributes>,
+	set: IRawAdapterEntityAttributes[],
 	options: QueryLanguage.QueryOptions
-): Array<IRawEntityAttributes> => {
+): IRawAdapterEntityAttributes[] => {
 	_.defaults(options, {
 		limit: Infinity,
 		skip: 0,
@@ -97,4 +97,15 @@ export const applyOptionsToSet = (
 		set = set.slice(0, options.limit);
 	}
 	return set;
+};
+
+export const deepFreeze = <T>(object: T) => {
+	const deepMap = (obj: T, mapper: Function): T => {
+		return mapper(
+			_.mapValues(obj, function(v) {
+				return _.isPlainObject(v) ? deepMap(v, mapper) : v;
+			})
+		);
+	};
+	return deepMap(object, Object.freeze);
 };

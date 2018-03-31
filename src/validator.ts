@@ -46,12 +46,12 @@ const validateArrayItems = (
 
 			if (!_.isArray(fieldDesc.of)) {
 				// Just get the first or default to null
-				return subErrors.get(0) || null;
-			} else if (subErrors.every(subError => !_.isNil(subError))) {
-				return subErrors.compact().value() as ErrorObjectFinal[];
+				return subErrors.get(0).value();
+			} else if (subErrors.every(subError => !_.isNil(subError)).value()) {
+				return subErrors.compact().value();
 			}
 		}
-		return [];
+		return null;
 	};
 };
 
@@ -144,7 +144,7 @@ const VALIDATIONS = {
 			this: Validator,
 			keys: PathStack,
 			fieldDesc: ObjectFieldDescriptor,
-			value: any
+			value: IRawEntityAttributes
 		): ErrorObjectFinal | undefined {
 			if (!_.isObject(value)) {
 				return {
@@ -166,6 +166,7 @@ const VALIDATIONS = {
 								);
 							})
 							.omitBy(_.isEmpty)
+							.omitBy(_.isNil)
 							.value()
 					: {}) as { [key: string]: ErrorObjectFinal };
 				if (!_.isEmpty(deepTest)) {
@@ -179,7 +180,7 @@ const VALIDATIONS = {
 			this: Validator,
 			keys: PathStack,
 			fieldDesc: ArrayFieldDescriptor,
-			value: any
+			value: any[]
 		): ErrorObjectFinal | undefined {
 			if (!_.isArray(value)) {
 				return {
@@ -191,6 +192,7 @@ const VALIDATIONS = {
 					? _.chain(value)
 							.map(validateArrayItems(this, fieldDesc, keys))
 							.omitBy(_.isEmpty)
+							.omitBy(_.isNil)
 							.value()
 					: []) as ErrorObjectFinal[];
 				if (!_.isEmpty(deepTest)) {
@@ -260,12 +262,17 @@ interface ValidationStepArgs {
 	value: any;
 }
 
+/**
+ * Those validation steps are called one after one during the validation of a single field.
+ *
+ * @property '0' - Check for `validate` field.
+ * @property '1' - Check for `type` & `required` fields.
+ * @property '2' - Check for `enum` field.
+ */
 const VALIDATION_STEPS = [
 	/**
 	 * Apply the custom `validate` function or function array, if it exists.
 	 *
-	 * @function module:Validator~checkCustoms
-	 * @type {module:Validator~ValidationStep}
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
@@ -274,7 +281,8 @@ const VALIDATION_STEPS = [
 		// It the field has a `validate` property, try to use it
 		const validateFcts = _.chain(fieldDesc.validate as Function[])
 			.castArray()
-			.compact();
+			.compact()
+			.value();
 		validateFcts.forEach(validateFct => {
 			if (!validateFct.call(this, value, fieldDesc)) {
 				error.validate = `${keys.toValidatePath()} custom validation failed`;
@@ -285,8 +293,6 @@ const VALIDATION_STEPS = [
 	/**
 	 * Check if the type & the existence matches the `type` & `required` specifications.
 	 *
-	 * @function module:Validator~checkTypeRequired
-	 * @type {module:Validator~ValidationStep}
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
@@ -339,8 +345,6 @@ const VALIDATION_STEPS = [
 	/**
 	 * Verify if the value correspond to a value in the `enum` property.
 	 *
-	 * @function module:Validator~checkEnum
-	 * @type {module:Validator~ValidationStep}
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
@@ -364,15 +368,6 @@ const VALIDATION_STEPS = [
 		}
 	},
 ];
-/**
- * Those validation steps are called one after one during the validation of a single field.
- *
- * @const VALIDATION_STEPS
- * @type {module:Validator~ValidationStep[]}
- * @property {module:Validator~checkCustoms}      '0' - Check for `validate` field.
- * @property {module:Validator~checkTypeRequired} '1' - Check for `type` & `required` fields.
- * @property {module:Validator~checkEnum}         '2' - Check for `enum` field.
- */
 
 /**
  * The PathStack class allows model validation to follow different paths in model description & entity.
@@ -545,10 +540,9 @@ export class Validator {
 			entity,
 			_.mapValues(this._modelAttributes, (fieldDesc, field) =>
 				this.defaultField(entity, new PathStack().pushProp(field), {
-					getProps: false,
+					getProps: true,
 				})
-			),
-			{ idHash: {} }
+			)
 		);
 	}
 
@@ -573,32 +567,27 @@ export class Validator {
 		const val = options.getProps ? _.get(value, keys.segmentsEntity) : value;
 		const fieldDesc = _.get(this.modelAttributes, keys.segmentsValidation);
 
-		// Apply the `default` if value is undefined
-		if (_.isUndefined(val)) {
-			_.set(
-				value,
-				keys.segmentsEntity,
-				_.isFunction(fieldDesc.default)
-					? (fieldDesc.default as Function)()
-					: getDefaultFunction(fieldDesc.default)
-			);
-		}
-		const valAfterDefault = options.getProps
-			? _.get(value, keys.segmentsEntity)
-			: value;
+		// Return the `default` if value is undefined
+		const valOrBaseDefault =
+			val || _.isFunction(fieldDesc.default)
+				? getDefaultFunction(fieldDesc.default)()
+				: fieldDesc.default;
 
 		// Recurse if we are defaulting an object
 		if (
 			fieldDesc.attributes &&
 			'object' === fieldDesc.type &&
 			_.keys(fieldDesc.attributes).length > 0 &&
-			!_.isNil(valAfterDefault)
+			!_.isNil(valOrBaseDefault)
 		) {
-			return _.mapValues(fieldDesc.attributes, (fieldDesc, key) => {
-				return this.defaultField(value, (keys as PathStack).clone().pushProp(key));
-			});
+			return _.merge(
+				valOrBaseDefault,
+				_.mapValues(fieldDesc.attributes, (fieldDesc, key) => {
+					return this.defaultField(value, (keys as PathStack).clone().pushProp(key));
+				})
+			);
 		} else {
-			return value;
+			return valOrBaseDefault;
 		}
 	}
 

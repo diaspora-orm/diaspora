@@ -13,6 +13,7 @@ import { Validator } from './validator';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
 import { QueryLanguage } from './adapters/base';
+import { deepFreeze } from './utils';
 
 export interface SourcesHash {
 	[key: string]: object;
@@ -31,10 +32,10 @@ export interface SourcesHash {
 export interface ModelDescriptionRaw {
 	sources: string | Array<string> | { [key: string]: object | boolean };
 	attributes: { [key: string]: FieldDescriptor | string };
-	methods: { [key: string]: Function };
-	staticMethods: { [key: string]: Function };
+	methods?: { [key: string]: Function };
+	staticMethods?: { [key: string]: Function };
 	// TODO: To improve
-	lifecycleEvents: { [key: string]: IEventHandler | IEventHandler[] };
+	lifecycleEvents?: { [key: string]: IEventHandler | IEventHandler[] };
 }
 export interface ModelDescription extends ModelDescriptionRaw {
 	attributes: { [key: string]: FieldDescriptor };
@@ -233,17 +234,6 @@ const normalizeRemaps = (modelDesc: ModelDescriptionRaw) => {
 	return sources;
 };
 
-const deepFreeze = <T>(object: T) => {
-	const deepMap = (obj: T, mapper: Function): T => {
-		return mapper(
-			_.mapValues(obj, function(v) {
-				return _.isPlainObject(v) ? deepMap(v, mapper) : v;
-			})
-		);
-	};
-	return deepMap(object, Object.freeze);
-};
-
 /**
  * The model class is used to interact with the population of all data of the same type.
  */
@@ -262,6 +252,10 @@ export class Model {
 	private _validator: Validator;
 	public get validator() {
 		return this._validator;
+	}
+
+	public get ctor() {
+		return this.constructor as typeof Model;
 	}
 	/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
@@ -409,7 +403,10 @@ export class Model {
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
 		const dataSource = this.getDataSource(dataSourceName);
-		const entities = await dataSource.insertMany(this.name, sources);
+		const entities: AdapterEntity[] = (await dataSource.insertMany(
+			this.name,
+			sources
+		)) as any;
 		return makeSet(this, entities);
 	}
 

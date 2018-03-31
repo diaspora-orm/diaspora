@@ -7,12 +7,7 @@ import _, {
 } from 'lodash';
 
 import { Model } from './model';
-import {
-	Entity,
-	EntitySpawner,
-	IRawEntityAttributes,
-	IEntityAttributes,
-} from './entityFactory';
+import { Entity, EntitySpawner, IRawEntityAttributes } from './entityFactory';
 import { Diaspora } from './diaspora';
 import { SetValidationError } from './errors';
 import * as Utils from './utils';
@@ -277,7 +272,7 @@ export class Set {
 	 * @author gerkin
 	 * @returns POJO representation of set & children.
 	 */
-	toObject(): IEntityAttributes[] {
+	toObject(): (IRawEntityAttributes | null)[] {
 		return this.entities.map(entity => entity.toObject()).value();
 	}
 }
