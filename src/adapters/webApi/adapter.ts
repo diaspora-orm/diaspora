@@ -1,15 +1,17 @@
 import * as _ from 'lodash';
 
-import { Adapter, QueryLanguage } from '../base';
-import { WebApiEntity } from '.';
+import { Adapter, QueryLanguage, IRawAdapterEntityAttributes } from '../base';
+import { WebApiEntity } from './entity';
 import { IRawEntityAttributes } from '../../entityFactory';
-import { Diaspora } from '../../diaspora';
+import { DefaultQueryTransformerFactory } from './defaultQueryTransformer';
+import { logger } from '../../logger';
 
 interface IXhrResponse extends XMLHttpRequest {
 	response: {
 		message?: string;
 	};
 }
+
 export interface IWebApiAdapterConfig {
 	/**
 	 * Hostname of the endpoint. On server environment, this parameter is *required*.
@@ -32,7 +34,34 @@ export interface IWebApiAdapterConfig {
 	 */
 	pluralApis?: { [key: string]: string };
 }
+export interface INodeWebApiAdapterConfig extends IWebApiAdapterConfig {
+	/**
+	 * Hostname of the endpoint. On server environment, this parameter is *required*.
+	 */
+	host: string;
+	/**
+	 * Scheme to use. On server environment, this parameter is *required*. On browser environment, it defaults to a relative scheme (IE ``). Note that it will be suffixed with `//`.
+	 */
+	scheme: string;
+	/**
+	 * Port of the endpoint.
+	 */
+	port?: number | false;
+	/**
+	 * Path to the endpoint.
+	 */
+	path: string;
+	/**
+	 * Hash with keys being the singular name of the endpoint, and values being the associated plural name of the same endpoint.
+	 */
+	pluralApis?: { [key: string]: string };
+}
+
+export interface IEventProviderFactory {
+	(...args: any[]): IEventProvider;
+}
 export interface IEventProvider {}
+
 export enum EHttpVerb {
 	GET = 'GET',
 	POST = 'POST',
@@ -46,6 +75,11 @@ interface IApiDescription {
 	body: object;
 	queryString: object;
 }
+
+type TEntitiesJsonResponse =
+	| IRawAdapterEntityAttributes
+	| IRawAdapterEntityAttributes[]
+	| undefined;
 
 /**
  * Adapter for RESTful HTTP APIs.
@@ -72,10 +106,11 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * @author gerkin
 	 */
 	constructor(
+		dataSourceName: string,
 		config: IWebApiAdapterConfig = { path: '' },
-		eventProviders: IEventProvider[] = []
+		eventProviders: IEventProvider[] = [DefaultQueryTransformerFactory()]
 	) {
-		super(WebApiEntity, 'webApi');
+		super(WebApiEntity, dataSourceName);
 
 		const defaultedConfig = _.defaults(config, {
 			scheme: false,
@@ -136,17 +171,17 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		body?: object,
 		queryString?: object
 	) {
-		Diaspora.logger.verbose(
-			`Sending ${verb} HTTP request to "${endPoint}" with data:`,
-			{ body, queryString }
-		);
+		logger.verbose(`Sending ${verb} HTTP request to "${endPoint}" with data:`, {
+			body,
+			queryString,
+		});
 		const response = await WebApiAdapter.httpRequest(
 			verb,
 			endPoint,
 			body,
 			queryString
 		);
-		Diaspora.logger.silly('HTTP Request response:', response);
+		logger.silly('HTTP Request response:', response);
 		return response;
 	}
 
@@ -188,8 +223,13 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	private static defineXhrEvents(
 		xhr: XMLHttpRequest,
-		resolve: (thenableOrResult?: {} | PromiseLike<{}> | undefined) => any,
-		reject: (thenableOrResult?: {} | PromiseLike<{}> | undefined) => any
+		resolve: (
+			thenableOrResult?:
+				| TEntitiesJsonResponse
+				| PromiseLike<TEntitiesJsonResponse>
+				| undefined
+		) => void,
+		reject: (thenableOrResult?: {} | PromiseLike<any> | undefined) => void
 	) {
 		xhr.onload = () => {
 			if (_.inRange(xhr.status, 200, 299)) {
@@ -215,7 +255,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		endPoint: string,
 		data?: object | true,
 		queryObject?: object
-	): Promise<any> {
+	): Promise<TEntitiesJsonResponse> {
 		if (!process.browser) {
 			if (_.isNil(data)) {
 				data = true;
@@ -228,19 +268,26 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 				),
 			});
 		} else {
-			return new Promise((resolve, reject) => {
-				/* globals XMLHttpRequest: false */
-				const xhr = WebApiAdapter.defineXhrEvents(
-					new XMLHttpRequest(),
-					resolve,
+			return new Promise(
+				(
+					resolve: (
+						value?: TEntitiesJsonResponse | PromiseLike<TEntitiesJsonResponse>
+					) => void,
 					reject
-				);
-				const queryString = WebApiAdapter.queryObjectToString(queryObject);
-				xhr.responseType = 'json';
-				xhr.open(method, `${endPoint}${queryString ? `?${queryString}` : ''}`);
-				xhr.setRequestHeader('Content-Type', 'application/json');
-				xhr.send(_.isNil(data) ? undefined : JSON.stringify(data));
-			});
+				) => {
+					/* globals XMLHttpRequest: false */
+					const xhr = WebApiAdapter.defineXhrEvents(
+						new XMLHttpRequest(),
+						resolve,
+						reject
+					);
+					const queryString = WebApiAdapter.queryObjectToString(queryObject);
+					xhr.responseType = 'json';
+					xhr.open(method, `${endPoint}${queryString ? `?${queryString}` : ''}`);
+					xhr.setRequestHeader('Content-Type', 'application/json');
+					xhr.send(_.isNil(data) ? undefined : JSON.stringify(data));
+				}
+			);
 		}
 	}
 
@@ -261,22 +308,23 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		entities: IRawEntityAttributes[],
 		adapter: WebApiAdapter
 	) {
-		if (!_.isEmpty(entities)) {
-			entities = _.map(entities, _.unary(adapter.setIdHash.bind(adapter)));
-		}
-		return entities;
+		return _.map(entities, entity => WebApiEntity.setId(entity, adapter));
 	}
 
 	private static checkWebApiAdapterConfig(config: IWebApiAdapterConfig) {
-		if (!process.browser && !_.isString(config.host)) {
-			throw new Error(
-				`"config.host" is not defined, or is not a string: had "${config.host}"`
-			);
-		}
-		if (!process.browser && !_.isString(config.scheme)) {
-			throw new Error(
-				`"config.scheme" is not defined, or is not a string: had "${config.scheme}"`
-			);
+		if (!process.browser) {
+			if (!_.isString(config.host)) {
+				throw new Error(
+					`"config.host" is not defined, or is not a string: had "${config.host}"`
+				);
+			}
+			if (!_.isString(config.scheme)) {
+				throw new Error(
+					`"config.scheme" is not defined, or is not a string: had "${
+						config.scheme
+					}"`
+				);
+			}
 		}
 	}
 
@@ -295,19 +343,19 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		endPoint: string,
 		data?: object,
 		queryObject?: object
-	): IRawEntityAttributes | undefined;
+	): Promise<IRawAdapterEntityAttributes | undefined>;
 	private apiQuery(
 		verb: EHttpVerb,
 		endPoint: PluralEndpoint,
 		data?: object,
 		queryObject?: object
-	): IRawEntityAttributes[];
+	): Promise<IRawAdapterEntityAttributes[]>;
 	private apiQuery(
 		verb: EHttpVerb,
 		endPoint: string,
 		data?: object,
 		queryObject?: object
-	): IRawEntityAttributes | IRawEntityAttributes[] | undefined {
+	): Promise<TEntitiesJsonResponse> {
 		return this.sendRequest(
 			verb,
 			`${this.baseEndPoint}/${endPoint.toLowerCase()}`,
@@ -331,12 +379,13 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
-	): Promise<WebApiEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		let newEntity = await this.apiQuery(EHttpVerb.POST, table, entity);
 		if (!_.isNil(newEntity)) {
-			this.setIdHash(newEntity);
+			return WebApiEntity.setId(newEntity, this);
+		} else {
+			return undefined;
 		}
-		return this.maybeCastEntity(newEntity);
 	}
 
 	/**
@@ -351,14 +400,14 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	async insertMany(
 		table: string,
 		entities: IRawEntityAttributes[]
-	): Promise<WebApiEntity[]> {
+	): Promise<IRawAdapterEntityAttributes[]> {
 		let newEntities = await this.apiQuery(
 			EHttpVerb.POST,
 			this.getPluralEndpoint(table),
 			entities
 		);
 		newEntities = WebApiAdapter.maybeAddIdHashToEntities(newEntities, this);
-		return this.maybeCastSet(newEntities);
+		return newEntities || [];
 	}
 
 	// -----
@@ -378,7 +427,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<WebApiEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const apiDesc: IApiDescription = await this.emit(
 			'beforeQuery',
 			'find',
@@ -395,9 +444,10 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			apiDesc.queryString
 		);
 		if (!_.isNil(newEntity)) {
-			this.setIdHash(newEntity);
+			return WebApiEntity.setId(newEntity, this);
+		} else {
+			return newEntity;
 		}
-		return this.maybeCastEntity(newEntity);
 	}
 
 	/**
@@ -414,7 +464,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<WebApiEntity[]> {
+	): Promise<IRawAdapterEntityAttributes[]> {
 		const apiDesc = await this.emit(
 			'beforeQuery',
 			'find',
@@ -431,7 +481,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			apiDesc.queryString
 		);
 		newEntities = WebApiAdapter.maybeAddIdHashToEntities(newEntities, this);
-		return this.maybeCastSet(newEntities);
+		return newEntities || [];
 	}
 
 	// -----
@@ -453,7 +503,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<WebApiEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		let entity = await this.apiQuery(
 			EHttpVerb.PATCH,
 			table,
@@ -465,7 +515,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 				[this.name]: entity.id,
 			};
 		}
-		return this.maybeCastEntity(entity);
+		return entity;
 	}
 
 	/**
@@ -484,7 +534,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<WebApiEntity[]> {
+	): Promise<IRawAdapterEntityAttributes[]> {
 		let entities = await this.apiQuery(
 			EHttpVerb.PATCH,
 			this.getPluralEndpoint(table),
@@ -492,7 +542,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			WebApiAdapter.getQueryObject(queryFind, options)
 		);
 		entities = WebApiAdapter.maybeAddIdHashToEntities(entities, this);
-		return this.maybeCastSet(entities);
+		return entities || [];
 	}
 
 	// -----

@@ -6,9 +6,10 @@ import {
 	IRemapsHash,
 	IFiltersHash,
 	QueryLanguage,
+	IRawAdapterEntityAttributes,
 } from '../base';
 import { IRawEntityAttributes, EntityUid } from '../../entityFactory';
-import { WebStorageEntity } from '.';
+import { WebStorageEntity } from './entity';
 import * as Utils from '../../utils';
 
 export interface IWebStorageAdapterConfig {
@@ -37,7 +38,10 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 * @author gerkin
 	 * @param config - Configuration object.
 	 */
-	constructor(config: IWebStorageAdapterConfig = { session: false }) {
+	constructor(
+		dataSourceName: string,
+		config: IWebStorageAdapterConfig = { session: false }
+	) {
 		/**
 		 * Link to the WebStorageEntity.
 		 *
@@ -47,15 +51,13 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		 * @instance
 		 * @author Gerkin
 		 */
-		super(WebStorageEntity, 'webStorage');
+		super(WebStorageEntity, dataSourceName);
 		_.defaults(config, {
 			session: false,
 		});
 		this.state = EAdapterState.READY;
 		this.source =
-			true === config.session
-				? (global as any).sessionStorage
-				: (global as any).localStorage;
+			true === config.session ? window.sessionStorage : window.localStorage;
 	}
 
 	/**
@@ -123,18 +125,22 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
-	): Promise<WebStorageEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		entity = _.cloneDeep(entity || {});
-		entity.id = Utils.generateUUID();
-		this.setIdHash(entity);
+		const rawAdapterAttributes = WebStorageEntity.setId(
+			entity,
+			this,
+			undefined,
+			Utils.generateUUID()
+		);
 		const tableIndex = this.ensureCollectionExists(table);
-		tableIndex.push(entity.id);
+		tableIndex.push(rawAdapterAttributes.id as string);
 		this.source.setItem(table, JSON.stringify(tableIndex));
 		this.source.setItem(
 			WebStorageAdapter.getItemName(table, entity.id),
-			JSON.stringify(entity)
+			JSON.stringify(rawAdapterAttributes)
 		);
-		return this.maybeCastEntity(entity);
+		return rawAdapterAttributes;
 	}
 
 	/**
@@ -149,25 +155,25 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	async insertMany(
 		table: string,
 		entities: IRawEntityAttributes[]
-	): Promise<WebStorageEntity[]> {
+	): Promise<IRawAdapterEntityAttributes[]> {
 		entities = _.cloneDeep(entities);
-		try {
-			const tableIndex = this.ensureCollectionExists(table);
-			entities = entities.map((entity = {}) => {
-				entity.id = Utils.generateUUID();
-				this.setIdHash(entity);
-				tableIndex.push(entity.id);
-				this.source.setItem(
-					WebStorageAdapter.getItemName(table, entity.id),
-					JSON.stringify(entity)
-				);
-				return new this.classEntity(entity, this);
-			});
-			this.source.setItem(table, JSON.stringify(tableIndex));
-		} catch (error) {
-			return Promise.reject(error);
-		}
-		return Promise.resolve(this.maybeCastSet(entities));
+		const tableIndex = this.ensureCollectionExists(table);
+		const rawAdapterAttributesArr = entities.map((entity = {}) => {
+			const rawAdapterAttributes = WebStorageEntity.setId(
+				entity,
+				this,
+				undefined,
+				Utils.generateUUID()
+			);
+			tableIndex.push(rawAdapterAttributes.id as string);
+			this.source.setItem(
+				WebStorageAdapter.getItemName(table, rawAdapterAttributes.id),
+				JSON.stringify(rawAdapterAttributes)
+			);
+			return rawAdapterAttributes;
+		});
+		this.source.setItem(table, JSON.stringify(tableIndex));
+		return rawAdapterAttributesArr;
 	}
 
 	// -----
@@ -181,10 +187,13 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 * @param   id    - Id of the entity to search.
 	 * @returns Found entity, or undefined if not found.
 	 */
-	findOneById(table: string, id: string): WebStorageEntity | undefined {
+	findOneById(
+		table: string,
+		id: string
+	): IRawAdapterEntityAttributes | undefined {
 		const item = this.source.getItem(WebStorageAdapter.getItemName(table, id));
 		if (!_.isNil(item)) {
-			return this.maybeCastEntity(JSON.parse(item));
+			return JSON.parse(item);
 		}
 		return undefined;
 	}
@@ -203,7 +212,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<WebStorageEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		_.defaults(options, {
 			skip: 0,
 		});
@@ -237,7 +246,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 			}
 			return true;
 		});
-		return this.maybeCastEntity(returnedItem);
+		return returnedItem;
 	}
 
 	// -----
@@ -259,7 +268,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<WebStorageEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		_.defaults(options, {
 			skip: 0,
 		});
@@ -322,11 +331,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<void> {
-		const entitiesToDelete = (await this.findMany(
-			table,
-			queryFind,
-			options
-		)) as WebStorageEntity[];
+		const entitiesToDelete = await this.findMany(table, queryFind, options);
 
 		const tableIndex = this.ensureCollectionExists(table);
 		_.pullAll(tableIndex, _.map(entitiesToDelete, 'id'));

@@ -1,7 +1,11 @@
 import * as _ from 'lodash';
 
 import { IRawEntityAttributes } from '../../entityFactory';
-import { AdapterEntity } from './entity';
+import {
+	AdapterEntity,
+	IAdapterEntityCtr,
+	IRawAdapterEntityAttributes,
+} from './entity';
 import { QueryLanguage } from './queryLanguage';
 import { Adapter } from './adapter';
 
@@ -64,21 +68,25 @@ const validateOption = (
 	return val;
 };
 
-export const iterateLimit = async <TEntity extends AdapterEntity>(
+export const iterateLimit = async (
 	options: QueryLanguage.QueryOptions,
-	query: (options: QueryLanguage.QueryOptions) => Promise<TEntity>
-): Promise<TEntity[]> => {
-	const foundEntities: TEntity[] = [];
+	query: (
+		options: QueryLanguage.QueryOptions
+	) => Promise<IRawAdapterEntityAttributes>
+): Promise<IRawAdapterEntityAttributes[]> => {
+	const foundEntities: IRawAdapterEntityAttributes[] = [];
 	let foundCount = 0;
 	let origSkip = options.skip;
 
 	// We are going to loop until we find enough items
-	const loopFind = async (found?: TEntity | true): Promise<TEntity[]> => {
+	const loopFind = async (
+		found?: IRawAdapterEntityAttributes | true
+	): Promise<IRawAdapterEntityAttributes[]> => {
 		// If the search returned nothing, then just finish the findMany
 		if (_.isNil(found)) {
 			return Promise.resolve(foundEntities);
 			// Else, if this is a value and not the initial `true`, add it to the list
-		} else if (found instanceof AdapterEntity) {
+		} else if (typeof found === 'object') {
 			foundEntities.push(found);
 		}
 		// If we found enough items, return them

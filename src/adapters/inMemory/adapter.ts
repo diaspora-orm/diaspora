@@ -7,17 +7,14 @@ import {
 	IRemapsHash,
 	IFiltersHash,
 	QueryLanguage,
+	IRawAdapterEntityAttributes,
 } from '../base';
-import {
-	IRawEntityAttributes,
-	EntityUid,
-	IEntityAttributes,
-} from '../../entityFactory';
+import { IRawEntityAttributes, EntityUid } from '../../entityFactory';
 import * as Utils from '../../utils';
-import { InMemoryEntity } from '.';
+import { InMemoryEntity } from './entity';
 
 interface IDataStoreItem {
-	id: string;
+	id: EntityUid;
 	idHash: { [key: string]: EntityUid };
 	[key: string]: any;
 }
@@ -43,8 +40,8 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 *
 	 * @author gerkin
 	 */
-	constructor() {
-		super(InMemoryEntity, 'inMemory');
+	constructor(dataSourceName: string) {
+		super(InMemoryEntity, dataSourceName);
 		this.state = EAdapterState.READY;
 	}
 
@@ -100,16 +97,17 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
-	): Promise<InMemoryEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		entity = _.cloneDeep(entity);
 		const storeTable = this.ensureCollectionExists(table);
-		entity.id = Utils.generateUUID();
-		this.setIdHash(entity);
-		storeTable.items.push(entity as IDataStoreItem);
-		const newEntity = new this.classEntity(entity, this) as
-			| InMemoryEntity
-			| undefined;
-		return newEntity;
+		const adapterEntityAttributes = InMemoryEntity.setId(
+			_.omitBy(entity, _.isUndefined),
+			this,
+			undefined,
+			Utils.generateUUID()
+		);
+		storeTable.items.push(adapterEntityAttributes);
+		return adapterEntityAttributes;
 	}
 
 	// -----
@@ -129,14 +127,14 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<InMemoryEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const storeTable = this.ensureCollectionExists(table);
 		const matches = _.filter(
 			storeTable.items,
 			_.partial(this.matchEntity, queryFind)
 		);
 		const reducedMatches = Utils.applyOptionsToSet(matches, options);
-		return Promise.resolve(this.maybeCastEntity(_.first(reducedMatches)));
+		return _.first(reducedMatches);
 	}
 
 	/**
@@ -153,14 +151,14 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<InMemoryEntity[]> {
+	): Promise<IRawAdapterEntityAttributes[]> {
 		const storeTable = this.ensureCollectionExists(table);
 		const matches = _.filter(
 			storeTable.items,
 			_.partial(this.matchEntity, queryFind)
 		);
 		const reducedMatches = Utils.applyOptionsToSet(matches, options);
-		return Promise.resolve(this.maybeCastSet(reducedMatches));
+		return reducedMatches || [];
 	}
 
 	// -----
@@ -182,7 +180,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<InMemoryEntity | undefined> {
+	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const found = await this.findOne(table, queryFind, options);
 
 		if (!_.isNil(found)) {
@@ -192,7 +190,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 			});
 			if (match) {
 				Utils.applyUpdateEntity(update, match);
-				return this.maybeCastEntity(match);
+				return match;
 			}
 		}
 		return undefined;
@@ -214,7 +212,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<InMemoryEntity[]> {
+	): Promise<IRawAdapterEntityAttributes[]> {
 		const foundEntity = await this.findMany(table, queryFind, options);
 
 		if (!_.isNil(foundEntity) && foundEntity.length > 0) {
@@ -224,12 +222,10 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 				storeTable.items,
 				item => -1 !== foundIds.indexOf(item.id)
 			);
-			return this.maybeCastSet(
-				_.map(matches, item => {
-					Utils.applyUpdateEntity(update, item);
-					return item;
-				})
-			);
+			return _.map(matches, item => {
+				Utils.applyUpdateEntity(update, item);
+				return item;
+			});
 		} else {
 			return [];
 		}
