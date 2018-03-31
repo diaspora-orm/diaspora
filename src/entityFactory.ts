@@ -2,8 +2,14 @@ import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
 import { EntityStateError } from './errors';
-import { AdapterEntity, Adapter } from './adapters/base';
+import {
+	AdapterEntity,
+	Adapter,
+	IRawAdapterEntityAttributes,
+	IIdHash,
+} from './adapters/base';
 import { ModelDescription, Model } from './model';
+import { deepFreeze } from './utils';
 
 /**
  * @module EntityFactory
@@ -17,10 +23,7 @@ export interface IOptions {
 export interface IRawEntityAttributes {
 	[key: string]: any;
 }
-export interface IEntityAttributes extends IRawEntityAttributes {
-	idHash: { [key: string]: string | number };
-}
-export enum State {
+export enum EEntityState {
 	ORPHAN = 'orphan',
 	SYNCING = 'syncing',
 	SYNC = 'sync',
@@ -32,7 +35,7 @@ export interface EntitySpawner {
 	model: Model;
 	name: string;
 }
-interface IDataSourceMap<T extends AdapterEntity>
+export interface IDataSourceMap<T extends AdapterEntity>
 	extends WeakMap<Adapter<T>, T | null> {}
 
 const maybeEmit = async (
@@ -56,13 +59,13 @@ const maybeEmit = async (
 
 const execIfOkState = <T extends AdapterEntity>(
 	entity: Entity,
-	beforeState: State,
+	beforeState: EEntityState,
 	dataSource: Adapter<T>,
 	// TODO: precise it
 	method: string
 ): Promise<T> => {
 	// Depending on state, we are going to perform a different operation
-	if (State.ORPHAN === beforeState) {
+	if (EEntityState.ORPHAN === beforeState) {
 		return Promise.reject(new EntityStateError("Can't fetch an orphan entity."));
 	} else {
 		// Skip scoping :/
@@ -76,7 +79,7 @@ const execIfOkState = <T extends AdapterEntity>(
 };
 
 const entityCtrSteps = {
-	castTypes(source: IRawEntityAttributes, modelDesc: ModelDescription) {
+	castTypes(source: IRawAdapterEntityAttributes, modelDesc: ModelDescription) {
 		const attrs = modelDesc.attributes;
 		_.forEach(source, (currentVal: any, attrName: string) => {
 			const attrDesc = attrs[attrName];
@@ -107,13 +110,31 @@ const entityCtrSteps = {
  * @extends SequentialEvent
  */
 export abstract class Entity extends SequentialEvent {
-	private attributes: IEntityAttributes;
-	private _state: State = State.ORPHAN;
+	private _attributes: IRawEntityAttributes | null = null;
+	public get attributes() {
+		return this._attributes;
+	}
+
+	private _state: EEntityState = EEntityState.ORPHAN;
 	public get state() {
 		return this._state;
 	}
-	protected lastDataSource?: Adapter<AdapterEntity>;
-	private dataSources: IDataSourceMap<AdapterEntity>;
+
+	private _lastDataSource: Adapter<AdapterEntity> | null;
+	public get lastDataSource() {
+		return this._lastDataSource;
+	}
+
+	private _dataSources: IDataSourceMap<AdapterEntity>;
+	public get dataSources() {
+		return deepFreeze(this._dataSources);
+	}
+
+	public get ctor() {
+		return this.constructor as typeof Entity & EntitySpawner;
+	}
+
+	private idHash: IIdHash;
 
 	/**
 	 * Create a new entity.
@@ -129,7 +150,7 @@ export abstract class Entity extends SequentialEvent {
 		private name: string,
 		private modelDesc: ModelDescription,
 		private model: Model,
-		source: IRawEntityAttributes = {}
+		source: AdapterEntity | IRawEntityAttributes = {}
 	) {
 		super();
 		const modelAttrsKeys = _.keys(modelDesc.attributes);
@@ -137,24 +158,17 @@ export abstract class Entity extends SequentialEvent {
 		// ### Init defaults
 		const sources = _.reduce(
 			model.dataSources,
-			(acc: IDataSourceMap<AdapterEntity>, adapter: Adapter<AdapterEntity>) =>
-				acc.set(adapter, null),
+			(acc: IDataSourceMap<AdapterEntity>, adapter) => acc.set(adapter, null),
 			new WeakMap()
 		);
-		this.dataSources = Object.seal(sources);
-
-		// ### Cast types if required
-		source = entityCtrSteps.castTypes(source, modelDesc);
+		this._dataSources = Object.seal(sources);
+		this._lastDataSource = null;
+		this.idHash = {};
 
 		// ### Load datas from source
 		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 		if (source instanceof AdapterEntity) {
-			this._state = State.SYNC;
-			this.lastDataSource = source.dataSource;
-			this.dataSources.set(this.lastDataSource, source);
-			source = (<typeof Entity>this.constructor).deserialize(
-				_.omit(source.toObject(), ['id'])
-			);
+			this.setLastDataSourceEntity(source.dataSource, source);
 		}
 
 		// ### Final validation
@@ -169,9 +183,11 @@ export abstract class Entity extends SequentialEvent {
 			);
 		}
 
-		// ### Generate prototype & attributes
+		// ### Generate attributes
 		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
-		this.attributes = model.validator.default(_.cloneDeep(source));
+		this._attributes = model.validator.default(
+			_.cloneDeep(this.attributes || source)
+		);
 
 		// ### Load events
 		_.forEach(modelDesc.lifecycleEvents, (eventFunctions, eventName) => {
@@ -192,7 +208,7 @@ export abstract class Entity extends SequentialEvent {
 	uidQuery<T extends AdapterEntity>(dataSource: Adapter<T>): object {
 		// Todo: precise return type
 		return {
-			id: this.attributes.idHash[dataSource.name],
+			id: this.idHash[dataSource.name],
 		};
 	}
 
@@ -216,7 +232,10 @@ export abstract class Entity extends SequentialEvent {
 	 * @see Validator.Validator#validate
 	 */
 	validate() {
-		(this.constructor as EntitySpawner).model.validator.validate(this.attributes);
+		if (this.attributes) {
+			this.ctor.model.validator.validate(this.attributes);
+		}
+		return this;
 	}
 
 	/**
@@ -227,8 +246,8 @@ export abstract class Entity extends SequentialEvent {
 	 * @returns Returns `this`.
 	 */
 	replaceAttributes(newContent: IRawEntityAttributes = {}) {
-		newContent.idHash = this.attributes.idHash;
-		this.attributes = newContent as IEntityAttributes;
+		newContent.idHash = this.idHash;
+		this._attributes = newContent;
 		return this;
 	}
 
@@ -239,36 +258,82 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Data source to diff with.
 	 * @returns Diff query.
 	 */
-	public getDiff(dataSource: string): object;
-	public getDiff<TCheck extends AdapterEntity>(
-		dataSource: Adapter<TCheck>
-	): object;
-	public getDiff<TCheck extends AdapterEntity>(
-		dataSource: Adapter<TCheck> | string
-	): object {
-		const dataSourceFixed: Adapter<AdapterEntity> =
+	public getDiff(
+		dataSource: Adapter | string
+	): IRawEntityAttributes | undefined {
+		const dataSourceFixed =
 			typeof dataSource === 'string'
-				? (this.constructor as EntitySpawner).model.getDataSource(dataSource)
-				: (dataSource as any);
+				? this.ctor.model.getDataSource(dataSource)
+				: dataSource;
 
 		const dataStoreEntity = this.dataSources.get(dataSourceFixed);
 		// All is diff if not present
-		if (!dataStoreEntity) {
-			return this.attributes;
+		if (dataStoreEntity == null || this.attributes == null) {
+			return this.attributes || undefined;
 		}
 		const dataStoreObject = dataStoreEntity.toObject() as IRawEntityAttributes;
+		const currentAttributes = this.attributes;
 
-		const keys = _.chain(this.attributes)
+		const potentialChangedKeys = _.chain(this.attributes)
+			// Get all keys in current attributes
 			.keys()
+			// Add to it the keys of the stored object
 			.concat(_.keys(dataStoreObject))
-			.uniq()
-			.difference(['idHash'])
-			.value() as string[];
-		const values = _.map(keys, (key: string) => this.attributes[key]);
-		const diff = _.omitBy(_.zipObject(keys, values), (val: any, key: string) =>
-			_.isEqual(this.attributes[key], dataStoreObject[key])
-		);
+			// Remove duplicates
+			.uniq();
+
+		const storedValues = potentialChangedKeys
+			// Replace keys with stored values
+			.map((key: string) => dataStoreEntity.attributes[key]);
+		const diff = potentialChangedKeys
+			// Make an object with potentially changed keys as keys, & stored values as values
+			.zipObject(storedValues.value())
+			// Omit values that did not changed between now & stored object
+			.omitBy((val: any, key: string) =>
+				_.isEqual(dataStoreEntity.attributes[key], currentAttributes[key])
+			)
+			.value();
 		return diff;
+	}
+
+	/**
+	 * Refresh last data source, attributes, state & data source entity
+	 */
+	private setLastDataSourceEntity(
+		dataSource: Adapter,
+		dataSourceEntity: AdapterEntity | null
+	) {
+		// We have used data source, store it
+		this._lastDataSource = dataSource;
+		// Refresh data source's entity
+		this.dataSources.set(dataSource, dataSourceEntity);
+		// Set attributes from dataSourceEntity
+		if (dataSourceEntity) {
+			// Set the state
+			this._state = EEntityState.SYNC;
+			const attrs = entityCtrSteps.castTypes(
+				dataSourceEntity.toObject(),
+				this.modelDesc
+			);
+			this.idHash = attrs.idHash;
+			this._attributes = _.omit(attrs, ['id', 'idHash']);
+		} else {
+			this._attributes = null;
+			// If this was our only data source, then go back to orphan state
+			if (
+				_.chain(this.model.dataSources)
+					.values()
+					.without(dataSource)
+					.isEmpty()
+					.value()
+			) {
+				this._state = EEntityState.ORPHAN;
+			} else {
+				this._state = EEntityState.SYNC;
+				this.idHash = {};
+			}
+		}
+		return this;
 	}
 
 	/**
@@ -277,8 +342,8 @@ export abstract class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @returns Attributes of this entity.
 	 */
-	toObject(): IEntityAttributes {
-		return this.attributes;
+	toObject() {
+		return _.cloneDeep(this.attributes);
 	}
 
 	/**
@@ -288,8 +353,14 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   data - Data to convert to primitive types.
 	 * @returns Object with Primitives-only types.
 	 */
-	static serialize(data: IRawEntityAttributes): IRawEntityAttributes {
-		return _.cloneDeep(data);
+	static serialize(
+		data: IRawEntityAttributes | null
+	): IRawEntityAttributes | undefined {
+		return data ? _.cloneDeep(data) : undefined;
+	}
+
+	protected serialize() {
+		return Entity.serialize(this.attributes);
 	}
 
 	/**
@@ -299,8 +370,34 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   data - Data to convert from primitive types.
 	 * @returns Object with Primitives & non primitives types.
 	 */
-	static deserialize(data: IRawEntityAttributes): IRawEntityAttributes {
-		return _.cloneDeep(data);
+	static deserialize(
+		data: IRawEntityAttributes | null
+	): IRawEntityAttributes | undefined {
+		return data ? _.cloneDeep(data) : undefined;
+	}
+
+	protected deserialize() {
+		return Entity.deserialize(this.attributes);
+	}
+
+	private async persistCreate(dataSource: Adapter, table: string) {
+		const attrs = this.toObject();
+		if (attrs) {
+			return (await dataSource.insertOne(table, attrs)) as any;
+		} else {
+			return undefined;
+		}
+	}
+
+	private async persistUpdate(dataSource: Adapter, table: string) {
+		const diff = this.getDiff(dataSource);
+		return diff
+			? ((await dataSource.updateOne(
+					this.table(table),
+					this.uidQuery(dataSource),
+					diff
+			  )) as any)
+			: undefined;
 	}
 
 	/**
@@ -313,16 +410,18 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is saved. Resolved with `this`.
 	 */
-	async persist(sourceName: string, options: IOptions = {}) {
+	async persist(sourceName?: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this.state;
-		this._state = State.SYNCING;
-		// Generate events args
+		this._state = EEntityState.SYNCING;
+		// Get the target data source & its name
 		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
 			sourceName
 		);
-		const eventsArgs = [dataSource.name];
+		const finalSourceName = dataSource.name;
+		// Generate events args
+		const eventsArgs = [finalSourceName];
 		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 
 		// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
@@ -333,24 +432,20 @@ export abstract class Entity extends SequentialEvent {
 		await this.validate();
 		await _maybeEmit(['afterValidate', `beforePersist${suffix}`]);
 
+		const table = this.table(finalSourceName);
 		// Depending on state, we are going to perform a different operation
-		const dataStoreEntity = await ('orphan' === beforeState
-			? dataSource.insertOne(this.table(sourceName), this.toObject())
-			: dataSource.updateOne(
-					this.table(sourceName),
-					this.uidQuery(dataSource),
-					this.getDiff(dataSource)
-			  ));
+		const operation =
+			'orphan' === beforeState ? this.persistCreate : this.persistUpdate;
+		const dataStoreEntity: AdapterEntity | undefined = await operation(
+			dataSource,
+			table
+		);
 		if (!dataStoreEntity) {
 			throw new Error('Insert/Update returned nothing.');
 		}
-		// We have used data source, store it
-		this.lastDataSource = dataSource;
+		// Now we insert data in stores
+		this.setLastDataSourceEntity(dataSource, dataStoreEntity);
 
-		entityCtrSteps.castTypes(dataStoreEntity, this.modelDesc);
-		this._state = State.SYNC;
-		this.attributes = dataStoreEntity.toObject();
-		this.dataSources.set(dataSource, dataStoreEntity);
 		return _maybeEmit([`afterPersist${suffix}`, 'afterPersist']);
 	}
 
@@ -364,19 +459,16 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options            - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is reloaded. Resolved with `this`.
 	 */
-	async fetch(sourceName: string, options: IOptions = {}) {
+	async fetch(sourceName?: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this.state;
-		this._state = State.SYNCING;
+		this._state = EEntityState.SYNCING;
 		// Generate events args
 		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
 			sourceName
 		);
-		const eventsArgs = [
-			dataSource.name,
-			(<typeof Entity>this.constructor).serialize(this.attributes),
-		];
+		const eventsArgs = [dataSource.name, this.ctor.serialize(this.attributes)];
 		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 
 		await _maybeEmit('beforeFetch');
@@ -387,11 +479,9 @@ export abstract class Entity extends SequentialEvent {
 			dataSource,
 			'findOne'
 		);
+		// Now we insert data in stores
+		this.setLastDataSourceEntity(dataSource, dataStoreEntity);
 
-		entityCtrSteps.castTypes(dataStoreEntity, this.modelDesc);
-		this._state = State.SYNC;
-		this.attributes = dataStoreEntity.toObject() as IEntityAttributes;
-		this.dataSources.set(dataSource, dataStoreEntity);
 		return _maybeEmit('afterFetch');
 	}
 
@@ -405,15 +495,13 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is destroyed. Resolved with `this`.
 	 */
-	async destroy(sourceName: string, options: IOptions = {}) {
+	async destroy(sourceName?: string, options: IOptions = {}) {
 		_.defaults(options, DEFAULT_OPTIONS);
 		// Change the state of the entity
 		const beforeState = this.state;
-		this._state = State.SYNCING;
+		this._state = EEntityState.SYNCING;
 		// Generate events args
-		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
-			sourceName
-		);
+		const dataSource = this.ctor.model.getDataSource(sourceName);
 		const eventsArgs = [dataSource.name];
 		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 
@@ -421,30 +509,23 @@ export abstract class Entity extends SequentialEvent {
 
 		await execIfOkState(this, beforeState, dataSource, 'deleteOne');
 
-		// If this was our only data source, then go back to orphan state
-		if (0 === _.without(_.values(this.model.dataSources), dataSource).length) {
-			this._state = State.ORPHAN;
-		} else {
-			this._state = State.SYNC;
-			delete this.attributes.idHash[dataSource.name];
-		}
-		this.dataSources.set(dataSource, null);
+		// Now we insert data in stores
+		this.setLastDataSourceEntity(dataSource, null);
+
 		return _maybeEmit('afterDestroy');
 	}
 
 	/**
-	 * Get the ID for the given source name.
+	 * Get the ID for the given source name. This ID is retrieved from the Data Store entity, not the latest ID hash of the entity itself
 	 *
 	 * @param   sourceName - Name of the source to get ID from.
 	 * @returns Id of this entity in requested data source.
 	 */
 	getId(sourceName: string): EntityUid | null {
-		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
-			sourceName
-		);
+		const dataSource = this.ctor.model.getDataSource(sourceName);
 		const entity = this.dataSources.get(dataSource);
 		if (entity) {
-			return entity.id;
+			return entity.attributes.id;
 		} else {
 			return null;
 		}
