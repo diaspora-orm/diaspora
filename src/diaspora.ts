@@ -1,6 +1,12 @@
 import * as _ from 'lodash';
 
-import { Adapter, AdapterEntity, QueryLanguage } from './adapters/base';
+import {
+	Adapter,
+	AdapterEntity,
+	QueryLanguage,
+	IAdapterEntityCtr,
+	IAdapterCtr,
+} from './adapters/base';
 import { Entity, IRawEntityAttributes, EntityUid } from './entityFactory';
 import { Set } from './set';
 import {
@@ -10,6 +16,9 @@ import {
 	ModelDescriptionRaw,
 } from './model';
 import { logger } from './logger';
+import { InMemoryAdapter } from './adapters/inMemory';
+import { WebApiAdapter } from './adapters/webApi';
+import { WebStorageAdapter } from './adapters/webStorage';
 
 /**
  * Event emitter that can execute async handlers in sequence
@@ -20,10 +29,10 @@ import { logger } from './logger';
  */
 
 interface IAdapterRegistry {
-	[key: string]: typeof Adapter;
+	[key: string]: IAdapterCtr;
 }
 export interface IDataSourceRegistry {
-	[key: string]: Adapter<AdapterEntity>;
+	[key: string]: Adapter;
 }
 interface IModelRegistry {
 	[key: string]: Model;
@@ -89,22 +98,21 @@ export class DiasporaStatic {
 	 */
 	private models: IModelRegistry = {};
 
-	private static ensureAllEntities(
-		adapter: Adapter<AdapterEntity>,
-		table: string
-	) {
+	private static ensureAllEntities(adapter: Adapter, table: string) {
 		// Filter our results
-		const filterResults = (entity: any): any => {
+		const filterResults = (entity: AdapterEntity | object): AdapterEntity => {
 			// Remap fields
-			entity = adapter.remapOutput(table, entity);
+			const remappedEntity = adapter.remapOutput(
+				table,
+				entity instanceof adapter.classEntity ? entity.attributes : entity
+			);
 			// Force results to be class instances
-			if (entity instanceof adapter.classEntity) {
-				return new adapter.classEntity(entity, adapter);
-			}
-			return entity;
+			return new adapter.classEntity(remappedEntity, adapter);
 		};
 
-		return (results: Entity | Entity[]): Entity | Entity[] | void => {
+		return (
+			results: AdapterEntity | AdapterEntity[] | object | object[]
+		): AdapterEntity | AdapterEntity[] | void => {
 			if (_.isNil(results)) {
 				return;
 			} else if (_.isArrayLike(results)) {
@@ -150,10 +158,7 @@ export class DiasporaStatic {
 		}
 	}
 
-	private static getRemapFunction(
-		adapter: Adapter<AdapterEntity>,
-		table: string
-	) {
+	private static getRemapFunction(adapter: Adapter, table: string) {
 		return (query: IRawEntityAttributes) => {
 			return adapter.remapInput(table, query);
 		};
@@ -162,7 +167,7 @@ export class DiasporaStatic {
 	private static wrapDataSourceAction(
 		callback: Function,
 		queryType: string,
-		adapter: Adapter<AdapterEntity>
+		adapter: Adapter
 	) {
 		return (table: string, ...args: any[]) => {
 			// Transform arguments for find, update & delete
@@ -195,7 +200,6 @@ export class DiasporaStatic {
 			}
 
 			// Hook after promise resolution
-			console.log({ callback, table, args, adapter });
 			return callback
 				.call(adapter, table, ...args)
 				.then(DiasporaStatic.ensureAllEntities(adapter, table));
@@ -229,7 +233,7 @@ export class DiasporaStatic {
 	 * @param   config       - Adapter specific configuration. Check your adapter's doc
 	 * @returns New adapter spawned.
 	 */
-	createDataSource(adapterLabel: string, ...config: any[]) {
+	createDataSource(adapterLabel: string, sourceName?: string, ...config: any[]) {
 		if (!this.adapters.hasOwnProperty(adapterLabel)) {
 			const moduleName = `diaspora-${adapterLabel}`;
 			try {
@@ -249,10 +253,10 @@ export class DiasporaStatic {
 				);
 			}
 		}
-		console.log('Passed module require');
-		const baseAdapter = new (this.adapters[adapterLabel] as any)(...config);
+		const adapterCtr = this.adapters[adapterLabel];
+		const baseAdapter = new adapterCtr(sourceName || adapterLabel, ...config);
 		const newDataSource = new Proxy(baseAdapter, {
-			get(target, key: string) {
+			get(target: any, key: string) {
 				// If this is an adapter action method, wrap it with filters. Our method keys are only string, not tags
 				if (_.isString(key)) {
 					let method = key.match(/^(find|update|insert|delete)(Many|One)$/);
@@ -279,28 +283,6 @@ export class DiasporaStatic {
 	}
 
 	/**
-	 * Stores the data source with provided label.
-	 *
-	 * @author gerkin
-	 * @throws  {Error} Error is thrown if parameters are incorrect or the name is already used or `dataSource` is not an adapter.
-	 * @param   name       - Name associated with this datasource.
-	 * @param   dataSource - Datasource itself.
-	 * @returns
-	 */
-	registerDataSource(dataSource: Adapter<AdapterEntity>) {
-		// TODO Oh that's bad....
-		DiasporaStatic.requireName('DataSource', name);
-		if (this.dataSources.hasOwnProperty(name)) {
-			throw new Error(`DataSource name already used, had "${name}"`);
-		}
-		/*		if ( !( dataSource instanceof Diaspora.components.Adapters.Adapter )) {
-			throw new Error( 'DataSource must be an instance inheriting "DiasporaAdapter"' );
-		}*/
-		this.dataSources[name] = dataSource;
-		return dataSource;
-	}
-
-	/**
 	 * Create a data source (usually, a database connection) that may be used by models.
 	 *
 	 * @author gerkin
@@ -313,14 +295,19 @@ export class DiasporaStatic {
 	createNamedDataSource(
 		sourceName: string,
 		adapterLabel: string,
-		configHash: object
+		...otherConfig: any[]
 	) {
+		DiasporaStatic.requireName('DataSource', sourceName);
 		const dataSource = this.createDataSource(
 			adapterLabel,
 			sourceName,
-			configHash
+			...otherConfig
 		);
-		return this.registerDataSource(dataSource);
+		if (this._dataSources.hasOwnProperty(sourceName)) {
+			throw new Error(`DataSource name already used, had "${sourceName}"`);
+		}
+		this._dataSources[sourceName] = dataSource;
+		return dataSource;
 	}
 
 	/**
@@ -354,7 +341,7 @@ export class DiasporaStatic {
 	 * @param   adapter - The adapter to register.
 	 * @returns This function does not return anything.
 	 */
-	registerAdapter(label: string, adapter: typeof Adapter) {
+	registerAdapter(label: string, adapter: IAdapterCtr) {
 		if (this.adapters.hasOwnProperty(label)) {
 			throw new Error(`Adapter with label "${label}" already exists.`);
 		}
@@ -369,12 +356,9 @@ export class DiasporaStatic {
 export const Diaspora = DiasporaStatic.instance;
 
 // Register available built-in adapters
-Diaspora.registerAdapter('inMemory', require('./adapters/inMemory/adapter'));
-Diaspora.registerAdapter('webApi', require('./adapters/webApi/adapter'));
+Diaspora.registerAdapter('inMemory', InMemoryAdapter);
+Diaspora.registerAdapter('webApi', WebApiAdapter);
 // Register webStorage only if in browser
 if (process.browser) {
-	Diaspora.registerAdapter(
-		'webStorage',
-		require('./adapters/webStorage/adapter')
-	);
+	Diaspora.registerAdapter('webStorage', WebStorageAdapter);
 }
