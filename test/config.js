@@ -9,10 +9,11 @@ module.exports = {
 	redis: {
 		database: 3,
 	},
-	localstorage: {
-		data_dir: '.localStorageTest',
-	},
-	webApi: {
+	webStorage: {},
+	webApi: process.browser ? {
+		port:   12345,
+		path:   '/api',
+	} : {
 		host:   'localhost',
 		port:   12345,
 		scheme: 'http',

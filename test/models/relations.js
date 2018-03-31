@@ -139,12 +139,12 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 					length: 1,
 				},
 			], item => checkFind( item.query, true ).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( item.length );
+				expect( foundEntities ).toHaveLength( item.length );
 			}));
 		});
 		it( 'Find all instances', () => {
 			return testModel.findMany({}).then( foundEntities => {
-				expect( foundEntities ).to.have.lengthOf( 5 );
+				expect( foundEntities ).toHaveLength( 5 );
 			});
 		});
 	});
@@ -187,7 +187,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				}, {
 					foo: 'bar',
 				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 2 );
+					expect( foundEntities ).toHaveLength( 2 );
 					return Promise.resolve();
 				}))
 				.then(() => checkUpdate({
@@ -195,7 +195,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				}, {
 					foo: undefined,
 				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 1 );
+					expect( foundEntities ).toHaveLength( 1 );
 					return Promise.resolve();
 				}))
 				.then(() => checkUpdate({
@@ -203,7 +203,7 @@ describe( 'Should be able to use model methods to find, update, delete & create'
 				}, {
 					foo: 'twy',
 				}, true ).then( foundEntities => {
-					expect( foundEntities ).to.have.lengthOf( 0 );
+					expect( foundEntities ).toHaveLength( 0 );
 					return Promise.resolve();
 				}));
 		});

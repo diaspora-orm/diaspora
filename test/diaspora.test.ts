@@ -1,56 +1,86 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { importTest, getStyle } from './utils';
 import { Diaspora } from '../src/diaspora';
+import { FieldDescriptor } from '../src/model';
+import { Validator } from '../src/validator';
 
-expect(
-	Diaspora.default(
-		{
+const defaultCheck = (
+	entity: any,
+	modelDesc: { [key: string]: FieldDescriptor }
+) => {
+	return new Validator(modelDesc).default(entity);
+};
+
+describe('Diaspora exposed methods', () => {
+	it('Default', () => {
+		const now = _.now();
+		expect(
+			defaultCheck(
+				{
+					aze: 123,
+				},
+				{
+					foo: {
+						type: 'text',
+						default: 'bar',
+					},
+				}
+			)
+		).toMatchObject({
 			aze: 123,
-		},
-		{
-			foo: {
-				type: 'text',
-				default: 'bar',
-			},
-		}
-	)
-).toEqual({
-	aze: 123,
-	foo: 'bar',
+			foo: 'bar',
+		});
+
+		expect(
+			defaultCheck(
+				{
+					aze: 123,
+				},
+				{
+					foo: {
+						type: 'datetime',
+						default: () => now,
+					},
+				}
+			)
+		).toMatchObject({
+			aze: 123,
+			foo: now,
+		});
+
+		expect(
+			defaultCheck(
+				{
+					aze: 'baz',
+				},
+				{
+					aze: {
+						type: 'text',
+						default: 'bar',
+					},
+				}
+			)
+		).toMatchObject({
+			aze: 'baz',
+		});
+		expect(
+			defaultCheck(
+				{
+					aze: 'baz',
+				},
+				{
+					aze: {
+						type: 'datetime',
+						default: () => 'bar',
+					},
+				}
+			)
+		).toMatchObject({
+			aze: 'baz',
+		});
+	});
 });
-/* const now = _.now();
-expect( Diaspora.default({
-	aze: 123,
-}, {
-	foo: {
-		type:    'datetime',
-		default: () => now,
-	},
-})).toEqual({
-	aze: 123,
-	foo: now,
-});
-expect( Diaspora.default({
-	aze: 'baz',
-}, {
-	aze: {
-		type:    'text',
-		default: 'bar',
-	},
-})).toEqual({
-	aze: 'baz',
-});
-expect( Diaspora.default({
-	aze: 'baz',
-}, {
-	aze: {
-		type:    'datetime',
-		default: () => 'bar',
-	},
-})).toEqual({
-	aze: 'baz',
-}); */
 
 //importTest( getStyle( 'category', 'Adapters' ), `${ __dirname  }/adapters/index.js` );
 //importTest( getStyle( 'category', 'Models' ), `${ __dirname  }/models/index.js` );

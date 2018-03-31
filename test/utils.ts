@@ -1,6 +1,10 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { resolve } from 'path';
 import * as chalk from 'chalk';
+import { Adapter, AdapterEntity } from '../src/adapters/base';
+import { Model } from '../src/model';
+import { IRawEntityAttributes, Entity } from '../src/entityFactory';
+import { Set as EntitySet } from '../src/set';
 
 const projectPath = resolve('../');
 let config;
@@ -16,16 +20,19 @@ try {
 	}
 	process.exit();
 }
+
 export const conf = config;
+
+export const dataSources: { [key: string]: Adapter } = {};
 
 const styles =
 	'undefined' === typeof window
 		? {
-				category: chalk.bold.underline.blue,
-				taskCategory: chalk.underline.white,
-				bold: chalk.bold,
-				adapter: chalk.bold.red,
-				model: chalk.bold.red,
+				category: (chalk as any).bold.underline.blue,
+				taskCategory: (chalk as any).underline.white,
+				bold: (chalk as any).bold,
+				adapter: (chalk as any).bold.red,
+				model: (chalk as any).bold.red,
 		  }
 		: {};
 
@@ -47,145 +54,219 @@ export const importTest = (name: string, modulePath: string) => {
 	});
 };
 
-/* chai.use( function chaiUse( _chai, utils ) {
-	utils.addProperty( chai.Assertion.prototype, 'set', function chaiSet() {
-		this.assert(
-			c.array( this._obj ) || this._obj.hasOwnProperty( 'entities' ),
-			'expected #{this} to be a collection',
-			'expected #{this} to not be a collection' );
-		utils.flag( this, 'collection', true );
-	});
-	utils.addProperty( chai.Assertion.prototype, 'of', () => {});
-	utils.addChainableMethod( chai.Assertion.prototype, 'boolean', function checkBool() {
-		const elem = this._obj;
-		const collection = utils.flag( this, 'collection' );
-		this.assert(
-			collection ? l.every( elem, c.boolean ) : c.boolean( elem ),
-			`expected #{this} to be a ${ collection ? 'collection of ' : '' }boolean`,
-			`expected #{this} to not be a ${ collection ? 'collection of ' : '' }boolean`
-		);
-	});
-	utils.addChainableMethod( chai.Assertion.prototype, 'dataStoreEntity', function checkDataStoreEntity( adapter, properties ) {
-		const data = this._obj;
-		const collection = utils.flag( this, 'collection' );
-		utils.flag( this, 'entityType', 'dataStoreEntity' );
-		const check = ( entity, props = {}) => {
-			try {
-				expect( entity ).to.be.an( 'object' );
-				//	console.log({name: adapter.name, idHash: entity.idHash, id: entity.id})
-				expect( entity.idHash ).to.be.an( 'object' ).that.have.property( adapter.name, entity.id );
-				expect( entity ).to.include.all.keys( 'id', 'idHash' );
-				expect( entity.id ).to.not.be.undefined;
-				if ( !entity.id ) {
-					throw new Error();
-				}
-				if ( 'undefined' === typeof window ) {
-					const baseName = ( adapter.name[0].toUpperCase() + adapter.name.substr( 1 )).replace( /Adapter$/, '' );
-					expect( entity.constructor.name, 'Entity Class name does not comply to naming convention' ).to.equal( `${ baseName }Entity` );
-				}
-				l.forEach( props, ( val, key ) => {
-					if ( c.undefined( val )) {
-						expect( entity ).to.satisfy( obj => {
-							return c.undefined( obj[key]) || !obj.hasOwnProperty( key );
-						});
-					} else {
-						expect( entity ).to.have.property( key, val );
-					}
-				});
-			} catch ( e ) {
-				return e;
+const check = (
+	entity: Entity,
+	model: Model,
+	props: IRawEntityAttributes = {},
+	orphan?: boolean | string
+) => {
+	expect(entity.ctor.model).toEqual(model);
+	const dataSourceName = 'string' === typeof orphan ? orphan : undefined;
+	const orphanState = dataSourceName ? false : orphan;
+	switch (orphanState) {
+		case true:
+			{
+				expect(entity.state).toEqual('orphan');
 			}
-		};
-		let errorOut;
-		if ( collection ) {
-			if ( c.array( properties ) && properties.length === data.length ) {
-				l.forEach( data, ( entity, index ) => {
-					errorOut = check( entity, properties[index]);
-					return !errorOut;
-				});
-			} else {
-				l.forEach( data, entity => {
-					errorOut = check( entity, properties );
-					return !errorOut;
-				});
-			}
-		} else {
-			errorOut = check( data, properties );
-		}
-		this.assert(
-			!errorOut,
-			`expected #{this} to be a ${ collection ? 'collection of ' : '' }DataStoreEntity: failed because of ${ errorOut }`,
-			`expected #{this} to not be a ${ collection ? 'collection of ' : '' }DataStoreEntity: failed because of ${ errorOut }`
-		);
-	});
-	utils.addChainableMethod( chai.Assertion.prototype, 'entity', function checkDataStoreEntity( model, properties, orphan = null ) {
-		const data = this._obj;
-		const collection = utils.flag( this, 'collection' );
-		utils.flag( this, 'entityType', 'entity' );
-		const check = ( entity, props = {}) => {
-			expect( entity.constructor.model ).to.equal( model );
-			var dataSource = 'string' === typeof orphan ? orphan : false;
-			orphan = dataSource ? false : orphan;
-			switch ( orphan ) {
-				case true: {
-					expect( entity.state, 'Entity should be orphan' ).to.equal( 'orphan' );
-				} break;
+			break;
 
-				case false: {
-					expect( entity.state, 'Entity should not be orphan' ).to.not.equal( 'orphan' );
-				} break;
+		case false:
+			{
+				expect(entity.state).not.toEqual('orphan');
 			}
-			if ( orphan ) {
-				expect( entity.lastDataSource, 'Orphans should not have a last data source' ).to.be.eql( null );
-				expect( entity.attributes, 'id should be an undefined value or key on orphans' ).to.not.have.property( 'id' );
-				expect( entity.attributes, 'idHash should be an undefined value or key on orphans' ).to.not.have.property( 'idHash' );
-			} else if ( null !== orphan ) {
-				if ( dataSource ) {
-					expect( entity.lastDataSource ).to.be.eql( dataSource );
-				} else {
-					expect( entity.lastDataSource, 'Non orphans should have a last data source' ).to.be.not.eql( null );
-				}
-				const lds = entity.lastDataSource;
-				expect( entity.dataSources[lds], 'id should be a defined value on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'id' );
-				expect( entity.dataSources[lds], 'idHash should be a hash on non-orphan last data source' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-				expect( entity.attributes, 'id should not be copied in model\'s value' ).to.be.an( 'object' ).that.have.not.property( 'id' );
-				expect( entity.attributes, 'idHash should be a hash on non-orphan model' ).to.be.an( 'object' ).that.have.property( 'idHash' ).that.is.an( 'object' );
-			}
-			expect( entity ).to.respondTo( 'persist' );
-			expect( entity ).to.respondTo( 'fetch' );
-			expect( entity ).to.respondTo( 'destroy' );
-			expect( entity ).to.respondTo( 'toObject' );
-			const toObj = entity.toObject();
-			l.forEach( props, ( val, key ) => {
-				if ( c.undefined( val )) {
-					expect( toObj ).to.satisfy( obj => {
-						return c.undefined( obj[key]) || !obj.hasOwnProperty( key );
-					});
-				} else {
-					expect( toObj ).to.have.property( key, val );
-				}
-			});
-		};
-		let errorOut;
-		if ( collection ) {
-			if ( c.array( properties ) && properties.length === data.length ) {
-				data.forEach(( entity, index ) => {
-					errorOut = check( entity, properties[index]);
-					return !errorOut;
-				});
-			} else {
-				data.forEach( entity => {
-					errorOut = check( entity, properties );
-					return !errorOut;
-				});
-			}
+			break;
+	}
+	if (orphanState) {
+		expect(entity.lastDataSource).toEqual(null);
+		expect(entity.attributes).not.toHaveProperty('id');
+		expect(entity.attributes).not.toHaveProperty('idHash');
+	} else if (null !== orphanState) {
+		if (dataSourceName) {
+			expect(entity.lastDataSource).toEqual(dataSourceName);
 		} else {
-			errorOut = check( data, properties );
+			expect(entity.lastDataSource).not.toEqual(null);
 		}
-		this.assert(
-			!errorOut,
-			`expected #{this} to be a${ collection ? ' collection of' : 'n' } Entity: failed because of ${ errorOut }`,
-			`expected #{this} to not be a${ collection ? ' collection of' : 'n' } Entity: failed because of ${ errorOut }`
-		);
+		const lds = entity.lastDataSource;
+		expect(entity.dataSources.get(lds)).toBeAnAdapterEntity(lds);
+		expect(entity.attributes).toBeInstanceOf(Object);
+		expect(entity.attributes).not.toHaveProperty('id');
+		expect(entity.attributes).not.toHaveProperty('idHash');
+	}
+	_.forEach(['persist', 'fetch', 'destroy', 'toObject'], word => {
+		expect(entity).toImplementMethod(word);
 	});
-}) */
+	const toObj = entity.toObject();
+	expect(entity.attributes).toMatchWithUndefined(props);
+};
+const hasOwnMethod = (received: any, methodName: string) => {
+	console.log({ received, methodName, method: received[methodName] });
+	return received && _.isFunction(received[methodName]);
+};
+
+expect.extend({
+	toImplementMethod(received: any, methodName: string) {
+		const pass = hasOwnMethod(received, methodName);
+		return {
+			message: () =>
+				`Expected to implement method ${this.utils.printExpected(methodName)}`,
+			pass: pass,
+		};
+	},
+	toImplementOneOfMethods(received: any, methodNames: string[]) {
+		const pass =
+			received &&
+			_.some(methodNames, methodName => hasOwnMethod(received, methodName));
+		return {
+			message: () =>
+				`Expected to implement one of methods ${this.utils.printExpected(
+					methodNames.join(', ')
+				)}`,
+			pass: pass,
+		};
+	},
+	toMatchWithUndefined(received: any, expected: any) {
+		_.forEach(expected, (val, key) => {
+			if (_.isUndefined(val)) {
+				expect(received).not.toHaveProperty(key);
+			} else {
+				expect(received).toHaveProperty(key, val);
+			}
+		});
+		return {
+			message: () => '',
+			pass: true,
+		};
+	},
+	toBeAnEntity(
+		received: any,
+		expectedModel: Model,
+		expectedAttributes: IRawEntityAttributes,
+		expectedOrphan?: boolean | string
+	) {
+		check(received, expectedModel, expectedAttributes, expectedOrphan);
+		return {
+			message: () => '',
+			pass: true,
+		};
+	},
+	toBeAnEntitySet(
+		receivedArray: any,
+		expectedModel: Model,
+		expectedAttributesArray: IRawEntityAttributes | IRawEntityAttributes[],
+		expectedOrphan?: boolean | string
+	) {
+		expect(receivedArray).toBeInstanceOf(EntitySet);
+		_.forEach(['persist', 'fetch', 'destroy', 'toObject'], word => {
+			expect(receivedArray).toImplementMethod(word);
+		});
+		_.forEach(receivedArray, (received, index) => {
+			const expectedAttributes = _.isArray(expectedAttributesArray)
+				? expectedAttributesArray[index]
+				: expectedAttributesArray;
+			check(received, expectedModel, expectedAttributes, expectedOrphan);
+		});
+		return {
+			message: () => '',
+			pass: true,
+		};
+	},
+	toBeAnAdapterEntity(
+		received: any,
+		expectedAdapter: Adapter,
+		expectedAttributes?: any
+	) {
+		expect(received).toBeInstanceOf(AdapterEntity);
+		const receivedEntity = received as AdapterEntity;
+		const adapter = receivedEntity.dataSource;
+		expect(receivedEntity.dataSource).toBeInstanceOf(Adapter);
+		expect(receivedEntity.dataSource).toEqual(expectedAdapter);
+		expect(receivedEntity.attributes).toBeInstanceOf(Object);
+		expect(receivedEntity.attributes.idHash).toBeInstanceOf(Object);
+		expect(receivedEntity.attributes).toHaveProperty('id');
+		expect(receivedEntity.attributes).toHaveProperty('idHash');
+		expect(receivedEntity.attributes.idHash).toHaveProperty(
+			adapter.name,
+			receivedEntity.attributes.id
+		);
+		expect(receivedEntity.attributes.id).not.toBeUndefined();
+		expect(receivedEntity.attributes.id).not.toBeNull();
+		if ('undefined' === typeof window) {
+			const baseName = (
+				adapter.name[0].toUpperCase() + adapter.name.substr(1)
+			).replace(/Adapter$/, '');
+			expect(receivedEntity.constructor.name).toEqual(`${baseName}Entity`);
+		}
+		expect(receivedEntity.attributes).toMatchWithUndefined(expectedAttributes);
+		return {
+			message: () => '',
+			pass: true,
+		};
+	},
+	toBeAnAdapterEntitySet(
+		receivedArray: any[],
+		expectedAdapter: Adapter,
+		expectedAttributesArray?: any[] | any
+	) {
+		expect(receivedArray).toBeInstanceOf(Array);
+		_.forEach(receivedArray, (received, index) => {
+			expect(received).toBeInstanceOf(AdapterEntity);
+			const receivedEntity = received as AdapterEntity;
+			const adapter = receivedEntity.dataSource;
+			expect(receivedEntity.dataSource).toBeInstanceOf(Adapter);
+			expect(receivedEntity.dataSource).toEqual(expectedAdapter);
+			expect(receivedEntity.attributes).toBeInstanceOf(Object);
+			expect(receivedEntity.attributes.idHash).toBeInstanceOf(Object);
+			expect(receivedEntity.attributes).toHaveProperty('id');
+			expect(receivedEntity.attributes).toHaveProperty('idHash');
+			expect(receivedEntity.attributes.idHash).toHaveProperty(
+				adapter.name,
+				receivedEntity.attributes.id
+			);
+			expect(receivedEntity.attributes.id).not.toBeUndefined();
+			expect(receivedEntity.attributes.id).not.toBeNull();
+			if ('undefined' === typeof window) {
+				const baseName = (
+					adapter.name[0].toUpperCase() + adapter.name.substr(1)
+				).replace(/Adapter$/, '');
+				expect(receivedEntity.constructor.name).toEqual(`${baseName}Entity`);
+			}
+			const expectedAttributes = _.isArray(expectedAttributesArray)
+				? expectedAttributesArray[index]
+				: expectedAttributesArray;
+			expect(receivedEntity.attributes).toMatchWithUndefined(expectedAttributes);
+		});
+		return {
+			message: () => '',
+			pass: true,
+		};
+	},
+});
+
+declare global {
+	namespace jest {
+		interface Matchers<R> {
+			// Method implementation
+			toImplementMethod(methodName: string);
+			toImplementOneOfMethods(methodNames: string[]);
+			// Matcher
+			toMatchWithUndefined(expected: any);
+			// Adapter Entity
+			toBeAnAdapterEntity(expectedAdapter: Adapter, expected?: any): void;
+			toBeAnAdapterEntitySet(
+				expectedAdapter: Adapter,
+				expectedAttributesArray?: any[] | any
+			): void;
+			// Entity
+			toBeAnEntity(
+				expectedModel: Model,
+				expectedAttributes: IRawEntityAttributes,
+				expectedOrphan?: boolean | string
+			);
+			toBeAnEntitySet(
+				expectedModel: Model,
+				expectedAttributesArray: IRawEntityAttributes | IRawEntityAttributes[],
+				expectedOrphan?: boolean | string
+			);
+		}
+	}
+}

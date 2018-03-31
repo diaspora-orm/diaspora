@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { Validator } from '../src/validator';
 import { EntityValidationError } from '../src/errors';
 

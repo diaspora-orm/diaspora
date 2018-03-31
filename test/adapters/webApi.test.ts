@@ -1,27 +1,36 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
+import express from 'express';
 
 import { Diaspora } from '../../src/diaspora';
 import { IWebApiAdapterConfig } from '../../src/adapters/webApi/adapter';
 import { getConfig } from '../utils';
+import {
+	createDataSource,
+	checkSpawnedAdapter,
+	checkEachStandardMethods,
+} from './utils';
+import { AdapterEntity, Adapter, QueryLanguage } from '../../src/adapters/base';
+
+//import { buildApi } from '../../../diaspora-server/src/diaspora-server';
 
 const ADAPTER_LABEL = 'webApi';
 const adapterConfig = getConfig(ADAPTER_LABEL) as IWebApiAdapterConfig;
 
-const AdapterTestUtils = require('./utils');
-
 let server;
 
-AdapterTestUtils.createDataSource(ADAPTER_LABEL, adapterConfig);
+createDataSource(ADAPTER_LABEL, adapterConfig);
 
 beforeAll(() => {
-	const parseQs = _.partialRight(_.mapValues, JSON.parse);
-	const express = require('express');
-	const DiasporaServer = require('diaspora-server');
+	const parseQs = _.partialRight(_.mapValues, JSON.parse) as (
+		str: string
+	) => { where: any } & QueryLanguage.QueryOptions;
 	const app = express();
 	const ENDPOINT = '/api/test';
-	const inMemoryAdapter = Diaspora.createDataSource('inMemory');
+	const inMemoryAdapter = Diaspora.createDataSource(
+		'inMemory',
+		'foobar'
+	) as Adapter;
 	const INMEMORY_TABLE = 'test-expressstore';
-	inMemoryAdapter.name = 'foobar';
 	app.use(ENDPOINT, require('body-parser')());
 	app.use(`${ENDPOINT}s`, require('body-parser')());
 
@@ -29,23 +38,26 @@ beforeAll(() => {
 		const body = req.body;
 		inMemoryAdapter.insertOne(INMEMORY_TABLE, body).then(entity => {
 			if (!_.isNil(entity)) {
-				entity.id = entity.idHash.foobar;
-				delete entity.idHash;
+				entity.attributes.id = entity.attributes.idHash.foobar;
+				delete entity.attributes.idHash;
+				return res.json(entity.attributes);
 			}
-			return res.json(entity);
+			return res.json();
 		});
 	});
 	app.post(`${ENDPOINT}s`, (req, res) => {
 		const body = req.body;
 		inMemoryAdapter.insertMany(INMEMORY_TABLE, body).then(entities => {
 			if (!_.isEmpty(entities)) {
-				entities = _.map(entities, entity => {
-					entity.id = entity.idHash.foobar;
-					delete entity.idHash;
-					return entity;
-				});
+				return res.json(
+					_.map(entities, (entity: AdapterEntity) => {
+						entity.attributes.id = entity.attributes.idHash.foobar;
+						delete entity.attributes.idHash;
+						return entity.attributes;
+					})
+				);
 			}
-			return res.json(entities);
+			return res.json();
 		});
 	});
 
@@ -55,10 +67,11 @@ beforeAll(() => {
 			.findOne(INMEMORY_TABLE, query.where, _.omit(query, ['where']))
 			.then(entity => {
 				if (!_.isNil(entity)) {
-					entity.id = entity.idHash.foobar;
-					delete entity.idHash;
+					entity.attributes.id = entity.attributes.idHash.foobar;
+					delete entity.attributes.idHash;
+					return res.json(entity.attributes);
 				}
-				return res.json(entity);
+				return res.json();
 			});
 	});
 	app.get(`${ENDPOINT}s`, (req, res) => {
@@ -67,13 +80,15 @@ beforeAll(() => {
 			.findMany(INMEMORY_TABLE, query.where, _.omit(query, ['where']))
 			.then(entities => {
 				if (!_.isEmpty(entities)) {
-					entities = _.map(entities, entity => {
-						entity.id = entity.idHash.foobar;
-						delete entity.idHash;
-						return entity;
-					});
+					return res.json(
+						_.map(entities, (entity: AdapterEntity) => {
+							entity.attributes.id = entity.attributes.idHash.foobar;
+							delete entity.attributes.idHash;
+							return entity.attributes;
+						})
+					);
 				}
-				return res.json(entities);
+				return res.json([]);
 			});
 	});
 
@@ -84,8 +99,9 @@ beforeAll(() => {
 			.updateOne(INMEMORY_TABLE, query.where, body, _.omit(query, ['where']))
 			.then(entity => {
 				if (!_.isNil(entity)) {
-					entity.id = entity.idHash.foobar;
-					delete entity.idHash;
+					entity.attributes.id = entity.attributes.idHash.foobar;
+					delete entity.attributes.idHash;
+					return res.json(entity.attributes);
 				}
 				return res.json(entity);
 			});
@@ -97,13 +113,15 @@ beforeAll(() => {
 			.updateMany(INMEMORY_TABLE, query.where, body, _.omit(query, ['where']))
 			.then(entities => {
 				if (!_.isEmpty(entities)) {
-					entities = _.map(entities, entity => {
-						entity.id = entity.idHash.foobar;
-						delete entity.idHash;
-						return entity;
-					});
+					return res.json(
+						_.map(entities, (entity: AdapterEntity) => {
+							entity.attributes.id = entity.attributes.idHash.foobar;
+							delete entity.attributes.idHash;
+							return entity.attributes;
+						})
+					);
 				}
-				return res.json(entities);
+				return res.json([]);
 			});
 	});
 
@@ -124,7 +142,6 @@ beforeAll(() => {
 			});
 	});
 
-	// console.log(require('util').inspect(req, {colors: true}));
 	return new Promise((resolve, reject) => {
 		server = app.listen(adapterConfig.port, () => {
 			console.log(`Example app listening on port ${adapterConfig.port}!`);
@@ -133,12 +150,10 @@ beforeAll(() => {
 	});
 });
 
-AdapterTestUtils.checkSpawnedAdapter(ADAPTER_LABEL);
-AdapterTestUtils.checkEachStandardMethods(ADAPTER_LABEL);
-//AdapterTestUtils.checkApplications( ADAPTER_LABEL );
-AdapterTestUtils.checkRegisterAdapter(ADAPTER_LABEL);
+checkSpawnedAdapter(ADAPTER_LABEL);
+checkEachStandardMethods(ADAPTER_LABEL);
 
-after(() => {
+afterAll(() => {
 	if (server) {
 		return new Promise((resolve, reject) => {
 			server.close(() => {
