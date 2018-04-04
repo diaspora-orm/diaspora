@@ -7,7 +7,7 @@ import {
 	IAdapterEntityCtr,
 	IRawAdapterEntityAttributes,
 } from '.';
-import { IRawEntityAttributes } from '../../entityFactory';
+import { IRawEntityAttributes } from '../../entity/entityFactory';
 import {
 	remapIO,
 	OPERATORS,

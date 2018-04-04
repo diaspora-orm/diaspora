@@ -6,9 +6,9 @@ import {
 	EntitySpawner,
 	Entity,
 	IRawEntityAttributes,
-} from './entityFactory';
+} from './entity/entityFactory';
 import { DiasporaStatic, IDataSourceRegistry } from './diaspora';
-import { Set } from './set';
+import { Set } from './entity/set';
 import { Validator } from './validator';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
@@ -147,8 +147,8 @@ const makeEntity = (
 };
 
 enum EDeleteMethod {
-	'deleteOne',
-	'deleteMany',
+	Single = 'deleteOne',
+	Multiple = 'deleteMany',
 }
 const doDelete = (methodName: EDeleteMethod, model: Model) => {
 	return (
@@ -511,7 +511,7 @@ export class Model {
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
-		return doDelete(EDeleteMethod.deleteOne, this)(
+		return doDelete(EDeleteMethod.Single, this)(
 			queryFind,
 			options,
 			dataSourceName
@@ -532,7 +532,7 @@ export class Model {
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
-		return doDelete(EDeleteMethod.deleteMany, this)(
+		return doDelete(EDeleteMethod.Multiple, this)(
 			queryFind,
 			options,
 			dataSourceName

@@ -1,15 +1,14 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
-import { EntityStateError } from './errors';
+import { EntityStateError } from '../errors';
 import {
 	AdapterEntity,
 	Adapter,
 	IRawAdapterEntityAttributes,
 	IIdHash,
-} from './adapters/base';
-import { ModelDescription, Model } from './model';
-import { deepFreeze } from './utils';
+} from '../adapters/base';
+import { ModelDescription, Model } from '../model';
 
 /**
  * @module EntityFactory
@@ -127,7 +126,7 @@ export abstract class Entity extends SequentialEvent {
 
 	private _dataSources: IDataSourceMap<AdapterEntity>;
 	public get dataSources() {
-		return deepFreeze(this._dataSources);
+		return this._dataSources;
 	}
 
 	public get ctor() {
@@ -173,7 +172,7 @@ export abstract class Entity extends SequentialEvent {
 
 		// ### Final validation
 		// Check keys provided in source
-		const sourceDModel = _.difference(_.keys(source), modelAttrsKeys);
+		const sourceDModel = _.difference(_.keys(this._attributes), modelAttrsKeys);
 		if (0 !== sourceDModel.length) {
 			// Later, add a criteria for schemaless models
 			throw new Error(
@@ -306,7 +305,7 @@ export abstract class Entity extends SequentialEvent {
 		// We have used data source, store it
 		this._lastDataSource = dataSource;
 		// Refresh data source's entity
-		this.dataSources.set(dataSource, dataSourceEntity);
+		this._dataSources.set(dataSource, dataSourceEntity);
 		// Set attributes from dataSourceEntity
 		if (dataSourceEntity) {
 			// Set the state

@@ -6,12 +6,11 @@ import _, {
 	LoDashExplicitArrayWrapper,
 } from 'lodash';
 
-import { Model } from './model';
+import { Model } from '../model';
 import { Entity, EntitySpawner, IRawEntityAttributes } from './entityFactory';
-import { Diaspora } from './diaspora';
-import { SetValidationError } from './errors';
-import * as Utils from './utils';
-import { logger } from './logger';
+import { SetValidationError } from '../errors';
+import * as Utils from '../utils';
+import { logger } from '../logger';
 
 /**
  * @module Set
@@ -62,7 +61,7 @@ async function wrapEventsAction(
 	);
 	await _allEmit('before');
 	await Promise.all(
-		this.entities
+		this.toChainable
 			.map(entity =>
 				(entity as any)[action](sourceName, {
 					skipEvents: true,
@@ -82,9 +81,9 @@ const setProxyProps = {
 		} else if (
 			'string' === typeof prop &&
 			prop.match(/^-?\d+$/) &&
-			target.entities.nth(parseInt(prop))
+			target.toChainable.nth(parseInt(prop))
 		) {
-			return target.entities.nth(parseInt(prop));
+			return target.toChainable.nth(parseInt(prop));
 		}
 	},
 	set(target: Set, prop: PropertyName, val: any) {
@@ -107,9 +106,12 @@ export class Set {
 	 *
 	 * @author Gerkin
 	 */
-	private _entities: LoDashExplicitArrayWrapper<Entity>;
+	private _entities: Entity[];
 	public get entities() {
 		return this._entities;
+	}
+	public get toChainable() {
+		return _.chain(this._entities);
 	}
 
 	/**
@@ -128,7 +130,8 @@ export class Set {
 	 * @author Gerkin
 	 */
 	public get length() {
-		return this.entities.size();
+		console.log('Calling length:', this.entities.length);
+		return this.entities.length;
 	}
 
 	/**
@@ -139,7 +142,7 @@ export class Set {
 	 */
 	constructor(model: Model, ...entities: (Entity | Entity[])[]) {
 		// Flatten arguments
-		const wrappedEntities = _.chain(entities).flatten();
+		const wrappedEntities = _.flatten(entities);
 		// Check if each entity is from the expected model
 		Set.checkEntitiesFromModel(wrappedEntities, model);
 
@@ -158,10 +161,7 @@ export class Set {
 	 * @param model    - Model expected to be the source of all entities.
 	 * @returns This function does not return anything.
 	 */
-	static checkEntitiesFromModel(
-		entities: LoDashExplicitArrayWrapper<Entity>,
-		model: Model
-	): void {
+	static checkEntitiesFromModel(entities: Entity[], model: Model): void {
 		entities.forEach((entity, index) => {
 			if ((entity.constructor as EntitySpawner).model !== model) {
 				throw new TypeError(
@@ -184,13 +184,13 @@ export class Set {
 	 * @see {@link EntityFactory.Entity#persist}
 	 */
 	async persist(sourceName: string): Promise<Set> {
-		const suffixes = this.entities
+		const suffixes = this.toChainable
 			.map(entity => ('orphan' === entity.state ? 'Create' : 'Update'))
 			.value();
 		const _allEmit = _.partial(allEmit, this.entities);
 		await _allEmit('Persist', 'before');
 		await _allEmit('Validate', 'before');
-		const validationResults = this.entities
+		const validationResults = this.toChainable
 			.map(entity => {
 				try {
 					entity.validate();
@@ -273,6 +273,6 @@ export class Set {
 	 * @returns POJO representation of set & children.
 	 */
 	toObject(): (IRawEntityAttributes | null)[] {
-		return this.entities.map(entity => entity.toObject()).value();
+		return this.toChainable.map(entity => entity.toObject()).value();
 	}
 }

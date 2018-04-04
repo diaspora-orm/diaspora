@@ -8,7 +8,7 @@ import {
 	QueryLanguage,
 	IRawAdapterEntityAttributes,
 } from '../base';
-import { IRawEntityAttributes, EntityUid } from '../../entityFactory';
+import { IRawEntityAttributes, EntityUid } from '../../entity/entityFactory';
 import { WebStorageEntity } from './entity';
 import * as Utils from '../../utils';
 

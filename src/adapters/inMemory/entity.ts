@@ -1,5 +1,5 @@
 import { AdapterEntity, Adapter } from '../base';
-import { IRawEntityAttributes } from '../../entityFactory';
+import { IRawEntityAttributes } from '../../entity/entityFactory';
 import { InMemoryAdapter } from '.';
 
 /**

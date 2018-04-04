@@ -9,7 +9,7 @@ import {
 	QueryLanguage,
 	IRawAdapterEntityAttributes,
 } from '../base';
-import { IRawEntityAttributes, EntityUid } from '../../entityFactory';
+import { IRawEntityAttributes, EntityUid } from '../../entity/entityFactory';
 import * as Utils from '../../utils';
 import { InMemoryEntity } from './entity';
 
@@ -98,7 +98,6 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		entity: IRawEntityAttributes
 	): Promise<IRawAdapterEntityAttributes | undefined> {
-		entity = _.cloneDeep(entity);
 		const storeTable = this.ensureCollectionExists(table);
 		const adapterEntityAttributes = InMemoryEntity.setId(
 			_.omitBy(entity, _.isUndefined),
@@ -107,7 +106,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 			Utils.generateUUID()
 		);
 		storeTable.items.push(adapterEntityAttributes);
-		return adapterEntityAttributes;
+		return _.cloneDeep(adapterEntityAttributes);
 	}
 
 	// -----

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { EntityUid, IRawEntityAttributes } from '../../entityFactory';
+import { EntityUid, IRawEntityAttributes } from '../../entity/entityFactory';
 import { Adapter } from '.';
 
 /**

@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { Adapter, QueryLanguage, IRawAdapterEntityAttributes } from '../base';
 import { WebApiEntity } from './entity';
-import { IRawEntityAttributes } from '../../entityFactory';
+import { IRawEntityAttributes } from '../../entity/entityFactory';
 import { DefaultQueryTransformerFactory } from './defaultQueryTransformer';
 import { logger } from '../../logger';
 
