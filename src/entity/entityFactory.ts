@@ -184,9 +184,8 @@ export abstract class Entity extends SequentialEvent {
 
 		// ### Generate attributes
 		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
-		this._attributes = model.validator.default(
-			_.cloneDeep(this.attributes || source)
-		);
+		const definitiveSource = this.attributes || source;
+		this._attributes = model.validator.default(_.cloneDeep(definitiveSource));
 
 		// ### Load events
 		_.forEach(modelDesc.lifecycleEvents, (eventFunctions, eventName) => {

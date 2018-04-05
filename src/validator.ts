@@ -8,7 +8,7 @@ import {
 	ObjectFieldDescriptor,
 	ValueFieldDescriptor,
 } from './model';
-import { Entity, IRawEntityAttributes } from './entityFactory';
+import { Entity, IRawEntityAttributes } from './entity/entityFactory';
 import { EntityValidationError } from './errors';
 import { getDefaultFunction } from './defaultFunctionStore';
 
@@ -538,11 +538,14 @@ export class Validator {
 		// Apply method `defaultField` on each field described
 		return _.defaults(
 			entity,
-			_.mapValues(this._modelAttributes, (fieldDesc, field) =>
-				this.defaultField(entity, new PathStack().pushProp(field), {
-					getProps: true,
-				})
-			)
+			_.chain(this._modelAttributes)
+				.mapValues((fieldDesc, field) =>
+					this.defaultField(entity, new PathStack().pushProp(field), {
+						getProps: true,
+					})
+				)
+				.omitBy(_.isUndefined)
+				.value()
 		);
 	}
 
@@ -582,9 +585,17 @@ export class Validator {
 		) {
 			return _.merge(
 				valOrBaseDefault,
-				_.mapValues(fieldDesc.attributes, (fieldDesc, key) => {
-					return this.defaultField(value, (keys as PathStack).clone().pushProp(key));
-				})
+				_.chain(fieldDesc.attributes)
+					.mapValues((fieldDesc, key) => {
+						const defaulted = this.defaultField(
+							value,
+							(keys as PathStack).clone().pushProp(key)
+						);
+						console.log({ defaulted });
+						return _.omitBy(defaulted, _.isNil);
+					})
+					.omitBy(_.isUndefined)
+					.value()
 			);
 		} else {
 			return valOrBaseDefault;

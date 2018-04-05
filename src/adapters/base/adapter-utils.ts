@@ -9,6 +9,10 @@ import {
 import { QueryLanguage } from './queryLanguage';
 import { Adapter } from './adapter';
 
+export interface Constructable<T> {
+	new (...args: any[]): T;
+}
+
 function getNum(fullMatch: string, sign: string, val: string): number;
 function getNum([fullMatch, sign, val]: string[]): number;
 function getNum(...params: (string | string[])[]) {

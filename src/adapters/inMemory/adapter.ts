@@ -13,13 +13,8 @@ import { IRawEntityAttributes, EntityUid } from '../../entity/entityFactory';
 import * as Utils from '../../utils';
 import { InMemoryEntity } from './entity';
 
-interface IDataStoreItem {
-	id: EntityUid;
-	idHash: { [key: string]: EntityUid };
-	[key: string]: any;
-}
 interface IDataStoreHash {
-	[key: string]: { items: IDataStoreItem[] };
+	[key: string]: { items: IRawAdapterEntityAttributes[] };
 }
 /**
  * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
@@ -128,9 +123,8 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const storeTable = this.ensureCollectionExists(table);
-		const matches = _.filter(
-			storeTable.items,
-			_.partial(this.matchEntity, queryFind)
+		const matches = _.filter(storeTable.items, item =>
+			InMemoryAdapter.matches(item, queryFind)
 		);
 		const reducedMatches = Utils.applyOptionsToSet(matches, options);
 		return _.first(reducedMatches);

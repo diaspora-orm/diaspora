@@ -2,18 +2,25 @@ import * as _ from 'lodash';
 
 import { Diaspora } from '../../src/diaspora';
 import { Model } from '../../src/model';
-import { Entity, IRawEntityAttributes } from '../../src/entityFactory';
+import {
+	Entity,
+	IRawEntityAttributes,
+	EntityUid,
+} from '../../src/entity/entityFactory';
 import '../utils';
 import * as Bluebird from 'bluebird';
 import { EntityStateError } from '../../src/errors';
+import { InMemoryAdapter, InMemoryEntity } from '../../src/adapters/inMemory';
+import { IRawAdapterEntityAttributes } from '../../src/adapters/base';
 
 let testModel: Model;
 let testedEntity: Entity;
 const MODEL_NAME = 'testModel';
 const SOURCE = 'inMemory-simple';
+let adapter: InMemoryAdapter;
 
 beforeAll(() => {
-	Diaspora.createNamedDataSource(SOURCE, 'inMemory');
+	adapter = Diaspora.createNamedDataSource(SOURCE, 'inMemory');
 	testModel = Diaspora.declareModel(MODEL_NAME, {
 		sources: [SOURCE],
 		//schema:     false,
@@ -23,6 +30,22 @@ beforeAll(() => {
 			},
 		},
 	});
+});
+beforeEach(() => {
+	const setId: (
+		attributes: IRawEntityAttributes,
+		adapter: InMemoryAdapter,
+		propName?: string,
+		id?: EntityUid
+	) => IRawAdapterEntityAttributes = (InMemoryEntity as any).setId;
+	const store = (adapter as any).store[MODEL_NAME] as {
+		items: IRawAdapterEntityAttributes[];
+	};
+	store.items = [];
+	_.forEach([{ foo: 'bar' }, { foo: 'baz' }, { foo: undefined }], entity => {
+		store.items.push(setId(entity, adapter));
+	});
+	console.log(store.items);
 });
 it('Should create a model', () => {
 	expect(testModel).toBeInstanceOf(Model);
@@ -52,23 +75,23 @@ it('Should be able to create multiple entities.', () => {
 		undefined,
 	];
 	const entities = testModel.spawnMany(objects);
-	expect(entities)
-		.toBeAnEntitySet(testModel, objects, true)
-		.that.have.lengthOf(2);
+	expect(entities).toBeAnEntitySet(testModel, objects, true);
+	expect(entities).toHaveLength(2);
 });
 describe('Should be able to use model methods to find, update, delete & create', () => {
 	describe('- Create instances', () => {
 		it('Create a single instance', () => {
-			expect(testModel).to.respondTo('insert');
+			expect(testModel).toImplementMethod('insert');
 			const object = {
 				foo: 'bar',
 			};
 			return testModel.insert(object).then(newEntity => {
+				console.log(newEntity);
 				expect(newEntity).toBeAnEntity(testModel, object, SOURCE);
 			});
 		});
 		it('Create multiple instances', () => {
-			expect(testModel).to.respondTo('insertMany');
+			expect(testModel).toImplementMethod('insertMany');
 			const objects = [
 				{
 					foo: 'baz',
@@ -82,15 +105,17 @@ describe('Should be able to use model methods to find, update, delete & create',
 				},
 			];
 			return testModel.insertMany(objects).then(newEntities => {
-				expect(newEntities)
-					.toBeAnEntitySet(testModel, objects, SOURCE)
-					.that.have.lengthOf(4);
+				expect(newEntities).toBeAnEntitySet(testModel, objects, SOURCE);
+				console.log('Before cmi length', newEntities.length);
+				expect(newEntities).toHaveLength(4);
+				console.log('Adter cmi length');
 			});
 		});
 	});
 	describe('- Find instances', () => {
 		const checkFind = async (query, many = true) => {
 			const foundEntities = await testModel[many ? 'findMany' : 'find'](query);
+			//console.log(foundEntities.attributes || foundEntities.entities);
 			if (many) {
 				expect(foundEntities).toBeAnEntitySet(testModel, query, SOURCE);
 			} else if (!_.isNil(foundEntities)) {
@@ -98,7 +123,7 @@ describe('Should be able to use model methods to find, update, delete & create',
 			}
 		};
 		it('Find a single instance', () => {
-			expect(testModel).to.respondTo('find');
+			expect(testModel).toImplementMethod('find');
 			return Bluebird.mapSeries(
 				[
 					{
@@ -115,7 +140,7 @@ describe('Should be able to use model methods to find, update, delete & create',
 			);
 		});
 		it('Find multiple instances', () => {
-			expect(testModel).to.respondTo('findMany');
+			expect(testModel).toImplementMethod('findMany');
 			return Bluebird.mapSeries(
 				[
 					{
@@ -156,95 +181,79 @@ describe('Should be able to use model methods to find, update, delete & create',
 				query,
 				update
 			);
+			console.log({ query, update, many, updatedEntities });
 			if (many) {
 				expect(updatedEntities).toBeAnEntitySet(testModel, update, SOURCE);
 			} else if (!_.isUndefined(updatedEntities)) {
 				expect(updatedEntities).toBeAnEntity(testModel, update, SOURCE);
 			}
+			return updatedEntities;
 		};
-		it('Update a single instance', () => {
-			expect(testModel).to.respondTo('update');
-			return Promise.resolve()
-				.then(() =>
-					checkUpdate(
-						{
-							foo: undefined,
-						},
-						{
-							foo: 'qux',
-						},
-						false
-					)
-				)
-				.then(() =>
-					checkUpdate(
-						{
-							foo: 'baz',
-						},
-						{
-							foo: 'qux',
-						},
-						false
-					)
-				)
-				.then(() =>
-					checkUpdate(
-						{
-							foo: 'bar',
-						},
-						{
-							foo: undefined,
-						},
-						false
-					)
-				);
+		it('Update a single instance', async () => {
+			expect(testModel).toImplementMethod('update');
+			await checkUpdate(
+				{
+					foo: undefined,
+				},
+				{
+					foo: 'qux',
+				},
+				false
+			);
+			await checkUpdate(
+				{
+					foo: 'baz',
+				},
+				{
+					foo: 'qux',
+				},
+				false
+			);
+			await checkUpdate(
+				{
+					foo: 'bar',
+				},
+				{
+					foo: undefined,
+				},
+				false
+			);
 		});
-		it('Update multiple instances', () => {
+		it('Update multiple instances', async () => {
 			//process.exit()
-			expect(testModel).to.respondTo('updateMany');
-			return Promise.resolve()
-				.then(() =>
-					checkUpdate(
-						{
-							foo: undefined,
-						},
-						{
-							foo: 'bar',
-						},
-						true
-					).then(foundEntities => {
-						expect(foundEntities).toHaveLength(2);
-						return Promise.resolve();
-					})
-				)
-				.then(() =>
-					checkUpdate(
-						{
-							foo: 'baz',
-						},
-						{
-							foo: undefined,
-						},
-						true
-					).then(foundEntities => {
-						expect(foundEntities).toHaveLength(1);
-						return Promise.resolve();
-					})
-				)
-				.then(() =>
-					checkUpdate(
-						{
-							foo: 'bat',
-						},
-						{
-							foo: 'twy',
-						},
-						true
-					).then(foundEntities => {
-						expect(foundEntities).toHaveLength(0);
-						return Promise.resolve();
-					})
-				);
+			expect(testModel).toImplementMethod('updateMany');
+			const foundEntities = await checkUpdate(
+				{
+					foo: undefined,
+				},
+				{
+					foo: 'bar',
+				},
+				true
+			);
+			expect(foundEntities).toHaveLength(2);
+
+			const foundEntities2 = await checkUpdate(
+				{
+					foo: 'baz',
+				},
+				{
+					foo: undefined,
+				},
+				true
+			);
+			expect(foundEntities2).toHaveLength(1);
+
+			const foundEntities3 = await checkUpdate(
+				{
+					foo: 'bat',
+				},
+				{
+					foo: 'twy',
+				},
+				true
+			);
+			expect(foundEntities3).toHaveLength(0);
 		});
 	});
 	describe('- Delete instances', () => {
@@ -269,14 +278,14 @@ describe('Should be able to use model methods to find, update, delete & create',
 				})
 				.then(result => {
 					if (many || 0 === result.before) {
-						expect(result.after).to.be.equal(0);
+						expect(result.after).toEqual(0);
 					} else {
-						expect(result.after).to.be.equal(result.before - 1);
+						expect(result.after).toEqual(result.before - 1);
 					}
 				});
 		};
 		it('Delete a single instance', () => {
-			expect(testModel).to.respondTo('delete');
+			expect(testModel).toImplementMethod('delete');
 			return Promise.resolve()
 				.then(() =>
 					checkDestroy(
@@ -296,7 +305,7 @@ describe('Should be able to use model methods to find, update, delete & create',
 				);
 		});
 		it('Delete multiple instances', () => {
-			expect(testModel).to.respondTo('deleteMany');
+			expect(testModel).toImplementMethod('deleteMany');
 			return Promise.resolve()
 				.then(() =>
 					checkDestroy(
@@ -369,7 +378,7 @@ describe('Should be able to persist, fetch & delete an entity of the defined mod
 			foo: 'bar',
 		};
 		return testModel.find(object).then(entity => {
-			expect(entity).to.respondTo('fetch');
+			expect(entity).toImplementMethod('fetch');
 			expect(entity).toBeAnEntity(testModel, object, SOURCE);
 			entity.attributes.foo = 'baz';
 			expect(entity).toBeAnEntity(
@@ -391,7 +400,8 @@ describe('Should be able to persist, fetch & delete an entity of the defined mod
 			foo: 'bar',
 		};
 		return testModel.find(object).then(entity => {
-			expect(entity).to.respondTo('destroy');
+			console.log('Fetch before destroy:', entity);
+			expect(entity).toImplementMethod('destroy');
 			expect(entity).toBeAnEntity(testModel, object, SOURCE);
 			const retPromise = entity.destroy();
 			expect(entity.state).toEqual('syncing');

@@ -130,7 +130,6 @@ export class Set {
 	 * @author Gerkin
 	 */
 	public get length() {
-		console.log('Calling length:', this.entities.length);
 		return this.entities.length;
 	}
 

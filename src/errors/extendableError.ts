@@ -20,6 +20,13 @@ export class ExtendableError extends Error {
 		} else {
 			this.stack = new Error(message).stack;
 		}
-		Object.setPrototypeOf(this, ExtendableError.prototype);
+		// restore prototype chain
+		const actualProto = new.target.prototype;
+
+		if (Object.setPrototypeOf) {
+			Object.setPrototypeOf(this, actualProto);
+		} else {
+			(this as any).__proto__ = new.target.prototype;
+		}
 	}
 }

@@ -10,11 +10,11 @@ import {
 import { IRawEntityAttributes } from '../../entity/entityFactory';
 import {
 	remapIO,
-	OPERATORS,
 	CANONICAL_OPERATORS,
 	QUERY_OPTIONS_TRANSFORMS,
 	iterateLimit,
 	IEnumeratedHash,
+	Constructable,
 } from './adapter-utils';
 import { logger } from '../../logger';
 
@@ -27,7 +27,8 @@ export enum EAdapterState {
 	PREPARING = 'preparing',
 }
 
-export interface IAdapterCtr<T extends AdapterEntity = AdapterEntity> {
+export interface IAdapterCtr<T extends AdapterEntity = AdapterEntity>
+	extends Constructable<IAdapterCtr> {
 	new (dataSourceName: string, ...args: any[]): Adapter;
 }
 
@@ -203,35 +204,6 @@ export abstract class Adapter<
 		query: IRawEntityAttributes
 	): IRawEntityAttributes {
 		return remapIO(this, tableName, query, false);
-	}
-
-	/**
-	 * Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function.
-	 *
-	 * @author gerkin
-	 */
-	matchEntity(
-		query: QueryLanguage.SelectQuery,
-		entity: IRawEntityAttributes
-	): boolean {
-		// Iterate over every query keys to check each predicates
-		const matchResult = _.every(_.toPairs(query), ([key, desc]) => {
-			if (_.isObject(desc)) {
-				const entityVal = entity[key];
-				// Iterate over each matchers in the query for this attribute
-				return _.every(desc, (val, operationName) => {
-					// Try to execute the rule's matcher if any
-					const operationFunction = OPERATORS[operationName];
-					if (operationFunction) {
-						return operationFunction(entityVal, val);
-					} else {
-						return false;
-					}
-				});
-			}
-			return false;
-		});
-		return matchResult;
 	}
 
 	/**

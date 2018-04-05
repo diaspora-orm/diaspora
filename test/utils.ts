@@ -3,9 +3,11 @@ import { resolve } from 'path';
 import * as chalk from 'chalk';
 import { Adapter, AdapterEntity } from '../src/adapters/base';
 import { Model } from '../src/model';
-import { IRawEntityAttributes, Entity } from '../src/entityFactory';
-import { Set as EntitySet } from '../src/set';
+import { IRawEntityAttributes, Entity } from '../src/entity/entityFactory';
+import { Set as EntitySet } from '../src/entity/set';
+import { Diaspora } from '../src/diaspora';
 
+process.on('unhandledRejection', r => console.log(r));
 const projectPath = resolve('../');
 let config;
 try {
@@ -60,6 +62,7 @@ const check = (
 	props: IRawEntityAttributes = {},
 	orphan?: boolean | string
 ) => {
+	expect(entity).toBeInstanceOf(Entity);
 	expect(entity.ctor.model).toEqual(model);
 	const dataSourceName = 'string' === typeof orphan ? orphan : undefined;
 	const orphanState = dataSourceName ? false : orphan;
@@ -81,13 +84,17 @@ const check = (
 		expect(entity.attributes).not.toHaveProperty('id');
 		expect(entity.attributes).not.toHaveProperty('idHash');
 	} else if (null !== orphanState) {
-		if (dataSourceName) {
-			expect(entity.lastDataSource).toEqual(dataSourceName);
-		} else {
-			expect(entity.lastDataSource).not.toEqual(null);
-		}
 		const lds = entity.lastDataSource;
+		if (dataSourceName) {
+			expect(lds).toEqual(Diaspora.dataSources[dataSourceName]);
+		} else {
+			expect(lds).not.toEqual(null);
+		}
+
+		// Check dataSources weakmap
+		expect(entity.dataSources).toBeInstanceOf(WeakMap);
 		expect(entity.dataSources.get(lds)).toBeAnAdapterEntity(lds);
+
 		expect(entity.attributes).toBeInstanceOf(Object);
 		expect(entity.attributes).not.toHaveProperty('id');
 		expect(entity.attributes).not.toHaveProperty('idHash');
@@ -99,8 +106,7 @@ const check = (
 	expect(entity.attributes).toMatchWithUndefined(props);
 };
 const hasOwnMethod = (received: any, methodName: string) => {
-	console.log({ received, methodName, method: received[methodName] });
-	return received && _.isFunction(received[methodName]);
+	return !!(received && _.isFunction(received[methodName]));
 };
 
 expect.extend({
@@ -150,20 +156,28 @@ expect.extend({
 		};
 	},
 	toBeAnEntitySet(
-		receivedArray: any,
+		receivedSet: any,
 		expectedModel: Model,
 		expectedAttributesArray: IRawEntityAttributes | IRawEntityAttributes[],
 		expectedOrphan?: boolean | string
 	) {
-		expect(receivedArray).toBeInstanceOf(EntitySet);
+		expect(receivedSet).toBeInstanceOf(EntitySet);
+		expect(receivedSet).toHaveProperty('length');
+		if (_.isArray(expectedAttributesArray)) {
+			expect(receivedSet).toHaveLength(expectedAttributesArray.length);
+		}
 		_.forEach(['persist', 'fetch', 'destroy', 'toObject'], word => {
-			expect(receivedArray).toImplementMethod(word);
+			expect(receivedSet).toImplementMethod(word);
 		});
-		_.forEach(receivedArray, (received, index) => {
+		receivedSet.forEach((received, index) => {
 			const expectedAttributes = _.isArray(expectedAttributesArray)
 				? expectedAttributesArray[index]
 				: expectedAttributesArray;
-			check(received, expectedModel, expectedAttributes, expectedOrphan);
+			expect(received).toBeAnEntity(
+				expectedModel,
+				expectedAttributes,
+				expectedOrphan
+			);
 		});
 		return {
 			message: () => '',
@@ -246,8 +260,8 @@ declare global {
 	namespace jest {
 		interface Matchers<R> {
 			// Method implementation
-			toImplementMethod(methodName: string);
-			toImplementOneOfMethods(methodNames: string[]);
+			toImplementMethod(methodName: string): void;
+			toImplementOneOfMethods(methodNames: string[]): void;
 			// Matcher
 			toMatchWithUndefined(expected: any);
 			// Adapter Entity
@@ -261,12 +275,12 @@ declare global {
 				expectedModel: Model,
 				expectedAttributes: IRawEntityAttributes,
 				expectedOrphan?: boolean | string
-			);
+			): void;
 			toBeAnEntitySet(
 				expectedModel: Model,
 				expectedAttributesArray: IRawEntityAttributes | IRawEntityAttributes[],
 				expectedOrphan?: boolean | string
-			);
+			): void;
 		}
 	}
 }
