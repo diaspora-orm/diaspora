@@ -11,15 +11,24 @@ export class ExtendableError extends Error {
 	 * @param message   - Message of this error.
 	 * @param errorArgs - Arguments to transfer to parent Error.
 	 */
-	constructor(message: string, ...errorArgs: any[]) {
+	constructor(message?: string, ...errorArgs: any[]) {
 		super(message);
 		this.name = this.constructor.name;
-		this.message = message;
+		if (message) {
+			this.message = message;
+		}
 		if ('function' === typeof Error.captureStackTrace) {
-			Error.captureStackTrace(this, this.constructor);
+			Error.captureStackTrace(this, new.target);
 		} else {
 			this.stack = new Error(message).stack;
 		}
-		Object.setPrototypeOf(this, ExtendableError.prototype);
+		// restore prototype chain
+		const actualProto = new.target.prototype;
+
+		if (Object.setPrototypeOf) {
+			Object.setPrototypeOf(this, actualProto);
+		} else {
+			(this as any).__proto__ = new.target.prototype;
+		}
 	}
 }
