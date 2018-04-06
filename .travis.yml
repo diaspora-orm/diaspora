@@ -33,7 +33,7 @@ notifications:
     rooms:
       - altenter-project:Pc8sMyCuHNPBCg1TOw0weD9S#tech
 before_install:
-  - rm npm-shrinkwrap.json
+  - rm -f npm-shrinkwrap.json
 before_script:
   - |
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
