@@ -130,7 +130,6 @@ export class Set {
 	 * @author Gerkin
 	 */
 	public get length() {
-		console.log('Calling length:', this.entities.length);
 		return this.entities.length;
 	}
 
@@ -183,7 +182,7 @@ export class Set {
 	 * @returns Promise resolved once all items are persisted.
 	 * @see {@link EntityFactory.Entity#persist}
 	 */
-	async persist(sourceName: string): Promise<Set> {
+	async persist(sourceName?: string): Promise<Set> {
 		const suffixes = this.toChainable
 			.map(entity => ('orphan' === entity.state ? 'Create' : 'Update'))
 			.value();
@@ -232,7 +231,7 @@ export class Set {
 	 * @returns Promise resolved once all items are reloaded.
 	 * @see {@link EntityFactory.Entity#fetch}
 	 */
-	async fetch(sourceName: string): Promise<Set> {
+	async fetch(sourceName?: string): Promise<Set> {
 		await wrapEventsAction.call(this, sourceName, 'fetch', 'Fetch');
 		return this;
 	}
@@ -247,7 +246,7 @@ export class Set {
 	 * @returns Promise resolved once all items are destroyed.
 	 * @see {@link EntityFactory.Entity#destroy}
 	 */
-	async destroy(sourceName: string): Promise<Set> {
+	async destroy(sourceName?: string): Promise<Set> {
 		await wrapEventsAction.call(this, sourceName, 'destroy', 'Destroy');
 		return this;
 	}

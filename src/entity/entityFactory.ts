@@ -184,9 +184,8 @@ export abstract class Entity extends SequentialEvent {
 
 		// ### Generate attributes
 		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
-		this._attributes = model.validator.default(
-			_.cloneDeep(this.attributes || source)
-		);
+		const definitiveSource = this.attributes || source;
+		this._attributes = model.validator.default(_.cloneDeep(definitiveSource));
 
 		// ### Load events
 		_.forEach(modelDesc.lifecycleEvents, (eventFunctions, eventName) => {
@@ -380,9 +379,8 @@ export abstract class Entity extends SequentialEvent {
 	}
 
 	private async persistCreate(dataSource: Adapter, table: string) {
-		const attrs = this.toObject();
-		if (attrs) {
-			return (await dataSource.insertOne(table, attrs)) as any;
+		if (this.attributes) {
+			return (await dataSource.insertOne(table, this.attributes)) as any;
 		} else {
 			return undefined;
 		}
@@ -420,7 +418,7 @@ export abstract class Entity extends SequentialEvent {
 		);
 		const finalSourceName = dataSource.name;
 		// Generate events args
-		const eventsArgs = [finalSourceName];
+		const eventsArgs = [finalSourceName, this.serialize()];
 		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 
 		// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
@@ -435,7 +433,8 @@ export abstract class Entity extends SequentialEvent {
 		// Depending on state, we are going to perform a different operation
 		const operation =
 			'orphan' === beforeState ? this.persistCreate : this.persistUpdate;
-		const dataStoreEntity: AdapterEntity | undefined = await operation(
+		const dataStoreEntity: AdapterEntity | undefined = await operation.call(
+			this,
 			dataSource,
 			table
 		);
@@ -467,7 +466,7 @@ export abstract class Entity extends SequentialEvent {
 		const dataSource = (this.constructor as EntitySpawner).model.getDataSource(
 			sourceName
 		);
-		const eventsArgs = [dataSource.name, this.ctor.serialize(this.attributes)];
+		const eventsArgs = [dataSource.name, this.serialize()];
 		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 
 		await _maybeEmit('beforeFetch');
@@ -501,7 +500,7 @@ export abstract class Entity extends SequentialEvent {
 		this._state = EEntityState.SYNCING;
 		// Generate events args
 		const dataSource = this.ctor.model.getDataSource(sourceName);
-		const eventsArgs = [dataSource.name];
+		const eventsArgs = [dataSource.name, this.serialize()];
 		const _maybeEmit = _.partial(maybeEmit, this, options, eventsArgs);
 
 		await _maybeEmit('beforeDestroy');
