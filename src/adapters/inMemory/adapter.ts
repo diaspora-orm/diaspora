@@ -13,13 +13,8 @@ import { IRawEntityAttributes, EntityUid } from '../../entity/entityFactory';
 import * as Utils from '../../utils';
 import { InMemoryEntity } from './entity';
 
-interface IDataStoreItem {
-	id: EntityUid;
-	idHash: { [key: string]: EntityUid };
-	[key: string]: any;
-}
 interface IDataStoreHash {
-	[key: string]: { items: IDataStoreItem[] };
+	[key: string]: { items: IRawAdapterEntityAttributes[] };
 }
 /**
  * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
@@ -101,9 +96,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		const storeTable = this.ensureCollectionExists(table);
 		const adapterEntityAttributes = InMemoryEntity.setId(
 			_.omitBy(entity, _.isUndefined),
-			this,
-			undefined,
-			Utils.generateUUID()
+			this
 		);
 		storeTable.items.push(adapterEntityAttributes);
 		return _.cloneDeep(adapterEntityAttributes);
@@ -128,9 +121,8 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const storeTable = this.ensureCollectionExists(table);
-		const matches = _.filter(
-			storeTable.items,
-			_.partial(this.matchEntity, queryFind)
+		const matches = _.filter(storeTable.items, item =>
+			InMemoryEntity.matches(item, queryFind)
 		);
 		const reducedMatches = Utils.applyOptionsToSet(matches, options);
 		return _.first(reducedMatches);
@@ -152,9 +144,8 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
 		const storeTable = this.ensureCollectionExists(table);
-		const matches = _.filter(
-			storeTable.items,
-			_.partial(this.matchEntity, queryFind)
+		const matches = _.filter(storeTable.items, item =>
+			InMemoryEntity.matches(item, queryFind)
 		);
 		const reducedMatches = Utils.applyOptionsToSet(matches, options);
 		return reducedMatches || [];
@@ -254,7 +245,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		if (!_.isNil(entityToDelete)) {
 			storeTable.items = _.reject(
 				storeTable.items,
-				entity => entity.id === entityToDelete.idHash[this.name]
+				entity => entity.id === entityToDelete.id
 			);
 		}
 	}
@@ -275,14 +266,10 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<void> {
 		const storeTable = this.ensureCollectionExists(table);
-		return this.findMany(table, queryFind, options).then(entitiesToDelete => {
-			const entitiesIds = _.map(entitiesToDelete, entity =>
-				_.get(entity, `idHash.${this.name}`)
-			);
-			storeTable.items = _.reject(storeTable.items, entity => {
-				return _.includes(entitiesIds, entity.id);
-			});
-			return Promise.resolve();
-		});
+		const entitiesToDelete = await this.findMany(table, queryFind, options);
+		const entitiesIds = _.map(entitiesToDelete, entity => entity.id);
+		storeTable.items = _.reject(storeTable.items, entity =>
+			_.includes(entitiesIds, entity.id)
+		);
 	}
 }

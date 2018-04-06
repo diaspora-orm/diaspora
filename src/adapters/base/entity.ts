@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { EntityUid, IRawEntityAttributes } from '../../entity/entityFactory';
-import { Adapter } from '.';
+import { Adapter, QueryLanguage } from '.';
 
 /**
  * @namespace DataStoreEntities
@@ -31,7 +31,7 @@ export abstract class AdapterEntity implements IAdapterEntity {
 	public get attributes() {
 		return this._attributes;
 	}
-	private _attributes: IRawAdapterEntityAttributes;
+	protected _attributes: IRawAdapterEntityAttributes;
 	public readonly dataSource: Adapter<AdapterEntity>;
 
 	/**
@@ -57,12 +57,7 @@ export abstract class AdapterEntity implements IAdapterEntity {
 		this.dataSource = dataSource;
 	}
 
-	/**
-	 * Refresh the `idHash` with current adapter's `id` injected.
-	 *
-	 * @author gerkin
-	 */
-	setId(
+	protected setId(
 		adapter: Adapter,
 		propName: string = 'id',
 		id: EntityUid = this.attributes.id
@@ -76,7 +71,7 @@ export abstract class AdapterEntity implements IAdapterEntity {
 		return this;
 	}
 
-	static setId(
+	public static setId(
 		attributes: IRawEntityAttributes,
 		adapter: Adapter,
 		propName: string = 'id',
@@ -89,6 +84,27 @@ export abstract class AdapterEntity implements IAdapterEntity {
 			},
 		});
 		return adapterEntityAttributes;
+	}
+
+	/**
+	 * Is implemented only by decorator
+	 *
+	 * @param query Query to match entity against
+	 */
+	matches(query: QueryLanguage.SelectQuery): boolean {
+		return false;
+	}
+
+	/**
+	 * Is implemented only by decorator
+	 *
+	 * @param query Query to match entity against
+	 */
+	static matches(
+		attributes: IRawAdapterEntityAttributes,
+		query: QueryLanguage.SelectQuery
+	): boolean {
+		return false;
 	}
 
 	/**

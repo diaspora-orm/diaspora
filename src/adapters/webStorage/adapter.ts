@@ -236,7 +236,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 				return true;
 			}
 			const item = JSON.parse(itemInWebStorage);
-			if (this.matchEntity(queryFind, item)) {
+			if (WebStorageEntity.matches(item, queryFind)) {
 				matched++;
 				// If we matched enough items
 				if (matched > options.skip) {
