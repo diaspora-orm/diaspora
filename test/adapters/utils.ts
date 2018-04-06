@@ -4,6 +4,7 @@ import { Adapter, AdapterEntity } from '../../src/adapters/base';
 import { Diaspora } from '../../src/diaspora';
 
 import { dataSources, getStyle } from '../utils';
+import { InMemoryEntity } from '../../src/adapters/inMemory';
 
 const getDataSourceLabel = name => {
 	return `${name}Adapter`;
@@ -208,7 +209,7 @@ export const checkInputFiltering = (adapter: Adapter) => {
 			});
 		});
 		describe('Check "matchEntity"', () => {
-			const me = adapter.matchEntity;
+			const me = (query, obj) => InMemoryEntity.matches(obj, query);
 			it('Empty query', () => {
 				expect(me({}, { foo: 'bar' })).toBeTruthy;
 			});
