@@ -5,12 +5,12 @@ import {
 	EAdapterState,
 	IRemapsHash,
 	IFiltersHash,
-	QueryLanguage,
 	IRawAdapterEntityAttributes,
 } from '../base';
-import { IRawEntityAttributes, EntityUid } from '../../entity/entityFactory';
+import { IRawEntityAttributes, EntityUid } from '../../entities/entityFactory';
 import { WebStorageEntity } from './entity';
 import * as Utils from '../../utils';
+import { QueryLanguage } from '../../types/queryLanguage';
 
 export interface IWebStorageAdapterConfig {
 	/**

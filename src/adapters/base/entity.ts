@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 
-import { EntityUid, IRawEntityAttributes } from '../../entity/entityFactory';
-import { Adapter, QueryLanguage } from '.';
+import { EntityUid, IRawEntityAttributes } from '../../entities/entityFactory';
+import { Adapter } from './adapter';
+import { QueryLanguage } from '../../types/queryLanguage';
 
 export interface IIdHash {
 	[key: string]: EntityUid;

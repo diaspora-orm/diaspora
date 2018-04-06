@@ -9,7 +9,8 @@ import {
 	checkSpawnedAdapter,
 	checkEachStandardMethods,
 } from './utils';
-import { AdapterEntity, Adapter, QueryLanguage } from '../../src/adapters/base';
+import { AdapterEntity, Adapter } from '../../src/adapters/base';
+import QueryLanguage from '../../src/types/queryLanguage';
 
 const ADAPTER_LABEL = 'webApi';
 const adapterConfig = getConfig( ADAPTER_LABEL ) as IWebApiAdapterConfig;

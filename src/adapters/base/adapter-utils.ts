@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
 import { AdapterEntity, IRawAdapterEntityAttributes } from './entity';
-import { QueryLanguage } from './queryLanguage';
 import { Adapter } from './adapter';
+import { QueryLanguage } from '../../types/queryLanguage';
 
 export interface Constructable<T> {
 	new ( ...args: any[] ): T;

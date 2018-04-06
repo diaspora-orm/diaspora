@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
-import { AdapterEntity, QueryLanguage, IRawAdapterEntityAttributes } from '.';
-import { IRawEntityAttributes } from '../../entity/entityFactory';
+import { AdapterEntity, IRawAdapterEntityAttributes } from '.';
+import { IRawEntityAttributes } from '../../entities/entityFactory';
 import {
 	remapIO,
 	CANONICAL_OPERATORS,
@@ -12,6 +12,7 @@ import {
 	Constructable,
 } from './adapter-utils';
 import { logger } from '../../logger';
+import { QueryLanguage } from '../../types/queryLanguage';
 
 export interface IRemapsHash extends IEnumeratedHash<any> {}
 export interface IFiltersHash extends IEnumeratedHash<any> {}

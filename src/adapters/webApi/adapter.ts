@@ -1,10 +1,11 @@
 import * as _ from 'lodash';
 
-import { Adapter, QueryLanguage, IRawAdapterEntityAttributes } from '../base';
+import { Adapter, IRawAdapterEntityAttributes } from '../base';
 import { WebApiEntity } from './entity';
-import { IRawEntityAttributes } from '../../entity/entityFactory';
+import { IRawEntityAttributes } from '../../entities/entityFactory';
 import { DefaultQueryTransformerFactory } from './defaultQueryTransformer';
 import { logger } from '../../logger';
+import { QueryLanguage } from '../../types/queryLanguage';
 
 interface IXhrResponse extends XMLHttpRequest {
 	response: {

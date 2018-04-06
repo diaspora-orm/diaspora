@@ -3,15 +3,16 @@ import * as _ from 'lodash';
 import {
 	Adapter,
 	AdapterEntity,
-	QueryLanguage,
 	IAdapterCtr,
 } from './adapters/base';
-import { IRawEntityAttributes } from './entity/entityFactory';
-import { Model, ModelDescriptionRaw } from './model';
-import { logger } from './logger';
+import { IRawEntityAttributes } from './entities/entityFactory';
+import { Model } from './model';
+import { logger, ILoggerInterface } from './logger';
 import { InMemoryAdapter } from './adapters/inMemory';
 import { WebApiAdapter } from './adapters/webApi';
 import { WebStorageAdapter } from './adapters/webStorage';
+import { ModelDescriptionRaw } from './types/modelDescription';
+import { QueryLanguage } from './types/queryLanguage';
 
 interface IAdapterRegistry {
 	[key: string]: IAdapterCtr;
@@ -54,7 +55,7 @@ export class DiasporaStatic {
 	};
 
 	/**
-	 * Logger used by Diaspora and its adapters. You can use this property to configure winston. On brower environment, this is replaced by a reference to global {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/console Console}.
+	 * Logger used by Diaspora and its adapters.
 	 *
 	 * @author gerkin
 	 */
@@ -62,6 +63,11 @@ export class DiasporaStatic {
 		return logger;
 	}
 
+	/**
+	 * Returns a copy of available data sources. Data sources are adapters already instanciated & registered in Diaspora.
+	 *
+	 * @author gerkin
+	 */
 	public get dataSources() {
 		return _.assign( {}, this._dataSources );
 	}
@@ -90,6 +96,15 @@ export class DiasporaStatic {
 	 */
 	private readonly models: IModelRegistry = {};
 
+	/**
+	 * Factory function that returns a function casting object or adapter entity to adapter entity of the factory's adapter & table. 
+	 * 
+	 * @author gerkin
+	 * @param   adapter - Adapter that will generate entities in the factored function.
+	 * @param   table   - Name of the table that owns those entities. It is used for remapping.
+	 * @returns Factored function to use for cast.
+	 * @see TODO Remapping
+	 */
 	private static ensureAllEntities( adapter: Adapter, table: string ) {
 		// Filter our results
 		const filterResults = ( entity: AdapterEntity | object ): AdapterEntity => {
@@ -150,6 +165,14 @@ export class DiasporaStatic {
 		}
 	}
 
+	/**
+	 * Factory function that expose the configured input remapping function
+	 * 
+	 * @author gerkin
+	 * @param   adapter - Adapter that will generate entities in the factored function.
+	 * @param   table   - Name of the table that owns those entities. It is used for remapping.
+	 * @returns Factored function that remaps the provided query or attributes
+	 */
 	private static getRemapFunction( adapter: Adapter, table: string ) {
 		return ( query: IRawEntityAttributes ) => {
 			return adapter.remapInput( table, query );

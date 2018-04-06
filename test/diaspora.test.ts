@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 
 import { importTest, getStyle } from './utils';
 import { Diaspora } from '../src/diaspora';
-import { FieldDescriptor } from '../src/model';
 import { Validator } from '../src/validator';
+import { FieldDescriptor } from '../src/types/modelDescription';
 
 const defaultCheck = (
 	entity: any,

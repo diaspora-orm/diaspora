@@ -6,7 +6,7 @@ import {
 	Entity,
 	IRawEntityAttributes,
 	EntityUid,
-} from '../../src/entity/entityFactory';
+} from '../../src/entities/entityFactory';
 import * as Bluebird from 'bluebird';
 import { InMemoryAdapter, InMemoryEntity } from '../../src/adapters/inMemory';
 import { IRawAdapterEntityAttributes } from '../../src/adapters/base';

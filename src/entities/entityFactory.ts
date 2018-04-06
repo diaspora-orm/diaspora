@@ -8,7 +8,8 @@ import {
 	IRawAdapterEntityAttributes,
 	IIdHash,
 } from '../adapters/base';
-import { ModelDescription, Model } from '../model';
+import { Model } from '../model';
+import { ModelDescription } from '../types/modelDescription';
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 

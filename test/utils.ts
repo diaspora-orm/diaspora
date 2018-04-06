@@ -3,8 +3,8 @@ import { resolve } from 'path';
 import * as chalk from 'chalk';
 import { Adapter, AdapterEntity } from '../src/adapters/base';
 import { Model } from '../src/model';
-import { IRawEntityAttributes, Entity } from '../src/entity/entityFactory';
-import { Set as EntitySet } from '../src/entity/set';
+import { IRawEntityAttributes, Entity } from '../src/entities/entityFactory';
+import { Set as EntitySet } from '../src/entities/set';
 import { Diaspora } from '../src/diaspora';
 import { InMemoryAdapter } from '../src/adapters/inMemory';
 
@@ -55,48 +55,6 @@ export const importTest = ( name: string, modulePath: string ) => {
 	describe( name, () => {
 		require( modulePath );
 	} );
-};
-
-export const lifecycleEvents = {
-	create: [
-		'beforePersist',
-		'beforeValidate',
-		'afterValidate',
-		'beforePersistCreate',
-		'afterPersistCreate',
-		'afterPersist',
-	],
-	update: [
-		'beforePersist',
-		'beforeValidate',
-		'afterValidate',
-		'beforePersistUpdate',
-		'afterPersistUpdate',
-		'afterPersist',
-	],
-	find: ['beforeFetch', 'afterFetch'],
-	delete: ['beforeDestroy', 'afterDestroy'],
-};
-
-export const createMockModel = ( scope: string ) => {
-	const MODEL_NAME = `${scope}-test`;
-	const SOURCE = `inMemory-${scope}-test`;
-	return {
-		adapter: Diaspora.createNamedDataSource( SOURCE, 'inMemory' ),
-		model: Diaspora.declareModel( MODEL_NAME, {
-			sources: [SOURCE],
-			attributes: {
-				foo: {
-					type: 'string',
-				},
-				baz: {
-					type: 'string',
-				},
-			},
-		} ),
-		MODEL_NAME,
-		SOURCE,
-	};
 };
 
 const check = (
@@ -212,7 +170,7 @@ expect.extend( {
 		_.forEach( ['persist', 'fetch', 'destroy', 'toObject'], word => {
 			expect( receivedSet ).toImplementMethod( word );
 		} );
-		receivedSet.forEach( ( received, index ) => {
+		receivedSet.entities.forEach( ( received, index ) => {
 			const expectedAttributes = _.isArray( expectedAttributesArray )
 				? expectedAttributesArray[index]
 				: expectedAttributesArray;

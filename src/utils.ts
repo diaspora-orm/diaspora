@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 
-import { IRawEntityAttributes } from './entity/entityFactory';
-import { QueryLanguage, IRawAdapterEntityAttributes } from './adapters/base';
+import { IRawEntityAttributes } from './entities/entityFactory';
+import { IRawAdapterEntityAttributes } from './adapters/base';
+import { QueryLanguage } from './types/queryLanguage';
 
 export const defineEnumerableProperties = (
 	subject: object,

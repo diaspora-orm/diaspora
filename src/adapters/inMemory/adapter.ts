@@ -5,12 +5,12 @@ import {
 	EAdapterState,
 	IRemapsHash,
 	IFiltersHash,
-	QueryLanguage,
 	IRawAdapterEntityAttributes,
 } from '../base';
-import { IRawEntityAttributes, EntityUid } from '../../entity/entityFactory';
+import { IRawEntityAttributes, EntityUid } from '../../entities/entityFactory';
 import * as Utils from '../../utils';
 import { InMemoryEntity } from './entity';
+import { QueryLanguage } from '../../types/queryLanguage';
 
 interface IDataStoreHash {
 	[key: string]: { items: IRawAdapterEntityAttributes[] };

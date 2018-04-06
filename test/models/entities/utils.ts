@@ -1,16 +1,30 @@
 import * as _ from 'lodash';
-
-import { Diaspora } from '../../src/diaspora';
-import { lifecycleEvents, createMockModel } from '../utils';
-import { Model } from '../../src/model';
-import { InMemoryAdapter } from '../../src/adapters/inMemory';
-import { Entity } from '../../src/entity/entityFactory';
 import { IEventHandler } from 'sequential-event';
-import { Set } from '../../src/entity/set';
 
-const { model, adapter, MODEL_NAME, SOURCE } = createMockModel(
-	'entity-lifecycle'
-);
+import { Entity } from '../../../src/entities/entityFactory';
+import { Set } from '../../../src/entities/set';
+
+export const lifecycleEvents = {
+	create: [
+		'beforePersist',
+		'beforeValidate',
+		'afterValidate',
+		'beforePersistCreate',
+		'afterPersistCreate',
+		'afterPersist',
+	],
+	update: [
+		'beforePersist',
+		'beforeValidate',
+		'afterValidate',
+		'beforePersistUpdate',
+		'afterPersistUpdate',
+		'afterPersist',
+	],
+	find: ['beforeFetch', 'afterFetch'],
+	delete: ['beforeDestroy', 'afterDestroy'],
+};
+
 
 export interface IEventMock {
 	mock: IEventHandler | IEventHandler[];
@@ -60,47 +74,17 @@ export const bindEvents = ( category: string, entity: Entity | Set ) => {
 	} );
 	return eventsFlags;
 };
-export const checkFlags = ( eventsFlags: IEventMock[] ) => {
+export const checkFlags = ( sourceName: string, eventsFlags: IEventMock[] ) => {
 	_.forEach( eventsFlags, eventFlags => {
 		_.chain( eventFlags.mock )
 			.castArray()
 			.forEach( ( mock, index ) => {
 				expect( mock ).toHaveBeenCalledTimes( 1 );
 				if ( index > 0 ) {
-					expect( mock ).toHaveBeenCalledWith( SOURCE, {}, eventFlags.index );
+					expect( mock ).toHaveBeenCalledWith( sourceName, {}, eventFlags.index );
 				} else {
-					expect( mock ).toHaveBeenCalledWith( SOURCE, {} );
+					expect( mock ).toHaveBeenCalledWith( sourceName, {} );
 				}
 			} );
 	} );
 };
-
-describe( 'Check lifecycle events', () => {
-	it( 'before/after persist (create)', async () => {
-		const testEntity = model.spawn( {} );
-		const eventsFlags = bindEvents( 'create', testEntity );
-		await testEntity.persist();
-		checkFlags( eventsFlags );
-	} );
-	it( 'before/after persist (update)', async () => {
-		const testEntity = model.spawn( {} );
-		await testEntity.persist();
-		const eventsFlags = bindEvents( 'update', testEntity );
-		await testEntity.persist();
-		checkFlags( eventsFlags );
-	} );
-	it( 'before/after fetch', async () => {
-		const testEntity = model.spawn( {} );
-		await testEntity.persist();
-		const eventsFlags = bindEvents( 'find', testEntity );
-		await testEntity.fetch();
-		checkFlags( eventsFlags );
-	} );
-	it( 'before/after destroy', async () => {
-		const testEntity = model.spawn( {} );
-		await testEntity.persist();
-		const eventsFlags = bindEvents( 'delete', testEntity );
-		await testEntity.destroy();
-		checkFlags( eventsFlags );
-	} );
-} );

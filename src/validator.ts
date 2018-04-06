@@ -1,15 +1,9 @@
 import * as _ from 'lodash';
 
-import {
-	FieldDescriptor,
-	ArrayFieldDescriptor,
-	RelationalFieldDescriptor,
-	ObjectFieldDescriptor,
-	FieldDescriptorTypeChecks,
-} from './model';
-import { IRawEntityAttributes } from './entity/entityFactory';
+import { IRawEntityAttributes } from './entities/entityFactory';
 import { EntityValidationError } from './errors';
 import { getDefaultFunction } from './defaultFunctionStore';
+import { ArrayFieldDescriptor, RelationalFieldDescriptor, FieldDescriptor, FieldDescriptorTypeChecks, ObjectFieldDescriptor } from './types/modelDescription';
 
 /**
  * Prepare the check of each items in the array.

@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 
 import { Constructable, OPERATORS } from './adapter-utils';
-import { QueryLanguage, AdapterEntity, IRawAdapterEntityAttributes } from '.';
+import { AdapterEntity, IRawAdapterEntityAttributes } from './entity';
+import { QueryLanguage } from '../../types/queryLanguage';
 
 export const SelfMatchingAdapterEntity = <
 	T extends Constructable<AdapterEntity>
