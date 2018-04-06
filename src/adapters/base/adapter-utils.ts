@@ -1,54 +1,49 @@
 import * as _ from 'lodash';
 
-import { IRawEntityAttributes } from '../../entity/entityFactory';
-import {
-	AdapterEntity,
-	IAdapterEntityCtr,
-	IRawAdapterEntityAttributes,
-} from './entity';
+import { AdapterEntity, IRawAdapterEntityAttributes } from './entity';
 import { QueryLanguage } from './queryLanguage';
 import { Adapter } from './adapter';
 
 export interface Constructable<T> {
-	new (...args: any[]): T;
+	new ( ...args: any[] ): T;
 }
 
-function getNum(fullMatch: string, sign: string, val: string): number;
-function getNum([fullMatch, sign, val]: string[]): number;
-function getNum(...params: (string | string[])[]) {
-	const flatten = _.flattenDeep(params) as string[];
+function getNum( fullMatch: string, sign: string, val: string ): number;
+function getNum( [fullMatch, sign, val]: string[] ): number;
+function getNum( ...params: Array<string | string[]> ) {
+	const flatten = _.flattenDeep( params ) as string[];
 	const [fullMatch, sign, val] = flatten;
-	if ('∞' === val) {
-		if ('-' === sign) {
+	if ( '∞' === val ) {
+		if ( '-' === sign ) {
 			return -Infinity;
 		} else {
 			return Infinity;
 		}
 	} else {
-		return parseInt(fullMatch, 10);
+		return parseInt( fullMatch, 10 );
 	}
 }
 
 const validations = {
 	type: {
-		int(key: string, val: string | number) {
-			if (_.isString(val)) {
-				val = parseInt(val, 10);
+		int( key: string, val: string | number ) {
+			if ( _.isString( val ) ) {
+				val = parseInt( val, 10 );
 			}
-			if (!_.isInteger(val) && isFinite(val)) {
-				throw new TypeError(`Expect "${key}" to be an integer`);
+			if ( !_.isInteger( val ) && isFinite( val ) ) {
+				throw new TypeError( `Expect "${key}" to be an integer` );
 			}
 			return val;
 		},
 	},
-	rng(key: string, val: string | number, range: string) {
-		const rangeMatch = range.match(/^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/);
-		if (rangeMatch) {
-			const lower = getNum(rangeMatch.splice(2, 3));
-			const upper = getNum(rangeMatch.splice(2, 3));
+	rng( key: string, val: string | number, range: string ) {
+		const rangeMatch = range.match( /^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/ );
+		if ( rangeMatch ) {
+			const lower = getNum( rangeMatch.splice( 2, 3 ) );
+			const upper = getNum( rangeMatch.splice( 2, 3 ) );
 			const isInRangeLower = '[' === rangeMatch[1] ? val >= lower : val > lower;
 			const isInRangeUpper = ']' === rangeMatch[2] ? val <= upper : val < upper;
-			if (!(isInRangeLower && isInRangeUpper)) {
+			if ( !( isInRangeLower && isInRangeUpper ) ) {
 				throw new RangeError(
 					`Expect "${key}" to be within ${range}, have "${val}"`
 				);
@@ -63,11 +58,11 @@ const validateOption = (
 	config: { type: string; rng?: string }
 ): any => {
 	const valTypes: any = validations.type;
-	if (valTypes[config.type]) {
-		val = valTypes[config.type](key, val);
+	if ( valTypes[config.type] ) {
+		val = valTypes[config.type]( key, val );
 	}
-	if (config.rng) {
-		val = validations.rng(key, val, config.rng);
+	if ( config.rng ) {
+		val = validations.rng( key, val, config.rng );
 	}
 	return val;
 };
@@ -87,23 +82,23 @@ export const iterateLimit = async (
 		found?: IRawAdapterEntityAttributes | true
 	): Promise<IRawAdapterEntityAttributes[]> => {
 		// If the search returned nothing, then just finish the findMany
-		if (_.isNil(found)) {
-			return Promise.resolve(foundEntities);
+		if ( _.isNil( found ) ) {
+			return Promise.resolve( foundEntities );
 			// Else, if this is a value and not the initial `true`, add it to the list
-		} else if (typeof found === 'object') {
-			foundEntities.push(found);
+		} else if ( typeof found === 'object' ) {
+			foundEntities.push( found );
 		}
 		// If we found enough items, return them
-		if (foundCount === options.limit) {
-			return Promise.resolve(foundEntities);
+		if ( foundCount === options.limit ) {
+			return Promise.resolve( foundEntities );
 		}
 		options.skip = origSkip + foundCount;
 		// Next time we'll skip 1 more item
 		foundCount++;
 		// Do the query & loop
-		return loopFind(await query(options));
+		return loopFind( await query( options ) );
 	};
-	return loopFind(true);
+	return loopFind( true );
 };
 
 /**
@@ -118,50 +113,50 @@ export const remapIO = <T extends AdapterEntity>(
 	query: QueryLanguage.SelectQuery,
 	input: boolean
 ): QueryLanguage.SelectQueryRemapped => {
-	if (_.isNil(query)) {
+	if ( _.isNil( query ) ) {
 		return query;
 	}
 	const direction = true === input ? 'input' : 'output';
-	const filtered = _.mapValues(query, (value, key) => {
+	const filtered = _.mapValues( query, ( value, key ) => {
 		const filter = _.get(
 			adapter,
 			['filters', tableName, direction, key],
 			undefined
 		);
-		if (_.isFunction(filter)) {
-			return filter(value);
+		if ( _.isFunction( filter ) ) {
+			return filter( value );
 		}
 		return value;
-	});
+	} );
 	const remapType = true === input ? 'normal' : 'inverted';
-	const remaped = _.mapKeys(filtered, (value, key) => {
-		return _.get(adapter, ['remaps', tableName, remapType, key], key);
-	});
+	const remaped = _.mapKeys( filtered, ( value, key ) => {
+		return _.get( adapter, ['remaps', tableName, remapType, key], key );
+	} );
 	return remaped;
 };
 
 export interface IQueryCheckFunction {
-	(entityVal: any, targetVal: any): boolean;
+	( entityVal: any, targetVal: any ): boolean;
 }
 
 export interface IEnumeratedHash<T> {
 	[key: string]: T;
 }
 export const OPERATORS: IEnumeratedHash<IQueryCheckFunction | undefined> = {
-	$exists: (entityVal: any, targetVal: any) =>
-		targetVal === !_.isUndefined(entityVal),
-	$equal: (entityVal: any, targetVal: any) =>
-		!_.isUndefined(entityVal) && entityVal === targetVal,
-	$diff: (entityVal: any, targetVal: any) =>
-		!_.isUndefined(entityVal) && entityVal !== targetVal,
-	$less: (entityVal: any, targetVal: any) =>
-		!_.isUndefined(entityVal) && entityVal < targetVal,
-	$lessEqual: (entityVal: any, targetVal: any) =>
-		!_.isUndefined(entityVal) && entityVal <= targetVal,
-	$greater: (entityVal: any, targetVal: any) =>
-		!_.isUndefined(entityVal) && entityVal > targetVal,
-	$greaterEqual: (entityVal: any, targetVal: any) =>
-		!_.isUndefined(entityVal) && entityVal >= targetVal,
+	$exists: ( entityVal: any, targetVal: any ) =>
+		targetVal === !_.isUndefined( entityVal ),
+	$equal: ( entityVal: any, targetVal: any ) =>
+		!_.isUndefined( entityVal ) && entityVal === targetVal,
+	$diff: ( entityVal: any, targetVal: any ) =>
+		!_.isUndefined( entityVal ) && entityVal !== targetVal,
+	$less: ( entityVal: any, targetVal: any ) =>
+		!_.isUndefined( entityVal ) && entityVal < targetVal,
+	$lessEqual: ( entityVal: any, targetVal: any ) =>
+		!_.isUndefined( entityVal ) && entityVal <= targetVal,
+	$greater: ( entityVal: any, targetVal: any ) =>
+		!_.isUndefined( entityVal ) && entityVal > targetVal,
+	$greaterEqual: ( entityVal: any, targetVal: any ) =>
+		!_.isUndefined( entityVal ) && entityVal >= targetVal,
 };
 export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'~': '$exists',
@@ -173,39 +168,39 @@ export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'>=': '$greaterEqual',
 };
 export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
-	((ops: QueryLanguage.QueryOptionsRaw) => void)
+	( ( ops: QueryLanguage.QueryOptionsRaw ) => void )
 > = {
-	limit(opts: QueryLanguage.QueryOptionsRaw) {
-		opts.limit = validateOption('limit', opts.limit as number, {
+	limit( opts: QueryLanguage.QueryOptionsRaw ) {
+		opts.limit = validateOption( 'limit', opts.limit as number, {
 			type: 'int',
 			rng: '[0,∞]',
-		});
+		} );
 	},
-	skip(opts: QueryLanguage.QueryOptionsRaw) {
-		opts.skip = validateOption('skip', opts.skip as number, {
+	skip( opts: QueryLanguage.QueryOptionsRaw ) {
+		opts.skip = validateOption( 'skip', opts.skip as number, {
 			type: 'int',
 			rng: '[0,∞[',
-		});
+		} );
 	},
-	page(opts: QueryLanguage.QueryOptionsRaw) {
-		if (!opts.hasOwnProperty('limit')) {
+	page( opts: QueryLanguage.QueryOptionsRaw ) {
+		if ( !opts.hasOwnProperty( 'limit' ) ) {
 			throw new ReferenceError(
 				'Usage of "options.page" requires "options.limit" to be defined.'
 			);
 		}
-		if (!isFinite(opts.limit as number)) {
+		if ( !isFinite( opts.limit as number ) ) {
 			throw new RangeError(
 				'Usage of "options.page" requires "options.limit" to not be infinite'
 			);
 		}
-		if (opts.hasOwnProperty('skip')) {
-			throw new ReferenceError('Use either "options.page" or "options.skip"');
+		if ( opts.hasOwnProperty( 'skip' ) ) {
+			throw new ReferenceError( 'Use either "options.page" or "options.skip"' );
 		}
 		opts.skip =
-			validateOption('page', opts.page as number, {
+			validateOption( 'page', opts.page as number, {
 				type: 'int',
 				rng: '[0,∞[',
-			}) * (opts.limit as number);
+			} ) * ( opts.limit as number );
 		delete opts.page;
 	},
 };

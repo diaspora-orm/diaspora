@@ -1,20 +1,11 @@
 import { SequentialEvent } from 'sequential-event';
-import _, {
-	LoDashImplicitArrayWrapper,
-	PropertyName,
-	LoDashExplicitWrapper,
-	LoDashExplicitArrayWrapper,
-} from 'lodash';
+import _ from 'lodash';
 
 import { Model } from '../model';
 import { Entity, EntitySpawner, IRawEntityAttributes } from './entityFactory';
 import { SetValidationError } from '../errors';
 import * as Utils from '../utils';
 import { logger } from '../logger';
-
-/**
- * @module Set
- */
 
 /**
  * Emit events on each entities.
@@ -32,8 +23,8 @@ const allEmit = (
 	prefix: string
 ): Promise<SequentialEvent[]> =>
 	Promise.all(
-		entities.map((entity, index) =>
-			entity.emit(`${prefix}${_.isArray(verb) ? verb[index] : verb}`)
+		entities.map( ( entity, index ) =>
+			entity.emit( `${prefix}${_.isArray( verb ) ? verb[index] : verb}` )
 		)
 	);
 
@@ -41,8 +32,6 @@ const allEmit = (
  * Emit `before` & `after` events around the entity action. `this` must be bound to the calling {@link Set}.
  *
  * @author Gerkin
- * @inner
- * @this Set
  * @param   sourceName    - Name of the data source to interact with.
  * @param   action        - Name of the entity function to apply.
  * @param   verb - String or array of strings to map for events suffix.
@@ -59,67 +48,38 @@ async function wrapEventsAction(
 		this.entities,
 		verb
 	);
-	await _allEmit('before');
+	await _allEmit( 'before' );
 	await Promise.all(
 		this.toChainable
-			.map(entity =>
-				(entity as any)[action](sourceName, {
+			.map( entity =>
+				( entity as any )[action]( sourceName, {
 					skipEvents: true,
-				})
+				} )
 			)
 			.value()
 	);
-	await _allEmit('after');
+	await _allEmit( 'after' );
 }
-
-const setProxyProps = {
-	get(target: Set, prop: PropertyName) {
-		if (prop in target) {
-			return (target as any)[prop];
-		} else if (prop in target.entities) {
-			return (target.entities as any)[prop];
-		} else if (
-			'string' === typeof prop &&
-			prop.match(/^-?\d+$/) &&
-			target.toChainable.nth(parseInt(prop))
-		) {
-			return target.toChainable.nth(parseInt(prop));
-		}
-	},
-	set(target: Set, prop: PropertyName, val: any) {
-		if ('model' === prop) {
-			throw new Error('Can\'t assign to read-only property "model".');
-		} else if ('entities' === prop) {
-			Set.checkEntitiesFromModel(val, target.model);
-			(target as any).entities = _.chain(val);
-		}
-		return true;
-	},
-};
 
 /**
  * Collections are used to manage multiple entities at the same time. You may try to use this class as an array.
  */
 export class Set {
-	/**
-	 * List entities of this set.
-	 *
-	 * @author Gerkin
-	 */
-	private _entities: Entity[];
 	public get entities() {
 		return this._entities;
 	}
+	public set entities( newEntities: Entity[] ) {
+		try {
+			Set.checkEntitiesFromModel( newEntities, this._model );
+			this._entities = newEntities;
+		} catch ( exception ) {
+			logger.warn( exception );
+		}
+	}
 	public get toChainable() {
-		return _.chain(this._entities);
+		return _.chain( this._entities );
 	}
 
-	/**
-	 * Model that generated this set.
-	 *
-	 * @author Gerkin
-	 */
-	private _model: Model;
 	public get model() {
 		return this._model;
 	}
@@ -134,21 +94,33 @@ export class Set {
 	}
 
 	/**
+	 * List entities of this set.
+	 *
+	 * @author Gerkin
+	 */
+	private _entities: Entity[];
+
+	/**
+	 * Model that generated this set.
+	 *
+	 * @author Gerkin
+	 */
+	private readonly _model: Model;
+
+	/**
 	 * Create a new set, managing provided `entities` that must be generated from provided `model`.
 	 *
 	 * @param model    - Model describing entities managed by this set.
 	 * @param entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
 	 */
-	constructor(model: Model, ...entities: (Entity | Entity[])[]) {
+	public constructor( model: Model, ...entities: Array<Entity | Entity[]> ) {
 		// Flatten arguments
-		const wrappedEntities = _.flatten(entities);
+		const wrappedEntities = _.flatten( entities );
 		// Check if each entity is from the expected model
-		Set.checkEntitiesFromModel(wrappedEntities, model);
+		Set.checkEntitiesFromModel( wrappedEntities, model );
 
 		this._model = model;
 		this._entities = wrappedEntities;
-
-		return new Proxy(this, setProxyProps);
 	}
 
 	/**
@@ -160,16 +132,16 @@ export class Set {
 	 * @param model    - Model expected to be the source of all entities.
 	 * @returns This function does not return anything.
 	 */
-	static checkEntitiesFromModel(entities: Entity[], model: Model): void {
-		entities.forEach((entity, index) => {
-			if ((entity.constructor as EntitySpawner).model !== model) {
+	public static checkEntitiesFromModel( entities: Entity[], model: Model ): void {
+		entities.forEach( ( entity, index ) => {
+			if ( ( entity.constructor as EntitySpawner ).model !== model ) {
 				throw new TypeError(
 					`Provided entity n°${index} ${entity} is not from model ${model} (${
 						model.name
 					})`
 				);
 			}
-		});
+		} );
 	}
 
 	/**
@@ -182,42 +154,42 @@ export class Set {
 	 * @returns Promise resolved once all items are persisted.
 	 * @see {@link EntityFactory.Entity#persist}
 	 */
-	async persist(sourceName?: string): Promise<Set> {
+	public async persist( sourceName?: string ): Promise<Set> {
 		const suffixes = this.toChainable
-			.map(entity => ('orphan' === entity.state ? 'Create' : 'Update'))
+			.map( entity => ( 'orphan' === entity.state ? 'Create' : 'Update' ) )
 			.value();
-		const _allEmit = _.partial(allEmit, this.entities);
-		await _allEmit('Persist', 'before');
-		await _allEmit('Validate', 'before');
+		const _allEmit = _.partial( allEmit, this.entities );
+		await _allEmit( 'Persist', 'before' );
+		await _allEmit( 'Validate', 'before' );
 		const validationResults = this.toChainable
-			.map(entity => {
+			.map( entity => {
 				try {
 					entity.validate();
-				} catch (error) {
-					console.error(error);
-					(logger.error as any)('Validation failed:', {
+				} catch ( error ) {
+					console.error( error );
+					logger.error( 'Validation failed:', {
 						entity,
 						error,
-					});
+					} );
 					return error;
 				}
-			})
+			} )
 			.value();
-		const errors = _.compact(validationResults).length;
-		if (errors > 0) {
+		const errors = _.compact( validationResults ).length;
+		if ( errors > 0 ) {
 			throw new SetValidationError(
 				`Set validation failed for ${errors} elements (on ${this.length}): `,
 				validationResults
 			);
 		}
-		await _allEmit('Validate', 'after');
+		await _allEmit( 'Validate', 'after' );
 		await wrapEventsAction.call(
 			this,
 			sourceName,
 			'persist',
-			_.map(suffixes, suffix => `Persist${suffix}`)
+			_.map( suffixes, suffix => `Persist${suffix}` )
 		);
-		await _allEmit('Persist', 'after');
+		await _allEmit( 'Persist', 'after' );
 		return this;
 	}
 
@@ -231,8 +203,8 @@ export class Set {
 	 * @returns Promise resolved once all items are reloaded.
 	 * @see {@link EntityFactory.Entity#fetch}
 	 */
-	async fetch(sourceName?: string): Promise<Set> {
-		await wrapEventsAction.call(this, sourceName, 'fetch', 'Fetch');
+	public async fetch( sourceName?: string ): Promise<Set> {
+		await wrapEventsAction.call( this, sourceName, 'fetch', 'Fetch' );
 		return this;
 	}
 
@@ -246,8 +218,8 @@ export class Set {
 	 * @returns Promise resolved once all items are destroyed.
 	 * @see {@link EntityFactory.Entity#destroy}
 	 */
-	async destroy(sourceName?: string): Promise<Set> {
-		await wrapEventsAction.call(this, sourceName, 'destroy', 'Destroy');
+	public async destroy( sourceName?: string ): Promise<Set> {
+		await wrapEventsAction.call( this, sourceName, 'destroy', 'Destroy' );
 		return this;
 	}
 
@@ -258,10 +230,10 @@ export class Set {
 	 * @param   newData - Attributes to change in each entity of the collection.
 	 * @returns `this`.
 	 */
-	update(newData: IRawEntityAttributes): Set {
-		this.entities.forEach(entity => {
-			Utils.applyUpdateEntity(newData, entity);
-		});
+	public update( newData: IRawEntityAttributes ): Set {
+		this.entities.forEach( entity => {
+			Utils.applyUpdateEntity( newData, entity );
+		} );
 		return this;
 	}
 
@@ -271,7 +243,7 @@ export class Set {
 	 * @author gerkin
 	 * @returns POJO representation of set & children.
 	 */
-	toObject(): (IRawEntityAttributes | null)[] {
-		return this.toChainable.map(entity => entity.toObject()).value();
+	public toObject(): Array<IRawEntityAttributes | null> {
+		return this.toChainable.map( entity => entity.toObject() ).value();
 	}
 }

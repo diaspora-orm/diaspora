@@ -1,4 +1,3 @@
-import { WebApiAdapter } from '.';
 import { AdapterEntity } from '../base';
 
 /**

@@ -23,18 +23,37 @@ export interface SourcesHash {
  * Object describing a model.
  *
  * @author gerkin
- * @property sources         - List of sources to use with this model.
- * @property attributes      - Attributes of the model.
- * @property methods         - Methods to add to entities prototype.
- * @property staticMethods   - Static methods to add to entities.
- * @property lifecycleEvents - Events to bind on entities.
  */
 export interface ModelDescriptionRaw {
-	sources: string | Array<string> | { [key: string]: object | boolean };
+	/**
+	 * List of sources to use with this model.
+	 *
+	 * @author gerkin
+	 */
+	sources: string | string[] | { [key: string]: object | boolean };
+	/**
+	 * Attributes of the model.
+	 *
+	 * @author gerkin
+	 */
 	attributes: { [key: string]: FieldDescriptor | string };
+	/**
+	 * Methods to add to entities prototype.
+	 *
+	 * @author gerkin
+	 */
 	methods?: { [key: string]: Function };
+	/**
+	 * Static methods to add to entities.
+	 *
+	 * @author gerkin
+	 */
 	staticMethods?: { [key: string]: Function };
-	// TODO: To improve
+	/**
+	 * Events to bind on entities.
+	 *
+	 * @author gerkin
+	 */
 	lifecycleEvents?: { [key: string]: IEventHandler | IEventHandler[] };
 }
 export interface ModelDescription extends ModelDescriptionRaw {
@@ -42,22 +61,52 @@ export interface ModelDescription extends ModelDescriptionRaw {
 	sources: SourcesHash;
 }
 
+/**
+ * Object describing the attributes of a {@link Model~Model}.
+ *
+ * @author gerkin
+ */
 export interface BaseFieldDescriptor {
+	/**
+	 * Expected type of the value. Either `type` or `model` should be defined, or none.
+	 *
+	 * @author gerkin
+	 */
 	type?: string;
+	/**
+	 * Custom validation callback.
+	 *
+	 * @author gerkin
+	 */
 	validate?: Function | Function[];
+	/**
+	 * Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
+	 *
+	 * @author gerkin
+	 */
 	required?: boolean;
 	default?: Function | string;
 }
 export interface ArrayFieldDescriptor extends BaseFieldDescriptor {
+	/**
+	 * Description (or array of descriptions) of possible values for this field
+	 *
+	 * @author gerkin
+	 */
 	of: FieldDescriptor | FieldDescriptor[];
 }
 export interface ObjectFieldDescriptor extends BaseFieldDescriptor {
 	attributes: { [key: string]: FieldDescriptor };
 }
 export interface EnumFieldDescriptor extends BaseFieldDescriptor {
-	enum: Array<any>;
+	enum: any[];
 }
 export interface RelationalFieldDescriptor extends BaseFieldDescriptor {
+	/**
+	 * Expected model of the value. Either `type` or `model` should be defined, or none.
+	 *
+	 * @author gerkin
+	 */
 	model: string;
 }
 
@@ -65,36 +114,25 @@ export const FieldDescriptorTypeChecks = {
 	isArrayFieldDescriptor(
 		fieldDescriptor: FieldDescriptor
 	): fieldDescriptor is ArrayFieldDescriptor {
-		return fieldDescriptor.hasOwnProperty('of');
+		return fieldDescriptor.hasOwnProperty( 'of' );
 	},
 	isObjectFieldDescriptor(
 		fieldDescriptor: FieldDescriptor
 	): fieldDescriptor is ObjectFieldDescriptor {
-		return fieldDescriptor.hasOwnProperty('attributes');
+		return fieldDescriptor.hasOwnProperty( 'attributes' );
 	},
 	isEnumFieldDescriptor(
 		fieldDescriptor: FieldDescriptor
 	): fieldDescriptor is EnumFieldDescriptor {
-		return fieldDescriptor.hasOwnProperty('enum');
+		return fieldDescriptor.hasOwnProperty( 'enum' );
 	},
 	isRelationalFieldDescriptor(
 		fieldDescriptor: FieldDescriptor
 	): fieldDescriptor is RelationalFieldDescriptor {
-		return fieldDescriptor.hasOwnProperty('model');
+		return fieldDescriptor.hasOwnProperty( 'model' );
 	},
 };
 
-/**
- * Object describing the attributes of a {@link Model~Model}.
- *
- * @typedef FieldDescriptor
- * @author gerkin
- * @property type     - Expected type of the value. Either `type` or `model` should be defined, or none.
- * @property model    - Expected model of the value. Either `type` or `model` should be defined, or none.
- * @property of       - Description (or array of descriptions) of possible values for this field
- * @property required - Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
- * @property validate - Custom validation callback.
- */
 export type FieldDescriptor =
 	| BaseFieldDescriptor
 	| ArrayFieldDescriptor
@@ -113,19 +151,19 @@ interface IQueryParams<T extends AdapterEntity> extends IQueryParamsRaw {
 
 const findArgs = (
 	model: Model,
-	...argsLeft: Array<any>
+	...argsLeft: any[]
 ): IQueryParams<AdapterEntity> => {
 	let paramsRaw: IQueryParamsRaw;
-	if (_.isString(argsLeft[1]) && _.isNil(argsLeft[2])) {
+	if ( _.isString( argsLeft[1] ) && _.isNil( argsLeft[2] ) ) {
 		// TODO: Elude case...
 		paramsRaw = {
 			dataSourceName: argsLeft[1],
 			options: {},
 		};
 	} else if (
-		_.isString(argsLeft[0]) &&
-		_.isNil(argsLeft[1]) &&
-		_.isNil(argsLeft[2])
+		_.isString( argsLeft[0] ) &&
+		_.isNil( argsLeft[1] ) &&
+		_.isNil( argsLeft[2] )
 	) {
 		paramsRaw = {
 			dataSourceName: argsLeft[0],
@@ -140,7 +178,7 @@ const findArgs = (
 		};
 	}
 	return _.defaults(
-		{ dataSource: model.getDataSource(paramsRaw.dataSourceName) },
+		{ dataSource: model.getDataSource( paramsRaw.dataSourceName ) },
 		paramsRaw
 	);
 };
@@ -151,19 +189,19 @@ const makeSet = (
 ): Set => {
 	const newEntities = _.map(
 		dataSourceEntities,
-		dataSourceEntity => new model.entityFactory(dataSourceEntity)
+		dataSourceEntity => new model.entityFactory( dataSourceEntity )
 	);
-	const set = new Set(model, newEntities);
+	const set = new Set( model, newEntities );
 	return set;
 };
 const makeEntity = (
 	model: Model,
 	dataSourceEntity: AdapterEntity
-): Entity | void => {
-	if (_.isNil(dataSourceEntity)) {
-		return;
+): Entity | undefined => {
+	if ( _.isNil( dataSourceEntity ) ) {
+		return undefined;
 	}
-	const newEntity = new model.entityFactory(dataSourceEntity);
+	const newEntity = new model.entityFactory( dataSourceEntity );
 	return newEntity;
 };
 
@@ -171,15 +209,15 @@ enum EDeleteMethod {
 	Single = 'deleteOne',
 	Multiple = 'deleteMany',
 }
-const doDelete = (methodName: EDeleteMethod, model: Model) => {
+const doDelete = ( methodName: EDeleteMethod, model: Model ) => {
 	return (
 		queryFind: QueryLanguage.SelectQuery = {},
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string
 	): Promise<void> => {
 		// Sort arguments
-		const args = findArgs(model, queryFind, options, dataSourceName);
-		return (args.dataSource as any)[methodName](
+		const args = findArgs( model, queryFind, options, dataSourceName );
+		return ( args.dataSource as any )[methodName](
 			model.name,
 			args.queryFind,
 			args.options
@@ -212,36 +250,36 @@ async function doFindUpdate(
 	update?: IRawEntityAttributes
 ): Promise<Entity | undefined | Set> {
 	// Sort arguments
-	const queryComponents = findArgs(model, queryFind, options, dataSourceName);
-	const args = _.chain([model.name, queryComponents.queryFind])
-		.push(update)
-		.push(queryComponents.options)
+	const queryComponents = findArgs( model, queryFind, options, dataSourceName );
+	const args = _.chain( [model.name, queryComponents.queryFind] )
+		.push( update )
+		.push( queryComponents.options )
 		.compact()
 		.value();
-	const queryMethod = (update ? 'update' : 'find') + (plural ? 'Many' : 'One');
-	const queryResults = (await (queryComponents.dataSource as any)[queryMethod](
+	const queryMethod = ( update ? 'update' : 'find' ) + ( plural ? 'Many' : 'One' );
+	const queryResults = ( await ( queryComponents.dataSource as any )[queryMethod](
 		...args
-	)) as AdapterEntity | AdapterEntity[];
-	if (queryResults instanceof Array) {
-		return makeSet(model, queryResults);
+	) ) as AdapterEntity | AdapterEntity[];
+	if ( queryResults instanceof Array ) {
+		return makeSet( model, queryResults );
 	} else {
-		const entity = makeEntity(model, queryResults);
+		const entity = makeEntity( model, queryResults );
 		return entity ? entity : undefined;
 	}
 }
 
-const normalizeRemaps = (modelDesc: ModelDescriptionRaw) => {
+const normalizeRemaps = ( modelDesc: ModelDescriptionRaw ) => {
 	const sourcesRaw = modelDesc.sources;
 	let sources: SourcesHash;
-	if (_.isString(sourcesRaw)) {
-		sources = { [sourcesRaw as string]: {} };
-	} else if (_.isArrayLike(sourcesRaw)) {
-		sources = _.zipObject(sourcesRaw, _.times(sourcesRaw.length, _.constant({})));
+	if ( _.isString( sourcesRaw ) ) {
+		sources = { [sourcesRaw]: {} };
+	} else if ( _.isArrayLike( sourcesRaw ) ) {
+		sources = _.zipObject( sourcesRaw, _.times( sourcesRaw.length, _.constant( {} ) ) );
 	} else {
-		sources = _.mapValues(sourcesRaw, (remap, dataSourceName) => {
-			if (true === remap) {
+		sources = _.mapValues( sourcesRaw, ( remap, dataSourceName ) => {
+			if ( true === remap ) {
 				return {};
-			} else if (_.isObject(remap)) {
+			} else if ( _.isObject( remap ) ) {
 				return remap as object;
 			} else {
 				throw new TypeError(
@@ -250,7 +288,7 @@ const normalizeRemaps = (modelDesc: ModelDescriptionRaw) => {
 					)}`
 				);
 			}
-		});
+		} );
 	}
 	return sources;
 };
@@ -261,16 +299,16 @@ const normalizeRemaps = (modelDesc: ModelDescriptionRaw) => {
 export class Model {
 	public attributes: { [key: string]: FieldDescriptor };
 
-	private _dataSources: { [key: string]: Adapter<AdapterEntity> };
+	private readonly _dataSources: { [key: string]: Adapter<AdapterEntity> };
 	public get dataSources() {
 		return this._dataSources;
 	}
-	private defaultDataSource: string;
-	private _entityFactory: EntitySpawner;
+	private readonly defaultDataSource: string;
+	private readonly _entityFactory: EntitySpawner;
 	public get entityFactory() {
 		return this._entityFactory;
 	}
-	private _validator: Validator;
+	private readonly _validator: Validator;
 	public get validator() {
 		return this._validator;
 	}
@@ -285,18 +323,18 @@ export class Model {
 	 * @param name      - Name of the model.
 	 * @param modelDesc - Hash representing the configuration of the model.
 	 */
-	constructor(
-		private Diaspora: DiasporaStatic,
+	public constructor(
+		Diaspora: DiasporaStatic,
 		public name: string,
 		modelDesc: ModelDescriptionRaw
 	) {
 		// Check model configuration
 		if (
-			!modelDesc.hasOwnProperty('sources') ||
+			!modelDesc.hasOwnProperty( 'sources' ) ||
 			!(
-				_.isArrayLike(modelDesc.sources) ||
-				_.isObject(modelDesc.sources) ||
-				_.isString(modelDesc.sources)
+				_.isArrayLike( modelDesc.sources ) ||
+				_.isObject( modelDesc.sources ) ||
+				_.isString( modelDesc.sources )
 			)
 		) {
 			throw new TypeError(
@@ -306,21 +344,21 @@ export class Model {
 			);
 		}
 		// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
-		const sourcesNormalized = normalizeRemaps(modelDesc);
+		const sourcesNormalized = normalizeRemaps( modelDesc );
 		// List sources required by this model
-		const sourceNames = _.keys(sourcesNormalized);
+		const sourceNames = _.keys( sourcesNormalized );
 		const modelSources: IDataSourceRegistry = _.pick(
 			Diaspora.dataSources,
 			sourceNames
 		);
-		const missingSources = _.difference(sourceNames, _.keys(modelSources));
-		if (0 !== missingSources.length) {
+		const missingSources = _.difference( sourceNames, _.keys( modelSources ) );
+		if ( 0 !== missingSources.length ) {
 			throw new Error(
-				`Missing data sources ${missingSources.map(v => `"${v}"`).join(', ')}`
+				`Missing data sources ${missingSources.map( v => `"${v}"` ).join( ', ' )}`
 			);
 		}
 
-		if (!_.isObject(modelDesc.attributes)) {
+		if ( !_.isObject( modelDesc.attributes ) ) {
 			throw new TypeError(
 				`Model attributes should be an object, have ${JSON.stringify(
 					modelDesc.attributes
@@ -330,18 +368,18 @@ export class Model {
 
 		// Now, we are sure that config is valid. We can configure our _dataSources with model options, and set `this` properties.
 		const modelDescNormalized = modelDesc as ModelDescription;
-		_.forEach(sourcesNormalized, (remap, sourceName) =>
-			modelSources[sourceName].configureCollection(name, remap)
-		);
+		_.forEach( sourcesNormalized, ( remap, sourceName ) => {
+			modelSources[sourceName].configureCollection( name, remap );
+		} );
 		this._dataSources = modelSources;
-		this.defaultDataSource = _.chain(modelSources)
+		this.defaultDataSource = _.chain( modelSources )
 			.keys()
 			.head()
 			.value() as string;
-		this._entityFactory = EntityFactory(name, modelDescNormalized, this);
-		this._validator = new Validator(modelDescNormalized.attributes);
+		this._entityFactory = EntityFactory( name, modelDescNormalized, this );
+		this._validator = new Validator( modelDescNormalized.attributes );
 		// TODO: Normalize attributes before
-		this.attributes = deepFreeze(modelDesc.attributes) as {
+		this.attributes = deepFreeze( modelDesc.attributes ) as {
 			[key: string]: FieldDescriptor;
 		};
 	}
@@ -354,18 +392,18 @@ export class Model {
 	 * @param   sourceName - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.Sources.
 	 * @returns Source adapter with requested name.
 	 */
-	getDataSource(
+	public getDataSource(
 		sourceName: string = this.defaultDataSource
 	): Adapter<AdapterEntity> {
-		if (_.isNil(sourceName)) {
+		if ( _.isNil( sourceName ) ) {
 			sourceName = this.defaultDataSource;
-		} else if (!this._dataSources.hasOwnProperty(sourceName)) {
+		} else if ( !this._dataSources.hasOwnProperty( sourceName ) ) {
 			throw new Error(
 				`Unknown data source "${sourceName}" in model "${
 					this.name
-				}", available are ${_.keys(this._dataSources)
-					.map(v => `"${v}"`)
-					.join(', ')}`
+				}", available are ${_.keys( this._dataSources )
+					.map( v => `"${v}"` )
+					.join( ', ' )}`
 			);
 		}
 		return this._dataSources[sourceName];
@@ -378,8 +416,8 @@ export class Model {
 	 * @param   source - Object to copy attributes from.
 	 * @returns New *orphan* entity.
 	 */
-	spawn(source: object): Entity {
-		const newEntity = new this.entityFactory(source);
+	public spawn( source: object ): Entity {
+		const newEntity = new this.entityFactory( source );
 		return newEntity;
 	}
 
@@ -390,8 +428,8 @@ export class Model {
 	 * @param   sources - Array of objects to copy attributes from.
 	 * @returns Set with new *orphan* entities.
 	 */
-	spawnMany(sources: object[]): Set {
-		return new Set(this, _.map(sources, source => this.spawn(source)));
+	public spawnMany( sources: object[] ): Set {
+		return new Set( this, _.map( sources, source => this.spawn( source ) ) );
 	}
 
 	/**
@@ -402,13 +440,13 @@ export class Model {
 	 * @param   dataSourceName - Name of the data source to insert in.
 	 * @returns Promise resolved with new *sync* {@link Entity entity}.
 	 */
-	async insert(
+	public async insert(
 		source: object,
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity> {
-		const dataSource = this.getDataSource(dataSourceName);
-		const entity = await dataSource.insertOne(this.name, source);
-		return new this.entityFactory(entity);
+		const dataSource = this.getDataSource( dataSourceName );
+		const entity = await dataSource.insertOne( this.name, source );
+		return new this.entityFactory( entity );
 	}
 
 	/**
@@ -419,16 +457,16 @@ export class Model {
 	 * @param   dataSourceName - Name of the data source to insert in.
 	 * @returns Promise resolved with a {@link Set set} containing new *sync* entities.
 	 */
-	async insertMany(
+	public async insertMany(
 		sources: object[],
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		const dataSource = this.getDataSource(dataSourceName);
-		const entities: AdapterEntity[] = (await dataSource.insertMany(
+		const dataSource = this.getDataSource( dataSourceName );
+		const entities: AdapterEntity[] = ( await dataSource.insertMany(
 			this.name,
 			sources
-		)) as any;
-		return makeSet(this, entities);
+		) ) as any;
+		return makeSet( this, entities );
 	}
 
 	/**
@@ -440,7 +478,7 @@ export class Model {
 	 * @param   dataSourceName - Name of the data source to get entity from.
 	 * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */
-	async find(
+	public async find(
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
@@ -464,12 +502,12 @@ export class Model {
 	 * @param   dataSourceName - Name of the data source to get entities from.
 	 * @returns Promise resolved with a {@link Set set} of found entities in *sync* state.
 	 */
-	async findMany(
+	public async findMany(
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		return doFindUpdate(this, true, queryFind, options, dataSourceName);
+		return doFindUpdate( this, true, queryFind, options, dataSourceName );
 	}
 
 	/**
@@ -482,7 +520,7 @@ export class Model {
 	 * @param   dataSourceName - Name of the data source to get entity from.
 	 * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */
-	async update(
+	public async update(
 		queryFind: QueryLanguage.SelectQuery,
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {},
@@ -509,13 +547,13 @@ export class Model {
 	 * @param   dataSourceName - Name of the data source to get entities from.
 	 * @returns Promise resolved with the {@link Set set} of found entities in *sync* state.
 	 */
-	async updateMany(
+	public async updateMany(
 		queryFind: QueryLanguage.SelectQuery,
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		return doFindUpdate(this, true, queryFind, options, dataSourceName, update);
+		return doFindUpdate( this, true, queryFind, options, dataSourceName, update );
 	}
 
 	/**
@@ -527,12 +565,12 @@ export class Model {
 	 * @param   dataSourceName - Name of the data source to get entity from.
 	 * @returns Promise resolved with `undefined`.
 	 */
-	async delete(
+	public async delete(
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
-		return doDelete(EDeleteMethod.Single, this)(
+		return doDelete( EDeleteMethod.Single, this )(
 			queryFind,
 			options,
 			dataSourceName
@@ -548,12 +586,12 @@ export class Model {
 	 * @param   dataSourceName - Name of the data source to get entities from.
 	 * @returns Promise resolved with `undefined`.
 	 */
-	async deleteMany(
+	public async deleteMany(
 		queryFind: QueryLanguage.SelectQuery = {},
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
-		return doDelete(EDeleteMethod.Multiple, this)(
+		return doDelete( EDeleteMethod.Multiple, this )(
 			queryFind,
 			options,
 			dataSourceName

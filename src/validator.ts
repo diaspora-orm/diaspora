@@ -2,14 +2,12 @@ import * as _ from 'lodash';
 
 import {
 	FieldDescriptor,
-	ModelDescription,
 	ArrayFieldDescriptor,
 	RelationalFieldDescriptor,
 	ObjectFieldDescriptor,
-	EnumFieldDescriptor,
 	FieldDescriptorTypeChecks,
 } from './model';
-import { Entity, IRawEntityAttributes } from './entity/entityFactory';
+import { IRawEntityAttributes } from './entity/entityFactory';
 import { EntityValidationError } from './errors';
 import { getDefaultFunction } from './defaultFunctionStore';
 
@@ -30,25 +28,25 @@ const validateArrayItems = (
 		propVal: any,
 		index: number
 	): ErrorObjectFinal[] | ErrorObjectFinal | null => {
-		if (fieldDesc.hasOwnProperty('of')) {
-			const ofArray = _.castArray(fieldDesc.of);
-			const subErrors = _.chain(ofArray).map((desc, subIndex) =>
+		if ( fieldDesc.hasOwnProperty( 'of' ) ) {
+			const ofArray = _.castArray( fieldDesc.of );
+			const subErrors = _.chain( ofArray ).map( ( desc, subIndex ) =>
 				validator.validateField(
 					propVal,
 					keys
 						.clone()
-						.pushValidationProp('of', (_.isArray(fieldDesc.of)
-							? String(subIndex)
-							: undefined) as string)
-						.pushEntityProp(String(index)),
+						.pushValidationProp( 'of', ( _.isArray( fieldDesc.of )
+							? String( subIndex )
+							: undefined ) as string )
+						.pushEntityProp( String( index ) ),
 					{ getProps: false }
 				)
 			);
 
-			if (!_.isArray(fieldDesc.of)) {
+			if ( !_.isArray( fieldDesc.of ) ) {
 				// Just get the first or default to null
-				return subErrors.get(0).value();
-			} else if (subErrors.every(subError => !_.isNil(subError)).value()) {
+				return subErrors.get( 0 ).value();
+			} else if ( subErrors.every( subError => !_.isNil( subError ) ).value() ) {
 				return subErrors.compact().value();
 			}
 		}
@@ -56,10 +54,10 @@ const validateArrayItems = (
 	};
 };
 
-const messageRequired = (keys: PathStack, fieldDesc: FieldDescriptor) => {
+const messageRequired = ( keys: PathStack, fieldDesc: FieldDescriptor ) => {
 	return `${keys.toValidatePath()} is a required property of ${
 		fieldDesc.type === 'Relation'
-			? `model "${(fieldDesc as RelationalFieldDescriptor).model}"`
+			? `model "${( fieldDesc as RelationalFieldDescriptor ).model}"`
 			: `type "${fieldDesc.type}"`
 	}`;
 };
@@ -77,7 +75,7 @@ export interface ErrorObjectFinal extends ErrorObject {
 	value: any;
 }
 
-export type TypeChecker = (value: any) => boolean;
+export type TypeChecker = ( value: any ) => boolean;
 
 export interface TypeErrorObject extends ErrorObject {
 	type: string;
@@ -105,13 +103,13 @@ type CheckFunction = (
  * @param   tester - The test function to invoke.
  * @returns Function to execute to validate the type.
  */
-const validateWrongType = (tester: TypeChecker): CheckFunction => {
+const validateWrongType = ( tester: TypeChecker ): CheckFunction => {
 	return (
 		keys: PathStack,
 		fieldDesc: FieldDescriptor,
 		value: any
 	): ErrorObjectFinal | undefined => {
-		if (!tester(value)) {
+		if ( !tester( value ) ) {
 			return {
 				type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
 				value,
@@ -124,92 +122,136 @@ const validateWrongType = (tester: TypeChecker): CheckFunction => {
 /**
  * Store for validation functions.
  *
- * @property TYPE - Type checkers.
- * @property TYPE.string - String type checker.
- * @property TYPE.integer - Integer type checker.
- * @property TYPE.float - Float type checker.
- * @property TYPE.date - Date type checker.
- * @property TYPE.object - Object type checker.
- * @property TYPE.array - Array type checker.
- * @property TYPE.any - Type checker for type 'any'.
- * @property TYPE._ - Default function for unhandled type.
+ * @author Gerkin
  */
 const VALIDATIONS = {
 	TYPE: {
-		string: validateWrongType(_.isString),
-		integer: validateWrongType(_.isInteger),
-		float: validateWrongType(_.isNumber),
-		date: validateWrongType(_.isDate),
-		boolean: validateWrongType(_.isBoolean),
+		/**
+		 * String type checker
+		 *
+		 * @author Gerkin
+		 */
+		string: validateWrongType( _.isString ),
+		/**
+		 * Integer type checker
+		 *
+		 * @author Gerkin
+		 */
+		integer: validateWrongType( _.isInteger ),
+		/**
+		 * Float type checker. Any numeric other NaN or ±Infinity is accepted
+		 *
+		 * @author Gerkin
+		 */
+		float: validateWrongType( _.isNumber ),
+		/**
+		 * Date type checker
+		 *
+		 * @author Gerkin
+		 */
+		date: validateWrongType( _.isDate ),
+		/**
+		 * Boolean type checker
+		 *
+		 * @author Gerkin
+		 */
+		boolean: validateWrongType( _.isBoolean ),
+		/**
+		 * Object type checker
+		 *
+		 * @param this      - Current validator to use
+		 * @param keys      - PathStack containing keys to access this property
+		 * @param fieldDesc - Description of the current field to check
+		 * @param value     - Entity attributes to check
+		 * @author Gerkin
+		 */
 		object(
 			this: Validator,
 			keys: PathStack,
 			fieldDesc: ObjectFieldDescriptor,
 			value: IRawEntityAttributes
 		): ErrorObjectFinal | undefined {
-			if (!_.isObject(value)) {
+			if ( !_.isObject( value ) ) {
 				return {
 					type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
 					value,
 				};
 			} else {
-				const deepTest = (_.isObject(fieldDesc.attributes)
-					? _.chain(_.assign({}, fieldDesc.attributes, value))
-							.mapValues((pv, propName) => {
+				const deepTest = ( _.isObject( fieldDesc.attributes )
+					? _.chain( _.assign( {}, fieldDesc.attributes, value ) )
+							.mapValues( ( pv, propName ) => {
 								const propVal = value[propName];
 								return this.validateField(
 									propVal,
 									keys
 										.clone()
-										.pushValidationProp('attributes')
-										.pushProp(propName),
+										.pushValidationProp( 'attributes' )
+										.pushProp( propName ),
 									{ getProps: false }
 								);
-							})
-							.omitBy(_.isEmpty)
-							.omitBy(_.isNil)
+							} )
+							.omitBy( _.isEmpty )
+							.omitBy( _.isNil )
 							.value()
-					: {}) as { [key: string]: ErrorObjectFinal };
-				if (!_.isEmpty(deepTest)) {
+					: {} ) as { [key: string]: ErrorObjectFinal };
+				if ( !_.isEmpty( deepTest ) ) {
 					return { children: deepTest, value };
 				} else {
 					return undefined;
 				}
 			}
 		},
+		/**
+		 * Array type checker
+		 *
+		 * @param this      - Current validator to use
+		 * @param keys      - PathStack containing keys to access this property
+		 * @param fieldDesc - Description of the current field to check
+		 * @param value     - Entity attributes to check
+		 * @author Gerkin
+		 */
 		array(
 			this: Validator,
 			keys: PathStack,
 			fieldDesc: ArrayFieldDescriptor,
 			value: any[]
 		): ErrorObjectFinal | undefined {
-			if (!_.isArray(value)) {
+			if ( !_.isArray( value ) ) {
 				return {
 					type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
 					value,
 				};
 			} else {
-				const deepTest = (_.isObject(fieldDesc.of)
-					? _.chain(value)
-							.map(validateArrayItems(this, fieldDesc, keys))
-							.omitBy(_.isEmpty)
-							.omitBy(_.isNil)
+				const deepTest = ( _.isObject( fieldDesc.of )
+					? _.chain( value )
+							.map( validateArrayItems( this, fieldDesc, keys ) )
+							.omitBy( _.isEmpty )
+							.omitBy( _.isNil )
 							.value()
-					: []) as ErrorObjectFinal[];
-				if (!_.isEmpty(deepTest)) {
+					: [] ) as ErrorObjectFinal[];
+				if ( !_.isEmpty( deepTest ) ) {
 					return { children: deepTest, value };
 				} else {
 					return undefined;
 				}
 			}
 		},
+		/**
+		 * Match all type checker
+		 *
+		 * @param this      - Current validator to use
+		 * @param keys      - PathStack containing keys to access this property
+		 * @param fieldDesc - Description of the current field to check
+		 * @param value     - Entity attributes to check
+		 * @author Gerkin
+		 */
 		any(
 			this: Validator,
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
 		): ErrorObjectFinal | undefined {
-			return _.isNil(value)
+			return _.isNil( value )
 				? {
 						type: `${keys.toValidatePath()} expected to be assigned with any type`,
 						value,
@@ -232,43 +274,49 @@ const VALIDATIONS = {
 	},
 };
 // Add aliases
-_.assign(VALIDATIONS.TYPE, {
+_.assign( VALIDATIONS.TYPE, {
 	bool: VALIDATIONS.TYPE.boolean,
 	int: VALIDATIONS.TYPE.integer,
 	str: VALIDATIONS.TYPE.string,
 	text: VALIDATIONS.TYPE.string,
-});
-
-/**
- * Standard function that can be used to add steps to the validation process..
- *
- * @callback ValidationStep
- * @param   validationArgs - Object of arguments.
- * @returns This function returns nothing.
- */
+} );
 
 /**
  * This object can be passed through each validation steps.
  *
- * @typedef  {Object} ValidationStepsArgs
- * @property {Object}                     error     - Error object to extend.
- * @property {Object}                     fieldDesc - Description of the field.
- * @property {module:Validator~PathStack} keys      - Pathstack representing keys so far.
- * @property {*}                          value     - Value to check.
+ * @author Gerkin
  */
 interface ValidationStepArgs {
+	/**
+	 * Error object to extend.
+	 *
+	 * @author Gerkin
+	 */
 	error: ErrorObject;
+	/**
+	 * Description of the field.
+	 *
+	 * @author Gerkin
+	 */
 	fieldDesc: FieldDescriptor;
+	/**
+	 * Pathstack representing keys so far.
+	 *
+	 * @author Gerkin
+	 */
 	keys: PathStack;
+	/**
+	 * Value to check.
+	 *
+	 * @author Gerkin
+	 */
 	value: any;
 }
 
 /**
  * Those validation steps are called one after one during the validation of a single field.
  *
- * @property '0' - Check for `validate` field.
- * @property '1' - Check for `type` & `required` fields.
- * @property '2' - Check for `enum` field.
+ * @author Gerkin
  */
 const VALIDATION_STEPS = [
 	/**
@@ -277,18 +325,18 @@ const VALIDATION_STEPS = [
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
-	function checkCustoms(this: Validator, validationArgs: ValidationStepArgs) {
+	function checkCustoms( this: Validator, validationArgs: ValidationStepArgs ) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// It the field has a `validate` property, try to use it
-		const validateFcts = _.chain(fieldDesc.validate as Function[])
+		const validateFcts = _.chain( fieldDesc.validate as Function[] )
 			.castArray()
 			.compact()
 			.value();
-		validateFcts.forEach(validateFct => {
-			if (!validateFct.call(this, value, fieldDesc)) {
+		validateFcts.forEach( validateFct => {
+			if ( !validateFct.call( this, value, fieldDesc ) ) {
 				error.validate = `${keys.toValidatePath()} custom validation failed`;
 			}
-		});
+		} );
 	},
 
 	/**
@@ -303,21 +351,21 @@ const VALIDATION_STEPS = [
 	) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// Check the type and the required status
-		const typeKeys = _.intersection(_.keys(fieldDesc), ['type', 'model']);
-		if (typeKeys.length > 1) {
+		const typeKeys = _.intersection( _.keys( fieldDesc ), ['type', 'model'] );
+		if ( typeKeys.length > 1 ) {
 			error.spec = `${keys.toValidatePath()} spec can't have multiple keys from ${typeKeys.join(
 				','
 			)}`;
 			// Apply the `required` modifier
-		} else if (true === fieldDesc.required && _.isNil(value)) {
-			error.required = messageRequired(keys, fieldDesc);
-		} else if (!_.isNil(value)) {
-			if (fieldDesc.hasOwnProperty('type') && fieldDesc.type !== 'Relation') {
-				if (_.isString(fieldDesc.type)) {
+		} else if ( true === fieldDesc.required && _.isNil( value ) ) {
+			error.required = messageRequired( keys, fieldDesc );
+		} else if ( !_.isNil( value ) ) {
+			if ( fieldDesc.hasOwnProperty( 'type' ) && fieldDesc.type !== 'Relation' ) {
+				if ( _.isString( fieldDesc.type ) ) {
 					_.assign(
 						error,
 						// Get the validator. Default to unhandled type
-						_.get(VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._).call(
+						_.get( VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._ ).call(
 							this,
 							keys,
 							fieldDesc,
@@ -327,15 +375,15 @@ const VALIDATION_STEPS = [
 				} else {
 					error.spec = `${keys.toValidatePath()} spec "type" must be a string`;
 				}
-			} else if (fieldDesc.hasOwnProperty('model')) {
-				if (_.isString((fieldDesc as any).model)) {
+			} else if ( fieldDesc.hasOwnProperty( 'model' ) ) {
+				if ( _.isString( ( fieldDesc as any ).model ) ) {
 					// TODO Wrong so far: fallback to another type of check.
 					const tester = _.get(
 						VALIDATIONS,
-						['TYPE', (fieldDesc as any).model],
+						['TYPE', ( fieldDesc as any ).model],
 						VALIDATIONS.TYPE._
 					);
-					_.assign(error, tester.call(this, keys, fieldDesc, value));
+					_.assign( error, tester.call( this, keys, fieldDesc, value ) );
 				} else {
 					error.spec = `${keys.toValidatePath()} spec "model" must be a string`;
 				}
@@ -349,22 +397,22 @@ const VALIDATION_STEPS = [
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
-	function checkEnum(this: Validator, validationArgs: ValidationStepArgs) {
+	function checkEnum( this: Validator, validationArgs: ValidationStepArgs ) {
 		const { error, keys, value } = validationArgs;
 		const fieldDesc = validationArgs.fieldDesc;
 		// Check enum values
 		if (
-			!_.isNil(value) &&
-			FieldDescriptorTypeChecks.isEnumFieldDescriptor(fieldDesc)
+			!_.isNil( value ) &&
+			FieldDescriptorTypeChecks.isEnumFieldDescriptor( fieldDesc )
 		) {
-			const result = _.some(fieldDesc.enum, enumVal => {
-				if (enumVal instanceof RegExp) {
-					return null !== value.match(enumVal);
+			const result = _.some( fieldDesc.enum, enumVal => {
+				if ( enumVal instanceof RegExp ) {
+					return null !== value.match( enumVal );
 				} else {
 					return value === enumVal;
 				}
-			});
-			if (false === result) {
+			} );
+			if ( false === result ) {
 				error.enum = `${keys.toValidatePath()} expected to have one of enumerated values "${JSON.stringify(
 					fieldDesc.enum
 				)}"`;
@@ -382,7 +430,7 @@ export class PathStack {
 	 *
 	 * @author gerkin
 	 */
-	constructor(
+	public constructor(
 		public segmentsEntity: string[] = [],
 		public segmentsValidation: string[] = []
 	) {}
@@ -393,10 +441,10 @@ export class PathStack {
 	 * @param   prop - Properties to add.
 	 * @returns Returns `this`.
 	 */
-	pushEntityProp(...prop: string[]): this {
-		this.segmentsEntity = _.chain(this.segmentsEntity)
-			.concat(_.flattenDeep(prop))
-			.reject(_.isNil)
+	public pushEntityProp( ...prop: string[] ): this {
+		this.segmentsEntity = _.chain( this.segmentsEntity )
+			.concat( _.flattenDeep( prop ) )
+			.reject( _.isNil )
 			.value();
 		return this;
 	}
@@ -407,10 +455,10 @@ export class PathStack {
 	 * @param   prop - Properties to add.
 	 * @returns Returns `this`.
 	 */
-	pushValidationProp(...prop: string[]): this {
-		this.segmentsValidation = _.chain(this.segmentsValidation)
-			.concat(prop)
-			.reject(_.isNil)
+	public pushValidationProp( ...prop: string[] ): this {
+		this.segmentsValidation = _.chain( this.segmentsValidation )
+			.concat( prop )
+			.reject( _.isNil )
 			.value();
 		return this;
 	}
@@ -421,8 +469,8 @@ export class PathStack {
 	 * @param   prop - Properties to add.
 	 * @returns Returns `this`.
 	 */
-	pushProp(...prop: string[]): this {
-		return this.pushEntityProp(...prop).pushValidationProp(...prop);
+	public pushProp( ...prop: string[] ): this {
+		return this.pushEntityProp( ...prop ).pushValidationProp( ...prop );
 	}
 
 	/**
@@ -430,14 +478,14 @@ export class PathStack {
 	 *
 	 * @returns String representation of path in entity.
 	 */
-	toValidatePath(): string {
-		return this.segmentsEntity.join('.');
+	public toValidatePath(): string {
+		return this.segmentsEntity.join( '.' );
 	}
 
 	/**
 	 * Cast this PathStack to its representing arrays.
 	 */
-	toArray(): string[][] {
+	public toArray(): string[][] {
 		return [this.segmentsEntity.slice(), this.segmentsValidation.slice()];
 	}
 
@@ -446,8 +494,8 @@ export class PathStack {
 	 *
 	 * @returns Clone of caller PathStack.
 	 */
-	clone(): PathStack {
-		return new PathStack(...this.toArray());
+	public clone(): PathStack {
+		return new PathStack( ...this.toArray() );
 	}
 }
 
@@ -460,25 +508,27 @@ export class Validator {
 	 *
 	 * @param modelAttributes - Model description to validate.
 	 */
-	constructor(private _modelAttributes: { [key: string]: FieldDescriptor }) {}
+	public constructor(
+		private readonly _modelAttributes: { [key: string]: FieldDescriptor }
+	) {}
 
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
 	 * @author gerkin
 	 */
-	validate(entity: IRawEntityAttributes) {
+	public validate( entity: IRawEntityAttributes ) {
 		// Apply method `checkField` on each field described
-		const checkResults = _.chain(this._modelAttributes)
-			.mapValues((fieldDesc, field) =>
-				this.validateField(entity[field], new PathStack().pushProp(field), {
+		const checkResults = _.chain( this._modelAttributes )
+			.mapValues( ( fieldDesc, field ) =>
+				this.validateField( entity[field], new PathStack().pushProp( field ), {
 					getProps: false,
-				})
+				} )
 			)
-			.omitBy(_.isEmpty)
+			.omitBy( _.isEmpty )
 			.value() as { [key: string]: ErrorObjectFinal };
-		if (!_.isNil(checkResults) && !_.isEmpty(checkResults)) {
-			throw new EntityValidationError(checkResults, 'Validation failed');
+		if ( !_.isNil( checkResults ) && !_.isEmpty( checkResults ) ) {
+			throw new EntityValidationError( checkResults, 'Validation failed' );
 		}
 	}
 
@@ -492,20 +542,20 @@ export class Validator {
 	 * @param   options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
 	 * @returns Hash describing errors.
 	 */
-	validateField(
+	public validateField(
 		value: any,
 		keys: PathStack | string[],
 		options: { getProps: boolean } = { getProps: false }
 	): ErrorObjectFinal | null {
-		_.defaults(options, { getProps: true });
-		if (!(keys instanceof PathStack)) {
-			keys = new PathStack(keys);
+		_.defaults( options, { getProps: true } );
+		if ( !( keys instanceof PathStack ) ) {
+			keys = new PathStack( keys );
 		}
 
-		const val = options.getProps ? _.get(value, keys.segmentsEntity) : value;
-		const fieldDesc = _.get(this.modelAttributes, keys.segmentsValidation);
+		const val = options.getProps ? _.get( value, keys.segmentsEntity ) : value;
+		const fieldDesc = _.get( this.modelAttributes, keys.segmentsValidation );
 		// TODO: Add checks for strict models (like if we are using MySQL)
-		if (!_.isObject(fieldDesc)) {
+		if ( !_.isObject( fieldDesc ) ) {
 			return null;
 		}
 
@@ -518,12 +568,12 @@ export class Validator {
 			value: val,
 		};
 
-		_.forEach(VALIDATION_STEPS, validationStep =>
-			validationStep.call(this, stepsArgs)
+		_.forEach( VALIDATION_STEPS, validationStep =>
+			validationStep.call( this, stepsArgs )
 		);
 
-		if (!_.isEmpty(error)) {
-			const finalError = _.defaults({ value } as ErrorObjectFinal, error);
+		if ( !_.isEmpty( error ) ) {
+			const finalError = _.defaults( { value } as ErrorObjectFinal, error );
 			return finalError;
 		} else {
 			return null;
@@ -538,17 +588,17 @@ export class Validator {
 	 * @param   modelDesc - Model description.
 	 * @returns  Entity merged with default values.
 	 */
-	default(entity: IRawEntityAttributes) {
+	public default( entity: IRawEntityAttributes ) {
 		// Apply method `defaultField` on each field described
 		return _.defaults(
 			entity,
-			_.chain(this._modelAttributes)
-				.mapValues((fieldDesc, field) =>
-					this.defaultField(entity, new PathStack().pushProp(field), {
+			_.chain( this._modelAttributes )
+				.mapValues( ( fieldDesc, field ) =>
+					this.defaultField( entity, new PathStack().pushProp( field ), {
 						getProps: true,
-					})
+					} )
 				)
-				.omitBy(_.isUndefined)
+				.omitBy( _.isUndefined )
 				.value()
 		);
 	}
@@ -561,17 +611,17 @@ export class Validator {
 	 * @param   fieldDesc - Description of the field to default.
 	 * @returns Defaulted value.
 	 */
-	defaultField(
+	public defaultField(
 		value: any,
 		keys: PathStack | string[],
 		options: { getProps: boolean } = { getProps: false }
 	): any {
-		_.defaults(options, { getProps: true });
-		if (!(keys instanceof PathStack)) {
-			keys = new PathStack(keys);
+		_.defaults( options, { getProps: true } );
+		if ( !( keys instanceof PathStack ) ) {
+			keys = new PathStack( keys );
 		}
 
-		const val = options.getProps ? _.get(value, keys.segmentsEntity) : value;
+		const val = options.getProps ? _.get( value, keys.segmentsEntity ) : value;
 		const fieldDesc = _.get(
 			this.modelAttributes,
 			keys.segmentsValidation
@@ -580,27 +630,27 @@ export class Validator {
 		// Return the `default` if value is undefined
 		const valOrBaseDefault =
 			val ||
-			(_.isFunction(fieldDesc.default)
-				? getDefaultFunction(fieldDesc.default)()
-				: fieldDesc.default);
+			( _.isFunction( fieldDesc.default )
+				? getDefaultFunction( fieldDesc.default )()
+				: fieldDesc.default );
 
 		// Recurse if we are defaulting an object
 		if (
-			FieldDescriptorTypeChecks.isObjectFieldDescriptor(fieldDesc) &&
-			_.keys(fieldDesc.attributes).length > 0 &&
-			!_.isNil(valOrBaseDefault)
+			FieldDescriptorTypeChecks.isObjectFieldDescriptor( fieldDesc ) &&
+			_.keys( fieldDesc.attributes ).length > 0 &&
+			!_.isNil( valOrBaseDefault )
 		) {
 			return _.merge(
 				valOrBaseDefault,
-				_.chain(fieldDesc.attributes)
-					.mapValues((fieldDesc, key) => {
+				_.chain( fieldDesc.attributes )
+					.mapValues( ( fieldDesc, key ) => {
 						const defaulted = this.defaultField(
 							value,
-							(keys as PathStack).clone().pushProp(key)
+							( keys as PathStack ).clone().pushProp( key )
 						);
-						return _.omitBy(defaulted, _.isNil);
-					})
-					.omitBy(_.isUndefined)
+						return _.omitBy( defaulted, _.isNil );
+					} )
+					.omitBy( _.isUndefined )
 					.value()
 			);
 		} else {
@@ -611,14 +661,14 @@ export class Validator {
 	/**
 	 * Get the model description provided in constructor.
 	 */
-	get modelAttributes(): object {
-		return _.cloneDeep(this._modelAttributes);
+	public get modelAttributes(): object {
+		return _.cloneDeep( this._modelAttributes );
 	}
 
 	/**
 	 * Get the PathStack constructor.
 	 */
-	static get PathStack() {
+	public static get PathStack() {
 		return PathStack;
 	}
 }

@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import {
 	Adapter,
 	EAdapterState,
-	AdapterEntity,
 	IRemapsHash,
 	IFiltersHash,
 	QueryLanguage,
@@ -18,9 +17,6 @@ interface IDataStoreHash {
 }
 /**
  * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
- *
- * @extends Adapters.DiasporaAdapter
- * @memberof Adapters
  */
 export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	/**
@@ -28,53 +24,16 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 *
 	 * @author Gerkin
 	 */
-	private store: IDataStoreHash = {};
+	private readonly store: IDataStoreHash = {};
 
 	/**
 	 * Create a new instance of in memory adapter.
 	 *
 	 * @author gerkin
 	 */
-	constructor(dataSourceName: string) {
-		super(InMemoryEntity, dataSourceName);
+	public constructor( dataSourceName: string ) {
+		super( InMemoryEntity, dataSourceName );
 		this.state = EAdapterState.READY;
-	}
-
-	/**
-	 * Create the data store and call {@link Adapters.DiasporaAdapter#configureCollection}.
-	 *
-	 * @author gerkin
-	 * @param   tableName - Name of the table (usually, model name).
-	 * @param   remaps    - Associative hash that links entity field names with data source field names.
-	 * @returns This function does not return anything.
-	 */
-	public configureCollection(
-		tableName: string,
-		remaps: IRemapsHash,
-		filters: IFiltersHash
-	) {
-		super.configureCollection(tableName, remaps, filters);
-		this.ensureCollectionExists(tableName);
-	}
-
-	// -----
-	// ### Utils
-
-	/**
-	 * Get or create the store hash.
-	 *
-	 * @author gerkin
-	 * @param   table - Name of the table.
-	 * @returns In memory table to use.
-	 */
-	private ensureCollectionExists(table: string) {
-		if (this.store.hasOwnProperty(table)) {
-			return this.store[table];
-		} else {
-			return (this.store[table] = {
-				items: [],
-			});
-		}
 	}
 
 	// -----
@@ -89,17 +48,17 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @param   entity - Hash representing the entity to insert.
 	 * @returns Promise resolved once insertion is done. Called with (*{@link InMemoryEntity}* `entity`).
 	 */
-	async insertOne(
+	public async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
 	): Promise<IRawAdapterEntityAttributes | undefined> {
-		const storeTable = this.ensureCollectionExists(table);
+		const storeTable = this.ensureCollectionExists( table );
 		const adapterEntityAttributes = InMemoryEntity.setId(
-			_.omitBy(entity, _.isUndefined),
+			_.omitBy( entity, _.isUndefined ),
 			this
 		);
-		storeTable.items.push(adapterEntityAttributes);
-		return _.cloneDeep(adapterEntityAttributes);
+		storeTable.items.push( adapterEntityAttributes );
+		return _.cloneDeep( adapterEntityAttributes );
 	}
 
 	// -----
@@ -115,17 +74,17 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @param   options   - Hash of options.
 	 * @returns Promise resolved once item is found. Called with (*{@link InMemoryEntity}* `entity`).
 	 */
-	async findOne(
+	public async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
-		const storeTable = this.ensureCollectionExists(table);
-		const matches = _.filter(storeTable.items, item =>
-			InMemoryEntity.matches(item, queryFind)
+		const storeTable = this.ensureCollectionExists( table );
+		const matches = _.filter( storeTable.items, item =>
+			InMemoryEntity.matches( item, queryFind )
 		);
-		const reducedMatches = Utils.applyOptionsToSet(matches, options);
-		return _.first(reducedMatches);
+		const reducedMatches = Utils.applyOptionsToSet( matches, options );
+		return _.first( reducedMatches );
 	}
 
 	/**
@@ -138,16 +97,16 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @param   options   - Hash of options.
 	 * @returns Promise resolved once items are found. Called with (*{@link InMemoryEntity}[]* `entities`).
 	 */
-	async findMany(
+	public async findMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
-		const storeTable = this.ensureCollectionExists(table);
-		const matches = _.filter(storeTable.items, item =>
-			InMemoryEntity.matches(item, queryFind)
+		const storeTable = this.ensureCollectionExists( table );
+		const matches = _.filter( storeTable.items, item =>
+			InMemoryEntity.matches( item, queryFind )
 		);
-		const reducedMatches = Utils.applyOptionsToSet(matches, options);
+		const reducedMatches = Utils.applyOptionsToSet( matches, options );
 		return reducedMatches || [];
 	}
 
@@ -165,21 +124,21 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @param   options   - Hash of options.
 	 * @returns Promise resolved once update is done. Called with (*{@link InMemoryEntity}* `entity`).
 	 */
-	async updateOne(
+	public async updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
-		const found = await this.findOne(table, queryFind, options);
+		const found = await this.findOne( table, queryFind, options );
 
-		if (!_.isNil(found)) {
-			const storeTable = this.ensureCollectionExists(table);
-			const match = _.find(storeTable.items, {
+		if ( !_.isNil( found ) ) {
+			const storeTable = this.ensureCollectionExists( table );
+			const match = _.find( storeTable.items, {
 				id: found.id,
-			});
-			if (match) {
-				Utils.applyUpdateEntity(update, match);
+			} );
+			if ( match ) {
+				Utils.applyUpdateEntity( update, match );
 				return match;
 			}
 		}
@@ -197,25 +156,25 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @param   options   - Hash of options.
 	 * @returns Promise resolved once update is done. Called with (*{@link InMemoryEntity}[]* `entities`).
 	 */
-	async updateMany(
+	public async updateMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
-		const foundEntity = await this.findMany(table, queryFind, options);
+		const foundEntity = await this.findMany( table, queryFind, options );
 
-		if (!_.isNil(foundEntity) && foundEntity.length > 0) {
-			const storeTable = this.ensureCollectionExists(table);
-			const foundIds = _.map(foundEntity, 'id');
+		if ( !_.isNil( foundEntity ) && foundEntity.length > 0 ) {
+			const storeTable = this.ensureCollectionExists( table );
+			const foundIds = _.map( foundEntity, 'id' );
 			const matches = _.filter(
 				storeTable.items,
-				item => -1 !== foundIds.indexOf(item.id)
+				item => -1 !== foundIds.indexOf( item.id )
 			);
-			return _.map(matches, item => {
-				Utils.applyUpdateEntity(update, item);
+			return _.map( matches, item => {
+				Utils.applyUpdateEntity( update, item );
 				return item;
-			});
+			} );
 		} else {
 			return [];
 		}
@@ -234,15 +193,15 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @param   options   - Hash of options.
 	 * @returns Promise resolved once item is found. Called with (*undefined*).
 	 */
-	async deleteOne(
+	public async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<void> {
-		const storeTable = this.ensureCollectionExists(table);
-		const entityToDelete = await this.findOne(table, queryFind, options);
+		const storeTable = this.ensureCollectionExists( table );
+		const entityToDelete = await this.findOne( table, queryFind, options );
 
-		if (!_.isNil(entityToDelete)) {
+		if ( !_.isNil( entityToDelete ) ) {
 			storeTable.items = _.reject(
 				storeTable.items,
 				entity => entity.id === entityToDelete.id
@@ -260,16 +219,50 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @param   options   - Hash of options.
 	 * @returns Promise resolved once items are deleted. Called with (*undefined*).
 	 */
-	async deleteMany(
+	public async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<void> {
-		const storeTable = this.ensureCollectionExists(table);
-		const entitiesToDelete = await this.findMany(table, queryFind, options);
-		const entitiesIds = _.map(entitiesToDelete, entity => entity.id);
-		storeTable.items = _.reject(storeTable.items, entity =>
-			_.includes(entitiesIds, entity.id)
+		const storeTable = this.ensureCollectionExists( table );
+		const entitiesToDelete = await this.findMany( table, queryFind, options );
+		const entitiesIds = _.map( entitiesToDelete, entity => entity.id );
+		storeTable.items = _.reject( storeTable.items, entity =>
+			_.includes( entitiesIds, entity.id )
 		);
+	}
+
+	/**
+	 * Create the data store and call {@link Adapters.DiasporaAdapter#configureCollection}.
+	 *
+	 * @author gerkin
+	 * @param   tableName - Name of the table (usually, model name).
+	 * @param   remaps    - Associative hash that links entity field names with data source field names.
+	 * @returns This function does not return anything.
+	 */
+	public configureCollection(
+		tableName: string,
+		remaps: IRemapsHash,
+		filters: IFiltersHash
+	) {
+		super.configureCollection( tableName, remaps, filters );
+		this.ensureCollectionExists( tableName );
+	}
+
+	/**
+	 * Get or create the store hash.
+	 *
+	 * @author gerkin
+	 * @param   table - Name of the table.
+	 * @returns In memory table to use.
+	 */
+	private ensureCollectionExists( table: string ) {
+		if ( this.store.hasOwnProperty( table ) ) {
+			return this.store[table];
+		} else {
+			return ( this.store[table] = {
+				items: [],
+			} );
+		}
 	}
 }

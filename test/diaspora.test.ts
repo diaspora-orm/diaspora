@@ -9,11 +9,11 @@ const defaultCheck = (
 	entity: any,
 	modelDesc: { [key: string]: FieldDescriptor }
 ) => {
-	return new Validator(modelDesc).default(entity);
+	return new Validator( modelDesc ).default( entity );
 };
 
-describe('Diaspora exposed methods', () => {
-	it('Default', () => {
+describe( 'Diaspora exposed methods', () => {
+	it( 'Default', () => {
 		const now = _.now();
 		expect(
 			defaultCheck(
@@ -27,10 +27,10 @@ describe('Diaspora exposed methods', () => {
 					},
 				}
 			)
-		).toMatchObject({
+		).toMatchObject( {
 			aze: 123,
 			foo: 'bar',
-		});
+		} );
 
 		expect(
 			defaultCheck(
@@ -44,10 +44,10 @@ describe('Diaspora exposed methods', () => {
 					},
 				}
 			)
-		).toMatchObject({
+		).toMatchObject( {
 			aze: 123,
 			foo: now,
-		});
+		} );
 
 		expect(
 			defaultCheck(
@@ -61,9 +61,9 @@ describe('Diaspora exposed methods', () => {
 					},
 				}
 			)
-		).toMatchObject({
+		).toMatchObject( {
 			aze: 'baz',
-		});
+		} );
 		expect(
 			defaultCheck(
 				{
@@ -76,11 +76,8 @@ describe('Diaspora exposed methods', () => {
 					},
 				}
 			)
-		).toMatchObject({
+		).toMatchObject( {
 			aze: 'baz',
-		});
-	});
-});
-
-//importTest( getStyle( 'category', 'Adapters' ), `${ __dirname  }/adapters/index.js` );
-//importTest( getStyle( 'category', 'Models' ), `${ __dirname  }/models/index.js` );
+		} );
+	} );
+} );

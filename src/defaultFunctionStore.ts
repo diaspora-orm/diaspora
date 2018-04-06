@@ -6,13 +6,13 @@ export const namedFunctions = {
 	},
 };
 
-export const getDefaultFunction = (identifier: string | Function): Function => {
-	if (_.isString(identifier)) {
-		const match = identifier.match(/^(.+?)(?:::(.+?))+$/);
-		if (match) {
-			const parts = identifier.split('::');
-			const namedFunction = _.get(namedFunctions, parts);
-			if (_.isFunction(namedFunction)) {
+export const getDefaultFunction = ( identifier: string | Function ): Function => {
+	if ( _.isString( identifier ) ) {
+		const match = identifier.match( /^(.+?)(?:::(.+?))+$/ );
+		if ( match ) {
+			const parts = identifier.split( '::' );
+			const namedFunction = _.get( namedFunctions, parts );
+			if ( _.isFunction( namedFunction ) ) {
 				return namedFunction();
 			}
 		}

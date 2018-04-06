@@ -1,12 +1,7 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
-import {
-	AdapterEntity,
-	QueryLanguage,
-	IAdapterEntityCtr,
-	IRawAdapterEntityAttributes,
-} from '.';
+import { AdapterEntity, QueryLanguage, IRawAdapterEntityAttributes } from '.';
 import { IRawEntityAttributes } from '../../entity/entityFactory';
 import {
 	remapIO,
@@ -29,14 +24,14 @@ export enum EAdapterState {
 
 export interface IAdapterCtr<T extends AdapterEntity = AdapterEntity>
 	extends Constructable<Adapter> {
-	new (dataSourceName: string, ...args: any[]): Adapter;
+	new ( dataSourceName: string, ...args: any[] ): Adapter;
 }
 
 /**
  * Adapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
  * @extends SequentialEvent
- * @memberof Adapters
  * @author gerkin
+ * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
  */
 export abstract class Adapter<
 	T extends AdapterEntity = AdapterEntity
@@ -89,9 +84,9 @@ export abstract class Adapter<
 	 * @author gerkin
 	 * @param classEntity - Entity to spawn with this adapter.
 	 */
-	constructor(
+	public constructor(
 		protected _classEntity: {
-			new (data: IRawEntityAttributes, adapter: Adapter<T>): T;
+			new ( data: IRawEntityAttributes, adapter: Adapter<T> ): T;
 		},
 		public readonly name: string
 	) {
@@ -103,33 +98,16 @@ export abstract class Adapter<
 		this.state = EAdapterState.PREPARING;
 
 		// Bind events
-		this.on(EAdapterState.READY, () => {
+		this.on( EAdapterState.READY, () => {
 			this.state = EAdapterState.READY;
-		}).on(EAdapterState.ERROR, (err: Error) => {
+		} ).on( EAdapterState.ERROR, ( err: Error ) => {
 			this.state = EAdapterState.ERROR;
-			(logger as any).error(
+			logger.error(
 				'Error while initializing:',
-				_.pick(err, Object.getOwnPropertyNames(err))
+				_.pick( err, Object.getOwnPropertyNames( err ) )
 			);
 			this.error = err;
-		});
-	}
-
-	/**
-	 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
-	 *
-	 * @author gerkin
-	 */
-	public configureCollection(
-		tableName: string,
-		remaps: IRemapsHash,
-		filters: IFiltersHash = {}
-	): void {
-		(this.remaps as any)[tableName] = {
-			normal: remaps,
-			inverted: _.invert(remaps),
-		};
-		(this.filters as any)[tableName] = filters;
+		} );
 	}
 
 	// -----
@@ -139,7 +117,6 @@ export abstract class Adapter<
 	 * Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
 	 *
 	 * @event Adapters.Adapter#ready
-	 * @type {undefined}
 	 * @see {@link Adapters.Adapter#waitReady waitReady} Convinience method to wait for state change.
 	 */
 
@@ -147,7 +124,6 @@ export abstract class Adapter<
 	 * Fired if the adapter failed to initialize or changed to `error` state. Called with the triggering `error`.
 	 *
 	 * @event Adapters.Adapter#error
-	 * @type {Error}
 	 * @see {@link Adapters.Adapter#waitReady waitReady} Convinience method to wait for state change.
 	 */
 
@@ -162,20 +138,20 @@ export abstract class Adapter<
 	 * @listens Adapters.Adapter#ready
 	 * @returns Promise resolved when adapter is ready, and rejected if an error occured.
 	 */
-	waitReady(): Promise<this> {
-		return new Promise((resolve, reject) => {
-			if (EAdapterState.READY === this.state) {
-				return resolve(this);
-			} else if (EAdapterState.ERROR === this.state) {
-				return reject(this.error);
+	public waitReady(): Promise<this> {
+		return new Promise( ( resolve, reject ) => {
+			if ( EAdapterState.READY === this.state ) {
+				return resolve( this );
+			} else if ( EAdapterState.ERROR === this.state ) {
+				return reject( this.error );
 			}
 
-			this.on(EAdapterState.READY, () => {
-				return resolve(this);
-			}).on(EAdapterState.ERROR, (err: Error) => {
-				return reject(err);
-			});
-		});
+			this.on( EAdapterState.READY, () => {
+				return resolve( this );
+			} ).on( EAdapterState.ERROR, ( err: Error ) => {
+				return reject( err );
+			} );
+		} );
 	}
 
 	/**
@@ -185,11 +161,11 @@ export abstract class Adapter<
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	remapInput(
+	public remapInput(
 		tableName: string,
 		query: IRawEntityAttributes
 	): IRawEntityAttributes {
-		return remapIO(this, tableName, query, true);
+		return remapIO( this, tableName, query, true );
 	}
 
 	/**
@@ -199,11 +175,11 @@ export abstract class Adapter<
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	remapOutput(
+	public remapOutput(
 		tableName: string,
 		query: IRawEntityAttributes
 	): IRawEntityAttributes {
-		return remapIO(this, tableName, query, false);
+		return remapIO( this, tableName, query, false );
 	}
 
 	/**
@@ -215,20 +191,20 @@ export abstract class Adapter<
 	 * @throws  {Error} Thrown when there isn't more precise description of the error is available (eg. when conflicts occurs).
 	 * @returns Transformed options (also called `canonical options`).
 	 */
-	normalizeOptions(
+	public normalizeOptions(
 		opts: QueryLanguage.QueryOptionsRaw = {}
 	): QueryLanguage.QueryOptions {
-		opts = _.cloneDeep(opts);
-		_.forEach(QUERY_OPTIONS_TRANSFORMS, (transform, optionName) => {
-			if (opts.hasOwnProperty(optionName)) {
-				QUERY_OPTIONS_TRANSFORMS[optionName](opts);
+		opts = _.cloneDeep( opts );
+		_.forEach( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
+			if ( opts.hasOwnProperty( optionName ) ) {
+				QUERY_OPTIONS_TRANSFORMS[optionName]( opts );
 			}
-		});
-		_.defaults(opts, {
+		} );
+		_.defaults( opts, {
 			skip: 0,
 			remapInput: true,
 			remapOutput: true,
-		});
+		} );
 		return opts as QueryLanguage.QueryOptions;
 	}
 
@@ -237,27 +213,27 @@ export abstract class Adapter<
 	 *
 	 * @author gerkin
 	 */
-	normalizeQuery(
+	public normalizeQuery(
 		originalQuery: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions
 	): QueryLanguage.SelectQueryOrCondition {
-		if (_.isString(originalQuery)) {
+		if ( _.isString( originalQuery ) ) {
 			originalQuery = { id: originalQuery };
 		}
 		const normalizedQuery =
 			true === options.remapInput
-				? _.chain(_.cloneDeep(originalQuery))
-						.mapValues(attrSearch => {
-							if (_.isUndefined(attrSearch)) {
+				? _.chain( _.cloneDeep( originalQuery ) )
+						.mapValues( attrSearch => {
+							if ( _.isUndefined( attrSearch ) ) {
 								return { $exists: false };
-							} else if (!(attrSearch instanceof Object)) {
+							} else if ( !( attrSearch instanceof Object ) ) {
 								return { $equal: attrSearch };
 							} else {
 								// Replace operations alias by canonical expressions
-								attrSearch = _.mapKeys(attrSearch, (val, operator, obj) => {
-									if (CANONICAL_OPERATORS.hasOwnProperty(operator)) {
+								attrSearch = _.mapKeys( attrSearch, ( val, operator, obj ) => {
+									if ( CANONICAL_OPERATORS.hasOwnProperty( operator ) ) {
 										// ... check for conflict with canonical operation name...
-										if (obj.hasOwnProperty(CANONICAL_OPERATORS[operator])) {
+										if ( obj.hasOwnProperty( CANONICAL_OPERATORS[operator] ) ) {
 											throw new Error(
 												`Search can't have both "${operator}" and "${
 													CANONICAL_OPERATORS[operator]
@@ -267,15 +243,15 @@ export abstract class Adapter<
 										return CANONICAL_OPERATORS[operator];
 									}
 									return operator;
-								});
+								} );
 								// For arithmetic comparison, check if values are numeric (TODO later: support date)
 								_.forEach(
 									['$less', '$lessEqual', '$greater', '$greaterEqual'],
 									operation => {
 										if (
-											attrSearch.hasOwnProperty(operation) &&
+											attrSearch.hasOwnProperty( operation ) &&
 											!(
-												_.isNumber(attrSearch[operation]) || _.isDate(attrSearch[operation])
+												_.isNumber( attrSearch[operation] ) || _.isDate( attrSearch[operation] )
 											)
 										) {
 											throw new TypeError(
@@ -288,9 +264,9 @@ export abstract class Adapter<
 								);
 								return attrSearch;
 							}
-						})
+						} )
 						.value()
-				: _.cloneDeep(originalQuery);
+				: _.cloneDeep( originalQuery );
 		return normalizedQuery;
 	}
 
@@ -299,14 +275,14 @@ export abstract class Adapter<
 	 *
 	 * @returns JSON representation of the adapter.
 	 */
-	toJSON(): object {
-		return _.pick(this, [
+	public toJSON(): object {
+		return _.pick( this, [
 			'state',
 			'remaps',
 			'remapsInverted',
 			'classEntity',
 			'error',
-		]);
+		] );
 	}
 
 	// -----
@@ -318,11 +294,11 @@ export abstract class Adapter<
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	async insertOne(
+	public async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
 	): Promise<IRawAdapterEntityAttributes | undefined> {
-		return _.first(await this.insertMany(table, [entity]));
+		return _.first( await this.insertMany( table, [entity] ) );
 	}
 
 	/**
@@ -331,15 +307,15 @@ export abstract class Adapter<
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	async insertMany(
+	public async insertMany(
 		table: string,
 		entities: IRawEntityAttributes[]
 	): Promise<IRawAdapterEntityAttributes[]> {
 		const mapped = [];
-		for (let i = 0; i < entities.length; i++) {
-			mapped.push(await this.insertOne(table, entities[i] || {}));
+		for ( let i = 0; i < entities.length; i++ ) {
+			mapped.push( await this.insertOne( table, entities[i] || {} ) );
 		}
-		return _.compact(mapped);
+		return _.compact( mapped );
 	}
 
 	// -----
@@ -351,13 +327,13 @@ export abstract class Adapter<
 	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	async findOne(
+	public async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		options.limit = 1;
-		return _.first(await this.findMany(table, queryFind, options));
+		return _.first( await this.findMany( table, queryFind, options ) );
 	}
 
 	/**
@@ -366,14 +342,14 @@ export abstract class Adapter<
 	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	async findMany(
+	public async findMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
-		const optionsNormalized = this.normalizeOptions(options);
-		const boundQuery = this.findOne.bind(this, table, queryFind);
-		return iterateLimit(optionsNormalized, boundQuery);
+		const optionsNormalized = this.normalizeOptions( options );
+		const boundQuery = this.findOne.bind( this, table, queryFind );
+		return iterateLimit( optionsNormalized, boundQuery );
 	}
 
 	// -----
@@ -385,15 +361,15 @@ export abstract class Adapter<
 	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	async updateOne(
+	public async updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
-		options = this.normalizeOptions(options);
+		options = this.normalizeOptions( options );
 		options.limit = 1;
-		return _.first(await this.updateMany(table, queryFind, update, options));
+		return _.first( await this.updateMany( table, queryFind, update, options ) );
 	}
 
 	/**
@@ -402,16 +378,16 @@ export abstract class Adapter<
 	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	async updateMany(
+	public async updateMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
-		const optionsNormalized = this.normalizeOptions(options);
+		const optionsNormalized = this.normalizeOptions( options );
 		return iterateLimit(
 			optionsNormalized,
-			this.updateOne.bind(this, table, queryFind, update)
+			this.updateOne.bind( this, table, queryFind, update )
 		);
 	}
 
@@ -424,13 +400,13 @@ export abstract class Adapter<
 	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	async deleteOne(
+	public async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<void> {
 		options.limit = 1;
-		return this.deleteMany(table, queryFind, options);
+		return this.deleteMany( table, queryFind, options );
 	}
 
 	/**
@@ -443,7 +419,7 @@ export abstract class Adapter<
 	 * @param   options   - Hash of options.
 	 * @returns Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
-	async deleteMany(
+	public async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
@@ -452,22 +428,39 @@ export abstract class Adapter<
 		// We are going to loop until we find enough items
 		const loopFind = (): Promise<void> => {
 			// First, search for the item.
-			return this.findOne(table, queryFind, options).then(found => {
+			return this.findOne( table, queryFind, options ).then( found => {
 				// If the search returned nothing, then just finish the findMany
-				if (_.isNil(found)) {
+				if ( _.isNil( found ) ) {
 					return Promise.resolve();
 					// Else, if this is a value and not the initial `true`, add it to the list
 				}
 				// If we found enough items, return them
-				if (count === options.limit) {
+				if ( count === options.limit ) {
 					return Promise.resolve();
 				}
 				// Increase our counter
 				count++;
 				// Do the deletion & loop
-				return this.deleteOne(table, queryFind, options).then(loopFind);
-			});
+				return this.deleteOne( table, queryFind, options ).then( loopFind );
+			} );
 		};
 		return loopFind();
+	}
+
+	/**
+	 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
+	 *
+	 * @author gerkin
+	 */
+	public configureCollection(
+		tableName: string,
+		remaps: IRemapsHash,
+		filters: IFiltersHash = {}
+	): void {
+		( this.remaps as any )[tableName] = {
+			normal: remaps,
+			inverted: _.invert( remaps ),
+		};
+		( this.filters as any )[tableName] = filters;
 	}
 }

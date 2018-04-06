@@ -7,7 +7,7 @@ import { EntityValidationError } from './entityValidationError';
  * This class represents an error related to validation on a set.
  */
 export class SetValidationError extends ValidationError {
-	private validationErrors: EntityValidationError[];
+	private readonly validationErrors: EntityValidationError[];
 
 	/**
 	 * Construct a new validation error.
@@ -18,22 +18,27 @@ export class SetValidationError extends ValidationError {
 	 * @param validationErrors - Array of validation errors.
 	 * @param errorArgs        - Arguments to transfer to parent Error.
 	 */
-	constructor(
+	public constructor(
 		message: string,
 		validationErrors: EntityValidationError[],
 		...errorArgs: any[]
 	) {
-		message += `[\n${_.chain(validationErrors)
-			.map((error, index) => {
-				if (_.isNil(error)) {
+		super( message, ...errorArgs );
+		this.validationErrors = validationErrors;
+		this.message += `[\n${this.stringifyValidationError()}\n]`;
+	}
+
+	protected stringifyValidationError() {
+		return _.chain( this.validationErrors )
+			.map( ( error, index ) => {
+				if ( _.isNil( error ) ) {
 					return false;
 				} else {
-					return `${index}: ${error.message.replace(/\n/g, '\n	')}`;
+					return `${index}: ${error.message.replace( /\n/g, '\n	' )}`;
 				}
-			})
-			.filter(_.identity)
-			.join(',\n')}\n]`;
-		super(message, ...errorArgs);
-		this.validationErrors = validationErrors;
+			} )
+			.filter( _.identity )
+			.join( ',\n' )
+			.value();
 	}
 }

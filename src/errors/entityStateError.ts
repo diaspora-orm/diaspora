@@ -10,7 +10,7 @@ export class EntityStateError extends ExtendableError {
 	 * @author gerkin
 	 * @param errorArgs        - Arguments to transfer to parent Error.
 	 */
-	constructor(message: string, ...errorArgs: any[]) {
-		super(message, ...errorArgs);
+	public constructor( message: string, ...errorArgs: any[] ) {
+		super( message, ...errorArgs );
 	}
 }

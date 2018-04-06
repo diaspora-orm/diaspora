@@ -1,41 +1,44 @@
 import * as _ from 'lodash';
 
-import { ValidationError } from './validationError';
 import { ErrorObjectFinal } from '../validator';
-
-const stringifyValidationObject = (validationErrors: {
-	[key: string]: ErrorObjectFinal;
-}) => {
-	return _.chain(validationErrors)
-		.mapValues((error: ErrorObjectFinal, key) => {
-			return `${key} => ${JSON.stringify(error.value)}
-* ${_.chain(error)
-				.omit(['value'])
-				.values()
-				.map(_.identity)
-				.value()}`;
-		})
-		.values()
-		.join('\n* ');
-};
+import { ValidationError } from './validationError';
 
 /**
  * This class represents an error related to validation on an entity.
  */
 export class EntityValidationError extends ValidationError {
-	private validationErrors: { [key: string]: ErrorObjectFinal };
+	private readonly validationErrors: { [key: string]: ErrorObjectFinal };
 	/**
 	 * Construct a new validation error.
 	 */
-	constructor(
+	public constructor(
 		validationErrors: { [key: string]: ErrorObjectFinal },
 		message: string,
 		...errorArgs: any[]
 	) {
-		message += `
-${stringifyValidationObject(validationErrors)}`;
-		super(message, ...errorArgs);
+		super( message, ...errorArgs );
 		this.validationErrors = validationErrors;
-		Object.setPrototypeOf(this, EntityValidationError.prototype);
+		this.message += `
+		${this.stringifyValidationError()}`;
+	}
+
+	private static stringifyErrorComponent( error: ErrorObjectFinal ) {
+		return `${JSON.stringify( error.value )}
+		 * ${_.chain( error )
+				.omit( ['value'] )
+				.values()
+				.map( _.identity )
+				.value()}`;
+	}
+
+	protected stringifyValidationError() {
+		return _.chain( this.validationErrors )
+			.mapValues(
+				( error, key ) =>
+					`${key} => ${EntityValidationError.stringifyErrorComponent( error )}`
+			)
+			.values()
+			.join( '\n* ' )
+			.value();
 	}
 }

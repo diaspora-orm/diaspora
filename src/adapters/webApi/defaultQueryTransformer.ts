@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { EHttpVerb, IEventProvider, IEventProviderFactory } from '.';
+import { EHttpVerb, IEventProviderFactory, IApiDescription } from '.';
 
 export const DefaultQueryTransformerFactory: IEventProviderFactory = (
 	config: any
@@ -7,11 +7,11 @@ export const DefaultQueryTransformerFactory: IEventProviderFactory = (
 	/**
 	 * Get the plural name of an endpoint.
 	 *
-	 * @param   {string} endPoint - Name of the endpoint.
-	 * @returns {string} Plural version of the endpoint name.
+	 * @param   endPoint - Name of the endpoint.
+	 * @returns Plural version of the endpoint name.
 	 */
-	function getPluralEndpoint(endPoint: string) {
-		return _.get(config, ['pluralApis', endPoint], `${endPoint}s`);
+	function getPluralEndpoint( endPoint: string ) {
+		return _.get( config, ['pluralApis', endPoint], `${endPoint}s` );
 	}
 
 	return {
@@ -22,20 +22,20 @@ export const DefaultQueryTransformerFactory: IEventProviderFactory = (
 			select: any,
 			update: any,
 			options: any,
-			apiDesc: any
-		) {
-			const method = ({
+			apiDesc: IApiDescription
+		): IApiDescription {
+			const method = ( {
 				find: 'GET',
 				update: 'PATCH',
 				delete: 'DELETE',
 				insert: 'POST',
-			} as any)[queryType] as EHttpVerb;
+			} as any )[queryType] as EHttpVerb;
 
 			return _.defaultsDeep(
 				{
 					method,
-					endPoint: (queryNum === 'many'
-						? getPluralEndpoint(modelName)
+					endPoint: ( queryNum === 'many'
+						? getPluralEndpoint( modelName )
 						: modelName
 					).toLowerCase(),
 					queryString: {

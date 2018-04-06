@@ -3,19 +3,15 @@ import * as _ from 'lodash';
 import { IRawEntityAttributes } from './entity/entityFactory';
 import { QueryLanguage, IRawAdapterEntityAttributes } from './adapters/base';
 
-/**
- * @module Utils
- */
-
 export const defineEnumerableProperties = (
 	subject: object,
 	handlers: object
 ) => {
-	const remappedHandlers = _.mapValues(handlers, handler => {
+	const remappedHandlers = _.mapValues( handlers, handler => {
 		if (
-			_.isNil(handler) ||
+			_.isNil( handler ) ||
 			'object' !== typeof handler ||
-			Object.getPrototypeOf(handler) !== Object.prototype
+			Object.getPrototypeOf( handler ) !== Object.prototype
 		) {
 			handler = {
 				value: handler,
@@ -24,13 +20,13 @@ export const defineEnumerableProperties = (
 		let defaults: { enumerable: boolean; writable?: boolean } = {
 			enumerable: true,
 		};
-		if (!handler.hasOwnProperty('get')) {
+		if ( !handler.hasOwnProperty( 'get' ) ) {
 			defaults.writable = false;
 		}
-		_.defaults(handler, defaults);
+		_.defaults( handler, defaults );
 		return handler;
-	}) as PropertyDescriptorMap;
-	return Object.defineProperties(subject, remappedHandlers);
+	} ) as PropertyDescriptorMap;
+	return Object.defineProperties( subject, remappedHandlers );
 };
 
 /**
@@ -45,13 +41,13 @@ export const applyUpdateEntity = (
 	update: IRawEntityAttributes,
 	entity: IRawEntityAttributes
 ): IRawEntityAttributes => {
-	_.forEach(update, (val, key) => {
-		if (_.isUndefined(val)) {
+	_.forEach( update, ( val, key ) => {
+		if ( _.isUndefined( val ) ) {
 			delete entity[key];
 		} else {
 			entity[key] = val;
 		}
-	});
+	} );
 	return entity;
 };
 
@@ -64,15 +60,15 @@ export const applyUpdateEntity = (
 export const generateUUID = (): string => {
 	let d = new Date().getTime();
 	// Use high-precision timer if available
-	const perf = (global as any).performance;
-	if (perf && 'function' === typeof perf.now) {
+	const perf = ( global as any ).performance;
+	if ( perf && 'function' === typeof perf.now ) {
 		d += perf.now();
 	}
-	const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-		const r = ((d + Math.random() * 16) % 16) | 0;
-		d = Math.floor(d / 16);
-		return ('x' === c ? r : (r & 0x3) | 0x8).toString(16);
-	});
+	const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
+		const r = ( ( d + Math.random() * 16 ) % 16 ) | 0;
+		d = Math.floor( d / 16 );
+		return ( 'x' === c ? r : ( r & 0x3 ) | 0x8 ).toString( 16 );
+	} );
 	return uuid;
 };
 
@@ -88,24 +84,24 @@ export const applyOptionsToSet = (
 	set: IRawAdapterEntityAttributes[],
 	options: QueryLanguage.QueryOptions
 ): IRawAdapterEntityAttributes[] => {
-	_.defaults(options, {
+	_.defaults( options, {
 		limit: Infinity,
 		skip: 0,
-	});
-	set = set.slice(options.skip);
-	if (set.length > options.limit) {
-		set = set.slice(0, options.limit);
+	} );
+	set = set.slice( options.skip );
+	if ( set.length > options.limit ) {
+		set = set.slice( 0, options.limit );
 	}
 	return set;
 };
 
-export const deepFreeze = <T>(object: T) => {
-	const deepMap = (obj: T, mapper: Function): T => {
+export const deepFreeze = <T>( object: T ) => {
+	const deepMap = ( obj: T, mapper: Function ): T => {
 		return mapper(
-			_.mapValues(obj, function(v) {
-				return _.isPlainObject(v) ? deepMap(v, mapper) : v;
-			})
+			_.mapValues( obj, function( v ) {
+				return _.isPlainObject( v ) ? deepMap( v, mapper ) : v;
+			} )
 		);
 	};
-	return deepMap(object, Object.freeze);
+	return deepMap( object, Object.freeze );
 };

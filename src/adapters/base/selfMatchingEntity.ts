@@ -14,8 +14,28 @@ export const SelfMatchingAdapterEntity = <
 		 *
 		 * @author gerkin
 		 */
-		matches(query: QueryLanguage.SelectQuery): boolean {
-			return SelfMatchingAdapterEntity.matches(this._attributes, query);
+		public static matches(
+			attributes: IRawAdapterEntityAttributes,
+			query: QueryLanguage.SelectQuery
+		): boolean {
+			// Iterate over every query keys to check each predicates
+			const matchResult = _.every( _.toPairs( query ), ( [key, desc] ) => {
+				if ( _.isObject( desc ) ) {
+					const entityVal = attributes[key];
+					// Iterate over each matchers in the query for this attribute
+					return _.every( desc, ( val, operationName ) => {
+						// Try to execute the rule's matcher if any
+						const operationFunction = OPERATORS[operationName];
+						if ( operationFunction ) {
+							return operationFunction( entityVal, val );
+						} else {
+							return false;
+						}
+					} );
+				}
+				return false;
+			} );
+			return matchResult;
 		}
 
 		/**
@@ -23,28 +43,8 @@ export const SelfMatchingAdapterEntity = <
 		 *
 		 * @author gerkin
 		 */
-		static matches(
-			attributes: IRawAdapterEntityAttributes,
-			query: QueryLanguage.SelectQuery
-		): boolean {
-			// Iterate over every query keys to check each predicates
-			const matchResult = _.every(_.toPairs(query), ([key, desc]) => {
-				if (_.isObject(desc)) {
-					const entityVal = attributes[key];
-					// Iterate over each matchers in the query for this attribute
-					return _.every(desc, (val, operationName) => {
-						// Try to execute the rule's matcher if any
-						const operationFunction = OPERATORS[operationName];
-						if (operationFunction) {
-							return operationFunction(entityVal, val);
-						} else {
-							return false;
-						}
-					});
-				}
-				return false;
-			});
-			return matchResult;
+		public matches( query: QueryLanguage.SelectQuery ): boolean {
+			return SelfMatchingAdapterEntity.matches( this._attributes, query );
 		}
 	};
 };
