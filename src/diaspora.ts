@@ -7,8 +7,12 @@ import {
 	IAdapterEntityCtr,
 	IAdapterCtr,
 } from './adapters/base';
-import { Entity, IRawEntityAttributes, EntityUid } from './entityFactory';
-import { Set } from './set';
+import {
+	Entity,
+	IRawEntityAttributes,
+	EntityUid,
+} from './entity/entityFactory';
+import { Set } from './entity/set';
 import {
 	ModelDescription,
 	FieldDescriptor,
