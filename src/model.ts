@@ -49,20 +49,40 @@ export interface BaseFieldDescriptor {
 	default?: Function | string;
 }
 export interface ArrayFieldDescriptor extends BaseFieldDescriptor {
-	type: 'Array';
-	of?: FieldDescriptor | FieldDescriptor[];
+	of: FieldDescriptor | FieldDescriptor[];
 }
 export interface ObjectFieldDescriptor extends BaseFieldDescriptor {
-	type: 'Object';
-	attributes?: { [key: string]: FieldDescriptor };
+	attributes: { [key: string]: FieldDescriptor };
 }
-export interface ValueFieldDescriptor extends BaseFieldDescriptor {
-	enum?: Array<any>;
+export interface EnumFieldDescriptor extends BaseFieldDescriptor {
+	enum: Array<any>;
 }
 export interface RelationalFieldDescriptor extends BaseFieldDescriptor {
-	type: 'Relation';
-	model?: string;
+	model: string;
 }
+
+export const FieldDescriptorTypeChecks = {
+	isArrayFieldDescriptor(
+		fieldDescriptor: FieldDescriptor
+	): fieldDescriptor is ArrayFieldDescriptor {
+		return fieldDescriptor.hasOwnProperty('of');
+	},
+	isObjectFieldDescriptor(
+		fieldDescriptor: FieldDescriptor
+	): fieldDescriptor is ObjectFieldDescriptor {
+		return fieldDescriptor.hasOwnProperty('attributes');
+	},
+	isEnumFieldDescriptor(
+		fieldDescriptor: FieldDescriptor
+	): fieldDescriptor is EnumFieldDescriptor {
+		return fieldDescriptor.hasOwnProperty('enum');
+	},
+	isRelationalFieldDescriptor(
+		fieldDescriptor: FieldDescriptor
+	): fieldDescriptor is RelationalFieldDescriptor {
+		return fieldDescriptor.hasOwnProperty('model');
+	},
+};
 
 /**
  * Object describing the attributes of a {@link Model~Model}.
@@ -76,9 +96,10 @@ export interface RelationalFieldDescriptor extends BaseFieldDescriptor {
  * @property validate - Custom validation callback.
  */
 export type FieldDescriptor =
+	| BaseFieldDescriptor
 	| ArrayFieldDescriptor
 	| ObjectFieldDescriptor
-	| ValueFieldDescriptor
+	| EnumFieldDescriptor
 	| RelationalFieldDescriptor;
 
 interface IQueryParamsRaw {

@@ -6,7 +6,8 @@ import {
 	ArrayFieldDescriptor,
 	RelationalFieldDescriptor,
 	ObjectFieldDescriptor,
-	ValueFieldDescriptor,
+	EnumFieldDescriptor,
+	FieldDescriptorTypeChecks,
 } from './model';
 import { Entity, IRawEntityAttributes } from './entity/entityFactory';
 import { EntityValidationError } from './errors';
@@ -350,9 +351,12 @@ const VALIDATION_STEPS = [
 	 */
 	function checkEnum(this: Validator, validationArgs: ValidationStepArgs) {
 		const { error, keys, value } = validationArgs;
-		const fieldDesc = validationArgs.fieldDesc as ValueFieldDescriptor;
+		const fieldDesc = validationArgs.fieldDesc;
 		// Check enum values
-		if (!_.isNil(value) && !_.isNil(fieldDesc.enum)) {
+		if (
+			!_.isNil(value) &&
+			FieldDescriptorTypeChecks.isEnumFieldDescriptor(fieldDesc)
+		) {
 			const result = _.some(fieldDesc.enum, enumVal => {
 				if (enumVal instanceof RegExp) {
 					return null !== value.match(enumVal);
@@ -391,8 +395,8 @@ export class PathStack {
 	 */
 	pushEntityProp(...prop: string[]): this {
 		this.segmentsEntity = _.chain(this.segmentsEntity)
-			.concat(prop)
-			.filter(_.isNil)
+			.concat(_.flattenDeep(prop))
+			.reject(_.isNil)
 			.value();
 		return this;
 	}
@@ -406,7 +410,7 @@ export class PathStack {
 	pushValidationProp(...prop: string[]): this {
 		this.segmentsValidation = _.chain(this.segmentsValidation)
 			.concat(prop)
-			.filter(val => !_.isNil(val))
+			.reject(_.isNil)
 			.value();
 		return this;
 	}
@@ -568,18 +572,21 @@ export class Validator {
 		}
 
 		const val = options.getProps ? _.get(value, keys.segmentsEntity) : value;
-		const fieldDesc = _.get(this.modelAttributes, keys.segmentsValidation);
+		const fieldDesc = _.get(
+			this.modelAttributes,
+			keys.segmentsValidation
+		) as FieldDescriptor;
 
 		// Return the `default` if value is undefined
 		const valOrBaseDefault =
-			val || _.isFunction(fieldDesc.default)
+			val ||
+			(_.isFunction(fieldDesc.default)
 				? getDefaultFunction(fieldDesc.default)()
-				: fieldDesc.default;
+				: fieldDesc.default);
 
 		// Recurse if we are defaulting an object
 		if (
-			fieldDesc.attributes &&
-			'object' === fieldDesc.type &&
+			FieldDescriptorTypeChecks.isObjectFieldDescriptor(fieldDesc) &&
 			_.keys(fieldDesc.attributes).length > 0 &&
 			!_.isNil(valOrBaseDefault)
 		) {
