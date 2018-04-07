@@ -8,7 +8,6 @@
 	},
 	"extends": "eslint:recommended",
 	"parserOptions": {
-		//		"sourceType": "script",
 		"sourceType": "module",
 		"ecmaVersion": 8
 	},
@@ -45,25 +44,31 @@
 		"no-lonely-if": "error",
 		"curly": "error",
 		"space-before-blocks": "error",
-		"require-jsdoc": ["error", {
-			"require": {
-				"FunctionDeclaration": true,
-				"MethodDefinition": true,
-				"ClassDeclaration": true,
-				"ArrowFunctionExpression": false
+		"require-jsdoc": [
+			"error",
+			{
+				"require": {
+					"FunctionDeclaration": true,
+					"MethodDefinition": true,
+					"ClassDeclaration": true,
+					"ArrowFunctionExpression": false
+				}
 			}
-		}],
+		],
 		"prefer-template": "error",
 		"no-useless-concat": "error",
 		"template-curly-spacing": ["error", "always"],
 		"space-infix-ops": "error",
-		"space-unary-ops": [ 2, {
-			"words": true,
-			"nonwords": false
-		}],
+		"space-unary-ops": [
+			2,
+			{
+				"words": true,
+				"nonwords": false
+			}
+		],
 		"one-var": ["error", "never"],
-
-
+		
+		
 		"jsdoc/check-param-names": 1,
 		"jsdoc/check-tag-names": 1,
 		"jsdoc/check-types": 1,
@@ -88,8 +93,10 @@
 			}
 		}
 	},
-  "overrides": [
-    {
-      "files": [ "bin/*.js", "lib/*.js" ],
-      "excludedFiles": "*.test.js",
+	"overrides": [
+		{
+			"files": [ "bin/*.js", "lib/*.js" ],
+			"excludedFiles": "*.test.js"
+		}
+	]
 }
