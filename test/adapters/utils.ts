@@ -13,12 +13,12 @@ const getDataSourceLabel = name => {
 
 const TABLE = 'test';
 
-export const createDataSource = ( adapterLabel: string, config: any ) => {
+export const createDataSource = ( adapterLabel: string, ...config: any[] ) => {
 	const dataSourceLabel = getDataSourceLabel( adapterLabel );
 	const dataSource = Diaspora.createNamedDataSource(
 		dataSourceLabel,
 		adapterLabel,
-		config
+		...config
 	);
 	dataSources[dataSourceLabel] = dataSource;
 	return dataSource;
@@ -27,25 +27,25 @@ export const checkSpawnedAdapter = ( adapterLabel: string ) => {
 	const baseName = adapterLabel[0].toUpperCase() + adapterLabel.substr( 1 );
 	const dataSourceLabel = getDataSourceLabel( adapterLabel );
 	it( getStyle( 'taskCategory', `Create ${adapterLabel} adapter` ), async () => {
-		const adapter = dataSources[dataSourceLabel];
-		await adapter.waitReady();
-		expect( adapter ).toBeInstanceOf( DataAccessLayer );
-		expect( adapter.adapter ).toBeInstanceOf( Adapter );
+		const dataAccessLayer = dataSources[dataSourceLabel];
+		await dataAccessLayer.waitReady();
+		expect( dataAccessLayer ).toBeInstanceOf( DataAccessLayer );
+		expect( dataAccessLayer.adapter ).toBeInstanceOf( Adapter );
 		if ( 'undefined' === typeof window ) {
-			expect( adapter.adapter.constructor.name ).toEqual( `${baseName}Adapter` );
-			expect( adapter.classEntity.name ).toEqual( `${baseName}Entity` );
+			expect( dataAccessLayer.adapter.constructor.name ).toEqual( `${baseName}Adapter` );
+			expect( dataAccessLayer.classEntity.name ).toEqual( `${baseName}Entity` );
 		}
 		_.forEach( ['insert', 'find', 'update', 'delete'], word => {
-			expect( adapter ).toImplementOneOfMethods( [`${word}One`, `${word}Many`] );
+			expect( dataAccessLayer ).toImplementOneOfMethods( [`${word}One`, `${word}Many`] );
 		} );
 	} );
 };
-export const checkInputFiltering = ( adapter: DataAccessLayer ) => {
+export const checkInputFiltering = ( dataAccessLayer: DataAccessLayer ) => {
 	describe( `${getStyle( 'taskCategory', 'Check query inputs filtering' )} with ${
-		adapter.constructor.name
+		dataAccessLayer.constructor.name
 	}`, () => {
 		describe( 'Check options normalization', () => {
-			const no = adapter.normalizeOptions;
+			const no = dataAccessLayer.normalizeOptions;
 			it( 'Default options', () => {
 				expect( no( {} ) ).toEqual( {
 					skip: 0,
@@ -116,148 +116,150 @@ export const checkInputFiltering = ( adapter: DataAccessLayer ) => {
 				} );
 				expect( () => no( { page: 1 } ) ).toThrowError( ReferenceError );
 				expect( () =>
-					no( {
-						page: 1,
-						skip: 1,
-						limit: 5,
-					} )
-				).toThrowError( ReferenceError );
-				expect( () =>
-					no( {
-						page: 0.5,
-						limit: 5,
-					} )
-				).toThrowError( TypeError );
-				expect( () =>
-					no( {
-						page: 1,
-						limit: Infinity,
-					} )
-				).toThrowError( RangeError );
-				expect( () =>
-					no( {
-						page: Infinity,
-						limit: 5,
-					} )
-				).toThrowError( RangeError );
-				expect( () =>
-					no( {
-						page: -1,
-						limit: 5,
-					} )
-				).toThrowError( RangeError );
-			} );
+				no( {
+					page: 1,
+					skip: 1,
+					limit: 5,
+				} )
+			).toThrowError( ReferenceError );
+	   expect( () =>
+			no( {
+				page: 0.5,
+				limit: 5,
+			} )
+		).toThrowError( TypeError );
+	   expect( () =>
+		no( {
+			page: 1,
+			limit: Infinity,
+		} )
+	).toThrowError( RangeError );
+	   expect( () =>
+	no( {
+		page: Infinity,
+		limit: 5,
+	} )
+).toThrowError( RangeError );
+	   expect( () =>
+no( {
+	page: -1,
+	limit: 5,
+} )
+).toThrowError( RangeError );
+} );
+} );
+  describe( 'Check "normalizeQuery"', () => {
+	const nq = ( query: any ) =>
+	dataAccessLayer.normalizeQuery(
+		{ foo: query },
+		{ remapInput: true, remapOutput: false, skip: 0, limit: 0, page: 0 }
+	);
+	it( 'Empty query', () => {
+		expect(
+			dataAccessLayer.normalizeQuery(
+				{},
+				{ remapInput: true, remapOutput: false, skip: 0, limit: 0, page: 0 }
+			)
+		).toEqual( {} );
+	} );
+	it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
+		expect( nq( undefined ) ).toEqual( { foo: { $exists: false } } );
+		expect( nq( { '~': true } ) ).toEqual( { foo: { $exists: true } } );
+		expect( nq( { $exists: true } ) ).toEqual( { foo: { $exists: true } } );
+		expect( nq( { '~': false } ) ).toEqual( { foo: { $exists: false } } );
+		expect( nq( { $exists: false } ) ).toEqual( { foo: { $exists: false } } );
+		expect( () => nq( { '~': 'bar', $exists: 'bar' } ) ).toThrowError();
+	} );
+	it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
+		expect( nq( 'bar' ) ).toEqual( { foo: { $equal: 'bar' } } );
+		expect( nq( { $equal: 'bar' } ) ).toEqual( { foo: { $equal: 'bar' } } );
+		expect( nq( { '==': 'bar' } ) ).toEqual( { foo: { $equal: 'bar' } } );
+		expect( () => nq( { '==': 'bar', $equal: 'bar' } ) ).toThrowError();
+	} );
+	it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
+		expect( nq( { $diff: 'bar' } ) ).toEqual( { foo: { $diff: 'bar' } } );
+		expect( nq( { '!=': 'bar' } ) ).toEqual( { foo: { $diff: 'bar' } } );
+		expect( () => nq( { '!=': 'bar', $diff: 'bar' } ) ).toThrowError();
+	} );
+	it( `${getStyle( 'bold', '<' )} ($less)`, () => {
+		expect( nq( { $less: 1 } ) ).toEqual( { foo: { $less: 1 } } );
+		expect( nq( { '<': 1 } ) ).toEqual( { foo: { $less: 1 } } );
+		expect( () => nq( { '<': 1, $less: 1 } ) ).toThrowError();
+		expect( () => nq( { '<': 'aze' } ) ).toThrowError();
+		expect( () => nq( { $less: 'aze' } ) ).toThrowError();
+	} );
+	it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
+		expect( nq( { $lessEqual: 1 } ) ).toEqual( { foo: { $lessEqual: 1 } } );
+		expect( nq( { '<=': 1 } ) ).toEqual( { foo: { $lessEqual: 1 } } );
+		expect( () => nq( { '<=': 1, $lessEqual: 1 } ) ).toThrowError();
+		expect( () => nq( { '<=': 'aze' } ) ).toThrowError();
+		expect( () => nq( { $lessEqual: 'aze' } ) ).toThrowError();
+	} );
+	it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
+		expect( nq( { $greater: 1 } ) ).toEqual( { foo: { $greater: 1 } } );
+		expect( nq( { '>': 1 } ) ).toEqual( { foo: { $greater: 1 } } );
+		expect( () => nq( { '>': 1, $greater: 1 } ) ).toThrowError();
+		expect( () => nq( { '>': 'aze' } ) ).toThrowError();
+		expect( () => nq( { $greater: 'aze' } ) ).toThrowError();
+	} );
+	it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
+		expect( nq( { $greaterEqual: 1 } ) ).toEqual( { foo: { $greaterEqual: 1 } } );
+		expect( nq( { '>=': 1 } ) ).toEqual( { foo: { $greaterEqual: 1 } } );
+		expect( () => nq( { '>=': 1, $greaterEqual: 1 } ) ).toThrowError();
+		expect( () => nq( { '>=': 'aze' } ) ).toThrowError();
+		expect( () => nq( { $greaterEqual: 'aze' } ) ).toThrowError();
+	} );
+} );
+  if ( dataAccessLayer.adapter.classEntity.matches !== AdapterEntity.matches ){
+	describe( 'Check "matchEntity"', () => {
+		const me = ( query, obj ) => dataAccessLayer.adapter.classEntity.matches( obj, query );
+		it( 'Empty query', () => {
+			expect( me( {}, { foo: 'bar' } ) ).toBeTruthy();
 		} );
-		describe( 'Check "normalizeQuery"', () => {
-			const nq = ( query: any ) =>
-				adapter.normalizeQuery(
-					{ foo: query },
-					{ remapInput: true, remapOutput: false, skip: 0, limit: 0, page: 0 }
-				);
-			it( 'Empty query', () => {
-				expect(
-					adapter.normalizeQuery(
-						{},
-						{ remapInput: true, remapOutput: false, skip: 0, limit: 0, page: 0 }
-					)
-				).toEqual( {} );
-			} );
-			it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
-				expect( nq( undefined ) ).toEqual( { foo: { $exists: false } } );
-				expect( nq( { '~': true } ) ).toEqual( { foo: { $exists: true } } );
-				expect( nq( { $exists: true } ) ).toEqual( { foo: { $exists: true } } );
-				expect( nq( { '~': false } ) ).toEqual( { foo: { $exists: false } } );
-				expect( nq( { $exists: false } ) ).toEqual( { foo: { $exists: false } } );
-				expect( () => nq( { '~': 'bar', $exists: 'bar' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
-				expect( nq( 'bar' ) ).toEqual( { foo: { $equal: 'bar' } } );
-				expect( nq( { $equal: 'bar' } ) ).toEqual( { foo: { $equal: 'bar' } } );
-				expect( nq( { '==': 'bar' } ) ).toEqual( { foo: { $equal: 'bar' } } );
-				expect( () => nq( { '==': 'bar', $equal: 'bar' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
-				expect( nq( { $diff: 'bar' } ) ).toEqual( { foo: { $diff: 'bar' } } );
-				expect( nq( { '!=': 'bar' } ) ).toEqual( { foo: { $diff: 'bar' } } );
-				expect( () => nq( { '!=': 'bar', $diff: 'bar' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '<' )} ($less)`, () => {
-				expect( nq( { $less: 1 } ) ).toEqual( { foo: { $less: 1 } } );
-				expect( nq( { '<': 1 } ) ).toEqual( { foo: { $less: 1 } } );
-				expect( () => nq( { '<': 1, $less: 1 } ) ).toThrowError();
-				expect( () => nq( { '<': 'aze' } ) ).toThrowError();
-				expect( () => nq( { $less: 'aze' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
-				expect( nq( { $lessEqual: 1 } ) ).toEqual( { foo: { $lessEqual: 1 } } );
-				expect( nq( { '<=': 1 } ) ).toEqual( { foo: { $lessEqual: 1 } } );
-				expect( () => nq( { '<=': 1, $lessEqual: 1 } ) ).toThrowError();
-				expect( () => nq( { '<=': 'aze' } ) ).toThrowError();
-				expect( () => nq( { $lessEqual: 'aze' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
-				expect( nq( { $greater: 1 } ) ).toEqual( { foo: { $greater: 1 } } );
-				expect( nq( { '>': 1 } ) ).toEqual( { foo: { $greater: 1 } } );
-				expect( () => nq( { '>': 1, $greater: 1 } ) ).toThrowError();
-				expect( () => nq( { '>': 'aze' } ) ).toThrowError();
-				expect( () => nq( { $greater: 'aze' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
-				expect( nq( { $greaterEqual: 1 } ) ).toEqual( { foo: { $greaterEqual: 1 } } );
-				expect( nq( { '>=': 1 } ) ).toEqual( { foo: { $greaterEqual: 1 } } );
-				expect( () => nq( { '>=': 1, $greaterEqual: 1 } ) ).toThrowError();
-				expect( () => nq( { '>=': 'aze' } ) ).toThrowError();
-				expect( () => nq( { $greaterEqual: 'aze' } ) ).toThrowError();
-			} );
+		it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
+			expect( me( { foo: { $exists: true } }, { foo: 'bar' } ) ).toBeTruthy();
+			expect( me( { foo: { $exists: true } }, { foo: undefined } ) ).toBeFalsy();
+			expect( me( { foo: { $exists: false } }, { foo: 'bar' } ) ).toBeFalsy();
+			expect( me( { foo: { $exists: false } }, { foo: undefined } ) ).toBeTruthy();
 		} );
-		describe( 'Check "matchEntity"', () => {
-			const me = ( query, obj ) => InMemoryEntity.matches( obj, query );
-			it( 'Empty query', () => {
-				expect( me( {}, { foo: 'bar' } ) ).toBeTruthy();
-			} );
-			it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
-				expect( me( { foo: { $exists: true } }, { foo: 'bar' } ) ).toBeTruthy();
-				expect( me( { foo: { $exists: true } }, { foo: undefined } ) ).toBeFalsy();
-				expect( me( { foo: { $exists: false } }, { foo: 'bar' } ) ).toBeFalsy();
-				expect( me( { foo: { $exists: false } }, { foo: undefined } ) ).toBeTruthy();
-			} );
-			it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
-				expect( me( { foo: { $equal: 'bar' } }, { foo: 'bar' } ) ).toBeTruthy();
-				expect( me( { foo: { $equal: 'bar' } }, { foo: undefined } ) ).toBeFalsy();
-				expect( me( { foo: { $equal: 'bar' } }, { foo: 'baz' } ) ).toBeFalsy();
-			} );
-			it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
-				expect( me( { foo: { $diff: 'bar' } }, { foo: 'bar' } ) ).toBeFalsy();
-				expect( me( { foo: { $diff: 'bar' } }, { foo: 'baz' } ) ).toBeTruthy();
-				expect( me( { foo: { $diff: 'bar' } }, { foo: undefined } ) ).toBeFalsy();
-				expect( me( { foo: { $diff: 'bar' } }, { bar: 'qux' } ) ).toBeFalsy();
-			} );
-			it( `${getStyle( 'bold', '<' )} ($less)`, () => {
-				expect( me( { foo: { $less: 2 } }, { foo: undefined } ) ).toBeFalsy();
-				expect( me( { foo: { $less: 2 } }, { foo: 1 } ) ).toBeTruthy();
-				expect( me( { foo: { $less: 2 } }, { foo: 2 } ) ).toBeFalsy();
-				expect( me( { foo: { $less: 2 } }, { foo: 3 } ) ).toBeFalsy();
-			} );
-			it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
-				expect( me( { foo: { $lessEqual: 2 } }, { foo: undefined } ) ).toBeFalsy();
-				expect( me( { foo: { $lessEqual: 2 } }, { foo: 1 } ) ).toBeTruthy();
-				expect( me( { foo: { $lessEqual: 2 } }, { foo: 2 } ) ).toBeTruthy();
-				expect( me( { foo: { $lessEqual: 2 } }, { foo: 3 } ) ).toBeFalsy();
-			} );
-			it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
-				expect( me( { foo: { $greater: 2 } }, { foo: undefined } ) ).toBeFalsy();
-				expect( me( { foo: { $greater: 2 } }, { foo: 1 } ) ).toBeFalsy();
-				expect( me( { foo: { $greater: 2 } }, { foo: 2 } ) ).toBeFalsy();
-				expect( me( { foo: { $greater: 2 } }, { foo: 3 } ) ).toBeTruthy();
-			} );
-			it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
-				expect( me( { foo: { $greaterEqual: 2 } }, { foo: undefined } ) ).toBeFalsy();
-				expect( me( { foo: { $greaterEqual: 2 } }, { foo: 1 } ) ).toBeFalsy();
-				expect( me( { foo: { $greaterEqual: 2 } }, { foo: 2 } ) ).toBeTruthy();
-				expect( me( { foo: { $greaterEqual: 2 } }, { foo: 3 } ) ).toBeTruthy();
-			} );
+		it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
+			expect( me( { foo: { $equal: 'bar' } }, { foo: 'bar' } ) ).toBeTruthy();
+			expect( me( { foo: { $equal: 'bar' } }, { foo: undefined } ) ).toBeFalsy();
+			expect( me( { foo: { $equal: 'bar' } }, { foo: 'baz' } ) ).toBeFalsy();
+		} );
+		it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
+			expect( me( { foo: { $diff: 'bar' } }, { foo: 'bar' } ) ).toBeFalsy();
+			expect( me( { foo: { $diff: 'bar' } }, { foo: 'baz' } ) ).toBeTruthy();
+			expect( me( { foo: { $diff: 'bar' } }, { foo: undefined } ) ).toBeFalsy();
+			expect( me( { foo: { $diff: 'bar' } }, { bar: 'qux' } ) ).toBeFalsy();
+		} );
+		it( `${getStyle( 'bold', '<' )} ($less)`, () => {
+			expect( me( { foo: { $less: 2 } }, { foo: undefined } ) ).toBeFalsy();
+			expect( me( { foo: { $less: 2 } }, { foo: 1 } ) ).toBeTruthy();
+			expect( me( { foo: { $less: 2 } }, { foo: 2 } ) ).toBeFalsy();
+			expect( me( { foo: { $less: 2 } }, { foo: 3 } ) ).toBeFalsy();
+		} );
+		it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
+			expect( me( { foo: { $lessEqual: 2 } }, { foo: undefined } ) ).toBeFalsy();
+			expect( me( { foo: { $lessEqual: 2 } }, { foo: 1 } ) ).toBeTruthy();
+			expect( me( { foo: { $lessEqual: 2 } }, { foo: 2 } ) ).toBeTruthy();
+			expect( me( { foo: { $lessEqual: 2 } }, { foo: 3 } ) ).toBeFalsy();
+		} );
+		it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
+			expect( me( { foo: { $greater: 2 } }, { foo: undefined } ) ).toBeFalsy();
+			expect( me( { foo: { $greater: 2 } }, { foo: 1 } ) ).toBeFalsy();
+			expect( me( { foo: { $greater: 2 } }, { foo: 2 } ) ).toBeFalsy();
+			expect( me( { foo: { $greater: 2 } }, { foo: 3 } ) ).toBeTruthy();
+		} );
+		it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
+			expect( me( { foo: { $greaterEqual: 2 } }, { foo: undefined } ) ).toBeFalsy();
+			expect( me( { foo: { $greaterEqual: 2 } }, { foo: 1 } ) ).toBeFalsy();
+			expect( me( { foo: { $greaterEqual: 2 } }, { foo: 2 } ) ).toBeTruthy();
+			expect( me( { foo: { $greaterEqual: 2 } }, { foo: 3 } ) ).toBeTruthy();
 		} );
 	} );
+}
+} );
 };
 export const checkEachStandardMethods = adapterLabel => {
 	const adapter = dataSources[getDataSourceLabel( adapterLabel )];
@@ -268,7 +270,7 @@ export const checkEachStandardMethods = adapterLabel => {
 			return `${fctName} (from BaseAdapter)`;
 		}
 	};
-
+	
 	checkInputFiltering( adapter );
 	describe( getStyle( 'taskCategory', 'Test adapter methods' ), () => {
 		let findManyOk = false;
@@ -431,75 +433,75 @@ export const checkEachStandardMethods = adapterLabel => {
 			it( `${getStyle( 'bold', '~' )} ($exists) operator`, () => {
 				return Promise.all( [
 					adapter
-						.findOne( TABLE, {
-							foo: {
-								'~': true,
-							},
-						} )
-						.then( output => {
-							expect( output ).toBeAnAdapterEntity( adapter, {
-								foo: 1,
-							} );
-						} ),
-					adapter
-						.findOne( TABLE, {
-							foo: {
-								'~': false,
-							},
-						} )
-						.then( output => {
-							expect( output ).toBeAnAdapterEntity( adapter, {
-								foo: undefined,
-							} );
-						} ),
-				] );
-			} );
-			it( `${getStyle( 'bold', '==' )} ($equal) operator`, () => {
-				return adapter
 					.findOne( TABLE, {
 						foo: {
-							'==': 1,
+							'~': true,
 						},
 					} )
 					.then( output => {
 						expect( output ).toBeAnAdapterEntity( adapter, {
 							foo: 1,
 						} );
+					} ),
+					adapter
+					.findOne( TABLE, {
+						foo: {
+							'~': false,
+						},
+					} )
+					.then( output => {
+						expect( output ).toBeAnAdapterEntity( adapter, {
+							foo: undefined,
+						} );
+					} ),
+				] );
+			} );
+			it( `${getStyle( 'bold', '==' )} ($equal) operator`, () => {
+				return adapter
+				.findOne( TABLE, {
+					foo: {
+						'==': 1,
+					},
+				} )
+				.then( output => {
+					expect( output ).toBeAnAdapterEntity( adapter, {
+						foo: 1,
 					} );
+				} );
 			} );
 			it( `${getStyle( 'bold', '!=' )} ($diff) operator`, () => {
 				return Promise.all( [
 					adapter
-						.findOne( TABLE, {
-							bar: {
-								'!=': 1,
-							},
-						} )
-						.then( output => {
-							expect( output ).toBeAnAdapterEntity( adapter, {
-								bar: 2,
-							} );
-						} ),
+					.findOne( TABLE, {
+						bar: {
+							'!=': 1,
+						},
+					} )
+					.then( output => {
+						expect( output ).toBeAnAdapterEntity( adapter, {
+							bar: 2,
+						} );
+					} ),
 					adapter
-						.findOne( TABLE, {
-							foo: {
-								'!=': 1,
-							},
-						} )
-						.then( output => {
-							expect( output ).toBeUndefined();
-						} ),
+					.findOne( TABLE, {
+						foo: {
+							'!=': 1,
+						},
+					} )
+					.then( output => {
+						expect( output ).toBeUndefined();
+					} ),
 					adapter
-						.findOne( TABLE, {
-							foo: {
-								'!=': 2,
-							},
-						} )
-						.then( output => {
-							expect( output ).toBeAnAdapterEntity( adapter, {
-								foo: 1,
-							} );
-						} ),
+					.findOne( TABLE, {
+						foo: {
+							'!=': 2,
+						},
+					} )
+					.then( output => {
+						expect( output ).toBeAnAdapterEntity( adapter, {
+							foo: 1,
+						} );
+					} ),
 				] );
 			} );
 			it( `${getStyle( 'bold', '<' )} ($less) operator`, async () => {
