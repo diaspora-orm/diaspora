@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { Adapter, AdapterEntity } from './base';
+import { Adapter, AdapterEntity, IAdapterEntityCtr } from './base';
 import { DataSourceQuerier, IRemapsHash, IFiltersHash, IEnumeratedHash } from '../types/dataSourceQuerier';
 import { SequentialEvent } from 'sequential-event';
 import { IRawEntityAttributes } from '../entities';

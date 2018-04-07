@@ -14,17 +14,25 @@ export interface IRawAdapterEntityAttributes {
 	[key: string]: any;
 }
 
-export interface IAdapterEntityCtr {
-	new (
-		data: IRawEntityAttributes,
-		adapter: Adapter<AdapterEntity>
-	): IAdapterEntity;
+export interface IAdapterEntityCtr<T extends AdapterEntity>{
+	new ( data: IRawEntityAttributes, adapter: Adapter<T> ): T;
+	
+	matches(
+		attributes: IRawAdapterEntityAttributes,
+		query: QueryLanguage.SelectQuery
+	): boolean;
+
+	setId(
+		attributes: IRawEntityAttributes,
+		adapter: Adapter<T>,
+		propName: string,
+		id: EntityUid
+	): IRawAdapterEntityAttributes;
 }
-export interface IAdapterEntity {}
 /**
  * AdapterEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
  */
-export abstract class AdapterEntity implements IAdapterEntity {
+export abstract class AdapterEntity {
 	public get attributes() {
 		return this._attributes;
 	}

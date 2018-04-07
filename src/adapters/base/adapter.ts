@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
-import { AdapterEntity, IRawAdapterEntityAttributes } from '.';
+import { AdapterEntity, IRawAdapterEntityAttributes, IAdapterEntityCtr } from '.';
 import { IRawEntityAttributes } from '../../entities/entityFactory';
 import {
 	remapIO,
@@ -83,9 +83,7 @@ export abstract class Adapter<
 	 * @param classEntity - Entity to spawn with this adapter.
 	 */
 	public constructor(
-		protected _classEntity: {
-			new ( data: IRawEntityAttributes, adapter: Adapter<T> ): T;
-		},
+		protected _classEntity: IAdapterEntityCtr<T>,
 		public readonly name: string
 	) {
 		super();
