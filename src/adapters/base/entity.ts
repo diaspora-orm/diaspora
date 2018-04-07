@@ -28,7 +28,7 @@ export abstract class AdapterEntity implements IAdapterEntity {
 	public get attributes() {
 		return this._attributes;
 	}
-	public readonly dataSource: Adapter<AdapterEntity>;
+	public readonly dataSource: Adapter;
 	public readonly dataAccessLayer: DataAccessLayer;
 
 	protected _attributes: IRawAdapterEntityAttributes;
@@ -40,7 +40,7 @@ export abstract class AdapterEntity implements IAdapterEntity {
 	 */
 	public constructor(
 		entity: IRawEntityAttributes,
-		dataSource: Adapter<AdapterEntity>
+		dataSource: Adapter
 	) {
 		if ( _.isNil( entity ) ) {
 			throw new Error( "Can't construct entity from nil value" );

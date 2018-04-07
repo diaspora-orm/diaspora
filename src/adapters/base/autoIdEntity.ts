@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { AdapterEntity, Adapter, IRawAdapterEntityAttributes } from '../base';
-import { IRawEntityAttributes, EntityUid } from '../../entity/entityFactory';
+import { IRawEntityAttributes, EntityUid } from '../../entities/entityFactory';
 import { generateUUID } from '../../utils';
 import { Constructable } from './adapter-utils';
 

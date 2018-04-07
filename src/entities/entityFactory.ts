@@ -54,27 +54,6 @@ const maybeEmit = async (
 	}
 };
 
-const execIfOkState = <T extends AdapterEntity>(
-	entity: Entity,
-	beforeState: EEntityState,
-	dataSource: Adapter<T>,
-	// TODO: precise it
-	method: string
-): Promise<T> => {
-	// Depending on state, we are going to perform a different operation
-	if ( EEntityState.ORPHAN === beforeState ) {
-		return Promise.reject( new EntityStateError( "Can't fetch an orphan entity." ) );
-	} else {
-		// Skip scoping :/
-		( entity as any ).lastDataSource = dataSource;
-		const execMethod: (
-			table: string,
-			query: object
-		) => Promise<T> = ( dataSource as any )[method];
-		return execMethod( entity.table( dataSource.name ), entity.uidQuery( dataSource ) );
-	}
-};
-
 const entityCtrSteps = {
 	castTypes( source: IRawAdapterEntityAttributes, modelDesc: ModelDescription ) {
 		const attrs = modelDesc.attributes;
@@ -402,7 +381,7 @@ export abstract class Entity extends SequentialEvent {
 
 		await _maybeEmit( 'beforeFetch' );
 
-		const dataStoreEntity = await execIfOkState(
+		const dataStoreEntity = await this.execIfOkState(
 			this,
 			beforeState,
 			dataSource,
@@ -436,7 +415,7 @@ export abstract class Entity extends SequentialEvent {
 
 		await _maybeEmit( 'beforeDestroy' );
 
-		await execIfOkState( this, beforeState, dataSource, 'deleteOne' );
+		await this.execIfOkState( this, beforeState, dataSource, 'deleteOne' );
 
 		// Now we insert data in stores
 		this.setLastDataSourceEntity( dataSource, null );
@@ -468,6 +447,25 @@ export abstract class Entity extends SequentialEvent {
 		return Entity.deserialize( this.attributes );
 	}
 
+	private execIfOkState<T extends AdapterEntity>(
+		entity: Entity,
+		beforeState: EEntityState,
+		dataSource: DataAccessLayer<T, Adapter<T>>,
+		// TODO: precise it
+		method: string
+	): Promise<T>{
+		// Depending on state, we are going to perform a different operation
+		if ( EEntityState.ORPHAN === beforeState ) {
+			return Promise.reject( new EntityStateError( "Can't fetch an orphan entity." ) );
+		} else {
+			this._lastDataSource = dataSource;
+			const execMethod: (
+				table: string,
+				query: object
+			) => Promise<T> = ( dataSource as any )[method];
+			return execMethod.call( dataSource, entity.table( dataSource.name ), entity.uidQuery( dataSource ) );
+		}
+	}
 	/**
 	 * Refresh last data source, attributes, state & data source entity
 	 */
