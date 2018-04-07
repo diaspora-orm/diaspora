@@ -1,5 +1,5 @@
 {
-	"name": "diaspora",
+	"name": "@diaspora/diaspora",
 	"version": "0.2.0",
 	"description": "Multi-Layer ORM for Javascript Client+Server",
 	"main": "dist/diaspora.umd.js",
@@ -15,7 +15,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/GerkinDev/diaspora.git"
+		"url": "git+https://github.com/diaspora-orm/diaspora.git"
 	},
 	"scripts": {
 		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
@@ -49,9 +49,9 @@
 	"author": "Gerkin",
 	"license": "GPL-3.0",
 	"bugs": {
-		"url": "https://github.com/GerkinDev/diaspora/issues"
+		"url": "https://github.com/diaspora-orm/diaspora/issues"
 	},
-	"homepage": "https://github.com/GerkinDev/diaspora#readme",
+	"homepage": "https://github.com/diaspora-orm/diaspora#readme",
 	"lint-staged": {
 		"{src,test}/**/*.ts": [
 			"npm run lint:fix",
