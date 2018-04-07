@@ -12,15 +12,16 @@ import { InMemoryAdapter, InMemoryEntity } from '../../src/adapters/inMemory';
 import { IRawAdapterEntityAttributes } from '../../src/adapters/base';
 
 import '../utils';
+import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
 
 let testModel: Model;
 const MODEL_NAME = 'model-test';
 const SOURCE = 'inMemory-model-test';
-let adapter: InMemoryAdapter;
+let dataAccessLayer: DataAccessLayer;
 let store: { items: any[] };
 
 beforeAll( () => {
-	adapter = Diaspora.createNamedDataSource( SOURCE, 'inMemory' );
+	dataAccessLayer = Diaspora.createNamedDataSource( SOURCE, 'inMemory' );
 	testModel = Diaspora.declareModel( MODEL_NAME, {
 		sources: [SOURCE],
 		attributes: {
@@ -32,18 +33,18 @@ beforeAll( () => {
 			},
 		},
 	} );
-	store = ( adapter as any ).store[MODEL_NAME];
+	store = ( dataAccessLayer.adapter as any ).store[MODEL_NAME];
 } );
 beforeEach( () => {
 	const setId: (
 		attributes: IRawEntityAttributes,
-		adapter: InMemoryAdapter,
+		adapter: DataAccessLayer,
 		propName?: string,
 		id?: EntityUid
 	) => IRawAdapterEntityAttributes = ( InMemoryEntity as any ).setId;
 	store.items = [];
 	_.forEach( [{ foo: 'bar' }, { foo: 'bar' }, { foo: 'baz' }, {}], entity => {
-		store.items.push( setId( entity, adapter ) );
+		store.items.push( setId( entity, dataAccessLayer ) );
 	} );
 } );
 describe( 'Model', () => {
@@ -76,7 +77,7 @@ describe( 'Model', () => {
 			};
 			const newEntity = await testModel.insert( object );
 			expect( newEntity ).toBeAnEntity( testModel, object, SOURCE );
-			expect( ( adapter as any ).store[MODEL_NAME].items ).toHaveLength( 5 );
+			expect( store.items ).toHaveLength( 5 );
 		} );
 		it( 'Create multiple instances', async () => {
 			expect( testModel ).toImplementMethod( 'insertMany' );
@@ -95,7 +96,7 @@ describe( 'Model', () => {
 			const newEntities = await testModel.insertMany( objects );
 			expect( newEntities ).toBeAnEntitySet( testModel, objects, SOURCE );
 			expect( newEntities ).toHaveLength( 4 );
-			expect( ( adapter as any ).store[MODEL_NAME].items ).toHaveLength( 8 );
+			expect( store.items ).toHaveLength( 8 );
 		} );
 	} );
 	describe( '- Find instances', () => {

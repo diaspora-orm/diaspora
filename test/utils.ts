@@ -7,6 +7,7 @@ import { IRawEntityAttributes, Entity } from '../src/entities/entityFactory';
 import { Set as EntitySet } from '../src/entities/set';
 import { Diaspora } from '../src/diaspora';
 import { InMemoryAdapter } from '../src/adapters/inMemory';
+import { DataAccessLayer } from '../src/adapters/dataAccessLayer';
 
 process.on( 'unhandledRejection', r => console.log( r ) );
 const projectPath = resolve( '../' );
@@ -26,18 +27,18 @@ try {
 
 export const conf = config;
 
-export const dataSources: { [key: string]: Adapter } = {};
+export const dataSources: { [key: string]: DataAccessLayer<AdapterEntity, Adapter> } = {};
 
 const styles =
-	'undefined' === typeof window
-		? {
-				category: ( chalk as any ).bold.underline.blue,
-				taskCategory: ( chalk as any ).underline.white,
-				bold: ( chalk as any ).bold,
-				adapter: ( chalk as any ).bold.red,
-				model: ( chalk as any ).bold.red,
-		  }
-		: {};
+'undefined' === typeof window
+? {
+	category: ( chalk as any ).bold.underline.blue,
+	taskCategory: ( chalk as any ).underline.white,
+	bold: ( chalk as any ).bold,
+	adapter: ( chalk as any ).bold.red,
+	model: ( chalk as any ).bold.red,
+}
+: {};
 
 export const getStyle = ( styleName: string, text: string ) => {
 	const styleFct = styles[styleName];
@@ -69,16 +70,16 @@ const check = (
 	const orphanState = dataSourceName ? false : orphan;
 	switch ( orphanState ) {
 		case true:
-			{
-				expect( entity.state ).toEqual( 'orphan' );
-			}
-			break;
-
+		{
+			expect( entity.state ).toEqual( 'orphan' );
+		}
+		break;
+		
 		case false:
-			{
-				expect( entity.state ).not.toEqual( 'orphan' );
-			}
-			break;
+		{
+			expect( entity.state ).not.toEqual( 'orphan' );
+		}
+		break;
 	}
 	if ( orphanState ) {
 		expect( entity.lastDataSource ).toEqual( null );
@@ -91,11 +92,11 @@ const check = (
 		} else {
 			expect( lds ).not.toEqual( null );
 		}
-
+		
 		// Check dataSources weakmap
 		expect( entity.dataSources ).toBeInstanceOf( WeakMap );
 		expect( entity.dataSources.get( lds ) ).toBeAnAdapterEntity( lds );
-
+		
 		expect( entity.attributes ).toBeInstanceOf( Object );
 		expect( entity.attributes ).not.toHaveProperty( 'id' );
 		expect( entity.attributes ).not.toHaveProperty( 'idHash' );
@@ -115,19 +116,19 @@ expect.extend( {
 		const pass = hasOwnMethod( received, methodName );
 		return {
 			message: () =>
-				`Expected to implement method ${this.utils.printExpected( methodName )}`,
+			`Expected to implement method ${this.utils.printExpected( methodName )}`,
 			pass: pass,
 		};
 	},
 	toImplementOneOfMethods( received: any, methodNames: string[] ) {
 		const pass =
-			received &&
-			_.some( methodNames, methodName => hasOwnMethod( received, methodName ) );
+		received &&
+		_.some( methodNames, methodName => hasOwnMethod( received, methodName ) );
 		return {
 			message: () =>
-				`Expected to implement one of methods ${this.utils.printExpected(
-					methodNames.join( ', ' )
-				)}`,
+			`Expected to implement one of methods ${this.utils.printExpected(
+				methodNames.join( ', ' )
+			)}`,
 			pass: pass,
 		};
 	},
@@ -172,8 +173,8 @@ expect.extend( {
 		} );
 		receivedSet.entities.forEach( ( received, index ) => {
 			const expectedAttributes = _.isArray( expectedAttributesArray )
-				? expectedAttributesArray[index]
-				: expectedAttributesArray;
+			? expectedAttributesArray[index]
+			: expectedAttributesArray;
 			expect( received ).toBeAnEntity(
 				expectedModel,
 				expectedAttributes,
@@ -187,14 +188,16 @@ expect.extend( {
 	},
 	toBeAnAdapterEntity(
 		received: any,
-		expectedAdapter: Adapter,
+		expectedDataAccessLayer: DataAccessLayer,
 		expectedAttributes?: any
 	) {
 		expect( received ).toBeInstanceOf( AdapterEntity );
 		const receivedEntity = received as AdapterEntity;
 		const adapter = receivedEntity.dataSource;
+		expect( receivedEntity.dataAccessLayer ).toBeInstanceOf( DataAccessLayer );
+		expect( receivedEntity.dataAccessLayer ).toEqual( expectedDataAccessLayer );
 		expect( receivedEntity.dataSource ).toBeInstanceOf( Adapter );
-		expect( receivedEntity.dataSource ).toEqual( expectedAdapter );
+		expect( receivedEntity.dataSource ).toEqual( expectedDataAccessLayer.adapter );
 		expect( receivedEntity.attributes ).toBeInstanceOf( Object );
 		expect( receivedEntity.attributes.idHash ).toBeInstanceOf( Object );
 		expect( receivedEntity.attributes ).toHaveProperty( 'id' );
@@ -219,36 +222,15 @@ expect.extend( {
 	},
 	toBeAnAdapterEntitySet(
 		receivedArray: any[],
-		expectedAdapter: Adapter,
+		expectedDataAccessLayer: DataAccessLayer,
 		expectedAttributesArray?: any[] | any
 	) {
 		expect( receivedArray ).toBeInstanceOf( Array );
 		_.forEach( receivedArray, ( received, index ) => {
-			expect( received ).toBeInstanceOf( AdapterEntity );
-			const receivedEntity = received as AdapterEntity;
-			const adapter = receivedEntity.dataSource;
-			expect( receivedEntity.dataSource ).toBeInstanceOf( Adapter );
-			expect( receivedEntity.dataSource ).toEqual( expectedAdapter );
-			expect( receivedEntity.attributes ).toBeInstanceOf( Object );
-			expect( receivedEntity.attributes.idHash ).toBeInstanceOf( Object );
-			expect( receivedEntity.attributes ).toHaveProperty( 'id' );
-			expect( receivedEntity.attributes ).toHaveProperty( 'idHash' );
-			expect( receivedEntity.attributes.idHash ).toHaveProperty(
-				adapter.name,
-				receivedEntity.attributes.id
-			);
-			expect( receivedEntity.attributes.id ).not.toBeUndefined();
-			expect( receivedEntity.attributes.id ).not.toBeNull();
-			if ( 'undefined' === typeof window ) {
-				const baseName = (
-					adapter.name[0].toUpperCase() + adapter.name.substr( 1 )
-				).replace( /Adapter$/, '' );
-				expect( receivedEntity.constructor.name ).toEqual( `${baseName}Entity` );
-			}
 			const expectedAttributes = _.isArray( expectedAttributesArray )
-				? expectedAttributesArray[index]
-				: expectedAttributesArray;
-			expect( receivedEntity.attributes ).toMatchWithUndefined( expectedAttributes );
+			? expectedAttributesArray[index]
+			: expectedAttributesArray;
+			expect( received ).toBeAnAdapterEntity( expectedDataAccessLayer, expectedAttributes );
 		} );
 		return {
 			message: () => '',
@@ -266,9 +248,9 @@ declare global {
 			// Matcher
 			toMatchWithUndefined( expected: any );
 			// Adapter Entity
-			toBeAnAdapterEntity( expectedAdapter: Adapter, expected?: any ): void;
+			toBeAnAdapterEntity( expectedAdapter: DataAccessLayer, expected?: any ): void;
 			toBeAnAdapterEntitySet(
-				expectedAdapter: Adapter,
+				expectedAdapter: DataAccessLayer,
 				expectedAttributesArray?: any[] | any
 			): void;
 			// Entity

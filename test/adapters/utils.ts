@@ -5,6 +5,7 @@ import { Diaspora } from '../../src/diaspora';
 
 import { dataSources, getStyle } from '../utils';
 import { InMemoryEntity } from '../../src/adapters/inMemory';
+import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
 
 const getDataSourceLabel = name => {
 	return `${name}Adapter`;
@@ -12,7 +13,7 @@ const getDataSourceLabel = name => {
 
 const TABLE = 'test';
 
-export const createDataSource = ( adapterLabel, config ) => {
+export const createDataSource = ( adapterLabel: string, config: any ) => {
 	const dataSourceLabel = getDataSourceLabel( adapterLabel );
 	const dataSource = Diaspora.createNamedDataSource(
 		dataSourceLabel,
@@ -22,15 +23,16 @@ export const createDataSource = ( adapterLabel, config ) => {
 	dataSources[dataSourceLabel] = dataSource;
 	return dataSource;
 };
-export const checkSpawnedAdapter = adapterLabel => {
+export const checkSpawnedAdapter = ( adapterLabel: string ) => {
 	const baseName = adapterLabel[0].toUpperCase() + adapterLabel.substr( 1 );
 	const dataSourceLabel = getDataSourceLabel( adapterLabel );
 	it( getStyle( 'taskCategory', `Create ${adapterLabel} adapter` ), async () => {
 		const adapter = dataSources[dataSourceLabel];
 		await adapter.waitReady();
-		expect( adapter ).toBeInstanceOf( Adapter );
+		expect( adapter ).toBeInstanceOf( DataAccessLayer );
+		expect( adapter.adapter ).toBeInstanceOf( Adapter );
 		if ( 'undefined' === typeof window ) {
-			expect( adapter.constructor.name ).toEqual( `${baseName}Adapter` );
+			expect( adapter.adapter.constructor.name ).toEqual( `${baseName}Adapter` );
 			expect( adapter.classEntity.name ).toEqual( `${baseName}Entity` );
 		}
 		_.forEach( ['insert', 'find', 'update', 'delete'], word => {
@@ -38,7 +40,7 @@ export const checkSpawnedAdapter = adapterLabel => {
 		} );
 	} );
 };
-export const checkInputFiltering = ( adapter: Adapter ) => {
+export const checkInputFiltering = ( adapter: DataAccessLayer ) => {
 	describe( `${getStyle( 'taskCategory', 'Check query inputs filtering' )} with ${
 		adapter.constructor.name
 	}`, () => {
@@ -258,7 +260,7 @@ export const checkInputFiltering = ( adapter: Adapter ) => {
 	} );
 };
 export const checkEachStandardMethods = adapterLabel => {
-	const adapter = dataSources[getDataSourceLabel( adapterLabel )] as Adapter;
+	const adapter = dataSources[getDataSourceLabel( adapterLabel )];
 	const getTestLabel = fctName => {
 		if ( ( adapter as any ).__proto__.hasOwnProperty( fctName ) ) {
 			return fctName;

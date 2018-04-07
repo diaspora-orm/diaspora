@@ -5,7 +5,7 @@ import { InMemoryAdapter } from '../../../../src/adapters/inMemory';
 import { EntityStateError } from '../../../../src/errors';
 import { createMockModel } from '../../utils';
 
-const { model, adapter, MODEL_NAME, SOURCE } = createMockModel(
+const { model, MODEL_NAME, SOURCE } = createMockModel(
 	'entity-actions'
 );
 

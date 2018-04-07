@@ -28,7 +28,7 @@ beforeAll( () => {
 	const inMemoryAdapter = Diaspora.createDataSource(
 		'inMemory',
 		'foobar'
-	) as Adapter;
+	);
 	const INMEMORY_TABLE = 'test-expressstore';
 	app.use( ENDPOINT, require( 'body-parser' )() );
 	app.use( `${ENDPOINT}s`, require( 'body-parser' )() );
