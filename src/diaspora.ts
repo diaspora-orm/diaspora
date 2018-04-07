@@ -38,16 +38,16 @@ interface IQueryTypeDescriptor {
  *
  * @author gerkin
  */
-export class DiasporaStatic {
+export class Diaspora {
 	public static get instance() {
-		if ( DiasporaStatic._instance ) {
-			return DiasporaStatic._instance;
+		if ( Diaspora._instance ) {
+			return Diaspora._instance;
 		} else {
-			return ( DiasporaStatic._instance = new this() );
+			return ( Diaspora._instance = new this() );
 		}
 	}
 
-	private static _instance: DiasporaStatic;
+	private static _instance: Diaspora;
 
 	private static readonly ERRORS = {
 		NON_EMPTY_STR: _.template(
@@ -100,7 +100,7 @@ export class DiasporaStatic {
 	private static requireName( classname: string, value: any ) {
 		if ( !_.isString( value ) && value.length > 0 ) {
 			throw new Error(
-				DiasporaStatic.ERRORS.NON_EMPTY_STR( {
+				Diaspora.ERRORS.NON_EMPTY_STR( {
 					c: classname,
 					p: 'name',
 					v: value,
@@ -163,7 +163,7 @@ export class DiasporaStatic {
 		adapterLabel: string,
 		...otherConfig: any[]
 	) {
-		DiasporaStatic.requireName( 'DataSource', sourceName );
+		Diaspora.requireName( 'DataSource', sourceName );
 		const dataSource = this.createDataSource(
 			adapterLabel,
 			sourceName,
@@ -187,7 +187,7 @@ export class DiasporaStatic {
 	 */
 	public declareModel( name: string, modelDesc: ModelDescriptionRaw ) {
 		if ( _.isString( name ) && name.length > 0 ) {
-			DiasporaStatic.requireName( 'Model', name );
+			Diaspora.requireName( 'Model', name );
 		}
 		if ( !_.isObject( modelDesc ) ) {
 			throw new Error( '"modelDesc" must be an object' );
@@ -219,12 +219,13 @@ export class DiasporaStatic {
 	}
 }
 
-export const Diaspora = DiasporaStatic.instance;
+const DiasporaInstance = Diaspora.instance;
+export default DiasporaInstance;
 
 // Register available built-in adapters
-Diaspora.registerAdapter( 'inMemory', InMemoryAdapter );
-Diaspora.registerAdapter( 'webApi', WebApiAdapter );
+DiasporaInstance.registerAdapter( 'inMemory', InMemoryAdapter );
+DiasporaInstance.registerAdapter( 'webApi', WebApiAdapter );
 // Register webStorage only if in browser
 if ( process.browser ) {
-	Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );
+	DiasporaInstance.registerAdapter( 'webStorage', WebStorageAdapter );
 }
