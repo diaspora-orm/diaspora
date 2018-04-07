@@ -1,5 +1,14 @@
 import * as _ from 'lodash';
 
+import { DataAccessLayer } from './adapters/dataAccessLayer';
+import { AdapterEntity, Adapter } from './adapters/base';
+
+export interface IDataSourceRegistry {
+	[key: string]: DataAccessLayer<AdapterEntity, Adapter>;
+}
+export const dataSourceRegistry: IDataSourceRegistry = {};
+
+
 export const namedFunctions = {
 	Diaspora: {
 		'Date.now()': () => new Date(),

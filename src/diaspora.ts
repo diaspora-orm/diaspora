@@ -14,12 +14,10 @@ import { WebStorageAdapter } from './adapters/webStorage';
 import { ModelDescriptionRaw } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
+import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
 
 interface IAdapterRegistry {
 	[key: string]: IAdapterCtr;
-}
-export interface IDataSourceRegistry {
-	[key: string]: DataAccessLayer<AdapterEntity, Adapter>;
 }
 interface IModelRegistry {
 	[key: string]: Model;
@@ -87,7 +85,7 @@ export class Diaspora {
 	 * @author gerkin
 	 * @see Use {@link Diaspora.createNamedDataSource} or {@link Diaspora.registerDataSource} to make data sources available for models.
 	 */
-	private readonly _dataSources: IDataSourceRegistry = {};
+	private readonly _dataSources: IDataSourceRegistry = dataSourceRegistry;
 
 	/**
 	 * Hash containing all available models.
@@ -192,7 +190,7 @@ export class Diaspora {
 		if ( !_.isObject( modelDesc ) ) {
 			throw new Error( '"modelDesc" must be an object' );
 		}
-		const model = new Model( this, name, modelDesc );
+		const model = new Model( name, modelDesc );
 		this.models[name] = model;
 		return model;
 	}

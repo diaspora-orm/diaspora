@@ -8,7 +8,6 @@ import {
 	IRawEntityAttributes,
 } from './entities/entityFactory';
 import { Set } from './entities/set';
-import { DiasporaStatic, IDataSourceRegistry } from './diaspora';
 import { Validator } from './validator';
 import { deepFreeze } from './utils';
 import { Adapter } from './adapters/base/adapter';
@@ -16,6 +15,7 @@ import { AdapterEntity } from './adapters/base/entity';
 import { ModelDescriptionRaw, FieldDescriptor, ModelDescription, SourcesHash } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
+import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
 
 interface IQueryParamsRaw {
 	queryFind?: QueryLanguage.SelectQueryOrConditionRaw;
@@ -201,7 +201,6 @@ export class Model {
 	 * @param modelDesc - Hash representing the configuration of the model.
 	 */
 	public constructor(
-		Diaspora: DiasporaStatic,
 		public name: string,
 		modelDesc: ModelDescriptionRaw
 	) {
@@ -225,7 +224,7 @@ export class Model {
 		// List sources required by this model
 		const sourceNames = _.keys( sourcesNormalized );
 		const modelSources = _.pick(
-			Diaspora.dataSources,
+			dataSourceRegistry,
 			sourceNames
 		);
 		const missingSources = _.difference( sourceNames, _.keys( modelSources ) );
