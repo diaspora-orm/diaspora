@@ -183,23 +183,6 @@ export abstract class Entity extends SequentialEvent {
 		return data ? _.cloneDeep( data ) : undefined;
 	}
 
-	private async maybeEmit(
-		options: IOptions,
-		eventsArgs: any[],
-		events: string | string[]
-	): Promise<this> {
-		events = _.castArray( events );
-		if ( options.skipEvents ) {
-			return this;
-		} else {
-			await this.emit( events[0], ...eventsArgs );
-			if ( events.length > 1 ) {
-				return this.maybeEmit( options, eventsArgs, _.slice( events, 1 ) );
-			} else {
-				return this;
-			}
-		}
-	}
 	/**
 	 * Generate the query to get this unique entity in the desired data source.
 	 *
@@ -436,13 +419,31 @@ export abstract class Entity extends SequentialEvent {
 			return null;
 		}
 	}
-
+	
 	protected serialize() {
 		return Entity.serialize( this.attributes );
 	}
 
 	protected deserialize() {
 		return Entity.deserialize( this.attributes );
+	}
+
+	private async maybeEmit(
+		options: IOptions,
+		eventsArgs: any[],
+		events: string | string[]
+	): Promise<this> {
+		events = _.castArray( events );
+		if ( options.skipEvents ) {
+			return this;
+		} else {
+			await this.emit( events[0], ...eventsArgs );
+			if ( events.length > 1 ) {
+				return this.maybeEmit( options, eventsArgs, _.slice( events, 1 ) );
+			} else {
+				return this;
+			}
+		}
 	}
 
 	private execIfOkState<T extends AdapterEntity>(

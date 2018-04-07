@@ -25,11 +25,11 @@ extends Constructable<Adapter> {
 }
 
 /**
-* Adapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
-* @extends SequentialEvent
-* @author gerkin
-* @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
-*/
+ * Adapter is the base class of adapters. Adapters are components that are in charge to interact with data sources (files, databases, etc etc) with standardized methods. You should not use this class directly: extend this class and re-implement some methods to build an adapter. See the (upcoming) tutorial section.
+ * @extends SequentialEvent
+ * @author gerkin
+ * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
+ */
 export abstract class Adapter<
 T extends AdapterEntity = AdapterEntity
 > extends SequentialEvent implements DataSourceQuerier<IRawAdapterEntityAttributes> {
@@ -38,49 +38,49 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Hash of functions to cast data store values to JSON standard values in entity.
-	*
-	* @author Gerkin
-	*/
+	 * Hash of functions to cast data store values to JSON standard values in entity.
+	 *
+	 * @author Gerkin
+	 */
 	protected filters: object;
 	
 	/**
-	* Hash to transform entity fields to data store fields.
-	*
-	* @author Gerkin
-	*/
+	 * Hash to transform entity fields to data store fields.
+	 *
+	 * @author Gerkin
+	 */
 	protected remaps: object;
 	
 	/**
-	* Hash to transform data store fields to entity fields.
-	*
-	* @author Gerkin
-	*/
+	 * Hash to transform data store fields to entity fields.
+	 *
+	 * @author Gerkin
+	 */
 	protected remapsInverted: object;
 	
 	/**
-	* Error triggered by adapter initialization.
-	*
-	* @author Gerkin
-	*/
+	 * Error triggered by adapter initialization.
+	 *
+	 * @author Gerkin
+	 */
 	protected error?: Error;
 	
 	/**
-	* Describe current adapter status.
-	*
-	* @author Gerkin
-	*/
+	 * Describe current adapter status.
+	 *
+	 * @author Gerkin
+	 */
 	protected state: EAdapterState;
 	
 	// -----
 	// ### Initialization
 	
 	/**
-	* Create a new instance of adapter. This base class should be used by all other adapters.
-	*
-	* @author gerkin
-	* @param classEntity - Entity to spawn with this adapter.
-	*/
+	 * Create a new instance of adapter. This base class should be used by all other adapters.
+	 *
+	 * @author gerkin
+	 * @param classEntity - Entity to spawn with this adapter.
+	 */
 	public constructor(
 		protected _classEntity: IAdapterEntityCtr<T>,
 		public readonly name: string
@@ -143,30 +143,30 @@ T extends AdapterEntity = AdapterEntity
 	// ### Events
 	
 	/**
-	* Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
-	*
-	* @event Adapters.Adapter#ready
-	* @see {@link Adapters.Adapter#waitReady waitReady} Convinience method to wait for state change.
-	*/
+	 * Fired when the adapter is ready to use. You should not try to use the adapter before this event is emitted.
+	 *
+	 * @event Adapters.Adapter#ready
+	 * @see {@link Adapters.Adapter#waitReady waitReady} Convinience method to wait for state change.
+	 */
 	
 	/**
-	* Fired if the adapter failed to initialize or changed to `error` state. Called with the triggering `error`.
-	*
-	* @event Adapters.Adapter#error
-	* @see {@link Adapters.Adapter#waitReady waitReady} Convinience method to wait for state change.
-	*/
+	 * Fired if the adapter failed to initialize or changed to `error` state. Called with the triggering `error`.
+	 *
+	 * @event Adapters.Adapter#error
+	 * @see {@link Adapters.Adapter#waitReady waitReady} Convinience method to wait for state change.
+	 */
 	
 	// -----
 	// ### Utils
 	
 	/**
-	* Returns a promise resolved once adapter state is ready.
-	*
-	* @author gerkin
-	* @listens Adapters.Adapter#error
-	* @listens Adapters.Adapter#ready
-	* @returns Promise resolved when adapter is ready, and rejected if an error occured.
-	*/
+	 * Returns a promise resolved once adapter state is ready.
+	 *
+	 * @author gerkin
+	 * @listens Adapters.Adapter#error
+	 * @listens Adapters.Adapter#ready
+	 * @returns Promise resolved when adapter is ready, and rejected if an error occured.
+	 */
 	public waitReady(): Promise<this> {
 		return new Promise( ( resolve, reject ) => {
 			if ( EAdapterState.READY === this.state ) {
@@ -184,12 +184,12 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* TODO.
-	*
-	* @author gerkin
-	* @see TODO remapping.
-	* @see {@link Adapters.Adapter#remapIO remapIO}
-	*/
+	 * TODO.
+	 *
+	 * @author gerkin
+	 * @see TODO remapping.
+	 * @see {@link Adapters.Adapter#remapIO remapIO}
+	 */
 	public remapInput<T extends IEnumeratedHash<any>>(
 		tableName: string,
 		query: T
@@ -198,12 +198,12 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* TODO.
-	*
-	* @author gerkin
-	* @see TODO remapping.
-	* @see {@link Adapters.Adapter#remapIO remapIO}
-	*/
+	 * TODO.
+	 *
+	 * @author gerkin
+	 * @see TODO remapping.
+	 * @see {@link Adapters.Adapter#remapIO remapIO}
+	 */
 	public remapOutput<T extends IEnumeratedHash<any>>(
 		tableName: string,
 		query: T
@@ -212,14 +212,14 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Transform options to their canonical form. This function must be applied before calling adapters' methods.
-	*
-	* @author gerkin
-	* @throws  {TypeError} Thrown if an option does not have an acceptable type.
-	* @throws  {ReferenceError} Thrown if a required option is not present.
-	* @throws  {Error} Thrown when there isn't more precise description of the error is available (eg. when conflicts occurs).
-	* @returns Transformed options (also called `canonical options`).
-	*/
+	 * Transform options to their canonical form. This function must be applied before calling adapters' methods.
+	 *
+	 * @author gerkin
+	 * @throws  {TypeError} Thrown if an option does not have an acceptable type.
+	 * @throws  {ReferenceError} Thrown if a required option is not present.
+	 * @throws  {Error} Thrown when there isn't more precise description of the error is available (eg. when conflicts occurs).
+	 * @returns Transformed options (also called `canonical options`).
+	 */
 	public normalizeOptions(
 		opts: QueryLanguage.QueryOptionsRaw = {}
 	): QueryLanguage.QueryOptions {
@@ -238,10 +238,10 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Transform a search query to its canonical form, replacing aliases or shorthands by full query.
-	*
-	* @author gerkin
-	*/
+	 * Transform a search query to its canonical form, replacing aliases or shorthands by full query.
+	 *
+	 * @author gerkin
+	 */
 	public normalizeQuery(
 		originalQuery: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptions
@@ -300,10 +300,10 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Returns a POJO representing the current adapter.
-	*
-	* @returns JSON representation of the adapter.
-	*/
+	 * Returns a POJO representing the current adapter.
+	 *
+	 * @returns JSON representation of the adapter.
+	 */
 	public toJSON(): object {
 		return _.pick( this, [
 			'state',
@@ -318,11 +318,11 @@ T extends AdapterEntity = AdapterEntity
 	// ### Insert
 	
 	/**
-	* Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertOne` itself.
-	*
-	* @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
-	* @author gerkin
-	*/
+	 * Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertOne` itself.
+	 *
+	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
+	 * @author gerkin
+	 */
 	public async insertOne(
 		table: string,
 		entity: IRawEntityAttributes
@@ -331,11 +331,11 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself.
-	*
-	* @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
-	* @author gerkin
-	*/
+	 * Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself.
+	 *
+	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
+	 * @author gerkin
+	 */
 	public async insertMany(
 		table: string,
 		entities: IRawEntityAttributes[]
@@ -351,11 +351,11 @@ T extends AdapterEntity = AdapterEntity
 	// ### Find
 	
 	/**
-	* Retrieve a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `findOne` itself.
-	*
-	* @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
-	* @author gerkin
-	*/
+	 * Retrieve a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `findOne` itself.
+	 *
+	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
+	 * @author gerkin
+	 */
 	public async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
@@ -366,11 +366,11 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `findMany` itself.
-	*
-	* @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
-	* @author gerkin
-	*/
+	 * Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `findMany` itself.
+	 *
+	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
+	 * @author gerkin
+	 */
 	public async findMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
@@ -385,11 +385,11 @@ T extends AdapterEntity = AdapterEntity
 	// ### Update
 	
 	/**
-	* Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateOne` itself.
-	*
-	* @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
-	* @author gerkin
-	*/
+	 * Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateOne` itself.
+	 *
+	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
+	 * @author gerkin
+	 */
 	public async updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
@@ -402,11 +402,11 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateMany` itself.
-	*
-	* @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
-	* @author gerkin
-	*/
+	 * Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateMany` itself.
+	 *
+	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
+	 * @author gerkin
+	 */
 	public async updateMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
@@ -424,11 +424,11 @@ T extends AdapterEntity = AdapterEntity
 	// ### Delete
 	
 	/**
-	* Delete a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteOne` itself.
-	*
-	* @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
-	* @author gerkin
-	*/
+	 * Delete a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteOne` itself.
+	 *
+	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
+	 * @author gerkin
+	 */
 	public async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
@@ -439,15 +439,15 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Delete several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteMany` itself.
-	*
-	* @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
-	* @author gerkin
-	* @param   table     - Name of the table to delete data from.
-	* @param   queryFind - Hash representing the entities to find.
-	* @param   options   - Hash of options.
-	* @returns Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
-	*/
+	 * Delete several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteMany` itself.
+	 *
+	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
+	 * @author gerkin
+	 * @param   table     - Name of the table to delete data from.
+	 * @param   queryFind - Hash representing the entities to find.
+	 * @param   options   - Hash of options.
+	 * @returns Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
+	 */
 	public async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
@@ -477,10 +477,10 @@ T extends AdapterEntity = AdapterEntity
 	}
 	
 	/**
-	* Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
-	*
-	* @author gerkin
-	*/
+	 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
+	 *
+	 * @author gerkin
+	 */
 	public configureCollection(
 		tableName: string,
 		remaps: IRemapsHash,
