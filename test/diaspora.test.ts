@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { importTest, getStyle } from './utils';
-import { Diaspora } from '../src/diaspora';
+import Diaspora from '../src/diaspora';
 import { Validator } from '../src/validator';
 import { FieldDescriptor } from '../src/types/modelDescription';
 

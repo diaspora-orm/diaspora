@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { Diaspora } from '../../src/diaspora';
+import Diaspora from '../../src/diaspora';
 import { Model } from '../../src/model';
 import {
 	Entity,

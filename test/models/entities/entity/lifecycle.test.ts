@@ -1,4 +1,3 @@
-import { Diaspora } from '../../../../src/diaspora';
 import { Model } from '../../../../src/model';
 import { InMemoryAdapter } from '../../../../src/adapters/inMemory';
 import { Entity } from '../../../../src/entities/entityFactory';

@@ -1,6 +1,6 @@
 import { getConfig } from '../utils';
 import { LocalStorage } from 'node-localstorage';
-import { Diaspora } from '../../src/diaspora';
+import Diaspora from '../../src/diaspora';
 import { WebStorageAdapter } from '../../src/adapters/webStorage';
 
 ( global as any ).localStorage = new LocalStorage( './.localstorage' );

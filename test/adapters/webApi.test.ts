@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import express from 'express';
 
-import { Diaspora } from '../../src/diaspora';
+import Diaspora from '../../src/diaspora';
 import { IWebApiAdapterConfig } from '../../src/adapters/webApi/adapter';
 import { getConfig } from '../utils';
 import {

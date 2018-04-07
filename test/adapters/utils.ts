@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { Adapter, AdapterEntity } from '../../src/adapters/base';
-import { Diaspora } from '../../src/diaspora';
+import Diaspora from '../../src/diaspora';
 
 import { dataSources, getStyle } from '../utils';
 import { InMemoryEntity } from '../../src/adapters/inMemory';
