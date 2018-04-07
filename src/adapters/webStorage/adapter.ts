@@ -3,14 +3,13 @@ import * as _ from 'lodash';
 import {
 	Adapter,
 	EAdapterState,
-	IRemapsHash,
-	IFiltersHash,
 	IRawAdapterEntityAttributes,
 } from '../base';
 import { IRawEntityAttributes, EntityUid } from '../../entities/entityFactory';
 import { WebStorageEntity } from './entity';
 import * as Utils from '../../utils';
 import { QueryLanguage } from '../../types/queryLanguage';
+import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
 
 export interface IWebStorageAdapterConfig {
 	/**
@@ -78,6 +77,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	) {
 		super.configureCollection( tableName, remaps );
 		this.ensureCollectionExists( tableName );
+		return this;
 	}
 
 	// -----

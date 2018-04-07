@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { AdapterEntity, IRawAdapterEntityAttributes } from './entity';
 import { Adapter } from './adapter';
 import { QueryLanguage } from '../../types/queryLanguage';
+import { IEnumeratedHash } from '../../types/dataSourceQuerier';
 
 export interface Constructable<T> {
 	new ( ...args: any[] ): T;
@@ -139,9 +140,6 @@ export interface IQueryCheckFunction {
 	( entityVal: any, targetVal: any ): boolean;
 }
 
-export interface IEnumeratedHash<T> {
-	[key: string]: T;
-}
 export const OPERATORS: IEnumeratedHash<IQueryCheckFunction | undefined> = {
 	$exists: ( entityVal: any, targetVal: any ) =>
 		targetVal === !_.isUndefined( entityVal ),

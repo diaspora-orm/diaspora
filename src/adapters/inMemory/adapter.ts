@@ -3,14 +3,13 @@ import * as _ from 'lodash';
 import {
 	Adapter,
 	EAdapterState,
-	IRemapsHash,
-	IFiltersHash,
 	IRawAdapterEntityAttributes,
 } from '../base';
 import { IRawEntityAttributes, EntityUid } from '../../entities/entityFactory';
 import * as Utils from '../../utils';
 import { InMemoryEntity } from './entity';
 import { QueryLanguage } from '../../types/queryLanguage';
+import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
 
 interface IDataStoreHash {
 	[key: string]: { items: IRawAdapterEntityAttributes[] };
@@ -247,6 +246,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	) {
 		super.configureCollection( tableName, remaps, filters );
 		this.ensureCollectionExists( tableName );
+		return this;
 	}
 
 	/**

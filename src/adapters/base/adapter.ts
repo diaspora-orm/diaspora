@@ -8,14 +8,11 @@ import {
 	CANONICAL_OPERATORS,
 	QUERY_OPTIONS_TRANSFORMS,
 	iterateLimit,
-	IEnumeratedHash,
 	Constructable,
 } from './adapter-utils';
 import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
-
-export interface IRemapsHash extends IEnumeratedHash<any> {}
-export interface IFiltersHash extends IEnumeratedHash<any> {}
+import { IRemapsHash, IFiltersHash, DataSourceQuerier } from '../../types/dataSourceQuerier';
 
 export enum EAdapterState {
 	READY = 'ready',
@@ -36,7 +33,7 @@ export interface IAdapterCtr<T extends AdapterEntity = AdapterEntity>
  */
 export abstract class Adapter<
 	T extends AdapterEntity = AdapterEntity
-> extends SequentialEvent {
+> extends SequentialEvent implements DataSourceQuerier<IRawAdapterEntityAttributes> {
 	public get classEntity() {
 		return this._classEntity;
 	}
@@ -457,11 +454,12 @@ export abstract class Adapter<
 		tableName: string,
 		remaps: IRemapsHash,
 		filters: IFiltersHash = {}
-	): void {
+	): this {
 		( this.remaps as any )[tableName] = {
 			normal: remaps,
 			inverted: _.invert( remaps ),
 		};
 		( this.filters as any )[tableName] = filters;
+		return this;
 	}
 }
