@@ -95,15 +95,15 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	
 	public async findOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
 		const queryFindRemappedIn = this.remapInput( table, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.adapter.normalizeOptions( options );
 		// Query search to cannonical
-		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const foundEntity = await this.adapter.findOne( table, queryFind, optionsNormalized );
+		const queryFindNormalized = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
+		const foundEntity = await this.adapter.findOne( table, queryFindNormalized, optionsNormalized );
 		if ( foundEntity ){
 			const foundEntityRemapped = this.remapOutput(
 				table,
@@ -117,15 +117,15 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	
 	public async findMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
 		const queryFindRemappedIn = this.remapInput( table, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.adapter.normalizeOptions( options );
 		// Query search to cannonical
-		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const foundEntities = await this.adapter.findMany( table, queryFind, optionsNormalized );
+		const queryFindNormalized = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
+		const foundEntities = await this.adapter.findMany( table, queryFindNormalized, optionsNormalized );
 		return _.map( foundEntities, foundEntity => {
 			const foundEntityRemapped = this.remapOutput(
 				table,
@@ -140,7 +140,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	
 	public async updateOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
@@ -164,7 +164,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	
 	public async updateMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
@@ -189,7 +189,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	
 	public async deleteOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
 		const queryFindRemappedIn = this.remapInput( table, queryFind );
@@ -202,7 +202,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	
 	public async deleteMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
 		const queryFindRemappedIn = this.remapInput( table, queryFind );

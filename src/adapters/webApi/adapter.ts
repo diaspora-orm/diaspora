@@ -267,7 +267,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	}
 
 	private static getQueryObject(
-		queryFind: QueryLanguage.SelectQueryRemapped,
+		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
 	) {
 		if ( 0 === options.skip ) {

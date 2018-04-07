@@ -18,7 +18,7 @@ import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
 
 interface IQueryParamsRaw {
-	queryFind?: QueryLanguage.SelectQuery;
+	queryFind?: QueryLanguage.SelectQueryOrConditionRaw;
 	options: QueryLanguage.QueryOptionsRaw;
 	dataSourceName: string;
 }
@@ -105,7 +105,7 @@ const doDelete = ( methodName: EDeleteMethod, model: Model ) => {
 async function doFindUpdate(
 	model: Model,
 	plural: true,
-	queryFind: QueryLanguage.SelectQuery,
+	queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
@@ -113,7 +113,7 @@ async function doFindUpdate(
 async function doFindUpdate(
 	model: Model,
 	plural: false,
-	queryFind: QueryLanguage.SelectQuery,
+	queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
@@ -121,7 +121,7 @@ async function doFindUpdate(
 async function doFindUpdate(
 	model: Model,
 	plural: boolean,
-	queryFind: QueryLanguage.SelectQuery,
+	queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 	options: QueryLanguage.QueryOptionsRaw,
 	dataSourceName: string,
 	update?: IRawEntityAttributes
@@ -356,7 +356,7 @@ export class Model {
 	 * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */
 	public async find(
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
@@ -380,7 +380,7 @@ export class Model {
 	 * @returns Promise resolved with a {@link Set set} of found entities in *sync* state.
 	 */
 	public async findMany(
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
@@ -398,7 +398,7 @@ export class Model {
 	 * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */
 	public async update(
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
@@ -425,7 +425,7 @@ export class Model {
 	 * @returns Promise resolved with the {@link Set set} of found entities in *sync* state.
 	 */
 	public async updateMany(
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
@@ -443,7 +443,7 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	public async delete(
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
@@ -464,7 +464,7 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	public async deleteMany(
-		queryFind: QueryLanguage.SelectQuery = {},
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw = {},
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {

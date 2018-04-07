@@ -90,7 +90,7 @@ export abstract class AdapterEntity {
 	 */
 	public static matches(
 		attributes: IRawAdapterEntityAttributes,
-		query: QueryLanguage.SelectQuery
+		query: QueryLanguage.SelectQueryOrCondition
 	): boolean {
 		return false;
 	}
@@ -100,7 +100,7 @@ export abstract class AdapterEntity {
 	 *
 	 * @param query Query to match entity against
 	 */
-	public matches( query: QueryLanguage.SelectQuery ): boolean {
+	public matches( query: QueryLanguage.SelectQueryOrCondition ): boolean {
 		return false;
 	}
 

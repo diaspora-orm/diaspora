@@ -210,7 +210,7 @@ export abstract class Adapter<
 	 * @author gerkin
 	 */
 	public normalizeQuery(
-		originalQuery: QueryLanguage.SelectQueryOrCondition,
+		originalQuery: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptions
 	): QueryLanguage.SelectQueryOrCondition {
 		if ( _.isString( originalQuery ) ) {
@@ -325,7 +325,7 @@ export abstract class Adapter<
 	 */
 	public async findOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		options.limit = 1;
@@ -340,7 +340,7 @@ export abstract class Adapter<
 	 */
 	public async findMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
 		const optionsNormalized = this.normalizeOptions( options );
@@ -359,7 +359,7 @@ export abstract class Adapter<
 	 */
 	public async updateOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
@@ -376,7 +376,7 @@ export abstract class Adapter<
 	 */
 	public async updateMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
@@ -398,7 +398,7 @@ export abstract class Adapter<
 	 */
 	public async deleteOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<void> {
 		options.limit = 1;
@@ -417,7 +417,7 @@ export abstract class Adapter<
 	 */
 	public async deleteMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<void> {
 		let count = 0;
