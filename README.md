@@ -5,19 +5,30 @@
 ## Build status
 
 Fancy badges:
-[![Build Status](https://travis-ci.org/GerkinDev/diaspora.svg?branch=master)](https://travis-ci.org/GerkinDev/diaspora)
-[![Dependency Status](https://gemnasium.com/badges/github.com/GerkinDev/diaspora.svg)](https://gemnasium.com/github.com/GerkinDev/diaspora)
-[![Maintainability](https://api.codeclimate.com/v1/badges/52711a7a66f99c4b37ce/maintainability)](https://codeclimate.com/github/GerkinDev/diaspora/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/52711a7a66f99c4b37ce/test_coverage)](https://codeclimate.com/github/GerkinDev/diaspora/test_coverage)
-[![npm](https://img.shields.io/npm/dm/diaspora.svg)](https://npmjs.org/package/diaspora)
-[![npm version](https://badge.fury.io/js/diaspora.svg)](https://badge.fury.io/js/diaspora)
-[![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora)
-[![license](https://img.shields.io/github/license/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora)
+[![Build Status](https://travis-ci.org/diaspora-orm/diaspora.svg?branch=master)](https://travis-ci.org/diaspora-orm/diaspora)
+[![Dependency Status](https://gemnasium.com/badges/github.com/diaspora-orm/diaspora.svg)](https://gemnasium.com/github.com/diaspora-orm/diaspora)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f549405fb8016f6fdb1b/maintainability)](https://codeclimate.com/github/diaspora-orm/diaspora/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f549405fb8016f6fdb1b/test_coverage)](https://codeclimate.com/github/diaspora-orm/diaspora/test_coverage)
+[![npm](https://img.shields.io/npm/dm/diaspora-orm/diaspora.svg)](https://www.npmjs.com/package/diaspora/diaspora)
+[![npm version](https://badge.fury.io/js/diaspora-orm/diaspora.svg)](https://www.npmjs.com/package/diaspora/diaspora)
+[![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/diaspora-orm/diaspora.svg)](https://github.com/diaspora-orm/diaspora)
+[![license](https://img.shields.io/github/license/diaspora-orm/diaspora.svg)](https://github.com/diaspora-orm/diaspora/blob/master/LICENSE)
+
+## Installation
+
+To install Diaspora, simply run one of the following commands:
+
+```bash
+# With NPM
+npm i @diaspora/diaspora
+# With Yarn
+yarn add @diaspora/diaspora
+```
 
 ## Documentation & important notes
 
 Welcome on the GitHub repository of Diaspora. Please visit the
-[Manualwebsite](https://diaspora.ithoughts.io/), the
+[Manual website](https://diaspora.ithoughts.io/), the
 [Quick Code Review](https://diaspora.ithoughts.io/docco/index.html) or the
 [API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
 
@@ -35,62 +46,78 @@ features are incomplete or absent:
 <table style="display:table;">
     <thead>
         <tr>
-            <th>Adapter</th>
-            <th>Links</th>
-            <th>Maintainer</th>
-            <th>Platform</th>
-            <th>Other infos</th>
+            <th rowspan="2">Adapter</th>
+            <th rowspan="2">Description</th>
+            <th rowspan="2">Links</th>
+            <th rowspan="2">Maintainer</th>
+            <th colspan="2">Platform</th>
+            <th rowspan="2">Other infos</th>
+        </tr>
+        <tr>
+            <th>Node</th>
+            <th>Browser</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td style="vertical-align: middle;">
-                <img width="100" alt="In memory" src="https://cdn.rawgit.com/GerkinDev/diaspora/master/media/inMemory.svg"/><br/>
+                <img width="100" alt="In memory" src="https://cdn.rawgit.com/diaspora-orm/diaspora/master/media/inMemory.svg"/><br/>
                 In Memory
             </td>
+            <td>A simple adapter that stores its data directly in the memory</td>
             <td colspan="2" rowspan="3" style="vertical-align: middle;">Built-in</td>
-            <td rowspan="2">Node + Browser</td>
+            <td>✓</td>
+            <td>✓</td>
             <td rowspan="3" style="vertical-align: middle;">[QL] v2</td>
         </tr>
         <tr>
             <td style="vertical-align: middle;">
-                <img width="100" alt="Web API" src="https://cdn.rawgit.com/GerkinDev/diaspora/master/media/webApi.svg"/><br/>
+                <img width="100" alt="Web API" src="https://cdn.rawgit.com/diaspora-orm/diaspora/master/media/webApi.svg"/><br/>
                 WebApi
             </td>
+            <td>A customizable adapter that use HTTP APIs as data source. Convinient to query easily REST, SOAP or GraphQL apis.</td>
+            <td>✓</td>
+            <td>✓</td>
         </tr>
         <tr>
             <td style="vertical-align: middle;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage">
-                <img width="100" alt="Browser storage" src="https://cdn.rawgit.com/GerkinDev/diaspora/master/media/webStorage.svg"/><br/>
+                <img width="100" alt="Browser storage" src="https://cdn.rawgit.com/diaspora-orm/diaspora/master/media/webStorage.svg"/><br/>
                 WebStorage</a>
             </td>
-            <td>Browser</td>
+            <td>A simple adapter that stores its data in the browser's local or session storage.</td>
+            <td>✗</td>
+            <td>✓</td>
         </tr>
         <tr>
             <td style="vertical-align: middle;"><a href="https://www.mongodb.com/">
-                <img width="100" alt="MongoDB" src="https://cdn.rawgit.com/GerkinDev/diaspora-mongo/master/media/mongo.svg"/><br/>
+                <img width="100" alt="MongoDB" src="https://cdn.rawgit.com/diaspora-orm/adapter-mongo/master/media/mongo.svg"/><br/>
                 MongoDB</a>
             </td>
+            <td></td>
             <td style="vertical-align: middle;">
-                <a href="https://github.com/GerkinDev/diaspora-mongo" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/GerkinDev/diaspora-mongo.svg?label=GitHub"/></a>
-                <a href="https://www.npmjs.com/package/diaspora-mongo" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-mongo.svg"/></a>
-                <a href="yarnpkg.com/en/package/diaspora-mongo" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-mongo.svg?label=yarn"/></a>
+                <a href="https://github.com/diaspora-orm/adapter-mongo" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/diaspora-orm/adapter-mongo.svg?label=GitHub"/></a>
+                <a href="https://www.npmjs.com/package/diaspora/adapter-mongo" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-orm/adapter-mongo.svg"/></a>
+                <a href="https://yarnpkg.com/en/package/diaspora/adapter-mongo" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-orm/adapter-mongo.svg?label=yarn"/></a>
             </td>
-            <td style="vertical-align: middle;"><a href="https://github.com/GerkinDev" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev"/></a></td>
-            <td>Node</td>
+            <td style="vertical-align: middle;"><a href="https://github.com/diaspora-orm" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/diaspora-orm.svg?label=Diaspora%20ORM"/></a></td>
+            <td>✓</td>
+            <td>✗</td>
             <td style="vertical-align: middle;">[QL] v2</td>
         </tr>
         <tr>
             <td style="vertical-align: middle;"><a href="https://redis.io/">
-                <img width="100" alt="Redis" src="https://cdn.rawgit.com/GerkinDev/diaspora-redis/master/media/redis.svg"/><br/>
+                <img width="100" alt="Redis" src="https://cdn.rawgit.com/diaspora-orm/adapter-redis/master/media/redis.svg"/><br/>
                 Redis</a>
             </td>
+            <td></td>
             <td style="vertical-align: middle;">
-                <a href="https://github.com/GerkinDev/diaspora-redis" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/GerkinDev/diaspora-redis.svg?label=GitHub"/></a>
-                <a href="https://www.npmjs.com/package/diaspora-redis" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-redis.svg"/></a>
-                <a href="yarnpkg.com/en/package/diaspora-redis" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-redis.svg?label=yarn"/></a>
+                <a href="https://github.com/diaspora-orm/adapter-redis" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/diaspora-orm/adapter-redis.svg?label=GitHub"/></a>
+                <a href="https://www.npmjs.com/package/diaspora/adapter-redis" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-orm/adapter-redis.svg"/></a>
+                <a href="https://yarnpkg.com/en/package/diaspora/adapter-redis" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-orm/adapter-redis.svg?label=yarn"/></a>
             </td>
-            <td style="vertical-align: middle;"><a href="https://github.com/GerkinDev" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/GerkinDev.svg?label=GerkinDev"/></a></td>
-            <td>Node</td>
+            <td style="vertical-align: middle;"><a href="https://github.com/diaspora-orm" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/diaspora-orm.svg?label=Diaspora%20ORM"/></a></td>
+            <td>✓</td>
+            <td>✗</td>
             <td style="vertical-align: middle;">[QL] v2</td>
         </tr>
     </tbody>
@@ -98,7 +125,7 @@ features are incomplete or absent:
 
 ### Other modules
 
-[Diaspora-Server](https://www.npmjs.com/package/diaspora-server): a package to easily create APIs for Diaspora models
+[plugin-server](https://www.npmjs.com/package/diaspora/plugin-server): a package to easily create APIs for Diaspora models
 
 ## Compatibility
 
@@ -176,7 +203,7 @@ isn't an object, it is considered as an ID. `options` can contain
 
 See `update`
 
-### Entity methods
+### Entity/Set methods
 
 #### destroy([*string* `source`]) => *Promise(this)*
 
