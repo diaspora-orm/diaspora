@@ -15,6 +15,7 @@ import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
 import { ModelDescriptionRaw, FieldDescriptor, ModelDescription, SourcesHash } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
+import { DataAccessLayer } from './adapters/dataAccessLayer';
 
 interface IQueryParamsRaw {
 	queryFind?: QueryLanguage.SelectQuery;
@@ -22,7 +23,7 @@ interface IQueryParamsRaw {
 	dataSourceName: string;
 }
 interface IQueryParams<T extends AdapterEntity> extends IQueryParamsRaw {
-	dataSource: Adapter<T>;
+	dataSource: DataAccessLayer;
 }
 
 const findArgs = (
@@ -175,7 +176,7 @@ const normalizeRemaps = ( modelDesc: ModelDescriptionRaw ) => {
 export class Model {
 	public attributes: { [key: string]: FieldDescriptor };
 
-	private readonly _dataSources: { [key: string]: Adapter<AdapterEntity> };
+	private readonly _dataSources: IDataSourceRegistry;
 	public get dataSources() {
 		return this._dataSources;
 	}
@@ -223,7 +224,7 @@ export class Model {
 		const sourcesNormalized = normalizeRemaps( modelDesc );
 		// List sources required by this model
 		const sourceNames = _.keys( sourcesNormalized );
-		const modelSources: IDataSourceRegistry = _.pick(
+		const modelSources = _.pick(
 			Diaspora.dataSources,
 			sourceNames
 		);
@@ -270,7 +271,7 @@ export class Model {
 	 */
 	public getDataSource(
 		sourceName: string = this.defaultDataSource
-	): Adapter<AdapterEntity> {
+	): DataAccessLayer {
 		if ( _.isNil( sourceName ) ) {
 			sourceName = this.defaultDataSource;
 		} else if ( !this._dataSources.hasOwnProperty( sourceName ) ) {

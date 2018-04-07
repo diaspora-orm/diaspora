@@ -10,6 +10,7 @@ import {
 } from '../adapters/base';
 import { Model } from '../model';
 import { ModelDescription } from '../types/modelDescription';
+import { DataAccessLayer } from '../adapters/dataAccessLayer';
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 
@@ -32,7 +33,7 @@ export interface EntitySpawner {
 	new ( source?: IRawEntityAttributes ): Entity;
 }
 export interface IDataSourceMap<T extends AdapterEntity>
-	extends WeakMap<Adapter<T>, T | null> {}
+	extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
 
 const maybeEmit = async (
 	entity: Entity,
@@ -129,7 +130,7 @@ export abstract class Entity extends SequentialEvent {
 
 	private _state: EEntityState = EEntityState.ORPHAN;
 
-	private _lastDataSource: Adapter<AdapterEntity> | null;
+	private _lastDataSource: DataAccessLayer | null;
 
 	private readonly _dataSources: IDataSourceMap<AdapterEntity>;
 
@@ -167,7 +168,7 @@ export abstract class Entity extends SequentialEvent {
 		// ### Load datas from source
 		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 		if ( source instanceof AdapterEntity ) {
-			this.setLastDataSourceEntity( source.dataSource, source );
+			this.setLastDataSourceEntity( DataAccessLayer.retrieveAccessLayer( source.dataSource ), source );
 		}
 
 		// ### Final validation
@@ -226,13 +227,14 @@ export abstract class Entity extends SequentialEvent {
 	 * Generate the query to get this unique entity in the desired data source.
 	 *
 	 * @author gerkin
-	 * @param   dataSource - Name of the data source to get query for.
+	 * @param   dataSource - Data source to get query for.
 	 * @returns Query to find this entity.
 	 */
-	public uidQuery<T extends AdapterEntity>( dataSource: Adapter<T> ): object {
+	public uidQuery( dataSource: string | DataAccessLayer | Adapter ): object {
 		// Todo: precise return type
+		const dataSourceName = typeof dataSource !== 'string' ? dataSource.name : dataSource;
 		return {
-			id: this.idHash[dataSource.name],
+			id: this.idHash[dataSourceName],
 		};
 	}
 
@@ -282,14 +284,10 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Data source to diff with.
 	 * @returns Diff query.
 	 */
-	public getDiff(
-		dataSource: Adapter | string
-	): IRawEntityAttributes | undefined {
-		const dataSourceFixed =
-			typeof dataSource === 'string'
-				? this.ctor.model.getDataSource( dataSource )
-				: dataSource;
+	public getDiff( dataSource: string | Adapter | DataAccessLayer ): IRawEntityAttributes | undefined {
+		const dataSourceName = typeof dataSource !== 'string' ? dataSource.name : dataSource;
 
+		const dataSourceFixed = this.ctor.model.getDataSource( dataSourceName );
 		const dataStoreEntity = this.dataSources.get( dataSourceFixed );
 		// All is diff if not present
 		if ( _.isNil( dataStoreEntity ) || _.isNil( this.attributes ) ) {
@@ -474,7 +472,7 @@ export abstract class Entity extends SequentialEvent {
 	 * Refresh last data source, attributes, state & data source entity
 	 */
 	private setLastDataSourceEntity(
-		dataSource: Adapter,
+		dataSource: DataAccessLayer,
 		dataSourceEntity: AdapterEntity | null
 	) {
 		// We have used data source, store it

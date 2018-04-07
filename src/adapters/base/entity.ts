@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { EntityUid, IRawEntityAttributes } from '../../entities/entityFactory';
 import { Adapter } from './adapter';
 import { QueryLanguage } from '../../types/queryLanguage';
+import { DataAccessLayer } from '../dataAccessLayer';
 
 export interface IIdHash {
 	[key: string]: EntityUid;
@@ -28,6 +29,7 @@ export abstract class AdapterEntity implements IAdapterEntity {
 		return this._attributes;
 	}
 	public readonly dataSource: Adapter<AdapterEntity>;
+	public readonly dataAccessLayer: DataAccessLayer;
 
 	protected _attributes: IRawAdapterEntityAttributes;
 
@@ -55,6 +57,7 @@ export abstract class AdapterEntity implements IAdapterEntity {
 		_.merge( entity, { idHash: { [dataSource.name]: entity.id } } );
 		this._attributes = entity as IRawAdapterEntityAttributes;
 		this.dataSource = dataSource;
+		this.dataAccessLayer = DataAccessLayer.retrieveAccessLayer( dataSource );
 	}
 
 	public static setId(
