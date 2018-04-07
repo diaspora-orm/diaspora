@@ -12,7 +12,7 @@ import {
 } from './adapter-utils';
 import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
-import { IRemapsHash, IFiltersHash, DataSourceQuerier } from '../../types/dataSourceQuerier';
+import { IRemapsHash, IFiltersHash, DataSourceQuerier, IEnumeratedHash } from '../../types/dataSourceQuerier';
 
 export enum EAdapterState {
 	READY = 'ready',
@@ -157,10 +157,10 @@ export abstract class Adapter<
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	public remapInput(
+	public remapInput<T extends IEnumeratedHash<any>>(
 		tableName: string,
-		query: IRawEntityAttributes
-	): IRawEntityAttributes {
+		query: T
+	) {
 		return remapIO( this, tableName, query, true );
 	}
 
@@ -171,10 +171,10 @@ export abstract class Adapter<
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	public remapOutput(
+	public remapOutput<T extends IEnumeratedHash<any>>(
 		tableName: string,
-		query: IRawEntityAttributes
-	): IRawEntityAttributes {
+		query: T
+	) {
 		return remapIO( this, tableName, query, false );
 	}
 

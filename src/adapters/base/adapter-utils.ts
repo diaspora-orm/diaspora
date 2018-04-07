@@ -108,15 +108,12 @@ export const iterateLimit = async (
  * @author gerkin
  * @see TODO remapping.
  */
-export const remapIO = <T extends AdapterEntity>(
-	adapter: Adapter<T>,
+export const remapIO = <T extends IEnumeratedHash<any>>(
+	adapter: Adapter,
 	tableName: string,
-	query: QueryLanguage.SelectQuery,
+	query: T,
 	input: boolean
-): QueryLanguage.SelectQueryRemapped => {
-	if ( _.isNil( query ) ) {
-		return query;
-	}
+) => {
 	const direction = true === input ? 'input' : 'output';
 	const filtered = _.mapValues( query, ( value, key ) => {
 		const filter = _.get(
