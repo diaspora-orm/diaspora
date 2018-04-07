@@ -1,6 +1,6 @@
 {
 	"name": "@diaspora/diaspora",
-	"version": "0.2.0",
+	"version": "0.3.0-alpha.1",
 	"description": "Multi-Layer ORM for Javascript Client+Server",
 	"main": "dist/diaspora.umd.js",
 	"module": "dist/diaspora.es5.js",

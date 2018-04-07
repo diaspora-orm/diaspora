@@ -1,8 +1,35 @@
-# Diaspora changelog
+<a name="0.3.0-alpha.1"></a>
+# [0.3.0-alpha.1](https://github.com/diaspora-orm/diaspora/compare/v0.2.0...v0.3.0-alpha.1) (2018-04-07)
 
-## v0.2.0 (12/23/2017, Merry Christmas)
 
-### New features
+### Bug Fixes
+
+* **dependencies:** Fixed require of sequential-event ([de4db02](https://github.com/diaspora-orm/diaspora/commit/de4db02))
+* **src/{diaspora,utils}:** Fixed path to entity-related classes ([48c2324](https://github.com/diaspora-orm/diaspora/commit/48c2324))
+* **src/{validator,model}:** Fixed validator prop wrong filter, use type guards for FieldDescriptor v ([82ed057](https://github.com/diaspora-orm/diaspora/commit/82ed057))
+* **src/*:** Changed lodash import method, resolved circular dependency ([60a9424](https://github.com/diaspora-orm/diaspora/commit/60a9424))
+* **src/*:** Fixed query types ([2bf84f9](https://github.com/diaspora-orm/diaspora/commit/2bf84f9))
+* **src/adapter/base/adapter:** Fixed adapter ctor interface inheritance ([34f8bf3](https://github.com/diaspora-orm/diaspora/commit/34f8bf3))
+* **src/entities/entityFactory:** `maybeEmit` bound to current Entity when preparing multi lifecycle ([999edbe](https://github.com/diaspora-orm/diaspora/commit/999edbe))
+* **src/entity/*:** Fixed entity create, attributes passed to event handlers, sourceName in Set actio ([6971dfd](https://github.com/diaspora-orm/diaspora/commit/6971dfd))
+* **src/errors/ExtendableError:** Fixed constructor inheritance ([5344be2](https://github.com/diaspora-orm/diaspora/commit/5344be2))
+
+
+### Features
+
+* **adapters/*:** Rewrite adapters ([8b27ab4](https://github.com/diaspora-orm/diaspora/commit/8b27ab4))
+* **Adapters/webApi/Adapter:** WebApi adapter loads events from event providers for init ([0f099ee](https://github.com/diaspora-orm/diaspora/commit/0f099ee))
+* **Diaspora:** Better logger ([9149c47](https://github.com/diaspora-orm/diaspora/commit/9149c47))
+* **Model:** Added modelDescription to model instance ([f5550f7](https://github.com/diaspora-orm/diaspora/commit/f5550f7))
+* **src/{model,diaspora,adapters/dataAccessLayer}:** Added DataAccessLayer ([2265392](https://github.com/diaspora-orm/diaspora/commit/2265392)), closes [#4](https://github.com/diaspora-orm/diaspora/issues/4)
+* **src/adapters/*:** Added decorators for autoId & self-matching adapter entities ([e1b5ef6](https://github.com/diaspora-orm/diaspora/commit/e1b5ef6))
+
+
+
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/diaspora-orm/diaspora/compare/v0.1.0...v0.2.0) (2017-23-12, Merry Christmas)
+
+### Features
 
 * Added class Set to manage several entities at the same time
 * Added webApi adapter
@@ -24,8 +51,9 @@
 * Improved maintainability
 * Custom errors now extend base JavaScript errors
 
----
 
-## v0.1.0 (10/03/2017)
+<a name="0.1.0"></a>
+# [0.1.0](https://github.com/diaspora-orm/diaspora/compare/v0.1.0...init) (2017-03-10)
+
 
 * Initial release
