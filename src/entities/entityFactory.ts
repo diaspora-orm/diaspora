@@ -327,7 +327,7 @@ export abstract class Entity extends SequentialEvent {
 		const finalSourceName = dataSource.name;
 		// Generate events args
 		const eventsArgs = [finalSourceName, this.serialize()];
-		const _maybeEmit = _.partial( this.maybeEmit, options, eventsArgs );
+		const _maybeEmit = this.maybeEmit.bind( this, options, eventsArgs );
 
 		// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
 		const suffix = 'orphan' === beforeState ? 'Create' : 'Update';
@@ -375,7 +375,7 @@ export abstract class Entity extends SequentialEvent {
 			sourceName
 		);
 		const eventsArgs = [dataSource.name, this.serialize()];
-		const _maybeEmit = _.partial( this.maybeEmit, options, eventsArgs );
+		const _maybeEmit = this.maybeEmit.bind( this, options, eventsArgs );
 
 		await _maybeEmit( 'beforeFetch' );
 
@@ -409,7 +409,7 @@ export abstract class Entity extends SequentialEvent {
 		// Generate events args
 		const dataSource = this.ctor.model.getDataSource( sourceName );
 		const eventsArgs = [dataSource.name, this.serialize()];
-		const _maybeEmit = _.partial( this.maybeEmit, options, eventsArgs );
+		const _maybeEmit = this.maybeEmit.bind( this, options, eventsArgs );
 
 		await _maybeEmit( 'beforeDestroy' );
 
