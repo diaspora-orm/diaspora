@@ -35,25 +35,6 @@ export interface EntitySpawner {
 export interface IDataSourceMap<T extends AdapterEntity>
 	extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
 
-const maybeEmit = async (
-	entity: Entity,
-	options: IOptions,
-	eventsArgs: any[],
-	events: string | string[]
-): Promise<Entity> => {
-	events = _.castArray( events );
-	if ( options.skipEvents ) {
-		return entity;
-	} else {
-		await entity.emit( events[0], ...eventsArgs );
-		if ( events.length > 1 ) {
-			return maybeEmit( entity, options, eventsArgs, _.slice( events, 1 ) );
-		} else {
-			return entity;
-		}
-	}
-};
-
 const entityCtrSteps = {
 	castTypes( source: IRawAdapterEntityAttributes, modelDesc: ModelDescription ) {
 		const attrs = modelDesc.attributes;
@@ -202,6 +183,23 @@ export abstract class Entity extends SequentialEvent {
 		return data ? _.cloneDeep( data ) : undefined;
 	}
 
+	private async maybeEmit(
+		options: IOptions,
+		eventsArgs: any[],
+		events: string | string[]
+	): Promise<this> {
+		events = _.castArray( events );
+		if ( options.skipEvents ) {
+			return this;
+		} else {
+			await this.emit( events[0], ...eventsArgs );
+			if ( events.length > 1 ) {
+				return this.maybeEmit( options, eventsArgs, _.slice( events, 1 ) );
+			} else {
+				return this;
+			}
+		}
+	}
 	/**
 	 * Generate the query to get this unique entity in the desired data source.
 	 *
@@ -329,7 +327,7 @@ export abstract class Entity extends SequentialEvent {
 		const finalSourceName = dataSource.name;
 		// Generate events args
 		const eventsArgs = [finalSourceName, this.serialize()];
-		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
+		const _maybeEmit = _.partial( this.maybeEmit, options, eventsArgs );
 
 		// Get suffix. If entity was orphan, we are creating. Otherwise, we are updating
 		const suffix = 'orphan' === beforeState ? 'Create' : 'Update';
@@ -377,7 +375,7 @@ export abstract class Entity extends SequentialEvent {
 			sourceName
 		);
 		const eventsArgs = [dataSource.name, this.serialize()];
-		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
+		const _maybeEmit = _.partial( this.maybeEmit, options, eventsArgs );
 
 		await _maybeEmit( 'beforeFetch' );
 
@@ -411,7 +409,7 @@ export abstract class Entity extends SequentialEvent {
 		// Generate events args
 		const dataSource = this.ctor.model.getDataSource( sourceName );
 		const eventsArgs = [dataSource.name, this.serialize()];
-		const _maybeEmit = _.partial( maybeEmit, this, options, eventsArgs );
+		const _maybeEmit = _.partial( this.maybeEmit, options, eventsArgs );
 
 		await _maybeEmit( 'beforeDestroy' );
 

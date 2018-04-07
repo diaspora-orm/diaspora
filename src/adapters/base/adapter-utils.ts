@@ -68,40 +68,6 @@ const validateOption = (
 	return val;
 };
 
-export const iterateLimit = async (
-	options: QueryLanguage.QueryOptions,
-	query: (
-		options: QueryLanguage.QueryOptions
-	) => Promise<IRawAdapterEntityAttributes>
-): Promise<IRawAdapterEntityAttributes[]> => {
-	const foundEntities: IRawAdapterEntityAttributes[] = [];
-	let foundCount = 0;
-	let origSkip = options.skip;
-
-	// We are going to loop until we find enough items
-	const loopFind = async (
-		found?: IRawAdapterEntityAttributes | true
-	): Promise<IRawAdapterEntityAttributes[]> => {
-		// If the search returned nothing, then just finish the findMany
-		if ( _.isNil( found ) ) {
-			return Promise.resolve( foundEntities );
-			// Else, if this is a value and not the initial `true`, add it to the list
-		} else if ( typeof found === 'object' ) {
-			foundEntities.push( found );
-		}
-		// If we found enough items, return them
-		if ( foundCount === options.limit ) {
-			return Promise.resolve( foundEntities );
-		}
-		options.skip = origSkip + foundCount;
-		// Next time we'll skip 1 more item
-		foundCount++;
-		// Do the query & loop
-		return loopFind( await query( options ) );
-	};
-	return loopFind( true );
-};
-
 /**
  * TODO.
  *
