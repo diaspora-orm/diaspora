@@ -1,3 +1,18 @@
+<a name="0.3.0-alpha.2"></a>
+# [0.3.0-alpha.2](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.1...v0.3.0-alpha.2) (2018-04-08)
+
+
+### Bug Fixes
+
+* **src/entities/entityFactory:** Entity has default parameter for `getId`, and new getter for `id` ([60c40b5](https://github.com/diaspora-orm/diaspora/commit/60c40b5))
+
+
+### Features
+
+* **src/diaspora:** Exposed getter for `models` hash ([f1afbd6](https://github.com/diaspora-orm/diaspora/commit/f1afbd6))
+
+
+
 <a name="0.3.0-alpha.1"></a>
 # [0.3.0-alpha.1](https://github.com/diaspora-orm/diaspora/compare/v0.2.0...v0.3.0-alpha.1) (2018-04-07)
 
