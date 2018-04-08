@@ -1,28 +1,14 @@
 language: node_js
-matrix:
-  include:
-    - node_js: "node"
-      addons:
-        sauce_connect: true
-      env:
-        - SAUCE=yes
-        - BROWSER_NAME=chrome
-    - node_js: "node"
-      addons:
-        sauce_connect: true
-      env:
-        - SAUCE=yes
-        - BROWSER_NAME=firefox
-    - node_js: "node"
-      env: SAUCE=no
-    - node_js: "lts/*"
-      env: SAUCE=no
-    - node_js: "9"
-      env: SAUCE=no
-    - node_js: "8"
-      env: SAUCE=no
-    - node_js: "7"
-      env: SAUCE=no
+node_js:
+  - "lts/*"
+  - "latest"
+  - "9"
+  - "8"
+  - "7"
+  - "6"
+os:
+  - linux
+  - osx
 env: 
   global:
     - CC_TEST_REPORTER_ID=564670983f32d7a463933ac3c57feb952d7c5a42cdbb9b22bf2939a7b6dbccd7
