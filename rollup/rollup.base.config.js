@@ -42,7 +42,8 @@ module.exports = (minify, externalize) => {
 		},
 		plugins: [
 			// Compile TypeScript files
-			typescript(),
+            typescript(),
+            
 			// Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
 			commonjs(commonjsConfig),
 		].concat(minify ? [

@@ -71,3 +71,7 @@ dist/
 
 \.rpt2_cache/
 \.localstorage/
+docs/
+es5/
+lib/
+umd/
