@@ -1,5 +1,5 @@
-<a name="0.3.0-alpha.2"></a>
-# [0.3.0-alpha.2](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.1...v0.3.0-alpha.2) (2018-04-08)
+<a name="0.3.0-alpha.3"></a>
+# [0.3.0-alpha.3](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.1...v0.3.0-alpha.3) (2018-04-08)
 
 
 ### Bug Fixes
