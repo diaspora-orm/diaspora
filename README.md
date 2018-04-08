@@ -9,8 +9,8 @@ Fancy badges:
 [![Dependency Status](https://gemnasium.com/badges/github.com/diaspora-orm/diaspora.svg)](https://gemnasium.com/github.com/diaspora-orm/diaspora)
 [![Maintainability](https://api.codeclimate.com/v1/badges/f549405fb8016f6fdb1b/maintainability)](https://codeclimate.com/github/diaspora-orm/diaspora/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f549405fb8016f6fdb1b/test_coverage)](https://codeclimate.com/github/diaspora-orm/diaspora/test_coverage)
-[![npm](https://img.shields.io/npm/dm/diaspora-orm/diaspora.svg)](https://www.npmjs.com/package/diaspora/diaspora)
-[![npm version](https://badge.fury.io/js/diaspora-orm/diaspora.svg)](https://www.npmjs.com/package/diaspora/diaspora)
+[![npm](https://img.shields.io/npm/dm/@diaspora/diaspora.svg)](https://www.npmjs.com/package/@diaspora/diaspora)
+[![npm version](https://badge.fury.io/js/%40diaspora%2Fdiaspora.svg)](https://www.npmjs.com/package/@diaspora/diaspora)
 [![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/diaspora-orm/diaspora.svg)](https://github.com/diaspora-orm/diaspora)
 [![license](https://img.shields.io/github/license/diaspora-orm/diaspora.svg)](https://github.com/diaspora-orm/diaspora/blob/master/LICENSE)
 
@@ -20,7 +20,7 @@ To install Diaspora, simply run one of the following commands:
 
 ```bash
 # With NPM
-npm i @diaspora/diaspora
+npm install --save @diaspora/diaspora
 # With Yarn
 yarn add @diaspora/diaspora
 ```
@@ -95,9 +95,9 @@ features are incomplete or absent:
             </td>
             <td></td>
             <td style="vertical-align: middle;">
-                <a href="https://github.com/diaspora-orm/adapter-mongo" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/diaspora-orm/adapter-mongo.svg?label=GitHub"/></a>
-                <a href="https://www.npmjs.com/package/diaspora/adapter-mongo" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-orm/adapter-mongo.svg"/></a>
-                <a href="https://yarnpkg.com/en/package/diaspora/adapter-mongo" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-orm/adapter-mongo.svg?label=yarn"/></a>
+                <a href="https://github.com/diaspora-orm/adapter-mongo" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/diaspora-orm/adapter-mongo.svg?label=GitHub"/></a><br/>
+                <a href="https://www.npmjs.com/package/@diaspora/adapter-mongo" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/@diaspora/adapter-mongo.svg"/></a><br/>
+                <a href="https://yarnpkg.com/en/package/@diaspora/adapter-mongo" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/@diaspora/adapter-mongo.svg?label=yarn"/></a>
             </td>
             <td style="vertical-align: middle;"><a href="https://github.com/diaspora-orm" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/diaspora-orm.svg?label=Diaspora%20ORM"/></a></td>
             <td>✓</td>
@@ -111,9 +111,9 @@ features are incomplete or absent:
             </td>
             <td></td>
             <td style="vertical-align: middle;">
-                <a href="https://github.com/diaspora-orm/adapter-redis" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/diaspora-orm/adapter-redis.svg?label=GitHub"/></a>
-                <a href="https://www.npmjs.com/package/diaspora/adapter-redis" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/diaspora-orm/adapter-redis.svg"/></a>
-                <a href="https://yarnpkg.com/en/package/diaspora/adapter-redis" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/diaspora-orm/adapter-redis.svg?label=yarn"/></a>
+                <a href="https://github.com/diaspora-orm/adapter-redis" target="_blank"><img alt="GitHub release" src="https://img.shields.io/github/release/diaspora-orm/adapter-redis.svg?label=GitHub"/></a><br/>
+                <a href="https://www.npmjs.com/package/@diaspora/adapter-redis" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/@diaspora/adapter-redis.svg"/></a><br/>
+                <a href="https://yarnpkg.com/en/package/@diaspora/adapter-redis" target="_blank"><img alt="yarn" src="https://img.shields.io/npm/v/@diaspora/adapter-redis.svg?label=yarn"/></a>
             </td>
             <td style="vertical-align: middle;"><a href="https://github.com/diaspora-orm" target="_blank"><img alt="GitHub followers" src="https://img.shields.io/github/followers/diaspora-orm.svg?label=Diaspora%20ORM"/></a></td>
             <td>✓</td>
@@ -125,7 +125,7 @@ features are incomplete or absent:
 
 ### Other modules
 
-[plugin-server](https://www.npmjs.com/package/diaspora/plugin-server): a package to easily create APIs for Diaspora models
+[plugin-server](https://www.npmjs.com/package/@diaspora/plugin-server): a package to easily create APIs for Diaspora models
 
 ## Compatibility
 
