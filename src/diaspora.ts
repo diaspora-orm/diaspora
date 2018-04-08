@@ -14,13 +14,10 @@ import { WebStorageAdapter } from './adapters/webStorage';
 import { ModelDescriptionRaw } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
-import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
+import { IDataSourceRegistry, dataSourceRegistry, modelRegistry, IModelRegistry } from './staticStores';
 
 interface IAdapterRegistry {
 	[key: string]: IAdapterCtr;
-}
-interface IModelRegistry {
-	[key: string]: Model;
 }
 interface IRemapIterator {
 	( entity: IRawEntityAttributes ): void;
@@ -70,6 +67,10 @@ export class Diaspora {
 	public get dataSources() {
 		return _.assign( {}, this._dataSources );
 	}
+	
+	public get models(){
+		return _.assign( {}, this._models );
+	}
 
 	/**
 	 * Hash containing all available adapters. The only universal adapter is `inMemory`.
@@ -93,7 +94,7 @@ export class Diaspora {
 	 * @author gerkin
 	 * @see Use {@link Diaspora.declareModel} to add models.
 	 */
-	private readonly models: IModelRegistry = {};
+	private readonly _models: IModelRegistry = modelRegistry;
 
 	private static requireName( classname: string, value: any ) {
 		if ( !_.isString( value ) && value.length > 0 ) {
