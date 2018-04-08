@@ -1,6 +1,6 @@
-PKG_NAME=$(node -p -e "require('./package.json').name")
+PKG_NAME=$(node -p -e "require('./package.json').name" | sed 's:/:-:' | sed 's:@::')
 
-rm "$PKG_NAME-*.tgz"
+rm -f "$PKG_NAME-*.tgz"
 
 VERSION=$(node -p -e "require('./package.json').version")
 

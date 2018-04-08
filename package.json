@@ -1,160 +1,159 @@
 {
-	"name": "@diaspora/diaspora",
-	"version": "0.3.0-alpha.1",
-	"description": "Multi-Layer ORM for Javascript Client+Server",
-	"main": "dist/diaspora.umd.js",
-	"module": "dist/diaspora.es5.js",
-	"typings": "dist/types/diaspora.d.ts",
-	"files": [
-		"dist"
-	],
-	"directories": {
-		"doc": "doc",
-		"lib": "lib",
-		"test": "test"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/diaspora-orm/diaspora.git"
-	},
-	"scripts": {
-		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-		"lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' || true",
-		"doc": "typedoc --out dist/docs --target es6 --theme minimal --mode file src",
-		"prebuild": "rimraf dist",
-		"build:standalone": "rollup -c ./rollup/rollup.standalone.config.ts",
-		"build:standalone:min": "rollup -c ./rollup/rollup.standalone.min.config.ts",
-		"build:module": "rollup -c ./rollup/rollup.module.config.ts",
-		"build:module:min": "rollup -c ./rollup/rollup.module.min.config.ts",
-		"build:all": "npm run build:standalone && npm run build:standalone:min && npm run build:module && npm run build:module:min",
-		"build": "tsc --module commonjs --outDir dist/lib && npm run build:all && npm run doc",
-		"start": "rollup -c ./rollup/rollup.module.config.ts -w",
-		"test": "jest",
-		"test:watch": "jest --watch",
-		"test:prod": "npm run lint && npm run test -- --coverage --no-cache",
-		"deploy-docs": "ts-node tools/gh-pages-publish",
-		"report-coverage": "cat ./coverage/lcov.info | coveralls",
-		"commit": "git-cz",
-		"semantic-release": "semantic-release pre && npm publish && semantic-release post",
-		"semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-		"precommit": "lint-staged"
-	},
-	"keywords": [
-		"ORM",
-		"db",
-		"collection",
-		"manager",
-		"localstorage",
-		"webstorage",
-		"models",
-		"mvc",
-		"query",
-		"object"
-	],
-	"author": "Gerkin",
-	"license": "GPL-3.0",
-	"bugs": {
-		"url": "https://github.com/diaspora-orm/diaspora/issues"
-	},
-	"homepage": "https://github.com/diaspora-orm/diaspora#readme",
-	"lint-staged": {
-		"{src,test}/**/*.ts": [
-			"npm run lint:fix",
-			"git add"
-		]
-	},
-	"config": {
-		"commitizen": {
-			"path": "node_modules/cz-conventional-changelog"
-		},
-		"validate-commit-msg": {
-			"types": "conventional-commit-types",
-			"helpMessage": "Use \"npm run commit\" instead, we use conventional-changelog format :) (https://github.com/commitizen/cz-cli)"
-		}
-	},
-	"jest": {
-		"transform": {
-			"^.+\\.tsx?$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"jsx",
-			"json"
-		],
-		"moduleDirectories": [
-			"node_modules"
-		],
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"/test/"
-		],
-		"coverageThreshold": {
-			"global": {
-				"branches": 90,
-				"functions": 95,
-				"lines": 95,
-				"statements": 95
-			}
-		},
-		"collectCoverage": true,
-		"globals": {
-			"ts-jest": {
-				"tsConfigFile": "tsconfig.jest.json"
-			}
-		}
-	},
-	"devDependencies": {
-		"@resin.io/types-node-localstorage": "^1.3.0",
-		"@types/bluebird": "^3.5.20",
-		"@types/chalk": "^2.2.0",
-		"@types/express": "^4.11.1",
-		"@types/jest": "^22.2.2",
-		"@types/lodash": "^4.14.106",
-		"@types/logform": "^1.2.0",
-		"@types/node": "^9.6.1",
-		"@types/winston": "^2.3.8",
-		"bluebird": "^3.5.1",
-		"colors": "^1.2.1",
-		"commitizen": "^2.9.6",
-		"coveralls": "^3.0.0",
-		"cross-env": "^5.1.4",
-		"cz-conventional-changelog": "^2.1.0",
-		"express": "^4.16.3",
-		"husky": "^0.14.3",
-		"jest": "^22.4.3",
-		"lint-staged": "^7.0.0",
-		"lodash.camelcase": "^4.3.0",
-		"node-localstorage": "^1.3.1",
-		"prompt": "^1.0.0",
-		"replace-in-file": "^3.4.0",
-		"rimraf": "^2.6.2",
-		"rollup": "^0.57.1",
-		"rollup-plugin-commonjs": "^9.1.0",
-		"rollup-plugin-node-resolve": "^3.3.0",
-		"rollup-plugin-sourcemaps": "^0.4.2",
-		"rollup-plugin-typescript2": "^0.12.0",
-		"rollup-plugin-uglify": "^3.0.0",
-		"semantic-release": "^15.1.4",
-		"ts-jest": "^22.4.2",
-		"ts-node": "^5.0.1",
-		"tslint": "^5.9.1",
-		"tslint-config-prettier": "^1.10.0",
-		"tslint-config-standard": "^7.0.0",
-		"typedoc": "^0.11.1",
-		"typescript": "^2.8.1",
-		"validate-commit-msg": "^2.14.0"
-	},
-	"dependencies": {
-		"lodash": "^4.17.5",
-		"request": "^2.85.0",
-		"request-promise": "^4.2.2",
-		"sequential-event": "^0.4.1",
-		"winston": "^3.0.0-rc3"
-	},
-	"engines": {
-		"node": ">=7.0.0"
-	}
+  "name": "@diaspora/diaspora",
+  "version": "0.3.0-alpha.1",
+  "description": "Multi-Layer ORM for Javascript Client+Server",
+  "main": "dist/diaspora.umd.js",
+  "module": "dist/diaspora.es5.js",
+  "typings": "dist/types/diaspora.d.ts",
+  "files": [
+    "dist"
+  ],
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diaspora-orm/diaspora.git"
+  },
+  "scripts": {
+    "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' || true",
+    "doc": "typedoc --out dist/docs --target es6 --theme minimal --mode file src",
+    "prebuild": "rimraf dist",
+    "build:standalone": "rollup -c ./rollup/rollup.standalone.config.ts",
+    "build:standalone:min": "rollup -c ./rollup/rollup.standalone.min.config.ts",
+    "build:module": "rollup -c ./rollup/rollup.module.config.ts",
+    "build:module:min": "rollup -c ./rollup/rollup.module.min.config.ts",
+    "build:all": "npm run build:standalone && npm run build:standalone:min && npm run build:module && npm run build:module:min",
+    "build": "tsc --module commonjs --outDir dist/lib && npm run build:all && npm run doc",
+    "start": "rollup -c ./rollup/rollup.module.config.ts -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
+    "deploy-docs": "ts-node tools/gh-pages-publish",
+    "report-coverage": "cat ./coverage/lcov.info | coveralls",
+    "commit": "git-cz",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
+    "precommit": "lint-staged"
+  },
+  "keywords": [
+    "ORM",
+    "db",
+    "collection",
+    "manager",
+    "localstorage",
+    "webstorage",
+    "models",
+    "mvc",
+    "query",
+    "object"
+  ],
+  "author": "Gerkin",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/diaspora-orm/diaspora/issues"
+  },
+  "homepage": "https://github.com/diaspora-orm/diaspora#readme",
+  "lint-staged": {
+    "{src,test}/**/*.ts": [
+      "npm run lint:fix",
+      "git add"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    },
+    "validate-commit-msg": {
+      "types": "conventional-commit-types",
+      "helpMessage": "Use \"npm run commit\" instead, we use conventional-changelog format :) (https://github.com/commitizen/cz-cli)"
+    }
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
+      }
+    },
+    "collectCoverage": true,
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.jest.json"
+      }
+    }
+  },
+  "devDependencies": {
+    "@resin.io/types-node-localstorage": "^1.3.0",
+    "@types/bluebird": "^3.5.20",
+    "@types/chalk": "^2.2.0",
+    "@types/express": "^4.11.1",
+    "@types/jest": "^22.2.2",
+    "@types/lodash": "^4.14.106",
+    "@types/logform": "^1.2.0",
+    "@types/node": "^9.6.1",
+    "@types/winston": "^2.3.8",
+    "bluebird": "^3.5.1",
+    "colors": "^1.2.1",
+    "commitizen": "^2.9.6",
+    "coveralls": "^3.0.0",
+    "cross-env": "^5.1.4",
+    "cz-conventional-changelog": "^2.1.0",
+    "express": "^4.16.3",
+    "husky": "^0.14.3",
+    "jest": "^22.4.3",
+    "lint-staged": "^7.0.0",
+    "lodash.camelcase": "^4.3.0",
+    "node-localstorage": "^1.3.1",
+    "prompt": "^1.0.0",
+    "replace-in-file": "^3.4.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.57.1",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-typescript2": "^0.12.0",
+    "rollup-plugin-uglify": "^3.0.0",
+    "semantic-release": "^15.1.4",
+    "ts-jest": "^22.4.2",
+    "ts-node": "^5.0.1",
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.10.0",
+    "tslint-config-standard": "^7.0.0",
+    "typedoc": "^0.11.1",
+    "typescript": "^2.8.1",
+    "validate-commit-msg": "^2.14.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.5",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "sequential-event": "^0.4.1",
+    "winston": "^3.0.0-rc3"
+  },
+  "engines": {
+    "node": ">=7.0.0"
+  }
 }

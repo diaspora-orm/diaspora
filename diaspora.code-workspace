@@ -1,9 +1,12 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "/Users/nihihilvin/Desktop/Work/nodejs/@diaspora/diaspora-server"
+        }
+    ],
 	"settings": {
 		"typescript.tsdk": "node_modules/typescript/lib"
 	}
