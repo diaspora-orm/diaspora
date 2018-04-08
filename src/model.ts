@@ -6,6 +6,7 @@ import {
 	EntitySpawner,
 	Entity,
 	IRawEntityAttributes,
+	EntityUid,
 } from './entities/entityFactory';
 import { Set } from './entities/set';
 import { Validator } from './validator';
@@ -259,6 +260,16 @@ export class Model {
 			[key: string]: FieldDescriptor;
 		};
 	}
+	
+	public ensureQueryObject( query: QueryLanguage.SelectQueryOrConditionRaw | EntityUid, sourceName: string = this.defaultDataSource ): QueryLanguage.SelectQueryOrConditionRaw{
+		if ( typeof query === 'object' ){
+			return query;
+		} else {
+			return {
+				id: query,
+			};
+		}
+	}
 
 	/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
@@ -355,14 +366,15 @@ export class Model {
 	 * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */
 	public async find(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
+		const queryFindNoId = this.ensureQueryObject( queryFind );
 		const updated = await doFindUpdate(
 			this,
 			false,
-			queryFind,
+			queryFindNoId,
 			options,
 			dataSourceName
 		);
@@ -397,15 +409,16 @@ export class Model {
 	 * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */
 	public async update(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
+		const queryFindNoId = this.ensureQueryObject( queryFind );
 		const updated = await doFindUpdate(
 			this,
 			false,
-			queryFind,
+			queryFindNoId,
 			options,
 			dataSourceName,
 			update
@@ -442,12 +455,13 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	public async delete(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
+		const queryFindNoId = this.ensureQueryObject( queryFind );
 		return doDelete( EDeleteMethod.Single, this )(
-			queryFind,
+			queryFindNoId,
 			options,
 			dataSourceName
 		);
@@ -463,7 +477,7 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	public async deleteMany(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw = {},
+		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
