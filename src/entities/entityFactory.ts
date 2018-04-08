@@ -86,6 +86,10 @@ export abstract class Entity extends SequentialEvent {
 		return this.constructor as typeof Entity & EntitySpawner;
 	}
 
+	public get id(){
+		return this.getId();
+	}
+
 	private _attributes: IRawEntityAttributes | null = null;
 
 	private _state: EEntityState = EEntityState.ORPHAN;
@@ -410,7 +414,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   sourceName - Name of the source to get ID from.
 	 * @returns Id of this entity in requested data source.
 	 */
-	public getId( sourceName: string ): EntityUid | null {
+	public getId( sourceName?: string ): EntityUid | null {
 		const dataSource = this.ctor.model.getDataSource( sourceName );
 		const entity = this.dataSources.get( dataSource );
 		if ( entity ) {
@@ -465,6 +469,7 @@ export abstract class Entity extends SequentialEvent {
 			return execMethod.call( dataSource, entity.table( dataSource.name ), entity.uidQuery( dataSource ) );
 		}
 	}
+	
 	/**
 	 * Refresh last data source, attributes, state & data source entity
 	 */
