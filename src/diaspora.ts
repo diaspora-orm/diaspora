@@ -192,7 +192,7 @@ export class Diaspora {
 			throw new Error( '"modelDesc" must be an object' );
 		}
 		const model = new Model( name, modelDesc );
-		this.models[name] = model;
+		this._models[name] = model;
 		return model;
 	}
 
