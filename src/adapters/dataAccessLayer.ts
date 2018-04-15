@@ -43,7 +43,8 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	
 	public constructor( public adapter: TAdapter ){
 		super();
-		DataAccessLayer.dataAccessLayersRegistry.set( adapter, this );
+		// TODO: Fix typings problems
+		      DataAccessLayer.dataAccessLayersRegistry.set( adapter as any, this as any );
 	}
 	
 	public static retrieveAccessLayer( adapter: Adapter ){
@@ -239,3 +240,5 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		this.adapter.on( eventName, ( ...args: any[] ) => this.emit( eventName, ...args ) );
 	}
 }
+
+export type TDataSource = string | Adapter | DataAccessLayer;

@@ -10,7 +10,7 @@ import {
 } from '../adapters/base';
 import { Model } from '../model';
 import { ModelDescription } from '../types/modelDescription';
-import { DataAccessLayer } from '../adapters/dataAccessLayer';
+import { DataAccessLayer, TDataSource } from '../adapters/dataAccessLayer';
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 
@@ -34,6 +34,7 @@ export interface EntitySpawner {
 }
 export interface IDataSourceMap<T extends AdapterEntity>
 	extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
+
 
 const entityCtrSteps = {
 	castTypes( source: IRawAdapterEntityAttributes, modelDesc: ModelDescription ) {
@@ -194,11 +195,11 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Data source to get query for.
 	 * @returns Query to find this entity.
 	 */
-	public uidQuery( dataSource: string | DataAccessLayer | Adapter ): object {
+	public uidQuery( dataSource?: TDataSource ): object {
+		const dataSourceFixed = this.getDataSource( dataSource );
 		// Todo: precise return type
-		const dataSourceName = typeof dataSource !== 'string' ? dataSource.name : dataSource;
 		return {
-			id: this.idHash[dataSourceName],
+			id: this.idHash[dataSourceFixed.name],
 		};
 	}
 
@@ -208,7 +209,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @returns Name of the table.
 	 */
-	public table( sourceName: string ) {
+	public table( dataSource?: TDataSource ) {
 		// Will be used later
 		return this.name;
 	}
@@ -248,10 +249,8 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Data source to diff with.
 	 * @returns Diff query.
 	 */
-	public getDiff( dataSource: string | Adapter | DataAccessLayer ): IRawEntityAttributes | undefined {
-		const dataSourceName = typeof dataSource !== 'string' ? dataSource.name : dataSource;
-
-		const dataSourceFixed = this.ctor.model.getDataSource( dataSourceName );
+	public getDiff( dataSource?: TDataSource ): IRawEntityAttributes | undefined {
+		const dataSourceFixed = this.getDataSource( dataSource );
 		const dataStoreEntity = this.dataSources.get( dataSourceFixed );
 		// All is diff if not present
 		if ( _.isNil( dataStoreEntity ) || _.isNil( this.attributes ) ) {
@@ -265,6 +264,7 @@ export abstract class Entity extends SequentialEvent {
 			.keys()
 			// Add to it the keys of the stored object
 			.concat( _.keys( dataStoreObject ) )
+			.filter( 'id' )
 			// Remove duplicates
 			.uniq();
 
@@ -302,16 +302,14 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is saved. Resolved with `this`.
 	 */
-	public async persist( sourceName?: string, options: IOptions = {} ) {
+	public async persist( dataSource?: TDataSource, options: IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
 		this._state = EEntityState.SYNCING;
 		// Get the target data source & its name
-		const dataSource = ( this.constructor as EntitySpawner ).model.getDataSource(
-			sourceName
-		);
-		const finalSourceName = dataSource.name;
+		const dataSourceFixed = this.getDataSource( dataSource );
+		const finalSourceName = dataSourceFixed.name;
 		// Generate events args
 		const eventsArgs = [finalSourceName, this.serialize()];
 		const _maybeEmit = this.maybeEmit.bind( this, options, eventsArgs );
@@ -330,14 +328,14 @@ export abstract class Entity extends SequentialEvent {
 			'orphan' === beforeState ? this.persistCreate : this.persistUpdate;
 		const dataStoreEntity: AdapterEntity | undefined = await operation.call(
 			this,
-			dataSource,
+			dataSourceFixed,
 			table
 		);
 		if ( !dataStoreEntity ) {
 			throw new Error( 'Insert/Update returned nothing.' );
 		}
 		// Now we insert data in stores
-		this.setLastDataSourceEntity( dataSource, dataStoreEntity );
+		this.setLastDataSourceEntity( dataSourceFixed, dataStoreEntity );
 
 		return _maybeEmit( [`afterPersist${suffix}`, 'afterPersist'] );
 	}
@@ -352,16 +350,14 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options            - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is reloaded. Resolved with `this`.
 	 */
-	public async fetch( sourceName?: string, options: IOptions = {} ) {
+	public async fetch( dataSource?: TDataSource, options: IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
 		this._state = EEntityState.SYNCING;
 		// Generate events args
-		const dataSource = ( this.constructor as EntitySpawner ).model.getDataSource(
-			sourceName
-		);
-		const eventsArgs = [dataSource.name, this.serialize()];
+		const dataSourceFixed = this.getDataSource( dataSource );
+		const eventsArgs = [dataSourceFixed.name, this.serialize()];
 		const _maybeEmit = this.maybeEmit.bind( this, options, eventsArgs );
 
 		await _maybeEmit( 'beforeFetch' );
@@ -369,11 +365,11 @@ export abstract class Entity extends SequentialEvent {
 		const dataStoreEntity = await this.execIfOkState(
 			this,
 			beforeState,
-			dataSource,
+			dataSourceFixed,
 			'findOne'
 		);
 		// Now we insert data in stores
-		this.setLastDataSourceEntity( dataSource, dataStoreEntity );
+		this.setLastDataSourceEntity( dataSourceFixed, dataStoreEntity );
 
 		return _maybeEmit( 'afterFetch' );
 	}
@@ -388,22 +384,22 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is destroyed. Resolved with `this`.
 	 */
-	public async destroy( sourceName?: string, options: IOptions = {} ) {
+	public async destroy( dataSource?: TDataSource, options: IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
 		this._state = EEntityState.SYNCING;
 		// Generate events args
-		const dataSource = this.ctor.model.getDataSource( sourceName );
-		const eventsArgs = [dataSource.name, this.serialize()];
+		const dataSourceFixed = this.getDataSource( dataSource );
+		const eventsArgs = [dataSourceFixed.name, this.serialize()];
 		const _maybeEmit = this.maybeEmit.bind( this, options, eventsArgs );
 
 		await _maybeEmit( 'beforeDestroy' );
 
-		await this.execIfOkState( this, beforeState, dataSource, 'deleteOne' );
+		await this.execIfOkState( this, beforeState, dataSourceFixed, 'deleteOne' );
 
 		// Now we insert data in stores
-		this.setLastDataSourceEntity( dataSource, null );
+		this.setLastDataSourceEntity( dataSourceFixed, null );
 
 		return _maybeEmit( 'afterDestroy' );
 	}
@@ -414,9 +410,9 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   sourceName - Name of the source to get ID from.
 	 * @returns Id of this entity in requested data source.
 	 */
-	public getId( sourceName?: string ): EntityUid | null {
-		const dataSource = this.ctor.model.getDataSource( sourceName );
-		const entity = this.dataSources.get( dataSource );
+	public getId( dataSource?: TDataSource ): EntityUid | null {
+		const dataSourceFixed = this.getDataSource( dataSource );
+		const entity = this.dataSources.get( dataSourceFixed );
 		if ( entity ) {
 			return entity.attributes.id;
 		} else {
@@ -424,6 +420,10 @@ export abstract class Entity extends SequentialEvent {
 		}
 	}
 	
+	protected getDataSource( dataSource?: TDataSource ){
+		return this.ctor.model.getDataSource( dataSource );
+	}
+
 	protected serialize() {
 		return Entity.serialize( this.attributes );
 	}
@@ -453,7 +453,7 @@ export abstract class Entity extends SequentialEvent {
 	private execIfOkState<T extends AdapterEntity>(
 		entity: Entity,
 		beforeState: EEntityState,
-		dataSource: DataAccessLayer<T, Adapter<T>>,
+		dataSource: DataAccessLayer,
 		// TODO: precise it
 		method: string
 	): Promise<T>{
