@@ -6,6 +6,7 @@ describe( 'Test errors', () => {
 		const subError = new SubError();
 
 		expect( subError ).toBeInstanceOf( ExtendableError );
-		expect( subError ).toBeInstanceOf( Error );
+  expect( subError ).toBeInstanceOf( Error );
+  expect( subError ).toHaveProperty( 'name', 'SubError' );
 	} );
 } );

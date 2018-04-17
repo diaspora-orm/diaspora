@@ -13,7 +13,7 @@ export class ExtendableError extends Error {
 	 */
 	public constructor( message?: string, ...errorArgs: any[] ) {
 		super( message );
-		this.name = this.constructor.name;
+		this.name = new.target.name;
 		if ( message ) {
 			this.message = message;
 		}
