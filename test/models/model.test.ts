@@ -9,7 +9,7 @@ import {
 } from '../../src/entities/entityFactory';
 import * as Bluebird from 'bluebird';
 import { InMemoryAdapter, InMemoryEntity } from '../../src/adapters/inMemory';
-import { IRawAdapterEntityAttributes } from '../../src/adapters/base';
+import { IRawAdapterEntityAttributes, Adapter } from '../../src/adapters/base';
 
 import '../utils';
 import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
@@ -36,15 +36,9 @@ beforeAll( () => {
 	store = ( dataAccessLayer.adapter as any ).store[MODEL_NAME];
 } );
 beforeEach( () => {
-	const setId: (
-		attributes: IRawEntityAttributes,
-		adapter: DataAccessLayer,
-		propName?: string,
-		id?: EntityUid
-	) => IRawAdapterEntityAttributes = ( InMemoryEntity as any ).setId;
 	store.items = [];
 	_.forEach( [{ foo: 'bar' }, { foo: 'bar' }, { foo: 'baz' }, {}], entity => {
-		store.items.push( setId( entity, dataAccessLayer ) );
+		store.items.push( InMemoryEntity.setId( entity, dataAccessLayer.adapter ) );
 	} );
 } );
 describe( 'Model', () => {

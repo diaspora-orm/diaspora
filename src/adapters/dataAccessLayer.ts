@@ -44,7 +44,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	public constructor( public adapter: TAdapter ){
 		super();
 		// TODO: Fix typings problems
-		      DataAccessLayer.dataAccessLayersRegistry.set( adapter as any, this as any );
+		DataAccessLayer.dataAccessLayersRegistry.set( adapter as any, this as any );
 	}
 	
 	public static retrieveAccessLayer( adapter: Adapter ){

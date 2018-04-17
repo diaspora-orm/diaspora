@@ -53,11 +53,11 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const storeTable = this.ensureCollectionExists( table );
 		const adapterEntityAttributes = InMemoryEntity.setId(
-			_.omitBy( entity, _.isUndefined ),
+			_.omitBy( _.cloneDeep( entity ), _.isUndefined ),
 			this
 		);
 		storeTable.items.push( adapterEntityAttributes );
-		return _.cloneDeep( adapterEntityAttributes );
+		return adapterEntityAttributes;
 	}
 
 	// -----
