@@ -166,11 +166,6 @@ export class Set {
 				try {
 					entity.validate();
 				} catch ( error ) {
-					console.error( error );
-					logger.error( 'Validation failed:', {
-						entity,
-						error,
-					} );
 					return error;
 				}
 			} )
