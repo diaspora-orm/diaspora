@@ -1,3 +1,21 @@
+<a name="0.3.0-alpha.4"></a>
+# [0.3.0-alpha.4](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.3...v0.3.0-alpha.4) (2018-04-17)
+
+
+### Bug Fixes
+
+* **Diaspora:** Diaspora assign new models to its private hash, not public copy via getter ([86fc83c](https://github.com/diaspora-orm/diaspora/commit/86fc83c))
+* **Entities/EntityFactory:** Fixed Entity.getDiff ([c7fc230](https://github.com/diaspora-orm/diaspora/commit/c7fc230))
+* **Errors/*:** Errors have the proper name (retrieved from `new.target.name`) ([7facce3](https://github.com/diaspora-orm/diaspora/commit/7facce3))
+
+
+### Features
+
+* **Entities/EntityFactory:** Entity methods allow more types for dataSource parameter ([ab0ad68](https://github.com/diaspora-orm/diaspora/commit/ab0ad68))
+* **Model:** Model singular actions now accepts either a SelectQueryOrCondition or an EntityUid ([bc34176](https://github.com/diaspora-orm/diaspora/commit/bc34176))
+
+
+
 <a name="0.3.0-alpha.3"></a>
 # [0.3.0-alpha.3](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.1...v0.3.0-alpha.3) (2018-04-08)
 
