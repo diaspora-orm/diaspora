@@ -1,31 +1,19 @@
 import * as _ from 'lodash';
 
-import {
-	Adapter,
-	AdapterEntity,
-	IAdapterCtr,
-} from './adapters/base';
-import { IRawEntityAttributes } from './entities/entityFactory';
+import { IAdapterCtr, Adapter, AdapterEntity } from './adapters/base';
 import { Model } from './model';
 import { logger, ILoggerInterface } from './logger';
 import { InMemoryAdapter } from './adapters/inMemory';
 import { WebApiAdapter } from './adapters/webApi';
 import { WebStorageAdapter } from './adapters/webStorage';
 import { ModelDescriptionRaw } from './types/modelDescription';
-import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry, modelRegistry, IModelRegistry } from './staticStores';
 
+export {Adapter, AdapterEntity};
+
 interface IAdapterRegistry {
 	[key: string]: IAdapterCtr;
-}
-interface IRemapIterator {
-	( entity: IRawEntityAttributes ): void;
-}
-interface IQueryTypeDescriptor {
-	full: string;
-	query: string;
-	number: string;
 }
 
 /**

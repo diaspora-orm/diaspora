@@ -1,10 +1,12 @@
 import * as _ from 'lodash';
 
 import { Adapter, AdapterEntity, IAdapterEntityCtr } from './base';
-import { DataSourceQuerier, IRemapsHash, IFiltersHash, IEnumeratedHash } from '../types/dataSourceQuerier';
+import { DataSourceQuerier, IFiltersHash, IEnumeratedHash, IRemapsHash } from '../types/dataSourceQuerier';
 import { SequentialEvent } from 'sequential-event';
 import { IRawEntityAttributes } from '../entities';
 import { QueryLanguage } from '../types/queryLanguage';
+
+export { IEnumeratedHash, IAdapterEntityCtr};
 
 /**
  * The Data Access Layer class is the components that wraps adapter calls to provide standard inputs & outputs. Typically, it casts raw query & raw query options in standard query & standard query options, and casts POJO from the output of the adapter's query in adapter entity.
@@ -15,6 +17,7 @@ export class DataAccessLayer<
 TEntity extends AdapterEntity = AdapterEntity,
 TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 > extends SequentialEvent implements DataSourceQuerier<TEntity>{
+
 	public get classEntity(){
 		return this.adapter.classEntity;
 	}

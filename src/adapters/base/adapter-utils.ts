@@ -9,9 +9,7 @@ export interface Constructable<T> {
 	new ( ...args: any[] ): T;
 }
 
-function getNum( fullMatch: string, sign: string, val: string ): number;
-function getNum( [fullMatch, sign, val]: string[] ): number;
-function getNum( ...params: Array<string | string[]> ) {
+const getNum = ( ...params: Array<string | string[]> ) => {
 	const flatten = _.flattenDeep( params ) as string[];
 	const [fullMatch, sign, val] = flatten;
 	if ( '∞' === val ) {
@@ -23,7 +21,7 @@ function getNum( ...params: Array<string | string[]> ) {
 	} else {
 		return parseInt( fullMatch, 10 );
 	}
-}
+};
 
 const validations = {
 	type: {

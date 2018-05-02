@@ -1,8 +1,6 @@
 import * as _ from 'lodash';
-import { Winston } from 'winston';
+import * as Winston from 'winston';
 
-const logLevels =  ['silly', 'verbose', 'debug', 'log', 'warn', 'error'];
-type LogLevels = 'silly' | 'verbose' | 'debug' | 'log' | 'warn' | 'error';
 
 /**
  * Function used to give feedback to the user about errors or other infos communicated by Diaspora. It can print directly to stdout, or can use Winston transport if configured so on server environment.
@@ -27,8 +25,7 @@ export interface ILoggerInterface{
 }
 const initLogger: () => ILoggerInterface = () => {
 	if ( !process.browser ) {
-		const winston = require( 'winston' );
-		const { createLogger, format, transports } = winston;
+		const { createLogger, format, transports } = Winston;
 		const { combine, json } = format;
 
 		const log = createLogger( {

@@ -67,11 +67,11 @@ const entityCtrSteps = {
 };
 
 /**
-* The entity is the class you use to manage a single document in all data sources managed by your model.
-* > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
-*
-* @extends SequentialEvent
-*/
+ * The entity is the class you use to manage a single document in all data sources managed by your model.
+ * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
+ *
+ * @extends SequentialEvent
+ */
 export abstract class Entity extends SequentialEvent {
 	public get attributes() {
 		return this._attributes;
@@ -108,15 +108,15 @@ export abstract class Entity extends SequentialEvent {
 	private idHash: IIdHash;
 	
 	/**
-    * Create a new entity.
-    *
-    * @author gerkin
-    * @param name        - Name of this model.
-    * @param modelDesc   - Model configuration that generated the associated `model`.
-    * @param model       - Model that will spawn entities.
-    * @param source - Hash with properties to copy on the new object.
-    *        If provided object inherits AdapterEntity, the constructed entity is built in `sync` state.
-    */
+	 * Create a new entity.
+	 *
+	 * @author gerkin
+	 * @param name        - Name of this model.
+	 * @param modelDesc   - Model configuration that generated the associated `model`.
+	 * @param model       - Model that will spawn entities.
+	 * @param source - Hash with properties to copy on the new object.
+	 *        If provided object inherits AdapterEntity, the constructed entity is built in `sync` state.
+	 */
 	public constructor(
 		private readonly name: string,
 		private readonly modelDesc: ModelDescription,
@@ -169,12 +169,12 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Applied before persisting the entity, this function is in charge to convert entity convinient attributes to a raw entity.
-    *
-    * @author gerkin
-    * @param   data - Data to convert to primitive types.
-    * @returns Object with Primitives-only types.
-    */
+	 * Applied before persisting the entity, this function is in charge to convert entity convinient attributes to a raw entity.
+	 *
+	 * @author gerkin
+	 * @param   data - Data to convert to primitive types.
+	 * @returns Object with Primitives-only types.
+	 */
 	public static serialize(
 		data: IRawEntityAttributes | null
 	): IRawEntityAttributes | undefined {
@@ -182,12 +182,12 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Applied after retrieving the entity, this function is in charge to convert entity raw attributes to convinient types.
-    *
-    * @author gerkin
-    * @param   data - Data to convert from primitive types.
-    * @returns Object with Primitives & non primitives types.
-    */
+	 * Applied after retrieving the entity, this function is in charge to convert entity raw attributes to convinient types.
+	 *
+	 * @author gerkin
+	 * @param   data - Data to convert from primitive types.
+	 * @returns Object with Primitives & non primitives types.
+	 */
 	public static deserialize(
 		data: IRawEntityAttributes | null
 	): IRawEntityAttributes | undefined {
@@ -195,12 +195,12 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Generate the query to get this unique entity in the desired data source.
-    *
-    * @author gerkin
-    * @param   dataSource - Data source to get query for.
-    * @returns Query to find this entity.
-    */
+	 * Generate the query to get this unique entity in the desired data source.
+	 *
+	 * @author gerkin
+	 * @param   dataSource - Data source to get query for.
+	 * @returns Query to find this entity.
+	 */
 	public uidQuery( dataSource?: TDataSource ): object {
 		const dataSourceFixed = this.getDataSource( dataSource );
 		// Todo: precise return type
@@ -211,23 +211,23 @@ export abstract class Entity extends SequentialEvent {
 	
 	/**
 	 * Return the collectionName of this entity in the specified data source.
-    *
-    * @author gerkin
+	 *
+	 * @author gerkin
 	 * @returns Name of the collectionName.
-    */
+	 */
 	public collectionName( dataSource?: TDataSource ) {
 		// Will be used later
 		return this.name;
 	}
 	
 	/**
-    * Check if the entity matches model description.
-    *
-    * @author gerkin
-    * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
-    * @returns This function does not return anything.
-    * @see Validator.Validator#validate
-    */
+	 * Check if the entity matches model description.
+	 *
+	 * @author gerkin
+	 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
+	 * @returns This function does not return anything.
+	 * @see Validator.Validator#validate
+	 */
 	public validate() {
 		if ( this.attributes ) {
 			this.ctor.model.validator.validate( this.attributes );
@@ -236,12 +236,12 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Remove all editable properties & replace them with provided object.
-    *
-    * @author gerkin
-    * @param   newContent - Replacement content.
-    * @returns Returns `this`.
-    */
+	 * Remove all editable properties & replace them with provided object.
+	 *
+	 * @author gerkin
+	 * @param   newContent - Replacement content.
+	 * @returns Returns `this`.
+	 */
 	public replaceAttributes( newContent: IRawEntityAttributes = {} ) {
 		newContent.idHash = this.idHash;
 		this._attributes = newContent;
@@ -249,25 +249,25 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Returns a copy of this entity attributes.
-    *
-    * @author gerkin
-    * @returns Attributes of this entity.
-    */
+	 * Returns a copy of this entity attributes.
+	 *
+	 * @author gerkin
+	 * @returns Attributes of this entity.
+	 */
 	public toObject() {
 		return _.cloneDeep( this.attributes );
 	}
 	
 	/**
-    * Save this entity in specified data source.
-    *
+	 * Save this entity in specified data source.
+	 *
 	 * @fires Entity#beforeUpdate
 	 * @fires Entity#afterUpdate
-    * @author gerkin
-    * @param   sourceName - Name of the data source to persist entity in.
-    * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-    * @returns Promise resolved once entity is saved. Resolved with `this`.
-    */
+	 * @author gerkin
+	 * @param   sourceName - Name of the data source to persist entity in.
+	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @returns Promise resolved once entity is saved. Resolved with `this`.
+	 */
 	public async persist( dataSource?: TDataSource, options: IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
@@ -288,15 +288,10 @@ export abstract class Entity extends SequentialEvent {
 		this.validate();
 		await _maybeEmit( ['afterValidate', `beforePersist${suffix}`] );
 		
-		const table = this.table( finalSourceName );
 		// Depending on state, we are going to perform a different operation
-		const operation =
-		'orphan' === beforeState ? this.persistCreate : this.persistUpdate;
-		const dataStoreEntity: AdapterEntity | undefined = await operation.call(
-			this,
-			dataSourceFixed,
-			table
-		);
+		const dataStoreEntity: AdapterEntity | undefined = await ( ( beforeState === 'orphan' ) ?
+		this.persistCreate( dataSourceFixed ) :
+		this.persistUpdate( dataSourceFixed, options ) );
 		if ( !dataStoreEntity ) {
 			throw new Error( 'Insert/Update returned nothing.' );
 		}
@@ -307,15 +302,15 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Reload this entity from specified data source.
-    *
+	 * Reload this entity from specified data source.
+	 *
 	 * @fires Entity#beforeFind
 	 * @fires Entity#afterFind
-    * @author gerkin
-    * @param   sourceName         - Name of the data source to fetch entity from.
-    * @param   options            - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-    * @returns Promise resolved once entity is reloaded. Resolved with `this`.
-    */
+	 * @author gerkin
+	 * @param   sourceName         - Name of the data source to fetch entity from.
+	 * @param   options            - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @returns Promise resolved once entity is reloaded. Resolved with `this`.
+	 */
 	public async fetch( dataSource?: TDataSource, options: IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
@@ -329,7 +324,6 @@ export abstract class Entity extends SequentialEvent {
 		await _maybeEmit( 'beforeFetch' );
 		
 		const dataStoreEntity = await this.execIfOkState(
-			this,
 			beforeState,
 			dataSourceFixed,
 			'findOne'
@@ -341,15 +335,15 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Delete this entity from the specified data source.
-    *
+	 * Delete this entity from the specified data source.
+	 *
 	 * @fires Entity#beforeDelete
 	 * @fires Entity#afterDelete
-    * @author gerkin
-    * @param   sourceName - Name of the data source to delete entity from.
-    * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
-    * @returns Promise resolved once entity is destroyed. Resolved with `this`.
-    */
+	 * @author gerkin
+	 * @param   sourceName - Name of the data source to delete entity from.
+	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
+	 * @returns Promise resolved once entity is destroyed. Resolved with `this`.
+	 */
 	public async destroy( dataSource?: TDataSource, options: IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
@@ -362,7 +356,7 @@ export abstract class Entity extends SequentialEvent {
 		
 		await _maybeEmit( 'beforeDestroy' );
 		
-		await this.execIfOkState( this, beforeState, dataSourceFixed, 'deleteOne' );
+		await this.execIfOkState( beforeState, dataSourceFixed, 'deleteOne' );
 		
 		// Now we insert data in stores
 		this.setLastDataSourceEntity( dataSourceFixed, null );
@@ -371,11 +365,11 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Get the ID for the given source name. This ID is retrieved from the Data Store entity, not the latest ID hash of the entity itself
-    *
-    * @param   sourceName - Name of the source to get ID from.
-    * @returns Id of this entity in requested data source.
-    */
+	 * Get the ID for the given source name. This ID is retrieved from the Data Store entity, not the latest ID hash of the entity itself
+	 *
+	 * @param   sourceName - Name of the source to get ID from.
+	 * @returns Id of this entity in requested data source.
+	 */
 	public getId( dataSource?: TDataSource ): EntityUid | null {
 		const dataSourceFixed = this.getDataSource( dataSource );
 		const entity = this.dataSources.get( dataSourceFixed );
@@ -387,15 +381,15 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Generate a diff update query by checking deltas with last source interaction.
-    *
-    * @author gerkin
-    * @param   dataSource - Data source to diff with.
-    * @returns Diff query.
-    */
+	 * Generate a diff update query by checking deltas with last source interaction.
+	 *
+	 * @author gerkin
+	 * @param   dataSource - Data source to diff with.
+	 * @returns Diff query.
+	 */
 	public getDiff( dataSource?: TDataSource ): IRawEntityAttributes | undefined {
 		const dataSourceFixed = this.getDataSource( dataSource );
-  const dataStoreEntity = this.dataSources.get( dataSourceFixed );
+		const dataStoreEntity = this.dataSources.get( dataSourceFixed );
 		// All is diff if not present
 		if ( _.isNil( dataStoreEntity ) || _.isNil( this.attributes ) ) {
 			return this.attributes || undefined;
@@ -495,10 +489,10 @@ export abstract class Entity extends SequentialEvent {
 		} else {
 			this._lastDataSource = dataSource;
 			const execMethod: (
-				table: string,
+				collectionName: string,
 				query: object
 			) => Promise<T> = ( dataSource as any )[method];
-			return execMethod.call( dataSource, entity.table( dataSource.name ), entity.uidQuery( dataSource ) );
+			return execMethod.call( dataSource, this.collectionName( dataSource.name ), this.uidQuery( dataSource ) );
 		}
 	}
 	
@@ -553,8 +547,9 @@ export abstract class Entity extends SequentialEvent {
 	 * @param dataSource     - Data source to persist entity into
 	 */
 	private async persistCreate( dataSource: DataAccessLayer ) {
+		
 		if ( this.attributes ) {
-			return ( await dataSource.insertOne( table, this.attributes ) ) as any;
+			return ( dataSource.insertOne( this.collectionName( dataSource ), this.attributes ) );
 		} else {
 			return undefined;
 		}
@@ -570,24 +565,25 @@ export abstract class Entity extends SequentialEvent {
 	private async persistUpdate( dataSource: DataAccessLayer, options?: IOptions ) {
 		const diff = this.getDiff( dataSource );
 		return diff
-		? ( ( await dataSource.updateOne(
-			this.table( table ),
+		? ( ( dataSource.updateOne(
+			this.collectionName( dataSource ),
 			this.uidQuery( dataSource ),
-			diff
-		) ) as any )
+			diff,
+			options as any
+		) ) )
 		: undefined;
 	}
 }
 
 /**
-* This factory function generate a new class constructor, prepared for a specific model.
-*
+ * This factory function generate a new class constructor, prepared for a specific model.
+ *
  * @author Gerkin
-* @param   name      - Name of this model.
-* @param   modelDesc - Model configuration that generated the associated `model`.
-* @param   model     - Model that will spawn entities.
-* @returns Entity constructor to use with this model.
-*/
+ * @param   name      - Name of this model.
+ * @param   modelDesc - Model configuration that generated the associated `model`.
+ * @param   model     - Model that will spawn entities.
+ * @returns Entity constructor to use with this model.
+ */
 export interface IEntityFactory {
 	( name: string, modelDesc: ModelDescription, model: Model ): EntitySpawner;
 	Entity: Entity;
@@ -596,23 +592,23 @@ export interface IEntityFactory {
 // We init the function as any to define the Entity property later.
 const ef: any = ( name: string, modelDesc: ModelDescription, model: Model ) => {
 	/**
-    * @ignore
-    */
+	 * @ignore
+	 */
 	class SubEntity extends Entity {
 		/**
-        * Name of the class.
-        *
-        * @author gerkin
-        */
+		 * Name of the class.
+		 *
+		 * @author gerkin
+		 */
 		public static get modelName() {
 			return `${name}Entity`;
 		}
 		
 		/**
-        * Reference to this entity's model.
-        *
-        * @author gerkin
-        */
+		 * Reference to this entity's model.
+		 *
+		 * @author gerkin
+		 */
 		public static get model() {
 			return model;
 		}
@@ -642,66 +638,66 @@ export const EntityFactory: IEntityFactory = ef;
 
 /**
  * @event Entity#beforePersist
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#beforeValidate
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#afterValidate
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#beforePersistCreate
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#beforePersistUpdate
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#afterPersistCreate
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#afterPersistUpdate
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#afterPersist
-* @type {String}
-*/
+ * @type {String}
+ */
 
 // -----
 // ### Find
 
 /**
  * @event Entity#beforeFind
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#afterFind
-* @type {String}
-*/
+ * @type {String}
+ */
 
 // -----
 // ### Destroy
 
 /**
  * @event Entity#beforeDestroy
-* @type {String}
-*/
+ * @type {String}
+ */
 
 /**
  * @event Entity#afterDestroy
-* @type {String}
-*/
+ * @type {String}
+ */

@@ -1,5 +1,5 @@
 import { SequentialEvent } from 'sequential-event';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { Model } from '../model';
 import { Entity, EntitySpawner, IRawEntityAttributes } from './entityFactory';
