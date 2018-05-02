@@ -63,6 +63,11 @@ export interface IEventProviderFactory {
 }
 export interface IEventProvider {}
 
+/**
+ * Defines the HTTP verbs usable by a query.
+ * 
+ * @author Gerkin
+ */
 export enum EHttpVerb {
 	GET = 'GET',
 	POST = 'POST',
@@ -118,8 +123,8 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * Create a new instance of web api adapter.
 	 *
 	 * @param config         - Configuration of this adapter.
-	 * @param eventProviders -
-	 * @author gerkin
+	 * @param eventProviders - Event providers that will catch requests and pre/post process around them.
+	 * @author Gerkin
 	 */
 	public constructor(
 		dataSourceName: string,
@@ -164,6 +169,12 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		}
 	}
 
+	/**
+	 * Serialize a query object to be injected in a query string.
+	 * 
+	 * @author Gerkin
+	 * @param queryObject - Query to serialize for a query string
+	 */
 	private static queryObjectToString( queryObject?: QueryLanguage.SelectQuery ) {
 		return (
 			_.chain( queryObject )
@@ -182,6 +193,12 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		);
 	}
 
+	/**
+	 * Gets the field 'message' in an XHR
+	 * TODO: Check if relevant
+	 * 
+	 * @param xhr - XHR to get field from
+	 */
 	private static getMessage( xhr: IXhrResponse ) {
 		return _.get( xhr, 'response.message' )
 			? `"${( xhr as { response: { message: string } } ).response.message}"`
@@ -225,6 +242,14 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		return xhr;
 	}
 
+	/**
+	 * Creates a request, send it and get the result
+	 * 
+	 * @param method      - HTTP verb that describes the request type
+	 * @param endPoint    - Url to send on
+	 * @param data        - Object to send
+	 * @param queryObject - Object to put in query string
+	 */
 	private static async httpRequest(
 		method: EHttpVerb,
 		endPoint: string,
@@ -266,6 +291,12 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		}
 	}
 
+	/**
+	 * Filters the query object for non-http query relevant informations
+	 * 
+	 * @param queryFind - Selection query object
+	 * @param options   - Options object
+	 */
 	private static getQueryObject(
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
@@ -279,6 +310,12 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		} );
 	}
 
+	/**
+	 * Fills the id of entities
+	 * 
+	 * @param entities - Entities received
+	 * @param adapter  - Source of those entities
+	 */
 	private static maybeAddIdHashToEntities(
 		entities: IRawEntityAttributes[],
 		adapter: WebApiAdapter
@@ -286,6 +323,11 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		return _.map( entities, entity => WebApiEntity.setId( entity, adapter ) );
 	}
 
+	/**
+	 * Ensure that the provided config is valid
+	 * 
+	 * @param config - Configuration object to check
+	 */
 	private static checkWebApiAdapterConfig( config: IWebApiAdapterConfig ) {
 		if ( !process.browser ) {
 			if ( !_.isString( config.host ) ) {
@@ -353,7 +395,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	// ### Find
 
 	/**
-	 *
+	 * Find a single entity from the web api store
 	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findOne}, modified for use of web api.
 	 * @author gerkin
@@ -390,7 +432,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	}
 
 	/**
-	 *
+	 * Find several entities from the web api store
 	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#findMany}, modified for use of web api.
 	 * @author gerkin
@@ -427,7 +469,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	// ### Update
 
 	/**
-	 *
+	 * Update a single entity from the web api store
 	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateOne}, modified for use of web api.
 	 * @author gerkin
@@ -458,7 +500,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	}
 
 	/**
-	 *
+	 * Update several entities from the web api store
 	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#updateMany}, modified for use of web api.
 	 * @author gerkin
@@ -488,7 +530,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	// ### Delete
 
 	/**
-	 *
+	 * Destroy a single entity from the web api store
 	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteOne}, modified for use of web api.
 	 * @author gerkin
@@ -511,7 +553,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	}
 
 	/**
-	 *
+	 * Destroy several entities from the web api store
 	 *
 	 * @summary This reimplements {@link Adapters.DiasporaAdapter#deleteMany}, modified for use of web api.
 	 * @author gerkin
@@ -569,6 +611,16 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		);
 	}
 
+	/**
+	 * Send the query, and log inputs & outputs
+	 * 
+	 * @see WebApiAdapter.httpRequest
+	 * @author Gerkin
+	 * @param method      - HTTP verb that describes the request type
+	 * @param endPoint    - Url to send on
+	 * @param data        - Object to send
+	 * @param queryObject - Object to put in query string
+	 */
 	private async sendRequest(
 		verb: EHttpVerb,
 		endPoint: string,
@@ -589,7 +641,14 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		return response;
 	}
 
-	private getPluralEndpoint( table: string ): PluralEndpoint {
-		return _.get( this.pluralApis, table, table + 's' );
+	/**
+	 * Returns the endpoint that corresponds to the plural variant of the provided endpoint.
+	 * 
+	 * @see WebApiAdapter.pluralApis
+	 * @author Gerkin
+	 * @param endpoint - Name of the endpoint
+	 */
+	private getPluralEndpoint( endpoint: string ): PluralEndpoint {
+		return _.get( this.pluralApis, endpoint, endpoint + 's' );
 	}
 }

@@ -96,6 +96,12 @@ export class Diaspora {
 	 */
 	private readonly _models: IModelRegistry = modelRegistry;
 
+	/**
+	 * Old useless error handling code. TODO: remove
+	 * 
+	 * @param classname - garbage
+	 * @param value     - junk
+	 */
 	private static requireName( classname: string, value: any ) {
 		if ( !_.isString( value ) && value.length > 0 ) {
 			throw new Error(

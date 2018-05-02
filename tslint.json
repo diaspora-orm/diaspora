@@ -10,9 +10,7 @@
         "align": [true, "parameters", "statements"],
         "array-type": [true, "array-simple"],
         "ban-types": false,
-        "completed-docs": [
-            true
-        ],
+        "completed-docs": [true, "enums", "functions", "methods"],
         "eofline": true,
         "indent": [true, "tabs", 4],
         "interface-name": false,

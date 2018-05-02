@@ -20,6 +20,12 @@ export interface IOptions {
 export interface IRawEntityAttributes {
 	[key: string]: any;
 }
+
+/**
+ * Reflects the state of the entity.
+ * 
+ * @author Gerkin
+ */
 export enum EEntityState {
 	ORPHAN = 'orphan',
 	SYNCING = 'syncing',
@@ -204,12 +210,12 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Return the table of this entity in the specified data source.
+	 * Return the collectionName of this entity in the specified data source.
     *
     * @author gerkin
-    * @returns Name of the table.
+	 * @returns Name of the collectionName.
     */
-	public table( dataSource?: TDataSource ) {
+	public collectionName( dataSource?: TDataSource ) {
 		// Will be used later
 		return this.name;
 	}
@@ -255,8 +261,8 @@ export abstract class Entity extends SequentialEvent {
 	/**
     * Save this entity in specified data source.
     *
-    * @fires EntityFactory.Entity#beforeUpdate
-    * @fires EntityFactory.Entity#afterUpdate
+	 * @fires Entity#beforeUpdate
+	 * @fires Entity#afterUpdate
     * @author gerkin
     * @param   sourceName - Name of the data source to persist entity in.
     * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
@@ -303,8 +309,8 @@ export abstract class Entity extends SequentialEvent {
 	/**
     * Reload this entity from specified data source.
     *
-    * @fires EntityFactory.Entity#beforeFind
-    * @fires EntityFactory.Entity#afterFind
+	 * @fires Entity#beforeFind
+	 * @fires Entity#afterFind
     * @author gerkin
     * @param   sourceName         - Name of the data source to fetch entity from.
     * @param   options            - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
@@ -337,8 +343,8 @@ export abstract class Entity extends SequentialEvent {
 	/**
     * Delete this entity from the specified data source.
     *
-    * @fires EntityFactory.Entity#beforeDelete
-    * @fires EntityFactory.Entity#afterDelete
+	 * @fires Entity#beforeDelete
+	 * @fires Entity#afterDelete
     * @author gerkin
     * @param   sourceName - Name of the data source to delete entity from.
     * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
@@ -415,18 +421,42 @@ export abstract class Entity extends SequentialEvent {
 		}, {} ).value();
 	}
 	
+	/**
+	 * Get the data access layer object that matches with the input type.
+	 * 
+	 * @author Gerkin
+	 * @param dataSource - String, Adapter or DataAccessLayer to get in the DataAccessLayer form
+	 */
 	protected getDataSource( dataSource?: TDataSource ){
 		return this.ctor.model.getDataSource( dataSource );
 	}
 	
+	/**
+	 * Serialize an entity
+	 * 
+	 * TODO: a real description
+	 */
 	protected serialize() {
 		return Entity.serialize( this.attributes );
 	}
 	
+	/**
+	 * Deserialize an entity
+	 * 
+	 * TODO: a real description
+	 */
 	protected deserialize() {
 		return Entity.deserialize( this.attributes );
 	}
 	
+	/**
+	 * Conditionaly triggers the provided events names with provided arguments if the options requires it.
+	 * 
+	 * @author Gerkin
+	 * @param options    - Options of the current entity operation
+	 * @param eventsArgs - Arguments to transmit by the events
+	 * @param events     - Event name(s) to trigger
+	 */
 	private async maybeEmit(
 		options: IOptions,
 		eventsArgs: any[],
@@ -445,8 +475,15 @@ export abstract class Entity extends SequentialEvent {
 		}
 	}
 	
+	/**
+	 * Runs the provided query if the entity is not in {@link EEntityState.ORPHAN} mode.
+	 * 
+	 * @author Gerkin
+	 * @param beforeState - The last stable state of the entity (before the current operation)
+	 * @param dataSource  - 
+	 * @param method      - 
+	 */
 	private execIfOkState<T extends AdapterEntity>(
-		entity: Entity,
 		beforeState: EEntityState,
 		dataSource: DataAccessLayer,
 		// TODO: precise it
@@ -466,8 +503,12 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
-    * Refresh last data source, attributes, state & data source entity
-    */
+	 * Refresh last data source, attributes, state & data source entity
+	 * 
+	 * @author Gerkin
+	 * @param dataSource       - Data source to set as last used
+	 * @param dataSourceEntity - New entity returned by this data source
+	 */
 	private setLastDataSourceEntity(
 		dataSource: DataAccessLayer,
 		dataSourceEntity: AdapterEntity | null
@@ -505,7 +546,13 @@ export abstract class Entity extends SequentialEvent {
 		return this;
 	}
 	
-	private async persistCreate( dataSource: Adapter, table: string ) {
+	/**
+	 * Persist the entity in the data source by performing an `insertOne` action
+	 * 
+	 * @author Gerkin
+	 * @param dataSource     - Data source to persist entity into
+	 */
+	private async persistCreate( dataSource: DataAccessLayer ) {
 		if ( this.attributes ) {
 			return ( await dataSource.insertOne( table, this.attributes ) ) as any;
 		} else {
@@ -513,7 +560,14 @@ export abstract class Entity extends SequentialEvent {
 		}
 	}
 	
-	private async persistUpdate( dataSource: Adapter, table: string ) {
+	/**
+	 * Persist the entity in the data source by performing an `updateOne` action
+	 * 
+	 * @author Gerkin
+	 * @param dataSource - Data source to persist entity into
+	 * @param options    - Optional options hash for the `update` operation
+	 */
+	private async persistUpdate( dataSource: DataAccessLayer, options?: IOptions ) {
 		const diff = this.getDiff( dataSource );
 		return diff
 		? ( ( await dataSource.updateOne(
@@ -528,6 +582,7 @@ export abstract class Entity extends SequentialEvent {
 /**
 * This factory function generate a new class constructor, prepared for a specific model.
 *
+ * @author Gerkin
 * @param   name      - Name of this model.
 * @param   modelDesc - Model configuration that generated the associated `model`.
 * @param   model     - Model that will spawn entities.
@@ -586,42 +641,42 @@ export const EntityFactory: IEntityFactory = ef;
 // ### Persist
 
 /**
-* @event EntityFactory.Entity#beforePersist
+ * @event Entity#beforePersist
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#beforeValidate
+ * @event Entity#beforeValidate
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#afterValidate
+ * @event Entity#afterValidate
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#beforePersistCreate
+ * @event Entity#beforePersistCreate
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#beforePersistUpdate
+ * @event Entity#beforePersistUpdate
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#afterPersistCreate
+ * @event Entity#afterPersistCreate
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#afterPersistUpdate
+ * @event Entity#afterPersistUpdate
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#afterPersist
+ * @event Entity#afterPersist
 * @type {String}
 */
 
@@ -629,12 +684,12 @@ export const EntityFactory: IEntityFactory = ef;
 // ### Find
 
 /**
-* @event EntityFactory.Entity#beforeFind
+ * @event Entity#beforeFind
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#afterFind
+ * @event Entity#afterFind
 * @type {String}
 */
 
@@ -642,11 +697,11 @@ export const EntityFactory: IEntityFactory = ef;
 // ### Destroy
 
 /**
-* @event EntityFactory.Entity#beforeDestroy
+ * @event Entity#beforeDestroy
 * @type {String}
 */
 
 /**
-* @event EntityFactory.Entity#afterDestroy
+ * @event Entity#afterDestroy
 * @type {String}
 */

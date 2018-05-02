@@ -22,15 +22,26 @@ export class EntityValidationError extends ValidationError {
 		${this.stringifyValidationError()}`;
 	}
 
+	/**
+	 * Generates a string to display a single problem on the validation
+	 * 
+	 * @author Gerkin
+	 * @param error - Description of the error
+	 */
 	private static stringifyErrorComponent( error: ErrorObjectFinal ) {
 		return `${JSON.stringify( error.value )}
-		 * ${_.chain( error )
+* ${_.chain( error )
 				.omit( ['value'] )
 				.values()
 				.map( _.identity )
 				.value()}`;
 	}
 
+	/**
+	 * Returns a readable description of the validation error
+	 * 
+	 * @author Gerkin
+	 */
 	protected stringifyValidationError() {
 		return _.chain( this.validationErrors )
 			.mapValues(

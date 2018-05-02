@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { IEventHandler } from 'sequential-event';
 
 import {
 	EntityFactory,
@@ -18,162 +17,9 @@ import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
 
-interface IQueryParamsRaw {
-	queryFind?: QueryLanguage.SelectQueryOrConditionRaw;
-	options: QueryLanguage.QueryOptionsRaw;
-	dataSourceName: string;
-}
-interface IQueryParams<T extends AdapterEntity> extends IQueryParamsRaw {
-	dataSource: DataAccessLayer;
-}
-
-const findArgs = (
-	model: Model,
-	...argsLeft: any[]
-): IQueryParams<AdapterEntity> => {
-	let paramsRaw: IQueryParamsRaw;
-	if ( _.isString( argsLeft[1] ) && _.isNil( argsLeft[2] ) ) {
-		// TODO: Elude case...
-		paramsRaw = {
-			dataSourceName: argsLeft[1],
-			options: {},
-		};
-	} else if (
-		_.isString( argsLeft[0] ) &&
-		_.isNil( argsLeft[1] ) &&
-		_.isNil( argsLeft[2] )
-	) {
-		paramsRaw = {
-			dataSourceName: argsLeft[0],
-			queryFind: {},
-			options: {},
-		};
-	} else {
-		paramsRaw = {
-			queryFind: argsLeft[0],
-			options: argsLeft[1],
-			dataSourceName: argsLeft[2],
-		};
-	}
-	return _.defaults(
-		{ dataSource: model.getDataSource( paramsRaw.dataSourceName ) },
-		paramsRaw
-	);
-};
-
-const makeSet = (
-	model: Model,
-	dataSourceEntities: Array<AdapterEntity | undefined>
-): Set => {
-	const newEntities = _.map(
-		dataSourceEntities,
-		dataSourceEntity => new model.entityFactory( dataSourceEntity )
-	);
-	const set = new Set( model, newEntities );
-	return set;
-};
-const makeEntity = (
-	model: Model,
-	dataSourceEntity: AdapterEntity
-): Entity | undefined => {
-	if ( _.isNil( dataSourceEntity ) ) {
-		return undefined;
-	}
-	const newEntity = new model.entityFactory( dataSourceEntity );
-	return newEntity;
-};
-
-enum EDeleteMethod {
-	Single = 'deleteOne',
-	Multiple = 'deleteMany',
-}
-const doDelete = ( methodName: EDeleteMethod, model: Model ) => {
-	return (
-		queryFind: QueryLanguage.SelectQuery = {},
-		options: QueryLanguage.QueryOptionsRaw = {},
-		dataSourceName: string
-	): Promise<void> => {
-		// Sort arguments
-		const args = findArgs( model, queryFind, options, dataSourceName );
-		return ( args.dataSource as any )[methodName](
-			model.name,
-			args.queryFind,
-			args.options
-		);
-	};
-};
-
-async function doFindUpdate(
-	model: Model,
-	plural: true,
-	queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-	options: QueryLanguage.QueryOptionsRaw,
-	dataSourceName: string,
-	update?: IRawEntityAttributes
-): Promise<Set>;
-async function doFindUpdate(
-	model: Model,
-	plural: false,
-	queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-	options: QueryLanguage.QueryOptionsRaw,
-	dataSourceName: string,
-	update?: IRawEntityAttributes
-): Promise<Entity | undefined>;
-async function doFindUpdate(
-	model: Model,
-	plural: boolean,
-	queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-	options: QueryLanguage.QueryOptionsRaw,
-	dataSourceName: string,
-	update?: IRawEntityAttributes
-): Promise<Entity | undefined | Set> {
-	// Sort arguments
-	const queryComponents = findArgs( model, queryFind, options, dataSourceName );
-	const args = _.chain( [model.name, queryComponents.queryFind] )
-	.push( update )
-	.push( queryComponents.options )
-	.compact()
-	.value();
-	const queryMethod = ( update ? 'update' : 'find' ) + ( plural ? 'Many' : 'One' );
-	const queryResults = ( await ( queryComponents.dataSource as any )[queryMethod](
-		...args
-	) ) as AdapterEntity | AdapterEntity[];
-	if ( queryResults instanceof Array ) {
-		return makeSet( model, queryResults );
-	} else {
-		const entity = makeEntity( model, queryResults );
-		return entity ? entity : undefined;
-	}
-}
-
-const normalizeRemaps = ( modelDesc: ModelDescriptionRaw ) => {
-	const sourcesRaw = modelDesc.sources;
-	let sources: SourcesHash;
-	if ( _.isString( sourcesRaw ) ) {
-		sources = { [sourcesRaw]: {} };
-	} else if ( _.isArrayLike( sourcesRaw ) ) {
-		sources = _.zipObject( sourcesRaw, _.times( sourcesRaw.length, _.constant( {} ) ) );
-	} else {
-		sources = _.mapValues( sourcesRaw, ( remap, dataSourceName ) => {
-			if ( true === remap ) {
-				return {};
-			} else if ( _.isObject( remap ) ) {
-				return remap as object;
-			} else {
-				throw new TypeError(
-					`Datasource "${dataSourceName}" value is invalid: expect \`true\` or a remap hash, but have ${JSON.stringify(
-						remap
-					)}`
-				);
-			}
-		} );
-	}
-	return sources;
-};
-
 /**
-* The model class is used to interact with the population of all data of the same type.
-*/
+ * The model class is used to interact with the population of all data of the same type.
+ */
 export class Model {
 	public attributes: { [key: string]: FieldDescriptor };
 	
@@ -194,13 +40,14 @@ export class Model {
 	public get ctor() {
 		return this.constructor as typeof Model;
 	}
+	
 	/**
-    * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-    *
-    * @author gerkin
-    * @param name      - Name of the model.
-    * @param modelDesc - Hash representing the configuration of the model.
-    */
+	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
+	 *
+	 * @author gerkin
+	 * @param name      - Name of the model.
+	 * @param modelDesc - Hash representing the configuration of the model.
+	 */
 	public constructor(
 		public name: string,
 		modelDesc: ModelDescriptionRaw
@@ -221,7 +68,7 @@ export class Model {
 			);
 		}
 		// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
-		const sourcesNormalized = normalizeRemaps( modelDesc );
+		const sourcesNormalized = Model.normalizeRemaps( modelDesc );
 		// List sources required by this model
 		const sourceNames = _.keys( sourcesNormalized );
 		const modelSources = _.pick(
@@ -261,7 +108,44 @@ export class Model {
 		};
 	}
 	
-	public ensureQueryObject( query: QueryLanguage.SelectQueryOrConditionRaw | EntityUid, sourceName: string = this.defaultDataSource ): QueryLanguage.SelectQueryOrConditionRaw{
+	/**
+	 * TODO
+	 * 
+	 * @author Gerkin
+	 * @param modelDesc - Description of the model to normalize remaps for
+	 */
+	protected static normalizeRemaps( modelDesc: ModelDescriptionRaw ){
+		const sourcesRaw = modelDesc.sources;
+		let sources: SourcesHash;
+		if ( _.isString( sourcesRaw ) ) {
+			sources = { [sourcesRaw]: {} };
+		} else if ( _.isArrayLike( sourcesRaw ) ) {
+			sources = _.zipObject( sourcesRaw, _.times( sourcesRaw.length, _.constant( {} ) ) );
+		} else {
+			sources = _.mapValues( sourcesRaw, ( remap, dataSourceName ) => {
+				if ( true === remap ) {
+					return {};
+				} else if ( _.isObject( remap ) ) {
+					return remap as object;
+				} else {
+					throw new TypeError(
+						`Datasource "${dataSourceName}" value is invalid: expect \`true\` or a remap hash, but have ${JSON.stringify(
+							remap
+						)}`
+					);
+				}
+			} );
+		}
+		return sources;
+	}
+	
+	/**
+	 * Generates a query object if the only provided parameter is an {@link EntityUid}.
+	 * 
+	 * @param query      - Entity ID or query to potentialy transform
+	 * @param sourceName - Name of the source we want to query
+	 */
+	public ensureQueryObject( query: QueryLanguage.SelectQueryOrConditionRaw | EntityUid, sourceName: string = this.defaultDataSource ): QueryLanguage.SelectQueryOrConditionRaw {
 		if ( typeof query === 'object' ){
 			return query;
 		} else {
@@ -272,13 +156,13 @@ export class Model {
 	}
 	
 	/**
-    * Create a new Model that is allowed to interact with all entities of data sources tables selected.
-    *
-    * @author gerkin
-    * @throws  {Error} Thrown if requested source name does not exists.
-    * @param   dataSource - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.Sources.
-    * @returns Source adapter with requested name.
-    */
+	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
+	 *
+	 * @author gerkin
+	 * @throws  {Error} Thrown if requested source name does not exists.
+	 * @param   dataSource - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.Sources.
+	 * @returns Source adapter with requested name.
+	 */
 	public getDataSource(
 		dataSource: TDataSource = this.defaultDataSource
 	): DataAccessLayer {
@@ -292,117 +176,103 @@ export class Model {
 	}
 	
 	/**
-    * Create a new *orphan* {@link Entity entity}.
-    *
-    * @author gerkin
-    * @param   source - Object to copy attributes from.
-    * @returns New *orphan* entity.
-    */
+	 * Create a new *orphan* {@link Entity entity}.
+	 *
+	 * @author gerkin
+	 * @param   source - Object to copy attributes from.
+	 * @returns New *orphan* entity.
+	 */
 	public spawn( source: object ): Entity {
 		const newEntity = new this.entityFactory( source );
 		return newEntity;
 	}
 	
 	/**
-    * Create multiple new *orphan* {@link Entity entities}.
-    *
-    * @author gerkin
-    * @param   sources - Array of objects to copy attributes from.
-    * @returns Set with new *orphan* entities.
-    */
+	 * Create multiple new *orphan* {@link Entity entities}.
+	 *
+	 * @author gerkin
+	 * @param   sources - Array of objects to copy attributes from.
+	 * @returns Set with new *orphan* entities.
+	 */
 	public spawnMany( sources: object[] ): Set {
 		return new Set( this, _.map( sources, source => this.spawn( source ) ) );
 	}
 	
 	/**
-    * Insert a raw source object in the data store.
-    *
-    * @author gerkin
-    * @param   source         - Object to copy attributes from.
-    * @param   dataSourceName - Name of the data source to insert in.
-    * @returns Promise resolved with new *sync* {@link Entity entity}.
-    */
+	 * Insert a raw source object in the data store.
+	 *
+	 * @author gerkin
+	 * @param   source         - Object to copy attributes from.
+	 * @param   dataSourceName - Name of the data source to insert in.
+	 * @returns Promise resolved with new *sync* {@link Entity entity}.
+	 */
 	public async insert(
-		source: object,
+		source: IRawEntityAttributes,
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity> {
-		const dataSource = this.getDataSource( dataSourceName );
-		const entity = await dataSource.insertOne( this.name, source );
-		return new this.entityFactory( entity );
+	): Promise<Entity | null> {
+		return this.makeEntity( this.getDataSource( dataSourceName ).insertOne( this.name, source ) );
 	}
 	
 	/**
-    * Insert multiple raw source objects in the data store.
-    *
-    * @author gerkin
-    * @param   sources        - Array of object to copy attributes from.
-    * @param   dataSourceName - Name of the data source to insert in.
-    * @returns Promise resolved with a {@link Set set} containing new *sync* entities.
-    */
+	 * Insert multiple raw source objects in the data store.
+	 *
+	 * @author gerkin
+	 * @param   sources        - Array of object to copy attributes from.
+	 * @param   dataSourceName - Name of the data source to insert in.
+	 * @returns Promise resolved with a {@link Set set} containing new *sync* entities.
+	 */
 	public async insertMany(
-		sources: object[],
+		sources: IRawEntityAttributes[],
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		const dataSource = this.getDataSource( dataSourceName );
-		const entities: AdapterEntity[] = ( await dataSource.insertMany(
-			this.name,
-			sources
-		) ) as any;
-		return makeSet( this, entities );
+		return this.makeSet( this.getDataSource( dataSourceName ).insertMany( this.name, sources ) );
 	}
 	
 	/**
-    * Retrieve a single entity from specified data source that matches provided `queryFind` and `options`.
-    *
-    * @author gerkin
-    * @param   queryFind      - Query to get desired entity.
-    * @param   options        - Options for this query.
-    * @param   dataSourceName - Name of the data source to get entity from.
-    * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
-    */
+	 * Retrieve a single entity from specified data source that matches provided `queryFind` and `options`.
+	 *
+	 * @author gerkin
+	 * @param   queryFind      - Query to get desired entity.
+	 * @param   options        - Options for this query.
+	 * @param   dataSourceName - Name of the data source to get entity from.
+	 * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
+	 */
 	public async find(
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
-		const updated = await doFindUpdate(
-			this,
-			false,
-			queryFindNoId,
-			options,
-			dataSourceName
-		);
-		return updated ? updated : null;
+  return this.makeEntity( this.getDataSource( dataSourceName ).findOne( this.name, queryFindNoId, options ) );
 	}
 	
 	/**
-    * Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`.
-    *
-    * @author gerkin
-    * @param   queryFind      - Query to get desired entities.
-    * @param   options        - Options for this query.
-    * @param   dataSourceName - Name of the data source to get entities from.
-    * @returns Promise resolved with a {@link Set set} of found entities in *sync* state.
-    */
+	 * Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`.
+	 *
+	 * @author gerkin
+	 * @param   queryFind      - Query to get desired entities.
+	 * @param   options        - Options for this query.
+	 * @param   dataSourceName - Name of the data source to get entities from.
+	 * @returns Promise resolved with a {@link Set set} of found entities in *sync* state.
+	 */
 	public async findMany(
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		return doFindUpdate( this, true, queryFind, options, dataSourceName );
+		return this.makeSet( this.getDataSource( dataSourceName ).findMany( this.name, queryFind, options ) );
 	}
 	
 	/**
-    * Update a single entity from specified data source that matches provided `queryFind` and `options`.
-    *
-    * @author gerkin
-    * @param   queryFind      - Query to get desired entity.
-    * @param   update         - Attributes to update on matched set.
-    * @param   options        - Options for this query.
-    * @param   dataSourceName - Name of the data source to get entity from.
-    * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
-    */
+	 * Update a single entity from specified data source that matches provided `queryFind` and `options`.
+	 *
+	 * @author gerkin
+	 * @param   queryFind      - Query to get desired entity.
+	 * @param   update         - Attributes to update on matched set.
+	 * @param   options        - Options for this query.
+	 * @param   dataSourceName - Name of the data source to get entity from.
+	 * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
+	 */
 	public async update(
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
 		update: object,
@@ -410,76 +280,93 @@ export class Model {
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
-		const updated = await doFindUpdate(
-			this,
-			false,
-			queryFindNoId,
-			options,
-			dataSourceName,
-			update
-		);
-		return updated ? updated : null;
+  return this.makeEntity( this.getDataSource( dataSourceName ).updateOne( this.name, queryFindNoId, update, options ) );
 	}
 	
 	/**
-    * Update multiple entities from specified data source that matches provided `queryFind` and `options`.
-    *
-    * @author gerkin
-    * @param   queryFind      - Query to get desired entities.
-    * @param   update         - Attributes to update on matched set.
-    * @param   options        - Options for this query.
-    * @param   dataSourceName - Name of the data source to get entities from.
-    * @returns Promise resolved with the {@link Set set} of found entities in *sync* state.
-    */
+	 * Update multiple entities from specified data source that matches provided `queryFind` and `options`.
+	 *
+	 * @author gerkin
+	 * @param   queryFind      - Query to get desired entities.
+	 * @param   update         - Attributes to update on matched set.
+	 * @param   options        - Options for this query.
+	 * @param   dataSourceName - Name of the data source to get entities from.
+	 * @returns Promise resolved with the {@link Set set} of found entities in *sync* state.
+	 */
 	public async updateMany(
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		update: object,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		return doFindUpdate( this, true, queryFind, options, dataSourceName, update );
+		return this.makeSet( this.getDataSource( dataSourceName ).updateMany( this.name, queryFind, update, options ) );
 	}
 	
 	/**
-    * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
-    *
-    * @author gerkin
-    * @param   queryFind      - Query to get desired entity.
-    * @param   options        - Options for this query.
-    * @param   dataSourceName - Name of the data source to get entity from.
-    * @returns Promise resolved with `undefined`.
-    */
+	 * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
+	 *
+	 * @author gerkin
+	 * @param   queryFind      - Query to get desired entity.
+	 * @param   options        - Options for this query.
+	 * @param   dataSourceName - Name of the data source to get entity from.
+	 * @returns Promise resolved with `undefined`.
+	 */
 	public async delete(
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
-		return doDelete( EDeleteMethod.Single, this )(
-			queryFindNoId,
-			options,
-			dataSourceName
-		);
+  return this.getDataSource( dataSourceName ).deleteMany( this.name, queryFindNoId, options );
 	}
 	
 	/**
-    * Delete multiple entities from specified data source that matches provided `queryFind` and `options`.
-    *
-    * @author gerkin
-    * @param   queryFind      - Query to get desired entities.
-    * @param   options        - Options for this query.
-    * @param   dataSourceName - Name of the data source to get entities from.
-    * @returns Promise resolved with `undefined`.
-    */
+	 * Delete multiple entities from specified data source that matches provided `queryFind` and `options`.
+	 *
+	 * @author gerkin
+	 * @param   queryFind      - Query to get desired entities.
+	 * @param   options        - Options for this query.
+	 * @param   dataSourceName - Name of the data source to get entities from.
+	 * @returns Promise resolved with `undefined`.
+	 */
 	public async deleteMany(
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
-		return doDelete( EDeleteMethod.Multiple, this )(
-			queryFind,
-			options,
-			dataSourceName
-		);
+		return this.getDataSource( dataSourceName ).deleteMany( this.name, queryFind, options );
+	}
+	
+	/**
+	 * Generate a new Set containing provided `AdapterEntities` wrapped in `Entities`
+	 * 
+	 * @param dataSourceEntitiesPromise - Promise that may return adapter entities to wrap in a newly created `Set`
+	 */
+	protected async makeSet(
+		dataSourceEntitiesPromise: Promise<Array<AdapterEntity | undefined>>
+	){
+		const dataSourceEntities = await dataSourceEntitiesPromise;
+  const newEntities = _.chain( dataSourceEntities )
+		.map( dataSourceEntity => new this.entityFactory( dataSourceEntity ) )
+		.compact()
+		.value();
+  const set = new Set( this, newEntities );
+  return set;
+	}
+	
+	/**
+	 * Generate a new entity from the promise's result
+	 * 
+	 * @author Gerkin
+	 * @param dataSourceEntityPromise - Promise that may return an adapter entity to wrap in a newly created `Entity`
+	 */
+	protected async makeEntity(
+		dataSourceEntityPromise: Promise<AdapterEntity | undefined>
+	){
+		const dataSourceEntity = await dataSourceEntityPromise;
+		if ( _.isNil( dataSourceEntity ) ){
+			return null;
+		}
+		return new this.entityFactory( dataSourceEntity );
 	}
 }

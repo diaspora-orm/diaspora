@@ -41,12 +41,24 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 
 	protected static dataAccessLayersRegistry = new WeakMap<Adapter, DataAccessLayer>();
 	
+	/**
+	 * Constructs a new instance of DataAccessLayer. This new instance is automatically registered in the registry of DataAccessLayer
+	 * 
+	 * @author Gekrin
+	 * @param adapter - Adapter to wrap
+	 */
 	public constructor( public adapter: TAdapter ){
 		super();
 		// TODO: Fix typings problems
-		DataAccessLayer.dataAccessLayersRegistry.set( adapter as any, this as any );
+		DataAccessLayer.dataAccessLayersRegistry.set( adapter, this );
 	}
 	
+	/**
+	 * Get the access layer that wraps the provided adapter. If it does not exists, this method constructs a new instance of {@link DataAccessLayer}
+	 * 
+	 * @author Gerkin
+	 * @param adapter - Adapter to get access layer from.
+	 */
 	public static retrieveAccessLayer( adapter: Adapter ){
 		const foundAccessLayer = this.dataAccessLayersRegistry.get( adapter );
 		if ( foundAccessLayer ){
@@ -59,15 +71,22 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	// -----
 	// ### Insert
 	
+	/**
+	 * Insert the provided entity in the desired collection
+	 * 
+	 * @author Gerkin
+	 * @param collectionName - Name of the collection to insert the entity into
+	 * @param entity         - Object containing the properties of the entity to insert
+	 */
 	public async insertOne(
-		table: string,
+		collectionName: string,
 		entity: IRawEntityAttributes
 	){
-		const entityRemappedIn = this.remapInput( table, entity );
-		const newEntity = await this.adapter.insertOne( table, entityRemappedIn );
+		const entityRemappedIn = this.remapInput( collectionName, entity );
+		const newEntity = await this.adapter.insertOne( collectionName, entityRemappedIn );
 		if ( newEntity ){
 			const newEntityRemappedOut = this.remapOutput(
-				table,
+				collectionName,
 				newEntity
 			);
 			return new this.classEntity( newEntityRemappedOut, this.adapter );
@@ -76,15 +95,22 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		}
 	}
 	
+	/**
+	 * Insert the provided entities in the desired collection
+	 * 
+	 * @author Gerkin
+	 * @param collectionName - Name of the collection to insert entities into
+	 * @param entities       - Array of objects containing the properties of the entities to insert
+	 */
 	public async insertMany(
-		table: string,
+		collectionName: string,
 		entities: IRawEntityAttributes[]
 	){
-		const entitiesRemappedIn = _.map( entities, entity => this.remapInput( table, entity ) );
-		const newEntities = await this.adapter.insertMany( table, entitiesRemappedIn );
+		const entitiesRemappedIn = _.map( entities, entity => this.remapInput( collectionName, entity ) );
+		const newEntities = await this.adapter.insertMany( collectionName, entitiesRemappedIn );
 		return _.map( newEntities, newEntity => {
 			const newEntityRemapped = this.remapOutput(
-				table,
+				collectionName,
 				newEntity
 			);
 			return new this.classEntity( newEntityRemapped, this.adapter );
@@ -94,20 +120,28 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	// -----
 	// ### Find
 	
+	/**
+	 * Retrieve a single entity from the desired collection.
+	 * 
+	 * @author Gerkin
+	 * @param collectionName - Name of the collection to search into
+	 * @param queryFind      - Description of the entity to find
+	 * @param options        - Options to apply to the query
+	 */
 	public async findOne(
-		table: string,
+		collectionName: string,
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
-		const queryFindRemappedIn = this.remapInput( table, queryFind );
+		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.adapter.normalizeOptions( options );
 		// Query search to cannonical
 		const queryFindNormalized = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const foundEntity = await this.adapter.findOne( table, queryFindNormalized, optionsNormalized );
+		const foundEntity = await this.adapter.findOne( collectionName, queryFindNormalized, optionsNormalized );
 		if ( foundEntity ){
 			const foundEntityRemapped = this.remapOutput(
-				table,
+				collectionName,
 				foundEntity
 			);
 			return new this.classEntity( foundEntityRemapped, this.adapter );
@@ -116,20 +150,28 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		}
 	}
 	
+	/**
+	 * Retrieve several entities from the desired collection.
+	 * 
+	 * @author Gerkin
+	 * @param collectionName - Name of the collection to search into
+	 * @param queryFind      - Description of the entities to find
+	 * @param options        - Options to apply to the query
+	 */
 	public async findMany(
-		table: string,
+		collectionName: string,
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
-		const queryFindRemappedIn = this.remapInput( table, queryFind );
+		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.adapter.normalizeOptions( options );
 		// Query search to cannonical
 		const queryFindNormalized = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const foundEntities = await this.adapter.findMany( table, queryFindNormalized, optionsNormalized );
+		const foundEntities = await this.adapter.findMany( collectionName, queryFindNormalized, optionsNormalized );
 		return _.map( foundEntities, foundEntity => {
 			const foundEntityRemapped = this.remapOutput(
-				table,
+				collectionName,
 				foundEntity
 			);
 			return new this.classEntity( foundEntityRemapped, this.adapter );
@@ -139,22 +181,31 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	// -----
 	// ### Update
 	
+	/**
+	 * Update a single entity from the desired collection
+	 * 
+	 * @author Gerkin
+	 * @param collectionName - Name of the collection to update
+	 * @param queryFind      - Description of the entity to update
+	 * @param update         - Properties to modify on the matched entity
+	 * @param options        - Options to apply to the query
+	 */
 	public async updateOne(
-		table: string,
+		collectionName: string,
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
-		const queryFindRemappedIn = this.remapInput( table, queryFind );
-		const updateRemappedIn = this.remapInput( table, update );
+		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
+		const updateRemappedIn = this.remapInput( collectionName, update );
 		// Options to canonical
 		const optionsNormalized = this.adapter.normalizeOptions( options );
 		// Query search to cannonical
 		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const updatedEntity = await this.adapter.updateOne( table, queryFind, updateRemappedIn, optionsNormalized );
+		const updatedEntity = await this.adapter.updateOne( collectionName, queryFind, updateRemappedIn, optionsNormalized );
 		if ( updatedEntity ){
 			const updatedEntityRemapped = this.remapOutput(
-				table,
+				collectionName,
 				updatedEntity
 			);
 			return new this.classEntity( updatedEntityRemapped, this.adapter );
@@ -163,22 +214,31 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		}
 	}
 	
+	/**
+	 * Update entities from the desired collection
+	 * 
+	 * @author Gerkin
+	 * @param collectionName - Name of the collection to update
+	 * @param queryFind      - Description of the entities to update
+	 * @param update         - Properties to modify on the matched entities
+	 * @param options        - Options to apply to the query
+	 */
 	public async updateMany(
-		table: string,
+		collectionName: string,
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
-		const queryFindRemappedIn = this.remapInput( table, queryFind );
-		const updateRemappedIn = this.remapInput( table, update );
+		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
+		const updateRemappedIn = this.remapInput( collectionName, update );
 		// Options to canonical
 		const optionsNormalized = this.adapter.normalizeOptions( options );
 		// Query search to cannonical
 		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const updatedEntities = await this.adapter.updateMany( table, queryFind, updateRemappedIn, optionsNormalized );
+		const updatedEntities = await this.adapter.updateMany( collectionName, queryFind, updateRemappedIn, optionsNormalized );
 		return _.map( updatedEntities, updatedEntity => {
 			const updatedEntityRemapped = this.remapOutput(
-				table,
+				collectionName,
 				updatedEntity
 			);
 			return new this.classEntity( updatedEntityRemapped, this.adapter );
@@ -188,35 +248,57 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	// -----
 	// ### Delete
 	
+	/**
+	 * Delete an entity from the desired collection
+	 * 
+	 * @author Gerkin
+	 * @param collectionName - Name of the collection to delete entity from
+	 * @param queryFind      - Description of the entity to delete
+	 * @param options        - Options to apply to the query
+	 */
 	public async deleteOne(
-		table: string,
+		collectionName: string,
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
-		const queryFindRemappedIn = this.remapInput( table, queryFind );
+		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.adapter.normalizeOptions( options );
 		// Query search to cannonical
 		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		return this.adapter.deleteOne( table, queryFind, optionsNormalized );
+		return this.adapter.deleteOne( collectionName, queryFind, optionsNormalized );
 	}
 	
+	/**
+	 * Delete entities from the desired collection
+	 * 
+	 * @author Gerkin
+	 * @param collectionName - Name of the collection to delete entities from
+	 * @param queryFind      - Description of the entities to delete
+	 * @param options        - Options to apply to the query
+	 */
 	public async deleteMany(
-		table: string,
+		collectionName: string,
 		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
 		options: QueryLanguage.QueryOptionsRaw = {}
 	){
-		const queryFindRemappedIn = this.remapInput( table, queryFind );
+		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.adapter.normalizeOptions( options );
 		// Query search to cannonical
 		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		return this.adapter.deleteMany( table, queryFind, optionsNormalized );
+		return this.adapter.deleteMany( collectionName, queryFind, optionsNormalized );
 	}
 	
 	// -----
 	// ### Utils
 	
+	/**
+	 * Waits for the underlying adapter to be ready.
+	 * 
+	 * @author Gerkin
+	 * @see Adapter.waitReady
+	 */
 	public async waitReady(){
 		await this.adapter.waitReady();
 		return this;
@@ -226,18 +308,27 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
 	 *
 	 * @author gerkin
+	 * @param collectionName - Name of the collection
+	 * @param remaps         - Remappings to apply on properties
+	 * @param filters        - Filters to apply on properties
 	 */
 	public configureCollection(
-		tableName: string,
+		collectionName: string,
 		remaps: IRemapsHash,
 		filters: IFiltersHash = {}
-	): this {
-		this.adapter.configureCollection( tableName, remaps, filters );
+	) {
+		this.adapter.configureCollection( collectionName, remaps, filters );
 		return this;
 	}
 	
-	protected transmitEvent( eventName: string ){
-		this.adapter.on( eventName, ( ...args: any[] ) => this.emit( eventName, ...args ) );
+	/**
+	 * Propagate the provided events from the adapter to the data access layer
+	 * 
+	 * @author Gerkin
+	 * @param eventNames - Name of the events to propagate
+	 */
+	protected transmitEvent( eventNames: string | string[] ){
+		_.chain( eventNames ).castArray().forEach( eventName => this.adapter.on( eventName, ( ...args: any[] ) => this.emit( eventName, ...args ) ) );
 	}
 }
 

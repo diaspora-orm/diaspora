@@ -13,11 +13,17 @@ import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IRemapsHash, IFiltersHash, DataSourceQuerier, IEnumeratedHash } from '../../types/dataSourceQuerier';
 
+/**
+ * Represents the current state of the adapter. Those states corresponds to event names emitted by the adapter when they are passed.
+ * 
+ * @author Gerkin
+ */
 export enum EAdapterState {
 	READY = 'ready',
 	ERROR = 'error',
 	PREPARING = 'preparing',
 }
+
 
 export interface IAdapterCtr<T extends AdapterEntity = AdapterEntity>
 extends Constructable<Adapter> {
@@ -105,6 +111,13 @@ T extends AdapterEntity = AdapterEntity
 		} );
 	}
 	
+	/**
+	 * Runs the query in loops to fulfill requirements in the options hash
+	 * 
+	 * @author Gerkin
+	 * @param options - Hash of options that forms the query
+	 * @param query   - Query function to loop
+	 */
 	private static iterateLimit(
 		options: QueryLanguage.QueryOptions,
 		query: (

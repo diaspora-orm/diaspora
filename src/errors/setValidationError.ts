@@ -10,7 +10,7 @@ export class SetValidationError extends ValidationError {
 	private readonly validationErrors: EntityValidationError[];
 
 	/**
-	 * Construct a new validation error.
+	 * Construct a new set validation error.
 	 *
 	 * @author gerkin
 	 * @see Diaspora.check
@@ -28,6 +28,11 @@ export class SetValidationError extends ValidationError {
 		this.message += `[\n${this.stringifyValidationError()}\n]`;
 	}
 
+	/**
+	 * Concatenate each validation error to generate a readable message
+	 * 
+	 * @author Gerkin
+	 */
 	protected stringifyValidationError() {
 		return _.chain( this.validationErrors )
 			.map( ( error, index ) => {

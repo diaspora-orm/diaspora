@@ -68,6 +68,15 @@ export abstract class AdapterEntity {
 		this.dataAccessLayer = DataAccessLayer.retrieveAccessLayer( dataSource );
 	}
 
+	/**
+	 * Applies the id in the appropriate field & id hash
+	 * 
+	 * @author Gerkin
+	 * @param attributes - Attributes of the entity 
+	 * @param adapter    - Adapter that will persist the entity
+	 * @param propName   - Property that should contain the ID
+	 * @param id         - Value of the ID
+ 	*/
 	public static setId(
 		attributes: IRawEntityAttributes,
 		adapter: Adapter,
@@ -115,6 +124,14 @@ export abstract class AdapterEntity {
 		return _.omit( this.attributes, ['dataSource', 'id'] );
 	}
 
+	/**
+	 * Calls the static {@link AdapterEntity.setId} with provided arguments
+	 * 
+	 * @author Gerkin
+	 * @param adapter    - Adapter that will persist the entity
+	 * @param propName   - Property that should contain the ID
+	 * @param id         - Value of the ID
+	 */
 	protected setId(
 		adapter: Adapter,
 		propName: string = 'id',
