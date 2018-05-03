@@ -135,7 +135,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 			const storeTable = this.ensureCollectionExists( table );
 			const match = _.find( storeTable.items, {
 				id: found.id,
-			} );
+			} ) as any as IRawAdapterEntityAttributes;
 			if ( match ) {
 				Utils.applyUpdateEntity( update, match );
 				return match;
