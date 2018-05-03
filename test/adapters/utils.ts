@@ -257,6 +257,13 @@ no( {
 			expect( me( { foo: { $greaterEqual: 2 } }, { foo: 2 } ) ).toBeTruthy();
 			expect( me( { foo: { $greaterEqual: 2 } }, { foo: 3 } ) ).toBeTruthy();
 		} );
+		
+		it( `${getStyle( 'bold', '$contains' )}`, () => {
+			expect( me( { foo: { $contains: 2 } }, { foo: [] } ) ).toBeFalsy();
+			expect( me( { foo: { $contains: 2 } }, { foo: [1] } ) ).toBeFalsy();
+			expect( me( { foo: { $contains: 2 } }, { foo: [2] } ) ).toBeTruthy();
+			expect( me( { foo: { $contains: 2 } }, { foo: [3, 2] } ) ).toBeTruthy();
+		} );
 	} );
 }
 } );

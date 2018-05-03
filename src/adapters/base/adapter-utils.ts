@@ -67,11 +67,11 @@ const validateOption = (
 };
 
 /**
- * TODO.
- *
- * @author gerkin
- * @see TODO remapping.
- */
+* TODO.
+*
+* @author gerkin
+* @see TODO remapping.
+*/
 export const remapIO = <T extends IEnumeratedHash<any>>(
 	adapter: Adapter,
 	tableName: string,
@@ -103,19 +103,21 @@ export interface IQueryCheckFunction {
 
 export const OPERATORS: IEnumeratedHash<IQueryCheckFunction | undefined> = {
 	$exists: ( entityVal: any, targetVal: any ) =>
-		targetVal === !_.isUndefined( entityVal ),
+	targetVal === !_.isUndefined( entityVal ),
 	$equal: ( entityVal: any, targetVal: any ) =>
-		!_.isUndefined( entityVal ) && entityVal === targetVal,
+	!_.isUndefined( entityVal ) && entityVal === targetVal,
 	$diff: ( entityVal: any, targetVal: any ) =>
-		!_.isUndefined( entityVal ) && entityVal !== targetVal,
+	!_.isUndefined( entityVal ) && entityVal !== targetVal,
 	$less: ( entityVal: any, targetVal: any ) =>
-		!_.isUndefined( entityVal ) && entityVal < targetVal,
+	!_.isUndefined( entityVal ) && entityVal < targetVal,
 	$lessEqual: ( entityVal: any, targetVal: any ) =>
-		!_.isUndefined( entityVal ) && entityVal <= targetVal,
+	!_.isUndefined( entityVal ) && entityVal <= targetVal,
 	$greater: ( entityVal: any, targetVal: any ) =>
-		!_.isUndefined( entityVal ) && entityVal > targetVal,
+	!_.isUndefined( entityVal ) && entityVal > targetVal,
 	$greaterEqual: ( entityVal: any, targetVal: any ) =>
-		!_.isUndefined( entityVal ) && entityVal >= targetVal,
+	!_.isUndefined( entityVal ) && entityVal >= targetVal,
+	$contains: ( entityVal: any, targetVal: any ) =>
+	!_.isUndefined( entityVal ) && _.isArray( entityVal ) && _.some( entityVal, ( val ) => _.isEqual( val, targetVal ) ),
 };
 export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'~': '$exists',
@@ -127,7 +129,7 @@ export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'>=': '$greaterEqual',
 };
 export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
-	( ( ops: QueryLanguage.QueryOptionsRaw ) => void )
+( ( ops: QueryLanguage.QueryOptionsRaw ) => void )
 > = {
 	limit( opts: QueryLanguage.QueryOptionsRaw ) {
 		opts.limit = validateOption( 'limit', opts.limit as number, {
@@ -156,10 +158,10 @@ export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
 			throw new ReferenceError( 'Use either "options.page" or "options.skip"' );
 		}
 		opts.skip =
-			validateOption( 'page', opts.page as number, {
-				type: 'int',
-				rng: '[0,∞[',
-			} ) * ( opts.limit as number );
+		validateOption( 'page', opts.page as number, {
+			type: 'int',
+			rng: '[0,∞[',
+		} ) * ( opts.limit as number );
 		delete opts.page;
 	},
 };
