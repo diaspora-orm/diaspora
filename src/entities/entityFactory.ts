@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
-import { EntityStateError } from '../errors';
+import { Errors } from '../errors';
 import {
 	AdapterEntity,
 	Adapter,
@@ -485,7 +485,7 @@ export abstract class Entity extends SequentialEvent {
 	): Promise<T>{
 		// Depending on state, we are going to perform a different operation
 		if ( EEntityState.ORPHAN === beforeState ) {
-			return Promise.reject( new EntityStateError( "Can't fetch an orphan entity." ) );
+			return Promise.reject( new Errors.EntityStateError( "Can't fetch an orphan entity." ) );
 		} else {
 			this._lastDataSource = dataSource;
 			const execMethod: (

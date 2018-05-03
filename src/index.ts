@@ -1,3 +1,5 @@
-import Diaspora from './diaspora';
+export { default as Diaspora } from './diaspora';
 
-export default Diaspora;
+export { Entities } from './entities';
+export { Errors } from './errors';
+export { Validator } from './validator';

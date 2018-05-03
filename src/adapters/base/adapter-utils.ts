@@ -67,11 +67,11 @@ const validateOption = (
 };
 
 /**
-* TODO.
-*
-* @author gerkin
-* @see TODO remapping.
-*/
+ * TODO.
+ *
+ * @author gerkin
+ * @see TODO remapping.
+ */
 export const remapIO = <T extends IEnumeratedHash<any>>(
 	adapter: Adapter,
 	tableName: string,

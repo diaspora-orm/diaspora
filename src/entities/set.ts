@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 import { Model } from '../model';
 import { Entity, EntitySpawner, IRawEntityAttributes } from './entityFactory';
-import { SetValidationError } from '../errors';
+import { Errors } from '../errors';
 import * as Utils from '../utils';
 import { logger } from '../logger';
 
@@ -172,7 +172,7 @@ export class Set {
 			.value();
 		const errors = _.compact( validationResults ).length;
 		if ( errors > 0 ) {
-			throw new SetValidationError(
+			throw new Errors.SetValidationError(
 				`Set validation failed for ${errors} elements (on ${this.length}): `,
 				validationResults
 			);

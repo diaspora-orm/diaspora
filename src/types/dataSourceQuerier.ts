@@ -1,7 +1,6 @@
 import {  } from '../adapters/base';
-import { IRawEntityAttributes } from '../entities';
+import { Entities } from '../entities';
 import { QueryLanguage } from './queryLanguage';
-
 
 export interface IEnumeratedHash<T> {
 	[key: string]: T;
@@ -24,7 +23,7 @@ export interface DataSourceQuerier<T>{
 	 */
 	insertOne(
 		table: string,
-		entity: IRawEntityAttributes
+		entity: Entities.IRawEntityAttributes
 	): Promise<T | undefined>;
 
 	/**
@@ -35,7 +34,7 @@ export interface DataSourceQuerier<T>{
 	 */
 	insertMany(
 		table: string,
-		entities: IRawEntityAttributes[]
+		entities: Entities.IRawEntityAttributes[]
 	): Promise<T[]>;
 
 	// -----
@@ -77,7 +76,7 @@ export interface DataSourceQuerier<T>{
 	updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		update: IRawEntityAttributes,
+		update: Entities.IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions
 	): Promise<T | undefined>;
 
@@ -90,7 +89,7 @@ export interface DataSourceQuerier<T>{
 	updateMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		update: IRawEntityAttributes,
+		update: Entities.IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions
 	): Promise<T[]>;
 

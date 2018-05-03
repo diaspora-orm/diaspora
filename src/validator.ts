@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
 import { IRawEntityAttributes } from './entities/entityFactory';
-import { EntityValidationError } from './errors';
 import { ArrayFieldDescriptor, RelationalFieldDescriptor, FieldDescriptor, FieldDescriptorTypeChecks, ObjectFieldDescriptor } from './types/modelDescription';
 import { getDefaultFunction } from './staticStores';
+import { EntityValidationError } from './errors/entityValidationError';
 
 /**
  * Prepare the check of each items in the array.

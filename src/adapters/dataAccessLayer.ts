@@ -3,8 +3,8 @@ import * as _ from 'lodash';
 import { Adapter, AdapterEntity, IAdapterEntityCtr } from './base';
 import { DataSourceQuerier, IFiltersHash, IEnumeratedHash, IRemapsHash } from '../types/dataSourceQuerier';
 import { SequentialEvent } from 'sequential-event';
-import { IRawEntityAttributes } from '../entities';
 import { QueryLanguage } from '../types/queryLanguage';
+import { IRawEntityAttributes } from '../entities/entityFactory';
 
 export { IEnumeratedHash, IAdapterEntityCtr};
 
