@@ -317,7 +317,7 @@ export class Model {
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
-  return this.getDataSource( dataSourceName ).deleteMany( this.name, queryFindNoId, options );
+  return this.getDataSource( dataSourceName ).deleteOne( this.name, queryFindNoId, options );
 	}
 	
 	/**
