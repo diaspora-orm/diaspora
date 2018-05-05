@@ -4,12 +4,17 @@
   "description": "Multi-Layer ORM for Javascript Client+Server",
   "main": "lib/index.js",
   "module": "es5/diaspora.js",
-  "typings": "lib/diaspora.d.ts",
+	"typings": "lib/index.d.ts",
   "files": [
     "docs",
     "es5",
     "lib"
   ],
+    
+    "browser": {
+    	"winston": false,
+    	"request-prmise": false
+    },
   "directories": {
     "doc": "doc",
     "test": "test"
@@ -22,7 +27,7 @@
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json",
     "lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json || true",
     "doc": "typedoc --out docs --target es6 --theme minimal --mode file src",
-    "prebuild": "rimraf docs es5 lib",
+		"prebuild": "rimraf docs es5 lib umd",
     "build:standalone": "rollup -c ./rollup/rollup.standalone.config.ts",
     "build:standalone:min": "rollup -c ./rollup/rollup.standalone.min.config.ts",
     "build:module": "rollup -c ./rollup/rollup.module.config.ts",
@@ -136,6 +141,8 @@
     "rimraf": "^2.6.2",
     "rollup": "^0.58.2",
     "rollup-plugin-commonjs": "^9.1.3",
+		"rollup-plugin-ignore": "^1.0.3",
+		"rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript2": "^0.13.0",

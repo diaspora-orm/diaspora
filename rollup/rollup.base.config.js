@@ -4,6 +4,8 @@ const sourceMaps = require('rollup-plugin-sourcemaps');
 const camelCase = require('lodash.camelcase');
 const typescript = require('rollup-plugin-typescript2');
 const uglify = require('rollup-plugin-uglify');
+const json = require('rollup-plugin-json');
+const ignore = require( 'rollup-plugin-ignore' );
 
 const pkg = require('../package.json')
 
@@ -21,7 +23,10 @@ module.exports = (minify, externalize) => {
 		}
 		return libFile;
 	}
-	const globals = externalize ? {'lodash': '_', 'sequential-event': 'SE'} : undefined
+	const globals = externalize ? {
+		'lodash': '_',
+		'sequential-event': 'SE',
+	} : undefined
 
 	const commonjsConfig = {
 		namedExports: {
@@ -30,22 +35,24 @@ module.exports = (minify, externalize) => {
 	};
 
 	const config = {
-		input: 'src/index.ts',
+		input: 'lib/index.js',
 		output: [
-			{ file: getFileName(pkg.main), name: libName, format: 'umd', sourcemap: true, globals },
-			{ file: getFileName(pkg.module), name: libName, format: 'es', sourcemap: true, globals },
+			{ file: getFileName(`umd/${libName}.js`), name: libName, format: 'umd', sourcemap: true, globals, exports: 'named' },
+			{ file: getFileName(`es5/${libName}.js`), name: libName, format: 'es', sourcemap: true, globals, exports: 'named' },
 		],
 		// Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
-		external: externalize ? ['lodash', 'sequential-event'] : undefined,
+		external: (externalize ? ['lodash', 'sequential-event'] : []).concat(['winston', 'request-promise']),
+		
 		watch: {
 			include: 'src/**',
 		},
 		plugins: [
 			// Compile TypeScript files
-            typescript(),
-            
-			// Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
-			commonjs(commonjsConfig),
+			typescript(),
+			
+			json(),
+			
+			ignore('winston', 'request-promise'),
 		].concat(minify ? [
 			// Minify
 			uglify(),
@@ -53,7 +60,11 @@ module.exports = (minify, externalize) => {
 			// Allow node_modules resolution, so you can use 'external' to control
 			// which external modules to include in the bundle
 			// https://github.com/rollup/rollup-plugin-node-resolve#usage
-			resolve(),
+			resolve({
+				browser: true,
+			}),
+			// Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
+			commonjs(commonjsConfig),
 			
 			// Resolve source maps to the original source
 			sourceMaps(),
