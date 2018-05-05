@@ -6,6 +6,7 @@ import { IRawEntityAttributes } from '../../entities/entityFactory';
 import { DefaultQueryTransformerFactory } from './defaultQueryTransformer';
 import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
+import * as requestPromise from 'request-promise';
 
 interface IXhrResponse extends XMLHttpRequest {
 	response: {
@@ -260,7 +261,8 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			if ( _.isNil( data ) ) {
 				data = true;
 			}
-			return require( 'request-promise' )[method.toLowerCase()]( endPoint, {
+			const methodNormalized = method.toLowerCase() as 'get' | 'post' | 'put' | 'delete';
+			return requestPromise[methodNormalized]( endPoint, {
 				json: data,
 				qs: _.mapValues(
 					queryObject,

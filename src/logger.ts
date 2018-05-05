@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as Winston from 'winston';
+const Winston = require( 'winston' );
 
 
 /**
