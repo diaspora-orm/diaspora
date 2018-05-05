@@ -276,4 +276,3 @@ export namespace QueryLanguage {
 
 	export type SelectQueryOrConditionRaw = SelectQueryRaw | SelectQueryConditionRaw;
 }
-export default QueryLanguage;
