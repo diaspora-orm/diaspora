@@ -40,12 +40,19 @@ export const checkSpawnedAdapter = ( adapterLabel: string ) => {
 		} );
 	} );
 };
-export const checkInputFiltering = ( dataAccessLayer: DataAccessLayer ) => {
-	describe( `${getStyle( 'taskCategory', 'Check query inputs filtering' )} with ${
-		dataAccessLayer.constructor.name
-	}`, () => {
+export const checkEachStandardMethods = adapterLabel => {
+	const adapter = dataSources[getDataSourceLabel( adapterLabel )];
+	const getTestLabel = fctName => {
+		if ( ( adapter as any ).__proto__.hasOwnProperty( fctName ) ) {
+			return fctName;
+		} else {
+			return `${fctName} (from BaseAdapter)`;
+		}
+	};
+	
+	describe( `${getStyle( 'taskCategory', `Check ${adapterLabel} query inputs filtering` )}`, () => {
 		describe( 'Check options normalization', () => {
-			const no = dataAccessLayer.normalizeOptions;
+			const no = adapter.normalizeOptions;
 			it( 'Default options', () => {
 				expect( no( {} ) ).toEqual( {
 					skip: 0,
@@ -115,177 +122,157 @@ export const checkInputFiltering = ( dataAccessLayer: DataAccessLayer ) => {
 					remapOutput: true,
 				} );
 				expect( () => no( { page: 1 } ) ).toThrowError( ReferenceError );
-				expect( () =>
-				no( {
+				expect( () => no( {
 					page: 1,
 					skip: 1,
 					limit: 5,
-				} )
-			).toThrowError( ReferenceError );
-	   expect( () =>
-			no( {
-				page: 0.5,
-				limit: 5,
-			} )
-		).toThrowError( TypeError );
-	   expect( () =>
-		no( {
-			page: 1,
-			limit: Infinity,
-		} )
-	).toThrowError( RangeError );
-	   expect( () =>
-	no( {
-		page: Infinity,
-		limit: 5,
-	} )
-).toThrowError( RangeError );
-	   expect( () =>
-no( {
-	page: -1,
-	limit: 5,
-} )
-).toThrowError( RangeError );
-} );
-} );
-  describe( 'Check "normalizeQuery"', () => {
-	const nq = ( query: any ) =>
-	dataAccessLayer.normalizeQuery(
-		{ foo: query },
-		{ remapInput: true, remapOutput: false, skip: 0, limit: 0, page: 0 }
-	);
-	it( 'Empty query', () => {
-		expect(
-			dataAccessLayer.normalizeQuery(
-				{},
-				{ remapInput: true, remapOutput: false, skip: 0, limit: 0, page: 0 }
-			)
-		).toEqual( {} );
-	} );
-	it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
-		expect( nq( undefined ) ).toEqual( { foo: { $exists: false } } );
-		expect( nq( { '~': true } ) ).toEqual( { foo: { $exists: true } } );
-		expect( nq( { $exists: true } ) ).toEqual( { foo: { $exists: true } } );
-		expect( nq( { '~': false } ) ).toEqual( { foo: { $exists: false } } );
-		expect( nq( { $exists: false } ) ).toEqual( { foo: { $exists: false } } );
-		expect( () => nq( { '~': 'bar', $exists: 'bar' } ) ).toThrowError();
-	} );
-	it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
-		expect( nq( 'bar' ) ).toEqual( { foo: { $equal: 'bar' } } );
-		expect( nq( { $equal: 'bar' } ) ).toEqual( { foo: { $equal: 'bar' } } );
-		expect( nq( { '==': 'bar' } ) ).toEqual( { foo: { $equal: 'bar' } } );
-		expect( () => nq( { '==': 'bar', $equal: 'bar' } ) ).toThrowError();
-	} );
-	it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
-		expect( nq( { $diff: 'bar' } ) ).toEqual( { foo: { $diff: 'bar' } } );
-		expect( nq( { '!=': 'bar' } ) ).toEqual( { foo: { $diff: 'bar' } } );
-		expect( () => nq( { '!=': 'bar', $diff: 'bar' } ) ).toThrowError();
-	} );
-	it( `${getStyle( 'bold', '<' )} ($less)`, () => {
-		expect( nq( { $less: 1 } ) ).toEqual( { foo: { $less: 1 } } );
-		expect( nq( { '<': 1 } ) ).toEqual( { foo: { $less: 1 } } );
-		expect( () => nq( { '<': 1, $less: 1 } ) ).toThrowError();
-		expect( () => nq( { '<': 'aze' } ) ).toThrowError();
-		expect( () => nq( { $less: 'aze' } ) ).toThrowError();
-	} );
-	it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
-		expect( nq( { $lessEqual: 1 } ) ).toEqual( { foo: { $lessEqual: 1 } } );
-		expect( nq( { '<=': 1 } ) ).toEqual( { foo: { $lessEqual: 1 } } );
-		expect( () => nq( { '<=': 1, $lessEqual: 1 } ) ).toThrowError();
-		expect( () => nq( { '<=': 'aze' } ) ).toThrowError();
-		expect( () => nq( { $lessEqual: 'aze' } ) ).toThrowError();
-	} );
-	it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
-		expect( nq( { $greater: 1 } ) ).toEqual( { foo: { $greater: 1 } } );
-		expect( nq( { '>': 1 } ) ).toEqual( { foo: { $greater: 1 } } );
-		expect( () => nq( { '>': 1, $greater: 1 } ) ).toThrowError();
-		expect( () => nq( { '>': 'aze' } ) ).toThrowError();
-		expect( () => nq( { $greater: 'aze' } ) ).toThrowError();
-	} );
-	it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
-		expect( nq( { $greaterEqual: 1 } ) ).toEqual( { foo: { $greaterEqual: 1 } } );
-		expect( nq( { '>=': 1 } ) ).toEqual( { foo: { $greaterEqual: 1 } } );
-		expect( () => nq( { '>=': 1, $greaterEqual: 1 } ) ).toThrowError();
-		expect( () => nq( { '>=': 'aze' } ) ).toThrowError();
-		expect( () => nq( { $greaterEqual: 'aze' } ) ).toThrowError();
-	} );
-} );
-  if ( dataAccessLayer.adapter.classEntity.matches !== AdapterEntity.matches ){
-	describe( 'Check "matchEntity"', () => {
-		const me = ( query, obj ) => dataAccessLayer.adapter.classEntity.matches( obj, query );
-		it( 'Empty query', () => {
-			expect( me( {}, { foo: 'bar' } ) ).toBeTruthy();
+				} ) ).toThrowError( ReferenceError );
+				expect( () => no( {
+					page: 0.5,
+					limit: 5,
+				} ) ).toThrowError( TypeError );
+				expect( () => no( {
+					page: 1,
+					limit: Infinity,
+				} ) ).toThrowError( RangeError );
+				expect( () => no( {
+					page: Infinity,
+					limit: 5,
+				} ) ).toThrowError( RangeError );
+				expect( () => no( {
+					page: -1,
+					limit: 5,
+				} ) ).toThrowError( RangeError );
+			} );
 		} );
-		it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
-			expect( me( { foo: { $exists: true } }, { foo: 'bar' } ) ).toBeTruthy();
-			expect( me( { foo: { $exists: true } }, { foo: undefined } ) ).toBeFalsy();
-			expect( me( { foo: { $exists: false } }, { foo: 'bar' } ) ).toBeFalsy();
-			expect( me( { foo: { $exists: false } }, { foo: undefined } ) ).toBeTruthy();
+		describe( 'Check "normalizeQuery"', () => {
+			const nq = ( query: any ) => adapter.normalizeQuery(
+				{ b: query },
+				{ remapInput: true, remapOutput: false, skip: 0, limit: 0 }
+			);
+			it( 'Empty query', () => {
+				expect(
+					adapter.normalizeQuery(
+						{},
+						{ remapInput: true, remapOutput: false, skip: 0, limit: 0 }
+					)
+				).toEqual( {} );
+			} );
+			it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
+				expect( nq( undefined ) ).toEqual( { b: { $exists: false } } );
+				expect( nq( { '~': true } ) ).toEqual( { b: { $exists: true } } );
+				expect( nq( { $exists: true } ) ).toEqual( { b: { $exists: true } } );
+				expect( nq( { '~': false } ) ).toEqual( { b: { $exists: false } } );
+				expect( nq( { $exists: false } ) ).toEqual( { b: { $exists: false } } );
+				expect( () => nq( { '~': 3, $exists: 3 } ) ).toThrowError();
+			} );
+			it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
+				expect( nq( 3 ) ).toEqual( { b: { $equal: 3 } } );
+				expect( nq( { $equal: 3 } ) ).toEqual( { b: { $equal: 3 } } );
+				expect( nq( { '==': 3 } ) ).toEqual( { b: { $equal: 3 } } );
+				expect( () => nq( { '==': 3, $equal: 3 } ) ).toThrowError();
+			} );
+			it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
+				expect( nq( { $diff: 3 } ) ).toEqual( { b: { $diff: 3 } } );
+				expect( nq( { '!=': 3 } ) ).toEqual( { b: { $diff: 3 } } );
+				expect( () => nq( { '!=': 3, $diff: 3 } ) ).toThrowError();
+			} );
+			it( `${getStyle( 'bold', '<' )} ($less)`, () => {
+				expect( nq( { $less: 1 } ) ).toEqual( { b: { $less: 1 } } );
+				expect( nq( { '<': 1 } ) ).toEqual( { b: { $less: 1 } } );
+				expect( () => nq( { '<': 1, $less: 1 } ) ).toThrowError();
+				expect( () => nq( { '<': 'aze' } ) ).toThrowError();
+				expect( () => nq( { $less: 'aze' } ) ).toThrowError();
+			} );
+			it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
+				expect( nq( { $lessEqual: 1 } ) ).toEqual( { b: { $lessEqual: 1 } } );
+				expect( nq( { '<=': 1 } ) ).toEqual( { b: { $lessEqual: 1 } } );
+				expect( () => nq( { '<=': 1, $lessEqual: 1 } ) ).toThrowError();
+				expect( () => nq( { '<=': 'aze' } ) ).toThrowError();
+				expect( () => nq( { $lessEqual: 'aze' } ) ).toThrowError();
+			} );
+			it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
+				expect( nq( { $greater: 1 } ) ).toEqual( { b: { $greater: 1 } } );
+				expect( nq( { '>': 1 } ) ).toEqual( { b: { $greater: 1 } } );
+				expect( () => nq( { '>': 1, $greater: 1 } ) ).toThrowError();
+				expect( () => nq( { '>': 'aze' } ) ).toThrowError();
+				expect( () => nq( { $greater: 'aze' } ) ).toThrowError();
+			} );
+			it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
+				expect( nq( { $greaterEqual: 1 } ) ).toEqual( { b: { $greaterEqual: 1 } } );
+				expect( nq( { '>=': 1 } ) ).toEqual( { b: { $greaterEqual: 1 } } );
+				expect( () => nq( { '>=': 1, $greaterEqual: 1 } ) ).toThrowError();
+				expect( () => nq( { '>=': 'aze' } ) ).toThrowError();
+				expect( () => nq( { $greaterEqual: 'aze' } ) ).toThrowError();
+			} );
 		} );
-		it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
-			expect( me( { foo: { $equal: 'bar' } }, { foo: 'bar' } ) ).toBeTruthy();
-			expect( me( { foo: { $equal: 'bar' } }, { foo: undefined } ) ).toBeFalsy();
-			expect( me( { foo: { $equal: 'bar' } }, { foo: 'baz' } ) ).toBeFalsy();
-		} );
-		it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
-			expect( me( { foo: { $diff: 'bar' } }, { foo: 'bar' } ) ).toBeFalsy();
-			expect( me( { foo: { $diff: 'bar' } }, { foo: 'baz' } ) ).toBeTruthy();
-			expect( me( { foo: { $diff: 'bar' } }, { foo: undefined } ) ).toBeFalsy();
-			expect( me( { foo: { $diff: 'bar' } }, { bar: 'qux' } ) ).toBeFalsy();
-		} );
-		it( `${getStyle( 'bold', '<' )} ($less)`, () => {
-			expect( me( { foo: { $less: 2 } }, { foo: undefined } ) ).toBeFalsy();
-			expect( me( { foo: { $less: 2 } }, { foo: 1 } ) ).toBeTruthy();
-			expect( me( { foo: { $less: 2 } }, { foo: 2 } ) ).toBeFalsy();
-			expect( me( { foo: { $less: 2 } }, { foo: 3 } ) ).toBeFalsy();
-		} );
-		it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
-			expect( me( { foo: { $lessEqual: 2 } }, { foo: undefined } ) ).toBeFalsy();
-			expect( me( { foo: { $lessEqual: 2 } }, { foo: 1 } ) ).toBeTruthy();
-			expect( me( { foo: { $lessEqual: 2 } }, { foo: 2 } ) ).toBeTruthy();
-			expect( me( { foo: { $lessEqual: 2 } }, { foo: 3 } ) ).toBeFalsy();
-		} );
-		it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
-			expect( me( { foo: { $greater: 2 } }, { foo: undefined } ) ).toBeFalsy();
-			expect( me( { foo: { $greater: 2 } }, { foo: 1 } ) ).toBeFalsy();
-			expect( me( { foo: { $greater: 2 } }, { foo: 2 } ) ).toBeFalsy();
-			expect( me( { foo: { $greater: 2 } }, { foo: 3 } ) ).toBeTruthy();
-		} );
-		it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
-			expect( me( { foo: { $greaterEqual: 2 } }, { foo: undefined } ) ).toBeFalsy();
-			expect( me( { foo: { $greaterEqual: 2 } }, { foo: 1 } ) ).toBeFalsy();
-			expect( me( { foo: { $greaterEqual: 2 } }, { foo: 2 } ) ).toBeTruthy();
-			expect( me( { foo: { $greaterEqual: 2 } }, { foo: 3 } ) ).toBeTruthy();
-		} );
-		
-		it( `${getStyle( 'bold', '$contains' )}`, () => {
-			expect( me( { foo: { $contains: 2 } }, { foo: [] } ) ).toBeFalsy();
-			expect( me( { foo: { $contains: 2 } }, { foo: [1] } ) ).toBeFalsy();
-			expect( me( { foo: { $contains: 2 } }, { foo: [2] } ) ).toBeTruthy();
-			expect( me( { foo: { $contains: 2 } }, { foo: [3, 2] } ) ).toBeTruthy();
-		} );
-	} );
-}
-} );
-};
-export const checkEachStandardMethods = adapterLabel => {
-	const adapter = dataSources[getDataSourceLabel( adapterLabel )];
-	const getTestLabel = fctName => {
-		if ( ( adapter as any ).__proto__.hasOwnProperty( fctName ) ) {
-			return fctName;
-		} else {
-			return `${fctName} (from BaseAdapter)`;
+		if ( adapter.classEntity.matches !== AdapterEntity.matches ){
+			describe( `Check ${adapter.adapter.name} "matchEntity"`, () => {
+				const me = ( query, obj ) => adapter.classEntity.matches( obj, query );
+				it( 'Empty query', () => {
+					expect( me( {}, { b: 3 } ) ).toBeTruthy();
+				} );
+				it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
+					expect( me( { b: { $exists: true } }, { b: 3 } ) ).toBeTruthy();
+					expect( me( { b: { $exists: true } }, { b: undefined } ) ).toBeFalsy();
+					expect( me( { b: { $exists: false } }, { b: 3 } ) ).toBeFalsy();
+					expect( me( { b: { $exists: false } }, { b: undefined } ) ).toBeTruthy();
+				} );
+				it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
+					expect( me( { b: { $equal: 3 } }, { b: 3 } ) ).toBeTruthy();
+					expect( me( { b: { $equal: 3 } }, { b: undefined } ) ).toBeFalsy();
+					expect( me( { b: { $equal: 3 } }, { b: 'baz' } ) ).toBeFalsy();
+				} );
+				it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
+					expect( me( { b: { $diff: 3 } }, { b: 3 } ) ).toBeFalsy();
+					expect( me( { b: { $diff: 3 } }, { b: 'baz' } ) ).toBeTruthy();
+					expect( me( { b: { $diff: 3 } }, { b: undefined } ) ).toBeFalsy();
+					expect( me( { b: { $diff: 3 } }, { a: 4 } ) ).toBeFalsy();
+				} );
+				it( `${getStyle( 'bold', '<' )} ($less)`, () => {
+					expect( me( { b: { $less: 2 } }, { b: undefined } ) ).toBeFalsy();
+					expect( me( { b: { $less: 2 } }, { b: 1 } ) ).toBeTruthy();
+					expect( me( { b: { $less: 2 } }, { b: 2 } ) ).toBeFalsy();
+					expect( me( { b: { $less: 2 } }, { b: 3 } ) ).toBeFalsy();
+				} );
+				it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
+					expect( me( { b: { $lessEqual: 2 } }, { b: undefined } ) ).toBeFalsy();
+					expect( me( { b: { $lessEqual: 2 } }, { b: 1 } ) ).toBeTruthy();
+					expect( me( { b: { $lessEqual: 2 } }, { b: 2 } ) ).toBeTruthy();
+					expect( me( { b: { $lessEqual: 2 } }, { b: 3 } ) ).toBeFalsy();
+				} );
+				it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
+					expect( me( { b: { $greater: 2 } }, { b: undefined } ) ).toBeFalsy();
+					expect( me( { b: { $greater: 2 } }, { b: 1 } ) ).toBeFalsy();
+					expect( me( { b: { $greater: 2 } }, { b: 2 } ) ).toBeFalsy();
+					expect( me( { b: { $greater: 2 } }, { b: 3 } ) ).toBeTruthy();
+				} );
+				it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
+					expect( me( { b: { $greaterEqual: 2 } }, { b: undefined } ) ).toBeFalsy();
+					expect( me( { b: { $greaterEqual: 2 } }, { b: 1 } ) ).toBeFalsy();
+					expect( me( { b: { $greaterEqual: 2 } }, { b: 2 } ) ).toBeTruthy();
+					expect( me( { b: { $greaterEqual: 2 } }, { b: 3 } ) ).toBeTruthy();
+				} );
+				
+				it( `${getStyle( 'bold', '$contains' )}`, () => {
+					expect( me( { b: { $contains: 2 } }, { b: [] } ) ).toBeFalsy();
+					expect( me( { b: { $contains: 2 } }, { b: [1] } ) ).toBeFalsy();
+					expect( me( { b: { $contains: 2 } }, { b: [2] } ) ).toBeTruthy();
+					expect( me( { b: { $contains: 2 } }, { b: [3, 2] } ) ).toBeTruthy();
+				} );
+			} );
 		}
-	};
-	
-	checkInputFiltering( adapter );
-	describe( getStyle( 'taskCategory', 'Test adapter methods' ), () => {
+	} );
+	describe( getStyle( 'taskCategory', `Test ${adapterLabel} adapter methods` ), () => {
 		let findManyOk = false;
 		let findAllOk = false;
 		describe( '✨ Insert methods', () => {
+			beforeEach( async () => {
+				await adapter.deleteMany( TABLE, {} );
+			} );
 			it( getTestLabel( 'insertOne' ), async () => {
 				const object = {
-					foo: 'bar',
+					b: 3,
 				};
 				const entity = await adapter.insertOne( TABLE, object );
 				expect( entity ).toBeAnAdapterEntity( adapter, object );
@@ -293,13 +280,13 @@ export const checkEachStandardMethods = adapterLabel => {
 			it( getTestLabel( 'insertMany' ), async () => {
 				const objects = [
 					{
-						baz: 'qux',
+						a: 4,
 					},
 					{
-						qux: 'foo',
+						qux: 1,
 					},
 					{
-						foo: 'bar',
+						b: 3,
 					},
 				];
 				const entities = await adapter.insertMany( TABLE, objects );
@@ -308,123 +295,103 @@ export const checkEachStandardMethods = adapterLabel => {
 			} );
 		} );
 		describe( 'Specification level 1', () => {
+			beforeEach( async () => {
+				await adapter.deleteMany( TABLE, {} );
+				await adapter.insertMany( TABLE, [{a: 1, b: 3}, {a: 4, c: 5}, {b: 3}] );
+			} );
 			describe( '🔎 Find methods', () => {
-				it( getTestLabel( 'findOne' ), () => {
+				it( getTestLabel( 'findOne' ), async () => {
 					const object = {
-						baz: 'qux',
+						a: 4,
 					};
-					return adapter.findOne( TABLE, object ).then( entity => {
+					const entity = await adapter.findOne( TABLE, object );
 						expect( entity ).toBeAnAdapterEntity( adapter, object );
 					} );
-				} );
 				it( getTestLabel( 'findMany' ), async () => {
 					const objects = {
-						foo: 'bar',
+						b: 3,
 					};
 					const entities = await adapter.findMany( TABLE, objects );
 					expect( entities ).toHaveLength( 2 );
 					expect( entities ).toBeAnAdapterEntitySet( adapter, objects );
-					findManyOk = true;
 				} );
-				it( 'Find all', async function skippable() {
-					if ( findManyOk !== true ) {
-						this.skip();
-						return;
-					}
+				it( 'Find all', async () => {
 					const entities = await adapter.findMany( TABLE, {} );
-					expect( entities ).toHaveLength( 4 );
+					expect( entities ).toHaveLength( 3 );
 					expect( entities ).toBeAnAdapterEntitySet( adapter );
-					findAllOk = true;
 				} );
 			} );
 			describe( '🔃 Update methods', () => {
-				it( getTestLabel( 'updateOne' ), () => {
-					const fromObj = {
-						baz: 'qux',
-					};
-					const targetObj = {
-						foo: 'bar',
-					};
-					return adapter.updateOne( TABLE, fromObj, targetObj ).then( entity => {
-						expect( entity ).toBeAnAdapterEntity(
-							adapter,
-							_.assign( {}, fromObj, targetObj )
-						);
-					} );
+				it( getTestLabel( 'updateOne' ), async () => {
+					const fromObj = { a: 4 };
+					const targetObj = { b: 3 };
+					const entity = await adapter.updateOne( TABLE, fromObj, targetObj );
+					expect( entity ).toBeAnAdapterEntity( adapter, _.assign( {c: 5}, fromObj, targetObj ) );
 				} );
 				it( getTestLabel( 'updateMany' ), async () => {
-					const fromObj = {
-						foo: 'bar',
-					};
-					const targetObj = {
-						baz: 'qux',
-					};
+					const fromObj = { b: 3 };
+					const targetObj = { a: 4 };
 					const entities = await adapter.updateMany( TABLE, fromObj, targetObj );
-					expect( entities ).toHaveLength( 3 );
+					expect( entities ).toHaveLength( 2 );
 					expect( entities ).toBeAnAdapterEntitySet(
 						adapter,
-						_.assign( {}, fromObj, targetObj )
+						_.map( [{a: 1}, {}], item => _.assign( item, fromObj, targetObj ) )
 					);
 				} );
-				it( getTestLabel( 'updateOne not found' ), () => {
+				it( getTestLabel( 'updateOne not found' ), async () => {
 					const fromObj = {
 						qwe: 'rty',
 					};
 					const targetObj = {
-						foo: 'bar',
+						b: 3,
 					};
-					return adapter.updateOne( TABLE, fromObj, targetObj ).then( entity => {
+					const entity = await adapter.updateOne( TABLE, fromObj, targetObj );
 						expect( entity ).toBeUndefined();
 					} );
-				} );
-				it( getTestLabel( 'updateMany not found' ), () => {
+				it( getTestLabel( 'updateMany not found' ), async () => {
 					const fromObj = {
 						qwe: 'rty',
 					};
 					const targetObj = {
-						baz: 'qux',
+						a: 4,
 					};
-					return adapter.updateMany( TABLE, fromObj, targetObj ).then( entities => {
+					const entities = await adapter.updateMany( TABLE, fromObj, targetObj );
 						expect( entities ).toHaveLength( 0 );
 					} );
 				} );
-			} );
 			describe( '❌ Delete methods', () => {
 				it( getTestLabel( 'deleteOne' ), () => {
 					const obj = {
-						qux: 'foo',
+						qux: 1,
 					};
 					return adapter.deleteOne( TABLE, obj ).then( ( ...args ) => {
 						expect( args ).toEqual( [undefined] );
 						return Promise.resolve();
 					} );
 				} );
-				it( getTestLabel( 'deleteMany' ), () => {
+				it( getTestLabel( 'deleteMany' ), async () => {
 					const obj = {
-						foo: 'bar',
+						b: 3,
 					};
-					return adapter.deleteMany( TABLE, obj ).then( ( ...args ) => {
-						expect( args ).toEqual( [undefined] );
-						return Promise.resolve();
-					} );
+					const deleteResults = await adapter.deleteMany( TABLE, obj );
+					expect( deleteResults ).toBeUndefined();
+					const entities = await adapter.findMany( TABLE, {} );
+					expect( entities ).toHaveLength( 1 );
 				} );
-				it( 'Check deletion: find all again', function skippable() {
-					if ( findAllOk !== true ) {
-						this.skip();
-						return;
-					}
-					return adapter.findMany( TABLE, {} ).then( entities => {
+				it( getTestLabel( 'deleteAll' ), async () => {
+					const deleteResults = await adapter.deleteMany( TABLE, {} );
+					expect( deleteResults ).toBeUndefined();
+					const entities = await adapter.findMany( TABLE, {} );
 						expect( entities ).toEqual( [] );
 					} );
 				} );
 			} );
-		} );
 		describe( 'Specification level 2', () => {
 			it( 'Initialize test data', async () => {
 				const objects = [
 					// Tests for $exists
-					{ foo: 1 },
-					{ foo: undefined },
+					{ b: 1 },
+					{ b: undefined },
 					// Tests for comparison operators
 					{ bar: 1 },
 					{ bar: 2 },
@@ -441,24 +408,24 @@ export const checkEachStandardMethods = adapterLabel => {
 				return Promise.all( [
 					adapter
 					.findOne( TABLE, {
-						foo: {
+						b: {
 							'~': true,
 						},
 					} )
 					.then( output => {
 						expect( output ).toBeAnAdapterEntity( adapter, {
-							foo: 1,
+							b: 1,
 						} );
 					} ),
 					adapter
 					.findOne( TABLE, {
-						foo: {
+						b: {
 							'~': false,
 						},
 					} )
 					.then( output => {
 						expect( output ).toBeAnAdapterEntity( adapter, {
-							foo: undefined,
+							b: undefined,
 						} );
 					} ),
 				] );
@@ -466,13 +433,13 @@ export const checkEachStandardMethods = adapterLabel => {
 			it( `${getStyle( 'bold', '==' )} ($equal) operator`, () => {
 				return adapter
 				.findOne( TABLE, {
-					foo: {
+					b: {
 						'==': 1,
 					},
 				} )
 				.then( output => {
 					expect( output ).toBeAnAdapterEntity( adapter, {
-						foo: 1,
+						b: 1,
 					} );
 				} );
 			} );
@@ -491,7 +458,7 @@ export const checkEachStandardMethods = adapterLabel => {
 					} ),
 					adapter
 					.findOne( TABLE, {
-						foo: {
+						b: {
 							'!=': 1,
 						},
 					} )
@@ -500,13 +467,13 @@ export const checkEachStandardMethods = adapterLabel => {
 					} ),
 					adapter
 					.findOne( TABLE, {
-						foo: {
+						b: {
 							'!=': 2,
 						},
 					} )
 					.then( output => {
 						expect( output ).toBeAnAdapterEntity( adapter, {
-							foo: 1,
+							b: 1,
 						} );
 					} ),
 				] );
