@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { Validator } from '../src/validator';
-import { EntityValidationError } from '../src/errors';
+import { Errors } from '../src/errors';
 
 interface IPartition<T> extends Array<T[]> {
 	0: T[];
@@ -78,7 +78,7 @@ const runTests = (
 	_.forEach( rejected, value => {
 		explain(
 			() =>
-				expect( () => validator.validate( value ) ).toThrowError( EntityValidationError ),
+				expect( () => validator.validate( value ) ).toThrowError( Errors.EntityValidationError ),
 			NOT_THROWING( validator.modelAttributes, value )
 		);
 	} );

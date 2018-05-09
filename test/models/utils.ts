@@ -1,4 +1,4 @@
-import Diaspora from '../../src/diaspora';
+import { Diaspora } from '../../src/diaspora';
 
 import '../utils';
 

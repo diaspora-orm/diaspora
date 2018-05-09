@@ -5,7 +5,7 @@ import { Adapter, AdapterEntity } from '../src/adapters/base';
 import { Model } from '../src/model';
 import { IRawEntityAttributes, Entity } from '../src/entities/entityFactory';
 import { Set as EntitySet } from '../src/entities/set';
-import Diaspora from '../src/diaspora';
+import { Diaspora } from '../src/diaspora';
 import { InMemoryAdapter } from '../src/adapters/inMemory';
 import { DataAccessLayer } from '../src/adapters/dataAccessLayer';
 

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import express from 'express';
 
-import Diaspora from '../../src/diaspora';
+import { Diaspora } from '../../src/diaspora';
 import { IWebApiAdapterConfig } from '../../src/adapters/webApi/adapter';
 import { getConfig } from '../utils';
 import {
@@ -10,7 +10,7 @@ import {
 	checkEachStandardMethods,
 } from './utils';
 import { AdapterEntity, Adapter } from '../../src/adapters/base';
-import QueryLanguage from '../../src/types/queryLanguage';
+import { QueryLanguage } from '../../src/types/queryLanguage';
 
 const ADAPTER_LABEL = 'webApi';
 const adapterConfig = getConfig( ADAPTER_LABEL ) as IWebApiAdapterConfig;

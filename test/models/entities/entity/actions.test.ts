@@ -1,9 +1,9 @@
-import Diaspora from '../../../../src/diaspora';
+import { Diaspora } from '../../../../src/diaspora';
 import { Model } from '../../../../src/model';
 import { Entity, EEntityState } from '../../../../src/entities/entityFactory';
 import { InMemoryAdapter } from '../../../../src/adapters/inMemory';
-import { EntityStateError } from '../../../../src/errors';
 import { createMockModel } from '../../utils';
+import { EntityStateError } from '../../../../src/errors/entityStateError';
 
 const { model, MODEL_NAME, SOURCE } = createMockModel(
 	'entity-actions'
