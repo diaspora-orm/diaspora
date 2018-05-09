@@ -306,6 +306,9 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		if ( 0 === options.skip ) {
 			delete options.skip;
 		}
+		if ( !isFinite( options.limit ) ) {
+			delete options.limit;
+		}
 
 		return _.assign( {}, _.omit( options, ['remapInput', 'remapOutput'] ), {
 			where: queryFind,

@@ -16,11 +16,6 @@ export namespace QueryLanguage {
 		limit: ConstrainedTypes.AbsIntInf0;
 
 		/**
-		 * To use with {@link QueryOptions.limit `limit`} and without {@link QueryOptions.skip `skip`}. Skips `page` pages of `limit` elements
-		 */
-		page: ConstrainedTypes.AbsInt0;
-
-		/**
 		 * Flag indicating if adapter input should be remapped or not. TODO Remapping doc
 		 */
 		remapInput: boolean;

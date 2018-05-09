@@ -58,6 +58,7 @@ export const checkEachStandardMethods = adapterLabel => {
 					skip: 0,
 					remapInput: true,
 					remapOutput: true,
+					limit: Infinity,
 				} );
 			} );
 			it( '"limit" option', () => {
@@ -88,11 +89,13 @@ export const checkEachStandardMethods = adapterLabel => {
 					skip: 10,
 					remapInput: true,
 					remapOutput: true,
+					limit: Infinity,
 				} );
 				expect( no( { skip: '10' } as any ) ).toEqual( {
 					skip: 10,
 					remapInput: true,
 					remapOutput: true,
+					limit: Infinity,
 				} );
 				expect( () => no( { skip: 0.5 } ) ).toThrowError( TypeError );
 				expect( () => no( { skip: -1 } ) ).toThrowError( RangeError );
@@ -305,8 +308,8 @@ export const checkEachStandardMethods = adapterLabel => {
 						a: 4,
 					};
 					const entity = await adapter.findOne( TABLE, object );
-						expect( entity ).toBeAnAdapterEntity( adapter, object );
-					} );
+					expect( entity ).toBeAnAdapterEntity( adapter, object );
+				} );
 				it( getTestLabel( 'findMany' ), async () => {
 					const objects = {
 						b: 3,
@@ -346,8 +349,8 @@ export const checkEachStandardMethods = adapterLabel => {
 						b: 3,
 					};
 					const entity = await adapter.updateOne( TABLE, fromObj, targetObj );
-						expect( entity ).toBeUndefined();
-					} );
+					expect( entity ).toBeUndefined();
+				} );
 				it( getTestLabel( 'updateMany not found' ), async () => {
 					const fromObj = {
 						qwe: 'rty',
@@ -356,9 +359,9 @@ export const checkEachStandardMethods = adapterLabel => {
 						a: 4,
 					};
 					const entities = await adapter.updateMany( TABLE, fromObj, targetObj );
-						expect( entities ).toHaveLength( 0 );
-					} );
+					expect( entities ).toHaveLength( 0 );
 				} );
+			} );
 			describe( '❌ Delete methods', () => {
 				it( getTestLabel( 'deleteOne' ), () => {
 					const obj = {
@@ -382,10 +385,10 @@ export const checkEachStandardMethods = adapterLabel => {
 					const deleteResults = await adapter.deleteMany( TABLE, {} );
 					expect( deleteResults ).toBeUndefined();
 					const entities = await adapter.findMany( TABLE, {} );
-						expect( entities ).toEqual( [] );
-					} );
+					expect( entities ).toEqual( [] );
 				} );
 			} );
+		} );
 		describe( 'Specification level 2', () => {
 			it( 'Initialize test data', async () => {
 				const objects = [

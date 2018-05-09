@@ -118,38 +118,27 @@ T extends AdapterEntity = AdapterEntity
 	 * @param options - Hash of options that forms the query
 	 * @param query   - Query function to loop
 	 */
-	private static iterateLimit(
+	private static async iterateLimit(
 		options: QueryLanguage.QueryOptions,
 		query: (
 			options: QueryLanguage.QueryOptions
-		) => Promise<IRawAdapterEntityAttributes>
+		) => Promise<IRawAdapterEntityAttributes | undefined>
 	){
 		const foundEntities: IRawAdapterEntityAttributes[] = [];
-		let foundCount = 0;
+		const localOptions = _.assign( {}, options );
 		let origSkip = options.skip;
 		
 		// We are going to loop until we find enough items
-		const loopFind = async (
-			found?: IRawAdapterEntityAttributes | true
-		): Promise<IRawAdapterEntityAttributes[]> => {
-			// If the search returned nothing, then just finish the findMany
-			if ( _.isNil( found ) ) {
-				return Promise.resolve( foundEntities );
-				// Else, if this is a value and not the initial `true`, add it to the list
-			} else if ( typeof found === 'object' ) {
+		while ( foundEntities.length < localOptions.limit ) {
+			const found = await query( localOptions );
+			if ( _.isNil( found ) ){
+				return foundEntities;
+			} else {
 				foundEntities.push( found );
 			}
-			// If we found enough items, return them
-			if ( foundCount === options.limit ) {
-				return Promise.resolve( foundEntities );
-			}
-			options.skip = origSkip + foundCount;
-			// Next time we'll skip 1 more item
-			foundCount++;
-			// Do the query & loop
-			return loopFind( await query( options ) );
-		};
-		return loopFind( true );
+			localOptions.skip = origSkip + foundEntities.length;
+		}
+		return foundEntities;
 	}
 	
 	// -----
@@ -242,12 +231,13 @@ T extends AdapterEntity = AdapterEntity
 				QUERY_OPTIONS_TRANSFORMS[optionName]( opts );
 			}
 		} );
-		_.defaults( opts, {
+		const optsDefaulted = _.defaults( opts, {
 			skip: 0,
 			remapInput: true,
 			remapOutput: true,
+			limit: Infinity,
 		} );
-		return opts as QueryLanguage.QueryOptions;
+		return optsDefaulted;
 	}
 	
 	/**
@@ -389,9 +379,8 @@ T extends AdapterEntity = AdapterEntity
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
-		const optionsNormalized = this.normalizeOptions( options );
 		const boundQuery = this.findOne.bind( this, table, queryFind );
-		return Adapter.iterateLimit( optionsNormalized, boundQuery );
+		return Adapter.iterateLimit( options, boundQuery );
 	}
 	
 	// -----
@@ -409,7 +398,6 @@ T extends AdapterEntity = AdapterEntity
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes | undefined> {
-		options = this.normalizeOptions( options );
 		options.limit = 1;
 		return _.first( await this.updateMany( table, queryFind, update, options ) );
 	}
@@ -426,9 +414,8 @@ T extends AdapterEntity = AdapterEntity
 		update: IRawEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
 	): Promise<IRawAdapterEntityAttributes[]> {
-		const optionsNormalized = this.normalizeOptions( options );
 		return Adapter.iterateLimit(
-			optionsNormalized,
+			options,
 			this.updateOne.bind( this, table, queryFind, update )
 		);
 	}
@@ -446,9 +433,9 @@ T extends AdapterEntity = AdapterEntity
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<void> {
+	) {
 		options.limit = 1;
-		return this.deleteMany( table, queryFind, options );
+		await this.deleteMany( table, queryFind, options );
 	}
 	
 	/**
@@ -465,28 +452,9 @@ T extends AdapterEntity = AdapterEntity
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<void> {
-		let count = 0;
-		// We are going to loop until we find enough items
-		const loopFind = (): Promise<void> => {
-			// First, search for the item.
-			return this.findOne( table, queryFind, options ).then( found => {
-				// If the search returned nothing, then just finish the findMany
-				if ( _.isNil( found ) ) {
-					return Promise.resolve();
-					// Else, if this is a value and not the initial `true`, add it to the list
-				}
-				// If we found enough items, return them
-				if ( count === options.limit ) {
-					return Promise.resolve();
-				}
-				// Increase our counter
-				count++;
-				// Do the deletion & loop
-				return this.deleteOne( table, queryFind, options ).then( loopFind );
-			} );
-		};
-		return loopFind();
+	) {
+		const boundQuery = this.deleteOne.bind( this, table, queryFind );
+		await Adapter.iterateLimit( options, boundQuery );
 	}
 	
 	/**
