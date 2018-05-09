@@ -138,7 +138,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
-		const optionsNormalized = this.adapter.normalizeOptions( options );
+		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
 		const queryFindNormalized = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
 		const foundEntity = await this.adapter.findOne( collectionName, queryFindNormalized, optionsNormalized );
@@ -168,7 +168,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
-		const optionsNormalized = this.adapter.normalizeOptions( options );
+		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
 		const queryFindNormalized = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
 		const foundEntities = await this.adapter.findMany( collectionName, queryFindNormalized, optionsNormalized );
@@ -202,7 +202,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		const updateRemappedIn = this.remapInput( collectionName, update );
 		// Options to canonical
-		const optionsNormalized = this.adapter.normalizeOptions( options );
+		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
 		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
 		const updatedEntity = await this.adapter.updateOne( collectionName, queryFind, updateRemappedIn, optionsNormalized );
@@ -235,7 +235,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		const updateRemappedIn = this.remapInput( collectionName, update );
 		// Options to canonical
-		const optionsNormalized = this.adapter.normalizeOptions( options );
+		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
 		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
 		const updatedEntities = await this.adapter.updateMany( collectionName, queryFind, updateRemappedIn, optionsNormalized );
@@ -266,7 +266,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
-		const optionsNormalized = this.adapter.normalizeOptions( options );
+		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
 		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
 		return this.adapter.deleteOne( collectionName, queryFind, optionsNormalized );
@@ -287,7 +287,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
-		const optionsNormalized = this.adapter.normalizeOptions( options );
+		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
 		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
 		return this.adapter.deleteMany( collectionName, queryFind, optionsNormalized );
