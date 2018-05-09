@@ -46,8 +46,9 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 			session: false,
 		} );
 		this.state = EAdapterState.READY;
+		const win = ( global as any as Window );
 		this.source =
-			true === config.session ? window.sessionStorage : window.localStorage;
+			true === config.session ? win.sessionStorage : win.localStorage;
 	}
 
 	/**
