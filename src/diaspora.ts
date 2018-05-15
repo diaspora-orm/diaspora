@@ -9,6 +9,8 @@ import { WebStorageAdapter } from './adapters/webStorage';
 import { ModelDescriptionRaw } from './types/modelDescription';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry, modelRegistry, IModelRegistry } from './staticStores';
+import { BrowserWebApiAdapter } from './adapters/webApi/subAdapters/browserAdapter';
+import { NodeWebApiAdapter } from './adapters/webApi/subAdapters/nodeAdapter';
 
 export {Adapter, AdapterEntity};
 
@@ -216,7 +218,7 @@ export const Diaspora = DiasporaStatic.instance;
 
 // Register available built-in adapters
 Diaspora.registerAdapter( 'inMemory', InMemoryAdapter );
-Diaspora.registerAdapter( 'webApi', WebApiAdapter );
+Diaspora.registerAdapter( 'webApi', process.browser ? BrowserWebApiAdapter : NodeWebApiAdapter );
 // Register webStorage only if in browser
 if ( process.browser ) {
 	Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );

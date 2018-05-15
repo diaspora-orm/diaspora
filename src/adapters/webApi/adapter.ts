@@ -6,9 +6,8 @@ import { IRawEntityAttributes } from '../../entities/entityFactory';
 import { DefaultQueryTransformerFactory } from './defaultQueryTransformer';
 import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
-import * as requestPromise from 'request-promise';
 
-interface IXhrResponse extends XMLHttpRequest {
+export interface IXhrResponse extends XMLHttpRequest {
 	response: {
 		message?: string;
 	};
@@ -36,27 +35,14 @@ export interface IWebApiAdapterConfig {
 	 */
 	pluralApis?: { [key: string]: string };
 }
-export interface INodeWebApiAdapterConfig extends IWebApiAdapterConfig {
-	/**
-	 * Hostname of the endpoint. On server environment, this parameter is *required*.
-	 */
-	host: string;
-	/**
-	 * Scheme to use. On server environment, this parameter is *required*. On browser environment, it defaults to a relative scheme (IE ``). Note that it will be suffixed with `//`.
-	 */
-	scheme: string;
-	/**
-	 * Port of the endpoint.
-	 */
-	port?: number | false;
-	/**
-	 * Path to the endpoint.
-	 */
+
+export interface IWebApiAdapterInternalConfig extends IWebApiAdapterConfig{
+	host: string | false;
+	scheme: string | false;
+	port: number | false;
 	path: string;
-	/**
-	 * Hash with keys being the singular name of the endpoint, and values being the associated plural name of the same endpoint.
-	 */
 	pluralApis?: { [key: string]: string };
+	baseEndPoint?: string;
 }
 
 export interface IEventProviderFactory {
@@ -83,7 +69,7 @@ export interface IApiDescription {
 	queryString: object;
 }
 
-type TEntitiesJsonResponse =
+export type TEntitiesJsonResponse =
 	| IRawAdapterEntityAttributes
 	| IRawAdapterEntityAttributes[]
 	| undefined;
@@ -93,8 +79,8 @@ type TEntitiesJsonResponse =
  *
  * @see https://www.npmjs.com/package/diaspora-server Diaspora-Server: Package built on Diaspora & Express.js to easily configure HTTP APIs compatible with this adapter.
  */
-export class WebApiAdapter extends Adapter<WebApiEntity> {
-	private static readonly httpErrorFactories = {
+export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
+	protected static readonly httpErrorFactories = {
 		400: ( xhr: IXhrResponse ) =>
 			new Error(
 				`Posted data through HTTP is invalid; message ${WebApiAdapter.getMessage(
@@ -129,32 +115,18 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public constructor(
 		dataSourceName: string,
-		config: IWebApiAdapterConfig = { path: '' },
+		config: IWebApiAdapterInternalConfig,
 		eventProviders: IEventProvider[] = [DefaultQueryTransformerFactory()]
 	) {
 		super( WebApiEntity, dataSourceName );
-
-		const defaultedConfig = _.defaults( config, {
-			scheme: false,
-			host: false,
-			port: false,
-			path: '',
-			pluralApis: {},
-		} );
-		WebApiAdapter.checkWebApiAdapterConfig( defaultedConfig );
-		if ( process.browser && false === defaultedConfig.host ) {
-			// Endpoint is an absolute url
-			this.baseEndPoint = defaultedConfig.path;
+		
+		if ( typeof config.baseEndPoint === 'undefined' ){
+			this.baseEndPoint = this.generateBaseEndPoint( config.scheme, config.host, config.port, config.path );
 		} else {
-			const portString = defaultedConfig.port ? `:${defaultedConfig.port}` : '';
-			const schemeString = defaultedConfig.scheme
-				? `${defaultedConfig.scheme}:`
-				: '';
-			this.baseEndPoint = `${schemeString}//${defaultedConfig.host}${portString}${
-				defaultedConfig.path
-			}`;
+			this.baseEndPoint = config.baseEndPoint;
 		}
-		this.pluralApis = defaultedConfig.pluralApis;
+
+		this.pluralApis = config.pluralApis || {};
 
 		// Bind lifecycle events
 		_.map( eventProviders, eventProvider =>
@@ -171,30 +143,6 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	}
 
 	/**
-	 * Serialize a query object to be injected in a query string.
-	 * 
-	 * @author Gerkin
-	 * @param queryObject - Query to serialize for a query string
-	 */
-	private static queryObjectToString( queryObject?: QueryLanguage.SelectQuery ) {
-		return (
-			_.chain( queryObject )
-				.tap( _.cloneDeep )
-				.omitBy( val => _.isObject( val ) && _.isEmpty( val ) )
-				// { foo: 1, bar: { baz: 2 } }
-				.mapValues( JSON.stringify )
-				// { foo: '1', bar: '{"baz": "2"}' }
-				.toPairs()
-				// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
-				.map( _.partial( _.map, _, encodeURIComponent ) )
-				// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
-				.map( arr => `${arr[0]}=${arr[1]}` )
-				// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
-				.join( '&' )
-		);
-	}
-
-	/**
 	 * Gets the field 'message' in an XHR
 	 * TODO: Check if relevant
 	 * 
@@ -204,93 +152,6 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		return _.get( xhr, 'response.message' )
 			? `"${( xhr as { response: { message: string } } ).response.message}"`
 			: 'NULL';
-	}
-
-	/**
-	 * Binds `resolve` & `reject` to XHR events.
-	 *
-	 * @param	xhr		- XHR request to bind
-	 * @param	resolve	- Promise resolution function that will be triggered if `onload` is ran & the status is a 2xx.
-	 * @param	reject	- Promise rejection function to trigger if `onerror` is ran, or a non 2xx status is returned.
-	 * @returns XHR with resolution bound to a promise.
-	 */
-	private static defineXhrEvents(
-		xhr: XMLHttpRequest,
-		resolve: (
-			thenableOrResult?:
-				| TEntitiesJsonResponse
-				| PromiseLike<TEntitiesJsonResponse>
-				| undefined
-		) => void,
-		reject: ( thenableOrResult?: {} | PromiseLike<any> | undefined ) => void
-	) {
-		xhr.onload = () => {
-			if ( _.inRange( xhr.status, 200, 299 ) ) {
-				return resolve( xhr.response );
-			} else {
-				// Retrieve the function that will generate the error
-				const errorBuilder = _.get(
-					WebApiAdapter.httpErrorFactories,
-					xhr.status,
-					WebApiAdapter.httpErrorFactories._
-				);
-				return reject( errorBuilder( xhr ) );
-			}
-		};
-		xhr.onerror = () => {
-			return reject( WebApiAdapter.httpErrorFactories._( xhr ) );
-		};
-		return xhr;
-	}
-
-	/**
-	 * Creates a request, send it and get the result
-	 * 
-	 * @param method      - HTTP verb that describes the request type
-	 * @param endPoint    - Url to send on
-	 * @param data        - Object to send
-	 * @param queryObject - Object to put in query string
-	 */
-	private static async httpRequest(
-		method: EHttpVerb,
-		endPoint: string,
-		data?: object | true,
-		queryObject?: object
-	): Promise<TEntitiesJsonResponse> {
-		if ( !process.browser ) {
-			if ( _.isNil( data ) ) {
-				data = true;
-			}
-			const methodNormalized = method.toLowerCase() as 'get' | 'post' | 'put' | 'delete';
-			return requestPromise[methodNormalized]( endPoint, {
-				json: data,
-				qs: _.mapValues(
-					queryObject,
-					data => ( typeof data === 'object' ? JSON.stringify( data ) : data )
-				),
-			} );
-		} else {
-			return new Promise(
-				(
-					resolve: (
-						value?: TEntitiesJsonResponse | PromiseLike<TEntitiesJsonResponse>
-					) => void,
-					reject
-				) => {
-					/* globals XMLHttpRequest: false */
-					const xhr = WebApiAdapter.defineXhrEvents(
-						new XMLHttpRequest(),
-						resolve,
-						reject
-					);
-					const queryString = WebApiAdapter.queryObjectToString( queryObject );
-					xhr.responseType = 'json';
-					xhr.open( method, `${endPoint}${queryString ? `?${queryString}` : ''}` );
-					xhr.setRequestHeader( 'Content-Type', 'application/json' );
-					xhr.send( _.isNil( data ) ? undefined : JSON.stringify( data ) );
-				}
-			);
-		}
 	}
 
 	/**
@@ -326,28 +187,6 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 		adapter: WebApiAdapter
 	) {
 		return _.map( entities, entity => WebApiEntity.setId( entity, adapter ) );
-	}
-
-	/**
-	 * Ensure that the provided config is valid
-	 * 
-	 * @param config - Configuration object to check
-	 */
-	private static checkWebApiAdapterConfig( config: IWebApiAdapterConfig ) {
-		if ( !process.browser ) {
-			if ( !_.isString( config.host ) ) {
-				throw new Error(
-					`"config.host" is not defined, or is not a string: had "${config.host}"`
-				);
-			}
-			if ( !_.isString( config.scheme ) ) {
-				throw new Error(
-					`"config.scheme" is not defined, or is not a string: had "${
-						config.scheme
-					}"`
-				);
-			}
-		}
 	}
 
 	// -----
@@ -581,6 +420,27 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 	}
 
 	/**
+	 * Creates a request, send it and get the result
+	 * 
+	 * @param method      - HTTP verb that describes the request type
+	 * @param endPoint    - Url to send on
+	 * @param data        - Object to send
+	 * @param queryObject - Object to put in query string
+	 */
+	protected abstract async httpRequest(
+		method: EHttpVerb,
+		endPoint: string,
+		data?: object | true,
+		queryObject?: object
+	): Promise<TEntitiesJsonResponse>;
+
+	protected generateBaseEndPoint( scheme: string | false, host: string | false, port: number | false, path: string ){
+		const portString = port ? `:${port}` : '';
+		const schemeString = scheme ? `${scheme}:` : '';
+		return `${schemeString}//${host}${portString}${path}`;
+	}
+
+	/**
 	 * Send an http query to the targeted `endPoint` using `method` as verb.
 	 *
 	 * @async
@@ -636,7 +496,7 @@ export class WebApiAdapter extends Adapter<WebApiEntity> {
 			body,
 			queryString,
 		} );
-		const response = await WebApiAdapter.httpRequest(
+		const response = await this.httpRequest(
 			verb,
 			endPoint,
 			body,
