@@ -3,7 +3,7 @@
  *
  * @extends Error
  */
-export class ExtendableError extends Error {
+export abstract class ExtendableError extends Error {
 	/**
 	 * Construct a new extendable error.
 	 *
