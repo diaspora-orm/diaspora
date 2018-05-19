@@ -1,6 +1,6 @@
 {
 	"name": "@diaspora/diaspora",
-	"version": "0.3.0-alpha.4",
+	"version": "0.3.0-alpha.5",
 	"description": "Multi-Layer ORM for Javascript Client+Server",
 	"main": "lib/index.js",
 	"module": "es5/diaspora.js",
@@ -9,12 +9,11 @@
 		"docs",
 		"es5",
 		"lib"
-    ],
-    
-    "browser": {
-    	"winston": false,
-    	"request-prmise": false
-    },
+	],
+	"browser": {
+		"winston": false,
+		"request-prmise": false
+	},
 	"directories": {
 		"doc": "doc",
 		"test": "test"
@@ -32,8 +31,8 @@
 		"build:standalone:min": "rollup -c ./rollup/rollup.standalone.min.config.ts",
 		"build:module": "rollup -c ./rollup/rollup.module.config.ts",
 		"build:module:min": "rollup -c ./rollup/rollup.module.min.config.ts",
-        "build:all": "npm run build:standalone && npm run build:standalone:min && npm run build:module && npm run build:module:min",
-        "build:typescript": "tsc --module commonjs --outDir lib",
+		"build:all": "npm run build:standalone && npm run build:standalone:min && npm run build:module && npm run build:module:min",
+		"build:typescript": "tsc --module commonjs --outDir lib",
 		"build": "npm run build:typescript && npm run build:all && npm run doc",
 		"start": "rollup -c ./rollup/rollup.module.config.ts -w",
 		"test": "jest",

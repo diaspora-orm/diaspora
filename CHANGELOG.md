@@ -1,3 +1,16 @@
+<a name="0.3.0-alpha.5"></a>
+# [0.3.0-alpha.5](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.4...v0.3.0-alpha.5) (2018-05-19)
+
+
+### Bug Fixes
+
+* **ExtendableError:** class is now abstract & must be subclassed ([643b03a](https://github.com/diaspora-orm/diaspora/commit/643b03a))
+* **Model:** Fixed `Model.delete` that used `DataAccessLayer.deleteMany` ([87ea3d6](https://github.com/diaspora-orm/diaspora/commit/87ea3d6))
+* **src/*:** Fixed exports types + values, removed default export, changed Diaspora type to DiasporaStatic ([9165f18](https://github.com/diaspora-orm/diaspora/commit/9165f18))
+* **WebStorageAdapter:** using `global` instead of `window` ([3a4e984](https://github.com/diaspora-orm/diaspora/commit/3a4e984))
+
+
+
 <a name="0.3.0-alpha.4"></a>
 # [0.3.0-alpha.4](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.3...v0.3.0-alpha.4) (2018-04-17)
 
