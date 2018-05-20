@@ -35,10 +35,10 @@ module.exports = (minify, externalize) => {
 	};
 
 	const config = {
-		input: 'lib/index.js',
+		input: 'dist/lib/index.js',
 		output: [
-			{ file: getFileName(`umd/${libName}.js`), name: libName, format: 'umd', sourcemap: true, globals, exports: 'named' },
-			{ file: getFileName(`es5/${libName}.js`), name: libName, format: 'es', sourcemap: true, globals, exports: 'named' },
+			{ file: getFileName(`dist/umd/${libName}.js`), name: libName, format: 'umd', sourcemap: true, globals, exports: 'named' },
+			{ file: getFileName(`dist/es5/${libName}.js`), name: libName, format: 'es', sourcemap: true, globals, exports: 'named' },
 		],
 		// Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
 		external: (externalize ? ['lodash', 'sequential-event'] : []).concat(['winston', 'request-promise']),
@@ -48,7 +48,7 @@ module.exports = (minify, externalize) => {
 		},
 		plugins: [
 			// Compile TypeScript files
-			typescript(),
+			//typescript(),
 			
 			json(),
 			
