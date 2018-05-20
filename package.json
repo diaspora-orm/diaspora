@@ -7,8 +7,8 @@
 	"typings": "./dist/lib/index.d.ts",
 	"files": [
 		"docs",
-		"es5",
-		"lib"
+		"dist",
+		"src"
 	],
 	"browser": {
 		"winston": false,
@@ -25,7 +25,7 @@
 	"scripts": {
 		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json",
 		"lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json || true",
-		"doc": "typedoc --out docs --target es6 --theme minimal --mode file src",
+		"doc": "typedoc --out docs --target es6 --theme minimal --mode file --json doc.json src",
 		"prebuild": "rimraf docs dist",
 		"build:standalone": "rollup -c ./rollup/rollup.standalone.config.ts",
 		"build:standalone:min": "rollup -c ./rollup/rollup.standalone.min.config.ts",
