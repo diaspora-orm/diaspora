@@ -1,3 +1,8 @@
+<a name="0.3.0-alpha.6"></a>
+# [0.3.0-alpha.6](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.5...v0.3.0-alpha.6) (2018-05-20)
+
+
+
 <a name="0.3.0-alpha.5"></a>
 # [0.3.0-alpha.5](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.4...v0.3.0-alpha.5) (2018-05-19)
 
