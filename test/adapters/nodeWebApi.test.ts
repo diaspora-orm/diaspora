@@ -12,12 +12,14 @@ import {
 } from './utils';
 import { AdapterEntity, Adapter } from '../../src/adapters/base';
 import { QueryLanguage } from '../../src/types/queryLanguage';
+import { NodeWebApiAdapter } from '../../src/adapters/webApi/subAdapters/nodeAdapter';
 
-const ADAPTER_LABEL = 'webApi';
+const ADAPTER_LABEL = 'webApiNode';
 const adapterConfig = getConfig( ADAPTER_LABEL ) as IWebApiAdapterConfig;
 
 let server;
 
+Diaspora.registerAdapter( ADAPTER_LABEL, NodeWebApiAdapter );
 createDataSource( ADAPTER_LABEL, adapterConfig );
 
 beforeAll( () => {
@@ -28,7 +30,7 @@ beforeAll( () => {
 	const ENDPOINT = '/api/test';
 	const inMemoryAdapter = Diaspora.createDataSource(
 		'inMemory',
-		'foobar'
+		'foobar2'
 	);
 	const INMEMORY_TABLE = 'test-expressstore';
 	app.use( urlencoded( {
