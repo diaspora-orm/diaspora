@@ -161,6 +161,9 @@ export abstract class Entity extends SequentialEvent {
 		model.entityTransformers.default.apply( this._attributes ).then( attrsDefaulted => {
 			this._attributes = attrsDefaulted;
 			this.emit( 'ready' );
+		} ).catch( error => {
+			this._attributes = null;
+			this.emit( 'readyerror', error );
 		} );
 		
 		// ### Load events
@@ -171,9 +174,14 @@ export abstract class Entity extends SequentialEvent {
 			} );
 		} );
 	}
-
+	
+	/**
+	 * Promise generator that resolves after the entity has been defaulted.
+	 * 
+	 * @author Gerkin
+	 */
 	public onceDefaulted(){
-		return new Promise( resolve => this.once( 'ready', resolve ) );
+		return new Promise( ( resolve, reject ) => this.once( 'ready', resolve ).once( 'readyerror', reject ) );
 	}
 	
 	/**
@@ -416,7 +424,7 @@ export abstract class Entity extends SequentialEvent {
 		const diffKeys = potentialChangedKeys
 		// Omit values that did not changed between now & stored object
 		.reject( ( key: string ) => ['id', 'idHash'].includes( key ) || _.isEqual( dataStoreEntity.attributes[key], currentAttributes[key] ) );
-
+		
 		return diffKeys.transform( ( accumulator: IRawEntityAttributes, key: string ) => {
 			accumulator[key] = currentAttributes[key];
 			return accumulator;
