@@ -3,32 +3,7 @@ import * as _ from 'lodash';
 import { IRawEntityAttributes } from './entities/entityFactory';
 import { IRawAdapterEntityAttributes } from './adapters/base';
 import { QueryLanguage } from './types/queryLanguage';
-
-export const defineEnumerableProperties = (
-	subject: object,
-	handlers: object
-) => {
-	const remappedHandlers = _.mapValues( handlers, handler => {
-		if (
-			_.isNil( handler ) ||
-			'object' !== typeof handler ||
-			Object.getPrototypeOf( handler ) !== Object.prototype
-		) {
-			handler = {
-				value: handler,
-			};
-		}
-		let defaults: { enumerable: boolean; writable?: boolean } = {
-			enumerable: true,
-		};
-		if ( !handler.hasOwnProperty( 'get' ) ) {
-			defaults.writable = false;
-		}
-		_.defaults( handler, defaults );
-		return handler;
-	} ) as PropertyDescriptorMap;
-	return Object.defineProperties( subject, remappedHandlers );
-};
+import { namedFunctions } from './staticStores';
 
 /**
  * Merge update query with the entity. This operation allows to delete fields.
@@ -96,6 +71,13 @@ export const applyOptionsToSet = (
 	return set;
 };
 
+/**
+ * Totally freeze an object, preventing any modifications on it.
+ * 
+ * @author gerkin
+ * @param object - Object to freeze
+ * @returns The frozen object
+ */
 export const deepFreeze = <T>( object: T ) => {
 	const deepMap = ( obj: T, mapper: Function ): T => {
 		return mapper(
@@ -105,4 +87,28 @@ export const deepFreeze = <T>( object: T ) => {
 		);
 	};
 	return deepMap( object, Object.freeze );
+};
+
+export const getDefaultFunction = ( identifier: string ): ( ( ...args: any[] ) => any ) | undefined => {
+	const match = identifier.match( /^(.+?)(?:::(.+?))+$/ );
+	if ( match ) {
+		const parts = identifier.split( '::' );
+		const namedFunction = _.get( namedFunctions, parts );
+		if ( _.isFunction( namedFunction ) ) {
+			return namedFunction;
+		}
+	}
+	return undefined;
+};
+
+export const getDefaultValue = async ( value: any ) => {
+	if ( _.isFunction( value ) ){
+		return value();
+	} else if ( _.isString( value ) ){
+		const maybeFct = getDefaultFunction( value );
+		if ( _.isFunction( maybeFct ) ){
+			return maybeFct();
+		}
+	}
+	return value;
 };
