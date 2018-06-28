@@ -12,7 +12,7 @@ import { deepFreeze } from './utils';
 import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
-import { ModelDescriptionRaw, FieldDescriptor, ModelDescription, SourcesHash } from './types/modelDescription';
+import { ModelDescriptionRaw, FieldDescriptor, SourcesHash } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
@@ -43,6 +43,10 @@ export class Model {
 	
 	public get ctor() {
 		return this.constructor as typeof Model;
+	}
+
+	private static normalizeAttributesDescription( desc:{ [key: string]: FieldDescriptor | string } ): { [key: string]: FieldDescriptor}{
+		return _.mapValues( desc, val => _.isString( val ) ? {type:val} : val );
 	}
 	
 	/**
@@ -95,7 +99,15 @@ export class Model {
 		}
 		
 		// Now, we are sure that config is valid. We can configure our _dataSources with model options, and set `this` properties.
-		const modelDescNormalized = modelDesc as ModelDescription;
+		// Configure attributes-related elements
+		const attributes = Model.normalizeAttributesDescription( modelDesc.attributes );
+		this._entityTransformers = {
+			default: new DefaultTransformer( attributes ),
+			check: new CheckTransformer( attributes ),
+		};
+		this.attributes = deepFreeze( attributes );
+		
+		// Configure source-related elements
 		_.forEach( sourcesNormalized, ( remap, sourceName ) => {
 			modelSources[sourceName].configureCollection( name, remap );
 		} );
@@ -104,15 +116,8 @@ export class Model {
 		.keys()
 		.head()
 		.value() as string;
-		this._entityFactory = EntityFactory( name, modelDescNormalized, this );
-		this._entityTransformers = {
-			default: new DefaultTransformer( modelDescNormalized.attributes ),
-			check: new CheckTransformer( modelDescNormalized.attributes ),
-		};
-		// TODO: Normalize attributes before
-		this.attributes = deepFreeze( modelDesc.attributes ) as {
-			[key: string]: FieldDescriptor;
-		};
+		// Prepare our entity factory
+		this._entityFactory = EntityFactory( name, _.assign( modelDesc, {attributes,sources: sourcesNormalized} ), this );
 	}
 	
 	/**
@@ -250,7 +255,7 @@ export class Model {
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
-  return this.makeEntity( this.getDataSource( dataSourceName ).findOne( this.name, queryFindNoId, options ) );
+		return this.makeEntity( this.getDataSource( dataSourceName ).findOne( this.name, queryFindNoId, options ) );
 	}
 	
 	/**
@@ -287,7 +292,7 @@ export class Model {
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
-  return this.makeEntity( this.getDataSource( dataSourceName ).updateOne( this.name, queryFindNoId, update, options ) );
+		return this.makeEntity( this.getDataSource( dataSourceName ).updateOne( this.name, queryFindNoId, update, options ) );
 	}
 	
 	/**
@@ -324,7 +329,7 @@ export class Model {
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
-  return this.getDataSource( dataSourceName ).deleteOne( this.name, queryFindNoId, options );
+		return this.getDataSource( dataSourceName ).deleteOne( this.name, queryFindNoId, options );
 	}
 	
 	/**
@@ -353,12 +358,12 @@ export class Model {
 		dataSourceEntitiesPromise: Promise<Array<AdapterEntity | undefined>>
 	){
 		const dataSourceEntities = await dataSourceEntitiesPromise;
-  const newEntities = _.chain( dataSourceEntities )
-		.map( dataSourceEntity => new this.entityFactory( dataSourceEntity ) )
-		.compact()
-		.value();
-  const set = new Set( this, newEntities );
-  return set;
+		const newEntities = _.chain( dataSourceEntities )
+				.map( dataSourceEntity => new this.entityFactory( dataSourceEntity ) )
+				.compact()
+				.value();
+		const set = new Set( this, newEntities );
+		return set;
 	}
 	
 	/**
