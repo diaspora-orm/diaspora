@@ -80,16 +80,16 @@ export const applyOptionsToSet = (
  */
 export const deepFreeze = <T>( object: T ) => {
 	const deepMap = ( obj: T, mapper: Function ): T => {
-		return mapper(
-			_.mapValues( obj, function( v ) {
+		return mapper( _.isObject( obj ) ?
+			_.mapValues( obj as any as object, function( v ) {
 				return _.isPlainObject( v ) ? deepMap( v, mapper ) : v;
-			} )
+			} ) : obj
 		);
 	};
 	return deepMap( object, Object.freeze );
 };
 
-export const getDefaultFunction = ( identifier: string ): ( ( ...args: any[] ) => any ) | undefined => {
+export const getDefaultFunction = ( identifier: string ): ( ( ...args: any[] ) => any ) => {
 	const match = identifier.match( /^(.+?)(?:::(.+?))+$/ );
 	if ( match ) {
 		const parts = identifier.split( '::' );
@@ -98,17 +98,14 @@ export const getDefaultFunction = ( identifier: string ): ( ( ...args: any[] ) =
 			return namedFunction;
 		}
 	}
-	return undefined;
+	return _.identity;
 };
 
 export const getDefaultValue = async ( value: any ) => {
 	if ( _.isFunction( value ) ){
 		return value();
 	} else if ( _.isString( value ) ){
-		const maybeFct = getDefaultFunction( value );
-		if ( _.isFunction( maybeFct ) ){
-			return maybeFct();
-		}
+		return getDefaultFunction( value )( value );
 	}
 	return value;
 };
