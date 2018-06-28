@@ -9,9 +9,9 @@ import {
 	QUERY_OPTIONS_TRANSFORMS,
 	Constructable,
 } from './adapter-utils';
-import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IRemapsHash, IFiltersHash, DataSourceQuerier, IEnumeratedHash } from '../../types/dataSourceQuerier';
+import { logger } from '../../logger';
 
 /**
  * Represents the current state of the adapter. Those states corresponds to event names emitted by the adapter when they are passed.

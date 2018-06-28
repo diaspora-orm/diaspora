@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 
 import { IAdapterCtr, Adapter, AdapterEntity } from './adapters/base';
 import { Model } from './model';
-import { logger, ILoggerInterface } from './logger';
 import { InMemoryAdapter } from './adapters/inMemory';
 import { WebStorageAdapter } from './adapters/webStorage';
 import { ModelDescriptionRaw } from './types/modelDescription';
@@ -10,6 +9,7 @@ import { DataAccessLayer } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry, modelRegistry, IModelRegistry } from './staticStores';
 import { BrowserWebApiAdapter } from './adapters/webApi/subAdapters/browserAdapter';
 import { NodeWebApiAdapter } from './adapters/webApi/subAdapters/nodeAdapter';
+import { logger } from './logger';
 
 export {Adapter, AdapterEntity};
 
