@@ -22,7 +22,7 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 		const baseEndPoint = false === defaultedConfig.host ? defaultedConfig.path : undefined;
 		super( dataSourceName, _.assign( {baseEndPoint}, defaultedConfig ), eventProviders );
 	}
-
+	
 	/**
 	 * Serialize a query object to be injected in a query string.
 	 * 
@@ -35,21 +35,21 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 			filteredQueryObject.options = _.omitBy( filteredQueryObject.options, v => _.isNumber( v ) && !isFinite( v ) );
 		}
 		return _.chain( filteredQueryObject )
-				.thru( _.cloneDeep )
-				.omitBy( val => _.isObject( val ) && _.isEmpty( val ) )
-				// { foo: 1, bar: { baz: 2 } }
-				.mapValues( _.unary( JSON.stringify ) )
-				// { foo: '1', bar: '{"baz": "2"}' }
-				.toPairs()
-				// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
-				.map( _.partial( _.map, _.partial.placeholder, encodeURIComponent ) )
-				// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
-				.map( arr => `${arr[0]}=${arr[1]}` )
-				// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
-				.join( '&' )
-				.value();
+		.thru( _.cloneDeep )
+		.omitBy( val => _.isObject( val ) && _.isEmpty( val ) )
+		// { foo: 1, bar: { baz: 2 } }
+		.mapValues( _.unary( JSON.stringify ) )
+		// { foo: '1', bar: '{"baz": "2"}' }
+		.toPairs()
+		// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
+		.map( _.partial( _.map, _.partial.placeholder, encodeURIComponent ) )
+		// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
+		.map( arr => `${arr[0]}=${arr[1]}` )
+		// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
+		.join( '&' )
+		.value();
 	}
-
+	
 	/**
 	 * Binds `resolve` & `reject` to XHR events.
 	 *
@@ -62,23 +62,31 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 		xhr: XMLHttpRequest,
 		resolve: (
 			thenableOrResult?:
-				| TEntitiesJsonResponse
-				| PromiseLike<TEntitiesJsonResponse>
-				| undefined
+			| TEntitiesJsonResponse
+			| PromiseLike<TEntitiesJsonResponse>
+			| undefined
 		) => void,
 		reject: ( thenableOrResult?: {} | PromiseLike<any> | undefined ) => void
 	) {
 		xhr.onload = () => {
-			if ( _.inRange( xhr.status, 200, 299 ) ) {
-				return resolve( xhr.response );
-			} else {
-				// Retrieve the function that will generate the error
-				const errorBuilder = _.get(
-					WebApiAdapter.httpErrorFactories,
-					xhr.status,
-					WebApiAdapter.httpErrorFactories._
-				);
-				return reject( errorBuilder( xhr ) );
+			try{
+				if ( _.inRange( xhr.status, 200, 299 ) ) {
+					if ( xhr.responseText === '' ){
+						return resolve( undefined );
+					} else {
+						return resolve( JSON.parse( xhr.responseText ) );
+					}
+				} else {
+					// Retrieve the function that will generate the error
+					const errorBuilder = _.get(
+						WebApiAdapter.httpErrorFactories,
+						xhr.status,
+						WebApiAdapter.httpErrorFactories._
+					);
+					throw errorBuilder( xhr );
+				}
+			} catch ( err ){
+				return reject( err );
 			}
 		};
 		xhr.onerror = () => {
