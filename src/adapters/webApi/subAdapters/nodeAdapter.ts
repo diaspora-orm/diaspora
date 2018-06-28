@@ -48,7 +48,7 @@ export class NodeWebApiAdapter extends WebApiAdapter{
 			json: data,
 			qs: _.mapValues(
 				queryObject,
-				data => ( typeof data === 'object' ? JSON.stringify( data ) : data )
+				data => ( _.isPlainObject( data ) ? JSON.stringify( data ) : data )
 			),
 		} );
 	}
