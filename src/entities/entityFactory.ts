@@ -157,7 +157,11 @@ export abstract class Entity extends SequentialEvent {
 		// ### Generate attributes
 		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
 		const definitiveSource = this.attributes || source;
-		this._attributes = model.validator.default( _.cloneDeep( definitiveSource ) );
+		this._attributes = _.cloneDeep( definitiveSource );
+		model.entityTransformers.default.apply( this._attributes ).then( attrsDefaulted => {
+			this._attributes = attrsDefaulted;
+			this.emit( 'ready' );
+		} );
 		
 		// ### Load events
 		_.forEach( modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
@@ -166,6 +170,10 @@ export abstract class Entity extends SequentialEvent {
 				this.on( eventName, eventFunction );
 			} );
 		} );
+	}
+
+	public onceDefaulted(){
+		return new Promise( resolve => this.once( 'ready', resolve ) );
 	}
 	
 	/**
@@ -230,7 +238,7 @@ export abstract class Entity extends SequentialEvent {
 	 */
 	public validate() {
 		if ( this.attributes ) {
-			this.ctor.model.validator.validate( this.attributes );
+			this.ctor.model.entityTransformers.check.apply( this.attributes );
 		}
 		return this;
 	}

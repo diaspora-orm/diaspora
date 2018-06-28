@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
 
-import { IRawEntityAttributes } from './entities/entityFactory';
-import { ArrayFieldDescriptor, RelationalFieldDescriptor, FieldDescriptor, FieldDescriptorTypeChecks, ObjectFieldDescriptor } from './types/modelDescription';
-import { getDefaultFunction } from './staticStores';
-import { EntityValidationError } from './errors/entityValidationError';
+import { EntityTransformer } from './entityTransformer';
+import { PathStack } from './pathStack';
+import { EntityValidationError } from '../errors/entityValidationError';
+import { IRawEntityAttributes } from '../entities/entityFactory';
+import { FieldDescriptor, ArrayFieldDescriptor, RelationalFieldDescriptor, ObjectFieldDescriptor, FieldDescriptorTypeChecks} from '../types/modelDescription';
 
 /**
  * Prepare the check of each items in the array.
@@ -14,7 +15,7 @@ import { EntityValidationError } from './errors/entityValidationError';
  * @returns Function to execute to validate array items.
  */
 const validateArrayItems = (
-	validator: Validator,
+	validator: CheckTransformer,
 	fieldDesc: ArrayFieldDescriptor,
 	keys: PathStack
 ) => {
@@ -25,7 +26,7 @@ const validateArrayItems = (
 		if ( fieldDesc.hasOwnProperty( 'of' ) ) {
 			const ofArray = _.castArray( fieldDesc.of );
 			const subErrors = _.chain( ofArray ).map( ( desc, subIndex ) =>
-				validator.validateField(
+				validator.applyField(
 					propVal,
 					keys
 						.clone()
@@ -85,7 +86,7 @@ export interface TypeErrorObject extends ErrorObject {
  * @returns Error component.
  */
 type CheckFunction = (
-	this: Validator,
+	this: CheckTransformer,
 	keys: PathStack,
 	fieldDesc: FieldDescriptor,
 	value: any
@@ -160,7 +161,7 @@ const VALIDATIONS = {
 		 * @author Gerkin
 		 */
 		object(
-			this: Validator,
+			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: ObjectFieldDescriptor,
 			value: IRawEntityAttributes
@@ -175,7 +176,7 @@ const VALIDATIONS = {
 					? _.chain( _.assign( {}, fieldDesc.attributes, value ) )
 							.mapValues( ( pv, propName ) => {
 								const propVal = value[propName];
-								return this.validateField(
+								return this.applyField(
 									propVal,
 									keys
 										.clone()
@@ -205,7 +206,7 @@ const VALIDATIONS = {
 		 * @author Gerkin
 		 */
 		array(
-			this: Validator,
+			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: ArrayFieldDescriptor,
 			value: any[]
@@ -240,7 +241,7 @@ const VALIDATIONS = {
 		 * @author Gerkin
 		 */
 		any(
-			this: Validator,
+			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
@@ -253,7 +254,7 @@ const VALIDATIONS = {
 				: undefined;
 		},
 		_(
-			this: Validator,
+			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
@@ -319,7 +320,7 @@ const VALIDATION_STEPS = [
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
-	function checkCustoms( this: Validator, validationArgs: ValidationStepArgs ) {
+	function checkCustoms( this: CheckTransformer, validationArgs: ValidationStepArgs ) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// It the field has a `validate` property, try to use it
 		const validateFcts = _.chain( fieldDesc.validate as Function[] )
@@ -340,48 +341,25 @@ const VALIDATION_STEPS = [
 	 * @returns This function returns nothing.
 	 */
 	function checkTypeRequired(
-		this: Validator,
+		this: CheckTransformer,
 		validationArgs: ValidationStepArgs
 	) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// Check the type and the required status
-		const typeKeys = _.intersection( _.keys( fieldDesc ), ['type', 'model'] );
-		if ( typeKeys.length > 1 ) {
-			error.spec = `${keys.toValidatePath()} spec can't have multiple keys from ${typeKeys.join(
-				','
-			)}`;
-			// Apply the `required` modifier
-		} else if ( true === fieldDesc.required && _.isNil( value ) ) {
+		// Apply the `required` modifier
+		if ( true === fieldDesc.required && _.isNil( value ) ) {
 			error.required = messageRequired( keys, fieldDesc );
 		} else if ( !_.isNil( value ) ) {
-			if ( fieldDesc.hasOwnProperty( 'type' ) && fieldDesc.type !== 'Relation' ) {
-				if ( _.isString( fieldDesc.type ) ) {
-					_.assign(
-						error,
-						// Get the validator. Default to unhandled type
-						_.get( VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._ ).call(
-							this,
-							keys,
-							fieldDesc,
-							value
-						)
-					);
-				} else {
-					error.spec = `${keys.toValidatePath()} spec "type" must be a string`;
-				}
-			} else if ( fieldDesc.hasOwnProperty( 'model' ) ) {
-				if ( _.isString( ( fieldDesc as any ).model ) ) {
-					// TODO Wrong so far: fallback to another type of check.
-					const tester = _.get(
-						VALIDATIONS,
-						['TYPE', ( fieldDesc as any ).model],
-						VALIDATIONS.TYPE._
-					);
-					_.assign( error, tester.call( this, keys, fieldDesc, value ) );
-				} else {
-					error.spec = `${keys.toValidatePath()} spec "model" must be a string`;
-				}
-			}
+			_.assign(
+				error,
+				// Get the validator. Default to unhandled type
+				_.get( VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._ ).call(
+					this,
+					keys,
+					fieldDesc,
+					value
+				)
+			);
 		}
 	},
 
@@ -391,7 +369,7 @@ const VALIDATION_STEPS = [
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
-	function checkEnum( this: Validator, validationArgs: ValidationStepArgs ) {
+	function checkEnum( this: CheckTransformer, validationArgs: ValidationStepArgs ) {
 		const { error, keys, value } = validationArgs;
 		const fieldDesc = validationArgs.fieldDesc;
 		// Check enum values
@@ -416,106 +394,20 @@ const VALIDATION_STEPS = [
 ];
 
 /**
- * The PathStack class allows model validation to follow different paths in model description & entity.
- */
-export class PathStack {
-	/**
-	 * Constructs a pathstack.
-	 *
-	 * @author gerkin
-	 */
-	public constructor(
-		public segmentsEntity: string[] = [],
-		public segmentsValidation: string[] = []
-	) {}
-
-	/**
-	 * Add a path segment for entity navigation.
-	 *
-	 * @param   prop - Properties to add.
-	 * @returns Returns `this`.
-	 */
-	public pushEntityProp( ...prop: string[] ): this {
-		this.segmentsEntity = _.chain( this.segmentsEntity )
-			.concat( _.flattenDeep( prop ) )
-			.reject( _.isNil )
-			.value();
-		return this;
-	}
-
-	/**
-	 * Add a path segment for model description navigation.
-	 *
-	 * @param   prop - Properties to add.
-	 * @returns Returns `this`.
-	 */
-	public pushValidationProp( ...prop: string[] ): this {
-		this.segmentsValidation = _.chain( this.segmentsValidation )
-			.concat( prop )
-			.reject( _.isNil )
-			.value();
-		return this;
-	}
-
-	/**
-	 * Add a path segment for both entity & model description navigation.
-	 *
-	 * @param   prop - Properties to add.
-	 * @returns Returns `this`.
-	 */
-	public pushProp( ...prop: string[] ): this {
-		return this.pushEntityProp( ...prop ).pushValidationProp( ...prop );
-	}
-
-	/**
-	 * Get a string version of entity segments.
-	 *
-	 * @returns String representation of path in entity.
-	 */
-	public toValidatePath(): string {
-		return this.segmentsEntity.join( '.' );
-	}
-
-	/**
-	 * Cast this PathStack to its representing arrays.
-	 */
-	public toArray(): string[][] {
-		return [this.segmentsEntity.slice(), this.segmentsValidation.slice()];
-	}
-
-	/**
-	 * Duplicate this PathStack, detaching its state from the new.
-	 *
-	 * @returns Clone of caller PathStack.
-	 */
-	public clone(): PathStack {
-		return new PathStack( ...this.toArray() );
-	}
-}
-
-/**
  * The Validator class is used to check an entity or its fields against a model description.
  */
-export class Validator {
-	/**
-	 * Construct a Validator configured for the provided model.
-	 *
-	 * @param modelAttributes - Model description to validate.
-	 */
-	public constructor(
-		private readonly _modelAttributes: { [key: string]: FieldDescriptor }
-	) {}
+export class CheckTransformer extends EntityTransformer {
 
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
 	 * @author gerkin
 	 */
-	public validate( entity: IRawEntityAttributes ) {
+	public apply( entity: IRawEntityAttributes ) {
 		// Apply method `checkField` on each field described
 		const checkResults = _.chain( this._modelAttributes )
 			.mapValues( ( fieldDesc, field ) =>
-				this.validateField( entity[field], new PathStack().pushProp( field ), {
+				this.applyField( entity[field], new PathStack().pushProp( field ), {
 					getProps: false,
 				} )
 			)
@@ -524,6 +416,7 @@ export class Validator {
 		if ( !_.isNil( checkResults ) && !_.isEmpty( checkResults ) ) {
 			throw new EntityValidationError( checkResults, 'Validation failed' );
 		}
+		return entity;
 	}
 
 	/**
@@ -536,7 +429,7 @@ export class Validator {
 	 * @param   options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
 	 * @returns Hash describing errors.
 	 */
-	public validateField(
+	public applyField(
 		value: any,
 		keys: PathStack | string[],
 		options: { getProps: boolean } = { getProps: false }
@@ -572,97 +465,5 @@ export class Validator {
 		} else {
 			return null;
 		}
-	}
-
-	/**
-	 * Set default values if required.
-	 *
-	 * @author gerkin
-	 * @param   entity    - Entity to set defaults in.
-	 * @param   modelDesc - Model description.
-	 * @returns  Entity merged with default values.
-	 */
-	public default( entity: IRawEntityAttributes ) {
-		// Apply method `defaultField` on each field described
-		return _.defaults(
-			entity,
-			_.chain( this._modelAttributes )
-				.mapValues( ( fieldDesc, field ) =>
-					this.defaultField( entity, new PathStack().pushProp( field ), {
-						getProps: true,
-					} )
-				)
-				.omitBy( _.isUndefined )
-				.value()
-		);
-	}
-
-	/**
-	 * Set the default on a single field according to its description.
-	 *
-	 * @author gerkin
-	 * @param   value     - Value to default.
-	 * @param   fieldDesc - Description of the field to default.
-	 * @returns Defaulted value.
-	 */
-	public defaultField(
-		value: any,
-		keys: PathStack | string[],
-		options: { getProps: boolean } = { getProps: false }
-	): any {
-		_.defaults( options, { getProps: true } );
-		if ( !( keys instanceof PathStack ) ) {
-			keys = new PathStack( keys );
-		}
-
-		const val = options.getProps ? _.get( value, keys.segmentsEntity ) : value;
-		const fieldDesc = _.get(
-			this.modelAttributes,
-			keys.segmentsValidation
-		) as FieldDescriptor;
-
-		// Return the `default` if value is undefined
-		const valOrBaseDefault =
-			val ||
-			( _.isFunction( fieldDesc.default )
-				? getDefaultFunction( fieldDesc.default )()
-				: fieldDesc.default );
-
-		// Recurse if we are defaulting an object
-		if (
-			FieldDescriptorTypeChecks.isObjectFieldDescriptor( fieldDesc ) &&
-			_.keys( fieldDesc.attributes ).length > 0 &&
-			!_.isNil( valOrBaseDefault )
-		) {
-			return _.merge(
-				valOrBaseDefault,
-				_.chain( fieldDesc.attributes )
-					.mapValues( ( fieldDesc, key ) => {
-						const defaulted = this.defaultField(
-							value,
-							( keys as PathStack ).clone().pushProp( key )
-						);
-						return _.omitBy( defaulted, _.isNil );
-					} )
-					.omitBy( _.isUndefined )
-					.value()
-			);
-		} else {
-			return valOrBaseDefault;
-		}
-	}
-
-	/**
-	 * Get the model description provided in constructor.
-	 */
-	public get modelAttributes(): object {
-		return _.cloneDeep( this._modelAttributes );
-	}
-
-	/**
-	 * Get the PathStack constructor.
-	 */
-	public static get PathStack() {
-		return PathStack;
 	}
 }

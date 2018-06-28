@@ -8,8 +8,8 @@ import {
 	EntityUid,
 } from './entities/entityFactory';
 import { Set } from './entities/set';
-import { Validator } from './validator';
 import { deepFreeze } from './utils';
+import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
 import { ModelDescriptionRaw, FieldDescriptor, ModelDescription, SourcesHash } from './types/modelDescription';
@@ -32,9 +32,13 @@ export class Model {
 	public get entityFactory() {
 		return this._entityFactory;
 	}
-	private readonly _validator: Validator;
-	public get validator() {
-		return this._validator;
+	private readonly _entityTransformers: {
+		default:DefaultTransformer;
+		check:CheckTransformer;
+		[key:string]:EntityTransformer|undefined;
+	};
+	public get entityTransformers() {
+		return this._entityTransformers;
 	}
 	
 	public get ctor() {
@@ -101,7 +105,10 @@ export class Model {
 		.head()
 		.value() as string;
 		this._entityFactory = EntityFactory( name, modelDescNormalized, this );
-		this._validator = new Validator( modelDescNormalized.attributes );
+		this._entityTransformers = {
+			default: new DefaultTransformer( modelDescNormalized.attributes ),
+			check: new CheckTransformer( modelDescNormalized.attributes ),
+		};
 		// TODO: Normalize attributes before
 		this.attributes = deepFreeze( modelDesc.attributes ) as {
 			[key: string]: FieldDescriptor;

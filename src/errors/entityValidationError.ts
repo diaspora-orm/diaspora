@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
-import { ErrorObjectFinal } from '../validator';
 import { ValidationError } from './validationError';
+import { ErrorObjectFinal } from '../entityTransformers/checkTransformer';
 
 /**
  * This class represents an error related to validation on an entity.
