@@ -10,12 +10,15 @@ module.exports = {
 		database: 3,
 	},
 	webStorage: {},
-	webApi: process.browser ? {
-		port:   12345,
-		path:   '/api',
-	} : {
+	webApiBrowser: {
 		host:   'localhost',
 		port:   12345,
+		scheme: 'http',
+		path:   '/api',
+	},
+	webApiNode: {
+		host:   'localhost',
+		port:   23456,
 		scheme: 'http',
 		path:   '/api',
 	},
