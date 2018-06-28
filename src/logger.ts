@@ -5,6 +5,7 @@ const Winston = require( 'winston' );
 /**
  * Function used to give feedback to the user about errors or other infos communicated by Diaspora. It can print directly to stdout, or can use Winston transport if configured so on server environment.
  * 
+ * @param args - Things to log to the console
  * @author Gerkin
  */
 export type LoggingFunction = ( ...args: any[] ) => void;
