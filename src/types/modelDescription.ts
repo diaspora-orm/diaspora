@@ -57,7 +57,7 @@ export interface BaseFieldDescriptor {
 	 *
 	 * @author gerkin
 	 */
-	type?: string;
+	type: string;
 	/**
 	 * Custom validation callback.
 	 *
