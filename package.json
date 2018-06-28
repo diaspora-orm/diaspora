@@ -96,16 +96,15 @@
 		"moduleDirectories": [
 			"node_modules"
 		],
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"/test/"
+		"roots": [
+			"test"
 		],
 		"coverageThreshold": {
 			"global": {
-				"branches": 90,
-				"functions": 95,
-				"lines": 95,
-				"statements": 95
+				"branches": 70,
+				"functions": 80,
+				"lines": 80,
+				"statements": 80
 			}
 		},
 		"collectCoverage": true,
