@@ -76,7 +76,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	public async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, item =>
@@ -99,7 +99,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	public async findMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes[]> {
 		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, item =>
@@ -127,7 +127,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const found = await this.findOne( table, queryFind, options );
 
@@ -159,7 +159,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes[]> {
 		const foundEntity = await this.findMany( table, queryFind, options );
 
@@ -195,7 +195,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	public async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<void> {
 		const storeTable = this.ensureCollectionExists( table );
 		const entityToDelete = await this.findOne( table, queryFind, options );
@@ -221,7 +221,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	public async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<void> {
 		const storeTable = this.ensureCollectionExists( table );
 		const entitiesToDelete = await this.findMany( table, queryFind, options );

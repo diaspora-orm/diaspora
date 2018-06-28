@@ -362,7 +362,7 @@ T extends AdapterEntity = AdapterEntity
 	public async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		options.limit = 1;
 		return _.first( await this.findMany( table, queryFind, options ) );
@@ -377,7 +377,7 @@ T extends AdapterEntity = AdapterEntity
 	public async findMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes[]> {
 		const boundQuery = this.findOne.bind( this, table, queryFind );
 		return Adapter.iterateLimit( options, boundQuery );
@@ -396,7 +396,7 @@ T extends AdapterEntity = AdapterEntity
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		update: IRawEntityAttributes,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		options.limit = 1;
 		return _.first( await this.updateMany( table, queryFind, update, options ) );
@@ -412,7 +412,7 @@ T extends AdapterEntity = AdapterEntity
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		update: IRawEntityAttributes,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes[]> {
 		return Adapter.iterateLimit(
 			options,
@@ -432,7 +432,7 @@ T extends AdapterEntity = AdapterEntity
 	public async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	) {
 		options.limit = 1;
 		await this.deleteMany( table, queryFind, options );
@@ -451,7 +451,7 @@ T extends AdapterEntity = AdapterEntity
 	public async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	) {
 		const boundQuery = this.deleteOne.bind( this, table, queryFind );
 		await Adapter.iterateLimit( options, boundQuery );

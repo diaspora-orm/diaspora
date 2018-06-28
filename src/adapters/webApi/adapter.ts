@@ -251,7 +251,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	public async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		const apiDesc: IApiDescription = await this.emit(
 			'beforeQuery',
@@ -288,7 +288,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	public async findMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes[]> {
 		const apiDesc = await this.emit(
 			'beforeQuery',
@@ -327,7 +327,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes | undefined> {
 		let entity = await this.apiQuery(
 			EHttpVerb.PATCH,
@@ -358,7 +358,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IRawEntityAttributes,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IRawAdapterEntityAttributes[]> {
 		let entities = await this.apiQuery(
 			EHttpVerb.PATCH,
@@ -386,7 +386,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	public async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<void> {
 		await this.apiQuery(
 			EHttpVerb.DELETE,
@@ -409,7 +409,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	public async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<void> {
 		await this.apiQuery(
 			EHttpVerb.DELETE,
