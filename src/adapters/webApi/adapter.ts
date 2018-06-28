@@ -434,6 +434,15 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryObject?: object
 	): Promise<TEntitiesJsonResponse>;
 
+	/**
+	 * Generates the URL to the base of the API
+	 * 
+	 * @param scheme - Represents the protocol (`http` or `https` most of the time)
+	 * @param host   - Hostname to target (domain name, IP, ...)
+	 * @param port   - Port of the target to point to
+	 * @param path   - Absolute URI on the API
+	 * @returns The URI string to the base of the API
+	 */
 	protected generateBaseEndPoint( scheme: string | false, host: string | false, port: number | false, path: string ){
 		const portString = port ? `:${port}` : '';
 		const schemeString = scheme ? `${scheme}:` : '';

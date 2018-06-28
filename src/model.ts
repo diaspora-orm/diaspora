@@ -45,6 +45,13 @@ export class Model {
 		return this.constructor as typeof Model;
 	}
 
+	/**
+	 * Modifies the raw attributes description to standardize it
+	 * 
+	 * @param desc - Attributes description map to transform
+	 * @returns Attributes description map normalized, with properties defaulted
+	 * @author Gerkin
+	 */
 	private static normalizeAttributesDescription( desc:{ [key: string]: FieldDescriptor | string } ): { [key: string]: FieldDescriptor}{
 		return _.mapValues( desc, val => _.isString( val ) ? {type:val} : val );
 	}

@@ -24,7 +24,16 @@ export class BrowserLogger extends Logger{
 		this.warn     = this.bindConsoleFct( ELoggingLevel.Warn, 'warn',  'Diaspora: warn   ' );
 		this.error    = this.bindConsoleFct( ELoggingLevel.Error, 'error', 'Diaspora: error  ' );
 	}
-	
+
+	/**
+	 * Prepare a log function with a specific log level
+	 * 
+	 * @author Gerkin
+	 * @param minLevel - Logging level of this function, under which no log will be emitted
+	 * @param fctName  - Name of the console function to target
+	 * @param args     - Parameters to prepend to the log
+	 * @returns A logging function to call with any parameters
+	 */
 	private bindConsoleFct( minLevel: ELoggingLevel, fctName: string, ...args: any[] ){
 		return ( ...logArgs: any[] ) => {
 			if ( this.level <= minLevel ){

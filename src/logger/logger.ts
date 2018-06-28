@@ -6,6 +6,11 @@
  */
 export type LoggingFunction = ( ...args: any[] ) => void;
 
+/**
+ * Enumeration of logging levels handled by the logger
+ * 
+ * @author Gerkin
+ */
 export enum ELoggingLevel{
 	Silly,
 	Verbose,
@@ -14,6 +19,22 @@ export enum ELoggingLevel{
 	Warn,
 	Error,
 	Silent,
+}
+
+/**
+ * Logger exposed by Diaspora.
+ * On server environment, you can use it to configure the underlying Winston instance.
+ * On the browser, it wraps calls to the browser's {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/console console}.
+ * 
+ * @author Gerkin
+ */
+export interface ILoggerInterface{
+	silly:   LoggingFunction;
+	verbose: LoggingFunction;
+	debug:   LoggingFunction;
+	log:     LoggingFunction;
+	warn:    LoggingFunction;
+	error:   LoggingFunction;
 }
 
 export abstract class Logger implements ILoggerInterface{
@@ -36,20 +57,4 @@ export abstract class Logger implements ILoggerInterface{
 	public log: LoggingFunction;
 	public warn: LoggingFunction;
 	public error: LoggingFunction;
-}
-
-/**
- * Logger exposed by Diaspora.
- * On server environment, you can use it to configure the underlying Winston instance.
- * On the browser, it wraps calls to the browser's {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/console console}.
- * 
- * @author Gerkin
- */
-export interface ILoggerInterface{
-	silly:   LoggingFunction;
-	verbose: LoggingFunction;
-	debug:   LoggingFunction;
-	log:     LoggingFunction;
-	warn:    LoggingFunction;
-	error:   LoggingFunction;
 }
