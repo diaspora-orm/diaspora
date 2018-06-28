@@ -1,7 +1,10 @@
 import * as _ from 'lodash';
+import express from 'express';
+import {json, urlencoded} from 'body-parser';
 
-import { Adapter, AdapterEntity } from '../../src/adapters/base';
+import { AdapterEntity, Adapter } from '../../src/adapters/base';
 import { Diaspora } from '../../src/diaspora';
+import { QueryLanguage } from '../../src/types/queryLanguage';
 
 import { dataSources, getStyle } from '../utils';
 import { InMemoryEntity } from '../../src/adapters/inMemory';
@@ -13,6 +16,133 @@ const getDataSourceLabel = name => {
 
 const TABLE = 'test';
 
+export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: number, endpoint: string, tableName: string ) => {
+	const parseQs = _.partialRight( _.mapValues, JSON.parse ) as (
+		str: string
+	) => { where: any } & QueryLanguage.QueryOptions;
+	
+	const app = express();
+	app.use( urlencoded( {
+		extended: true,
+	} ) );
+	
+	app.use( json() );
+	
+	app.post( endpoint, ( req, res ) => {
+		const body = req.body;
+		adapter.insertOne( tableName, body ).then( entity => {
+			if ( !_.isNil( entity ) ) {
+				entity.attributes.id = entity.attributes.idHash[tableName];
+				delete entity.attributes.idHash;
+				return res.json( entity.attributes );
+			}
+			return res.json();
+		} );
+	} );
+	app.post( `${endpoint}s`, ( req, res ) => {
+		const body = req.body;
+		adapter.insertMany( tableName, body ).then( entities => {
+			if ( !_.isEmpty( entities ) ) {
+				return res.json(
+					_.map( entities, ( entity: AdapterEntity ) => {
+						entity.attributes.id = entity.attributes.idHash[tableName];
+						delete entity.attributes.idHash;
+						return entity.attributes;
+					} )
+				);
+			}
+			return res.json();
+		} );
+	} );
+	
+	app.get( endpoint, ( req, res ) => {
+		const query = parseQs( req.query );
+		adapter
+		.findOne( tableName, query.where, _.omit( query, ['where'] ) )
+		.then( entity => {
+			if ( !_.isNil( entity ) ) {
+				entity.attributes.id = entity.attributes.idHash[tableName];
+				delete entity.attributes.idHash;
+				return res.json( entity.attributes );
+			}
+			return res.json();
+		} );
+	} );
+	app.get( `${endpoint}s`, ( req, res ) => {
+		const query = parseQs( req.query );
+		adapter
+		.findMany( tableName, query.where, _.omit( query, ['where'] ) )
+		.then( entities => {
+			if ( !_.isEmpty( entities ) ) {
+				return res.json(
+					_.map( entities, ( entity: AdapterEntity ) => {
+						entity.attributes.id = entity.attributes.idHash[tableName];
+						delete entity.attributes.idHash;
+						return entity.attributes;
+					} )
+				);
+			}
+			return res.json( [] );
+		} );
+	} );
+	
+	app.patch( endpoint, ( req, res ) => {
+		const body = req.body;
+		const query = parseQs( req.query );
+		adapter
+		.updateOne( tableName, query.where, body, _.omit( query, ['where'] ) )
+		.then( entity => {
+			if ( !_.isNil( entity ) ) {
+				entity.attributes.id = entity.attributes.idHash[tableName];
+				delete entity.attributes.idHash;
+				return res.json( entity.attributes );
+			}
+			return res.json( entity );
+		} );
+	} );
+	app.patch( `${endpoint}s`, ( req, res ) => {
+		const body = req.body;
+		const query = parseQs( req.query );
+		adapter
+		.updateMany( tableName, query.where, body, _.omit( query, ['where'] ) )
+		.then( entities => {
+			if ( !_.isEmpty( entities ) ) {
+				return res.json(
+					_.map( entities, ( entity: AdapterEntity ) => {
+						entity.attributes.id = entity.attributes.idHash[tableName];
+						delete entity.attributes.idHash;
+						return entity.attributes;
+					} )
+				);
+			}
+			return res.json( [] );
+		} );
+	} );
+	
+	app.delete( endpoint, ( req, res ) => {
+		const query = parseQs( req.query );
+		adapter
+		.deleteOne( tableName, query.where, _.omit( query, ['where'] ) )
+		.then( () => {
+			return res.json();
+		} );
+	} );
+	app.delete( `${endpoint}s`, ( req, res ) => {
+		const query = parseQs( req.query );
+		adapter
+		.deleteMany( tableName, query.where, _.omit( query, ['where'] ) )
+		.then( () => {
+			return res.json();
+		} );
+	} );
+	
+	return new Promise( ( resolve, reject ) => {
+		const server = app.listen( apiPort, () => {
+			//console.log( `Example app listening on port ${apiPort}!` );
+			return resolve( server );
+		} );
+	} );
+};
 export const createDataSource = ( adapterLabel: string, ...config: any[] ) => {
 	const dataSourceLabel = getDataSourceLabel( adapterLabel );
 	const dataSource = Diaspora.createNamedDataSource(
@@ -49,6 +179,11 @@ export const checkEachStandardMethods = adapterLabel => {
 			return `${fctName} (from BaseAdapter)`;
 		}
 	};
+	describe( 'Collection configuration', () => {
+		it( 'Configure collection', async () => {
+			await adapter.configureCollection( 'test-config', {}, {} );
+		} );
+	} );
 	
 	describe( `${getStyle( 'taskCategory', `Check ${adapterLabel} query inputs filtering` )}`, () => {
 		describe( 'Check options normalization', () => {

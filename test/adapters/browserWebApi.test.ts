@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
-import express from 'express';
-import {json, urlencoded} from 'body-parser';
+import { XMLHttpRequest } from 'xmlhttprequest';
 
 import { Diaspora } from '../../src/diaspora';
 import { IWebApiAdapterConfig } from '../../src/adapters/webApi/adapter';
@@ -9,150 +8,31 @@ import {
 	createDataSource,
 	checkSpawnedAdapter,
 	checkEachStandardMethods,
+	initMockApi,
 } from './utils';
 import { AdapterEntity, Adapter } from '../../src/adapters/base';
 import { QueryLanguage } from '../../src/types/queryLanguage';
 import { BrowserWebApiAdapter } from '../../src/adapters/webApi/subAdapters/browserAdapter';
+import { ELoggingLevel } from '../../src/logger/logger';
 
 const ADAPTER_LABEL = 'webApiBrowser';
 const adapterConfig = getConfig( ADAPTER_LABEL ) as IWebApiAdapterConfig;
 
+( global as any ).XMLHttpRequest = XMLHttpRequest;
 let server;
 
 Diaspora.registerAdapter( ADAPTER_LABEL, BrowserWebApiAdapter );
 createDataSource( ADAPTER_LABEL, adapterConfig );
 
-beforeAll( () => {
-	const parseQs = _.partialRight( _.mapValues, JSON.parse ) as (
-		str: string
-	) => { where: any } & QueryLanguage.QueryOptions;
-	const app = express();
-	const ENDPOINT = '/api/test';
+beforeAll( async () => {
+	Diaspora.logger.level = ELoggingLevel.Silent;
+	const INMEMORY_TABLE = 'test-expressstoreLocal';
 	const inMemoryAdapter = Diaspora.createDataSource(
 		'inMemory',
-		'foobar'
+		INMEMORY_TABLE
 	);
-	const INMEMORY_TABLE = 'test-expressstore';
-	app.use( urlencoded( {
-		extended: true,
-	} ) );
-	
-	app.use( json() );
-	
-	app.post( ENDPOINT, ( req, res ) => {
-		const body = req.body;
-		inMemoryAdapter.insertOne( INMEMORY_TABLE, body ).then( entity => {
-			if ( !_.isNil( entity ) ) {
-				entity.attributes.id = entity.attributes.idHash.foobar;
-				delete entity.attributes.idHash;
-				return res.json( entity.attributes );
-			}
-			return res.json();
-		} );
-	} );
-	app.post( `${ENDPOINT}s`, ( req, res ) => {
-		const body = req.body;
-		inMemoryAdapter.insertMany( INMEMORY_TABLE, body ).then( entities => {
-			if ( !_.isEmpty( entities ) ) {
-				return res.json(
-					_.map( entities, ( entity: AdapterEntity ) => {
-						entity.attributes.id = entity.attributes.idHash.foobar;
-						delete entity.attributes.idHash;
-						return entity.attributes;
-					} )
-				);
-			}
-			return res.json();
-		} );
-	} );
-	
-	app.get( ENDPOINT, ( req, res ) => {
-		const query = parseQs( req.query );
-		inMemoryAdapter
-		.findOne( INMEMORY_TABLE, query.where, _.omit( query, ['where'] ) )
-		.then( entity => {
-			if ( !_.isNil( entity ) ) {
-				entity.attributes.id = entity.attributes.idHash.foobar;
-				delete entity.attributes.idHash;
-				return res.json( entity.attributes );
-			}
-			return res.json();
-		} );
-	} );
-	app.get( `${ENDPOINT}s`, ( req, res ) => {
-		const query = parseQs( req.query );
-		inMemoryAdapter
-		.findMany( INMEMORY_TABLE, query.where, _.omit( query, ['where'] ) )
-		.then( entities => {
-			if ( !_.isEmpty( entities ) ) {
-				return res.json(
-					_.map( entities, ( entity: AdapterEntity ) => {
-						entity.attributes.id = entity.attributes.idHash.foobar;
-						delete entity.attributes.idHash;
-						return entity.attributes;
-					} )
-				);
-			}
-			return res.json( [] );
-		} );
-	} );
-	
-	app.patch( ENDPOINT, ( req, res ) => {
-		const body = req.body;
-		const query = parseQs( req.query );
-		inMemoryAdapter
-		.updateOne( INMEMORY_TABLE, query.where, body, _.omit( query, ['where'] ) )
-		.then( entity => {
-			if ( !_.isNil( entity ) ) {
-				entity.attributes.id = entity.attributes.idHash.foobar;
-				delete entity.attributes.idHash;
-				return res.json( entity.attributes );
-			}
-			return res.json( entity );
-		} );
-	} );
-	app.patch( `${ENDPOINT}s`, ( req, res ) => {
-		const body = req.body;
-		const query = parseQs( req.query );
-		inMemoryAdapter
-		.updateMany( INMEMORY_TABLE, query.where, body, _.omit( query, ['where'] ) )
-		.then( entities => {
-			if ( !_.isEmpty( entities ) ) {
-				return res.json(
-					_.map( entities, ( entity: AdapterEntity ) => {
-						entity.attributes.id = entity.attributes.idHash.foobar;
-						delete entity.attributes.idHash;
-						return entity.attributes;
-					} )
-				);
-			}
-			return res.json( [] );
-		} );
-	} );
-	
-	app.delete( ENDPOINT, ( req, res ) => {
-		const query = parseQs( req.query );
-		inMemoryAdapter
-		.deleteOne( INMEMORY_TABLE, query.where, _.omit( query, ['where'] ) )
-		.then( () => {
-			return res.json();
-		} );
-	} );
-	app.delete( `${ENDPOINT}s`, ( req, res ) => {
-		const query = parseQs( req.query );
-		inMemoryAdapter
-		.deleteMany( INMEMORY_TABLE, query.where, _.omit( query, ['where'] ) )
-		.then( () => {
-			return res.json();
-		} );
-	} );
-	
-	return new Promise( ( resolve, reject ) => {
-		server = app.listen( adapterConfig.port, () => {
-			console.log( `Example app listening on port ${adapterConfig.port}!` );
-			return resolve();
-		} );
-	} );
+	const ENDPOINT = '/api/test';
+	server = await initMockApi( inMemoryAdapter, adapterConfig.port as any, ENDPOINT, INMEMORY_TABLE );
 } );
 
 checkSpawnedAdapter( ADAPTER_LABEL );
@@ -163,6 +43,7 @@ afterAll( () => {
 		return new Promise( ( resolve, reject ) => {
 			server.close( () => {
 				console.log( 'Example app closed' );
+				Diaspora.logger.level = ELoggingLevel.Silly;
 				return resolve();
 			} );
 		} );
