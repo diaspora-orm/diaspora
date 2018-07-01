@@ -2,10 +2,10 @@ const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const sourceMaps = require('rollup-plugin-sourcemaps');
 const camelCase = require('lodash.camelcase');
-const typescript = require('rollup-plugin-typescript2');
-const uglify = require('rollup-plugin-uglify');
+const uglify = require('rollup-plugin-uglify').uglify;
 const json = require('rollup-plugin-json');
 const ignore = require( 'rollup-plugin-ignore' );
+const minifyEs = require('uglify-es').minify;
 
 const pkg = require('../package.json')
 
@@ -41,7 +41,7 @@ module.exports = (minify, externalize) => {
 			{ file: getFileName(`dist/es5/${libName}.js`), name: libName, format: 'es', sourcemap: true, globals, exports: 'named' },
 		],
 		// Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
-		external: (externalize ? ['lodash', 'sequential-event'] : []).concat(['winston', 'request-promise']),
+		external: (externalize ? ['lodash', 'sequential-event'] : []).concat(['winston', 'request-promise', 'util', 'os']),
 		
 		watch: {
 			include: 'src/**',
@@ -52,11 +52,7 @@ module.exports = (minify, externalize) => {
 			
 			json(),
 			
-			ignore('winston', 'request-promise'),
-		].concat(minify ? [
-			// Minify
-			uglify(),
-		] : []).concat([
+			ignore('winston', 'request-promise', 'util', 'os'),
 			// Allow node_modules resolution, so you can use 'external' to control
 			// which external modules to include in the bundle
 			// https://github.com/rollup/rollup-plugin-node-resolve#usage
@@ -65,6 +61,10 @@ module.exports = (minify, externalize) => {
 			}),
 			// Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
 			commonjs(commonjsConfig),
+		].concat(minify ? [
+			// Minify
+			uglify({}, minifyEs),
+		] : []).concat([
 			
 			// Resolve source maps to the original source
 			sourceMaps(),

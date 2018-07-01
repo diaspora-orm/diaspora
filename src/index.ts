@@ -4,5 +4,5 @@ export { Entities } from './entities';
 export { Errors } from './errors';
 export { QueryLanguage } from './types/queryLanguage';
 
-export { Validator } from './validator';
+export { CheckTransformer, DefaultTransformer, EntityTransformer } from './entityTransformers';
 export { Model } from './model';
