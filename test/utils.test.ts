@@ -33,14 +33,14 @@ describe( 'Default functions', () => {
 	} );
 	describe( 'Get default value', () => {
 		it( 'Should return value as is', () => {
-			expect( getDefaultValue( 1 ) ).resolves.toEqual( 1 );
-			expect( getDefaultValue( 'aze' ) ).resolves.toEqual( 'aze' );
-			expect( getDefaultValue( {} ) ).resolves.toEqual( {} );
-			expect( getDefaultValue( undefined ) ).resolves.toEqual( undefined );
+			expect( getDefaultValue( 1 ) ).toEqual( 1 );
+			expect( getDefaultValue( 'aze' ) ).toEqual( 'aze' );
+			expect( getDefaultValue( {} ) ).toEqual( {} );
+			expect( getDefaultValue( undefined ) ).toEqual( undefined );
 		} );
 		it( 'Should apply default function', () => {
-			expect( getDefaultValue( () => 1 ) ).resolves.toEqual( 1 );
-			expect( getDefaultValue( () => 'foo' ) ).resolves.toEqual( 'foo' );
+			expect( getDefaultValue( () => 1 ) ).toEqual( 1 );
+			expect( getDefaultValue( () => 'foo' ) ).toEqual( 'foo' );
 		} );
 	} );
 } );

@@ -8,7 +8,7 @@ describe( 'Default values', () => {
 				default: 'bar',
 			},
 		} );
-		expect( validator.applyField( {}, ['foo'] ) ).resolves.toEqual( 'bar' );
+		expect( validator.applyField( {}, ['foo'], {getProps:true} ) ).toEqual( 'bar' );
 	} );
 	it( 'Default all', async () => {
 		const validator = new DefaultTransformer( {
@@ -17,6 +17,6 @@ describe( 'Default values', () => {
 				default: 'bar',
 			},
 		} );
-		expect( validator.apply( {} ) ).resolves.toEqual( {foo:'bar'} );
+		expect( validator.apply( {} ) ).toEqual( {foo:'bar'} );
 	} );
 } );
