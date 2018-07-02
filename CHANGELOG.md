@@ -1,3 +1,15 @@
+<a name="0.3.0-alpha.8"></a>
+# [0.3.0-alpha.8](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.7...v0.3.0-alpha.8) (2018-07-02)
+
+
+### Bug Fixes
+
+* **Adapters/WebApi/Node:** Fixed stringification condition for object only ([8f64b8e](https://github.com/diaspora-orm/diaspora/commit/8f64b8e))
+* **Entity:** Added handling of rejection on entity defaulting ([f3f2a21](https://github.com/diaspora-orm/diaspora/commit/f3f2a21))
+* **WebApiAdapter:** catch undefined JSON response ([45a9265](https://github.com/diaspora-orm/diaspora/commit/45a9265))
+
+
+
 <a name="0.3.0-alpha.7"></a>
 # [0.3.0-alpha.7](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.6...v0.3.0-alpha.7) (2018-05-20)
 
