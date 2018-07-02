@@ -177,6 +177,7 @@ export class Set {
 				validationResults
 			);
 		}
+		this.toChainable.map( entity => entity.applyDefaults() ).value();
 		await _allEmit( 'Validate', 'after' );
 		await wrapEventsAction.call(
 			this,

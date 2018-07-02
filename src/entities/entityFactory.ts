@@ -158,13 +158,7 @@ export abstract class Entity extends SequentialEvent {
 		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
 		const definitiveSource = this.attributes || source;
 		this._attributes = _.cloneDeep( definitiveSource );
-		model.entityTransformers.default.apply( this._attributes ).then( attrsDefaulted => {
-			this._attributes = attrsDefaulted;
-			this.emit( 'ready' );
-		} ).catch( error => {
-			this._attributes = null;
-			this.emit( 'readyerror', error );
-		} );
+		this._attributes = this.applyDefaults();
 		
 		// ### Load events
 		_.forEach( modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
@@ -174,14 +168,13 @@ export abstract class Entity extends SequentialEvent {
 			} );
 		} );
 	}
-	
-	/**
-	 * Promise generator that resolves after the entity has been defaulted.
-	 * 
-	 * @author Gerkin
-	 */
-	public onceDefaulted(){
-		return new Promise( ( resolve, reject ) => this.once( 'ready', resolve ).once( 'readyerror', reject ) );
+
+	public applyDefaults(){
+		if ( this._attributes ){
+			return this.model.entityTransformers.default.apply( this._attributes );
+		} else {
+			return this;
+		}
 	}
 	
 	/**
@@ -259,7 +252,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @returns Returns `this`.
 	 */
 	public replaceAttributes( newContent: IRawEntityAttributes = {} ) {
-		newContent.idHash = this.idHash;
+		// newContent.idHash = this.idHash;
 		this._attributes = newContent;
 		return this;
 	}
@@ -302,6 +295,7 @@ export abstract class Entity extends SequentialEvent {
 		// Trigger events & validation
 		await _maybeEmit( ['beforePersist', 'beforeValidate'] );
 		this.validate();
+		this.applyDefaults();
 		await _maybeEmit( ['afterValidate', `beforePersist${suffix}`] );
 		
 		// Depending on state, we are going to perform a different operation

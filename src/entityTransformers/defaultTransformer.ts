@@ -18,18 +18,17 @@ export class DefaultTransformer extends EntityTransformer {
 	 * @param   modelDesc - Model description.
 	 * @returns  Entity merged with default values.
 	 */
-	public async apply( entity: IRawEntityAttributes ) {
+	public apply( entity: IRawEntityAttributes ) {
 		// Apply method `defaultField` on each field described
 		return _.defaults(
 			entity,
 			_.omitBy(
-				await _.chain( this._modelAttributes )
+				_.chain( this._modelAttributes )
 				.mapValues( ( fieldDesc, field ) =>
 					this.applyField( entity, new PathStack().pushProp( field ), {
 						getProps: true,
 					} )
 				)
-				.thru( async promises => _.zipObject( _.keys( promises ), await Promise.all( _.values( promises ) ) ) )
 				.value(),
 				_.isUndefined
 			)
@@ -44,11 +43,11 @@ export class DefaultTransformer extends EntityTransformer {
 	 * @param   fieldDesc - Description of the field to default.
 	 * @returns Defaulted value.
 	 */
-	public async applyField(
+	public applyField(
 		value: any,
 		keys: PathStack | string[],
 		options: { getProps: boolean } = { getProps: false }
-	): Promise<any> {
+	): any {
 		_.defaults( options, { getProps: true } );
 		if ( !( keys instanceof PathStack ) ) {
 			keys = new PathStack( keys );
@@ -61,8 +60,7 @@ export class DefaultTransformer extends EntityTransformer {
 		) as FieldDescriptor;
 
 		// Return the `default` if value is undefined
-		const valOrBaseDefault =
-			val || await getDefaultValue( fieldDesc.default );
+		const valOrBaseDefault = _.isNil( val ) ? getDefaultValue( fieldDesc.default ) : val;
 
 		// Recurse if we are defaulting an object
 		if (
@@ -73,15 +71,14 @@ export class DefaultTransformer extends EntityTransformer {
 			return _.merge(
 				valOrBaseDefault,
 				_.omitBy(
-					await _.chain( fieldDesc.attributes )
-					.mapValues( async ( fieldDesc, key ) => {
-						const defaulted = await this.applyField(
+					_.chain( fieldDesc.attributes )
+					.mapValues( ( fieldDesc, key ) => {
+						const defaulted = this.applyField(
 							value,
 							( keys as PathStack ).clone().pushProp( key )
 						);
 						return _.omitBy( defaulted, _.isNil );
 					} )
-					.thru( async promises => _.zipObject( _.keys( promises ), await Promise.all( _.values( promises ) ) ) )
 					.value(),
 					_.isUndefined
 				)

@@ -101,7 +101,7 @@ export const getDefaultFunction = ( identifier: string ): ( ( ...args: any[] ) =
 	return _.identity;
 };
 
-export const getDefaultValue = async ( value: any ) => {
+export const getDefaultValue = ( value: any ) => {
 	if ( _.isFunction( value ) ){
 		return value();
 	} else if ( _.isString( value ) ){
