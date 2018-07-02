@@ -75,3 +75,5 @@ docs/
 es5/
 lib/
 umd/
+
+doc\.json
