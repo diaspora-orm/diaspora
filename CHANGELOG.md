@@ -1,3 +1,13 @@
+<a name="0.3.0-alpha.9"></a>
+# [0.3.0-alpha.9](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.8...v0.3.0-alpha.9) (2018-07-02)
+
+
+### Reverts
+
+* **EntityTransformer/DefaultTransformer:** Default model functions can't be async anymore ([2a453c3](https://github.com/diaspora-orm/diaspora/commit/2a453c3))
+
+
+
 <a name="0.3.0-alpha.8"></a>
 # [0.3.0-alpha.8](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.7...v0.3.0-alpha.8) (2018-07-02)
 
