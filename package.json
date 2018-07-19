@@ -43,7 +43,6 @@
 		"commit": "git-cz",
 		"semantic-release": "semantic-release pre && npm publish && semantic-release post",
 		"semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-		"precommit": "lint-staged",
 		"conventional-changelog": "npx conventional-changelog-cli -p angular -i CHANGELOG.md -s",
 		"version": "npm run conventional-changelog && git add CHANGELOG.md && npm run doc && git add docs",
 		"prepack": "npm run build"
@@ -66,12 +65,6 @@
 		"url": "https://github.com/diaspora-orm/diaspora/issues"
 	},
 	"homepage": "https://github.com/diaspora-orm/diaspora#readme",
-	"lint-staged": {
-		"{src,test}/**/*.ts": [
-			"npm run lint:fix",
-			"git add"
-		]
-	},
 	"config": {
 		"commitizen": {
 			"path": "node_modules/cz-conventional-changelog"
