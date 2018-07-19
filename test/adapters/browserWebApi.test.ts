@@ -27,10 +27,11 @@ createDataSource( ADAPTER_LABEL, adapterConfig );
 beforeAll( async () => {
 	Diaspora.logger.level = ELoggingLevel.Silent;
 	const INMEMORY_TABLE = 'test-expressstoreLocal';
-	const inMemoryAdapter = Diaspora.createDataSource(
+	const inMemoryAdapter = await Diaspora.createDataSource(
 		'inMemory',
-		INMEMORY_TABLE
-	);
+		INMEMORY_TABLE,
+		adapterConfig
+	).waitReady();
 	const ENDPOINT = '/api/test';
 	server = await initMockApi( inMemoryAdapter, adapterConfig.port as any, ENDPOINT, INMEMORY_TABLE );
 } );
@@ -42,7 +43,6 @@ afterAll( () => {
 	if ( server ) {
 		return new Promise( ( resolve, reject ) => {
 			server.close( () => {
-				console.log( 'Example app closed' );
 				Diaspora.logger.level = ELoggingLevel.Silly;
 				return resolve();
 			} );
