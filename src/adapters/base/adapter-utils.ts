@@ -4,8 +4,7 @@ import { Adapter } from './adapter';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEnumeratedHash } from '../../types/dataSourceQuerier';
 import { IEntityAttributes } from '../../types/entity';
-import { AdapterEntity } from './index';
-export { AdapterEntity } from './index';
+import { AdapterEntity } from './entity';
 
 export interface Constructable<T> {
 	new ( ...args: any[] ): T;
