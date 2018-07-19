@@ -1,23 +1,23 @@
 language: node_js
+branches:
+  only:
+    - master
+    - staging
+    - /^greenkeeper/.*$/
 node_js:
-  - "lts/*"
   - "10"
   - "9"
   - "8"
-  - "7"
 os:
   - linux
   - osx
 matrix:
   include:
-  - node_js: 10
+  - node_js: "lts/*"
     os: linux
     env: CC_SAMPLE=true
-env: 
-  global:
-    - CC_TEST_REPORTER_ID=564670983f32d7a463933ac3c57feb952d7c5a42cdbb9b22bf2939a7b6dbccd7
-    - SAUCE_USERNAME=Gerkin
-    - SAUCE_ACCESS_KEY=bcc962ee-af76-4e36-bf15-ce3cbbbb5b8c
+  - node_js: "lts/*"
+    os: osx
 notifications:
   slack:
     rooms:
