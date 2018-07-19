@@ -6,6 +6,9 @@ import { ModelDescriptionRaw } from './types/modelDescription';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry, modelRegistry, IModelRegistry } from './staticStores';
 import { logger } from './logger';
+import { BrowserLogger } from './logger/browserLogger';
+import { NodeLogger } from './logger/nodeLogger';
+
 
 export { Adapter, AdapterEntity };
 
@@ -40,7 +43,7 @@ export class DiasporaStatic {
 	 *
 	 * @author gerkin
 	 */
-	public get logger() {
+	public get logger(): BrowserLogger | NodeLogger {
 		return logger;
 	}
 
