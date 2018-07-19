@@ -2,16 +2,12 @@ import * as _ from 'lodash';
 
 import { IAdapterCtr, Adapter, AdapterEntity } from './adapters/base';
 import { Model } from './model';
-import { InMemoryAdapter } from './adapters/inMemory';
-import { WebStorageAdapter } from './adapters/webStorage';
 import { ModelDescriptionRaw } from './types/modelDescription';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry, modelRegistry, IModelRegistry } from './staticStores';
-import { BrowserWebApiAdapter } from './adapters/webApi/subAdapters/browserAdapter';
-import { NodeWebApiAdapter } from './adapters/webApi/subAdapters/nodeAdapter';
 import { logger } from './logger';
 
-export {Adapter, AdapterEntity};
+export { Adapter, AdapterEntity };
 
 interface IAdapterRegistry {
 	[key: string]: IAdapterCtr;
@@ -215,10 +211,9 @@ export class DiasporaStatic {
 
 export const Diaspora = DiasporaStatic.instance;
 
-// Register available built-in adapters
-Diaspora.registerAdapter( 'inMemory', InMemoryAdapter );
-Diaspora.registerAdapter( 'webApi', process.browser ? BrowserWebApiAdapter : NodeWebApiAdapter );
-// Register webStorage only if in browser
-if ( process.browser ) {
-	Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );
-}
+import {declareInMemory} from './adapters/inMemory/adapterDeclaration';
+declareInMemory( Diaspora );
+import {declareWebApi} from './adapters/webApi/adapterDeclaration';
+declareWebApi( Diaspora );
+import {declareWebStorage} from './adapters/webStorage/adapterDeclaration';
+declareWebStorage( Diaspora );
