@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 
 import { EntityTransformer } from './entityTransformer';
-import { IRawEntityAttributes } from '../entities/entityFactory';
 import { PathStack } from './pathStack';
 import { FieldDescriptor, FieldDescriptorTypeChecks } from '../types/modelDescription';
 import { getDefaultValue } from '../utils';
+import { IEntityAttributes } from '../types/entity';
 
 /**
  * The Validator class is used to check an entity or its fields against a model description.
@@ -18,7 +18,7 @@ export class DefaultTransformer extends EntityTransformer {
 	 * @param   modelDesc - Model description.
 	 * @returns  Entity merged with default values.
 	 */
-	public apply( entity: IRawEntityAttributes ) {
+	public apply( entity: IEntityAttributes ) {
 		// Apply method `defaultField` on each field described
 		return _.defaults(
 			entity,

@@ -4,7 +4,7 @@ import { Adapter, AdapterEntity, IAdapterEntityCtr } from './base';
 import { DataSourceQuerier, IFiltersHash, IEnumeratedHash, IRemapsHash } from '../types/dataSourceQuerier';
 import { SequentialEvent } from 'sequential-event';
 import { QueryLanguage } from '../types/queryLanguage';
-import { IRawEntityAttributes } from '../entities/entityFactory';
+import { IEntityAttributes } from '../types/entity';
 
 export { IEnumeratedHash, IAdapterEntityCtr};
 
@@ -16,7 +16,7 @@ export { IEnumeratedHash, IAdapterEntityCtr};
 export class DataAccessLayer<
 TEntity extends AdapterEntity = AdapterEntity,
 TAdapter extends Adapter<TEntity> = Adapter<TEntity>
-> extends SequentialEvent implements DataSourceQuerier<TEntity>{
+> extends SequentialEvent implements DataSourceQuerier<TEntity, TEntity>{
 
 	public get classEntity(){
 		return this.adapter.classEntity;
@@ -83,7 +83,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 */
 	public async insertOne(
 		collectionName: string,
-		entity: IRawEntityAttributes
+		entity: IEntityAttributes
 	){
 		const entityRemappedIn = this.remapInput( collectionName, entity );
 		const newEntity = await this.adapter.insertOne( collectionName, entityRemappedIn );
@@ -107,7 +107,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 */
 	public async insertMany(
 		collectionName: string,
-		entities: IRawEntityAttributes[]
+		entities: IEntityAttributes[]
 	){
 		const entitiesRemappedIn = _.map( entities, entity => this.remapInput( collectionName, entity ) );
 		const newEntities = await this.adapter.insertMany( collectionName, entitiesRemappedIn );
@@ -133,8 +133,8 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 */
 	public async findOne(
 		collectionName: string,
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-		options: QueryLanguage.QueryOptionsRaw = {}
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
@@ -163,8 +163,8 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 */
 	public async findMany(
 		collectionName: string,
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-		options: QueryLanguage.QueryOptionsRaw = {}
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
@@ -195,9 +195,9 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 */
 	public async updateOne(
 		collectionName: string,
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-		update: IRawEntityAttributes,
-		options: QueryLanguage.QueryOptionsRaw = {}
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		update: IEntityAttributes,
+		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		const updateRemappedIn = this.remapInput( collectionName, update );
@@ -228,9 +228,9 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 */
 	public async updateMany(
 		collectionName: string,
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-		update: IRawEntityAttributes,
-		options: QueryLanguage.QueryOptionsRaw = {}
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		update: IEntityAttributes,
+		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		const updateRemappedIn = this.remapInput( collectionName, update );
@@ -261,8 +261,8 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 */
 	public async deleteOne(
 		collectionName: string,
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-		options: QueryLanguage.QueryOptionsRaw = {}
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
@@ -282,8 +282,8 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 */
 	public async deleteMany(
 		collectionName: string,
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-		options: QueryLanguage.QueryOptionsRaw = {}
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical

@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
-import { AdapterEntity, IRawAdapterEntityAttributes, IAdapterEntityCtr } from '.';
-import { IRawEntityAttributes } from '../../entities/entityFactory';
+import { AdapterEntity, IAdapterEntityCtr } from '.';
 import {
 	remapIO,
 	CANONICAL_OPERATORS,
@@ -12,6 +11,7 @@ import {
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IRemapsHash, IFiltersHash, DataSourceQuerier, IEnumeratedHash } from '../../types/dataSourceQuerier';
 import { logger } from '../../logger';
+import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
 /**
  * Represents the current state of the adapter. Those states corresponds to event names emitted by the adapter when they are passed.
@@ -38,7 +38,7 @@ extends Constructable<Adapter> {
  */
 export abstract class Adapter<
 T extends AdapterEntity = AdapterEntity
-> extends SequentialEvent implements DataSourceQuerier<IRawAdapterEntityAttributes> {
+> extends SequentialEvent implements DataSourceQuerier<IEntityAttributes, IEntityProperties> {
 	public get classEntity() {
 		return this._classEntity;
 	}
@@ -122,9 +122,9 @@ T extends AdapterEntity = AdapterEntity
 		options: QueryLanguage.QueryOptions,
 		query: (
 			options: QueryLanguage.QueryOptions
-		) => Promise<IRawAdapterEntityAttributes | undefined>
+		) => Promise<IEntityProperties | undefined>
 	){
-		const foundEntities: IRawAdapterEntityAttributes[] = [];
+		const foundEntities: IEntityProperties[] = [];
 		const localOptions = _.assign( {}, options );
 		let origSkip = options.skip;
 		
@@ -192,7 +192,7 @@ T extends AdapterEntity = AdapterEntity
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	public remapInput<T extends IEnumeratedHash<any>>(
+	public remapInput<T extends IEntityAttributes>(
 		tableName: string,
 		query: T
 	) {
@@ -223,7 +223,7 @@ T extends AdapterEntity = AdapterEntity
 	 * @returns Transformed options (also called `canonical options`).
 	 */
 	public normalizeOptions(
-		opts: QueryLanguage.QueryOptionsRaw = {}
+		opts: QueryLanguage.Raw.QueryOptions = {}
 	): QueryLanguage.QueryOptions {
 		opts = _.cloneDeep( opts );
 		_.forEach( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
@@ -246,7 +246,7 @@ T extends AdapterEntity = AdapterEntity
 	 * @author gerkin
 	 */
 	public normalizeQuery(
-		originalQuery: QueryLanguage.SelectQueryOrConditionRaw,
+		originalQuery: QueryLanguage.Raw.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions
 	): QueryLanguage.SelectQueryOrCondition {
 		if ( _.isString( originalQuery ) ) {
@@ -328,8 +328,8 @@ T extends AdapterEntity = AdapterEntity
 	 */
 	public async insertOne(
 		table: string,
-		entity: IRawEntityAttributes
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+		entity: IEntityAttributes
+	): Promise<IEntityProperties | undefined> {
 		return _.first( await this.insertMany( table, [entity] ) );
 	}
 	
@@ -341,8 +341,8 @@ T extends AdapterEntity = AdapterEntity
 	 */
 	public async insertMany(
 		table: string,
-		entities: IRawEntityAttributes[]
-	): Promise<IRawAdapterEntityAttributes[]> {
+		entities: IEntityAttributes[]
+	): Promise<IEntityProperties[]> {
 		const mapped = [];
 		for ( let i = 0; i < entities.length; i++ ) {
 			mapped.push( await this.insertOne( table, entities[i] || {} ) );
@@ -363,7 +363,7 @@ T extends AdapterEntity = AdapterEntity
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+	): Promise<IEntityProperties | undefined> {
 		options.limit = 1;
 		return _.first( await this.findMany( table, queryFind, options ) );
 	}
@@ -378,7 +378,7 @@ T extends AdapterEntity = AdapterEntity
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes[]> {
+	): Promise<IEntityProperties[]> {
 		const boundQuery = this.findOne.bind( this, table, queryFind );
 		return Adapter.iterateLimit( options, boundQuery );
 	}
@@ -395,9 +395,9 @@ T extends AdapterEntity = AdapterEntity
 	public async updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		update: IRawEntityAttributes,
+		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+	): Promise<IEntityProperties | undefined> {
 		options.limit = 1;
 		return _.first( await this.updateMany( table, queryFind, update, options ) );
 	}
@@ -411,9 +411,9 @@ T extends AdapterEntity = AdapterEntity
 	public async updateMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		update: IRawEntityAttributes,
+		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes[]> {
+	): Promise<IEntityProperties[]> {
 		return Adapter.iterateLimit(
 			options,
 			this.updateOne.bind( this, table, queryFind, update )

@@ -1,9 +1,11 @@
 import * as _ from 'lodash';
 
-import { AdapterEntity, IRawAdapterEntityAttributes } from './entity';
 import { Adapter } from './adapter';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEnumeratedHash } from '../../types/dataSourceQuerier';
+import { IEntityAttributes } from '../../types/entity';
+import { AdapterEntity } from './index';
+export { AdapterEntity } from './index';
 
 export interface Constructable<T> {
 	new ( ...args: any[] ): T;
@@ -72,8 +74,8 @@ const validateOption = (
  * @author gerkin
  * @see TODO remapping.
  */
-export const remapIO = <T extends IEnumeratedHash<any>>(
 	adapter: Adapter,
+export const remapIO = <T extends IEntityAttributes>(
 	tableName: string,
 	query: T,
 	input: boolean
@@ -129,21 +131,21 @@ export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'>=': '$greaterEqual',
 };
 export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
-( ( ops: QueryLanguage.QueryOptionsRaw ) => void )
+( ( ops: QueryLanguage.Raw.QueryOptions ) => void )
 > = {
-	limit( opts: QueryLanguage.QueryOptionsRaw ) {
+	limit( opts: QueryLanguage.Raw.QueryOptions ) {
 		opts.limit = validateOption( 'limit', opts.limit as number, {
 			type: 'int',
 			rng: '[0,∞]',
 		} );
 	},
-	skip( opts: QueryLanguage.QueryOptionsRaw ) {
+	skip( opts: QueryLanguage.Raw.QueryOptions ) {
 		opts.skip = validateOption( 'skip', opts.skip as number, {
 			type: 'int',
 			rng: '[0,∞[',
 		} );
 	},
-	page( opts: QueryLanguage.QueryOptionsRaw ) {
+	page( opts: QueryLanguage.Raw.QueryOptions ) {
 		if ( !opts.hasOwnProperty( 'limit' ) ) {
 			throw new ReferenceError(
 				'Usage of "options.page" requires "options.limit" to be defined.'

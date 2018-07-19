@@ -1,5 +1,3 @@
-import {  } from '../adapters/base';
-import { Entities } from '../entities';
 import { QueryLanguage } from './queryLanguage';
 
 export interface IEnumeratedHash<T> {
@@ -10,7 +8,7 @@ export interface IRemapsHash extends IEnumeratedHash<any> {}
 
 export interface IFiltersHash extends IEnumeratedHash<any> {}
 
-export interface DataSourceQuerier<T>{
+export interface DataSourceQuerier<TIn, TOut extends TIn>{
 	
 	// -----
 	// ### Insert
@@ -23,8 +21,8 @@ export interface DataSourceQuerier<T>{
 	 */
 	insertOne(
 		table: string,
-		entity: Entities.IRawEntityAttributes
-	): Promise<T | undefined>;
+		entity: TIn
+	): Promise<TOut | undefined>;
 
 	/**
 	 * Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself.
@@ -34,8 +32,8 @@ export interface DataSourceQuerier<T>{
 	 */
 	insertMany(
 		table: string,
-		entities: Entities.IRawEntityAttributes[]
-	): Promise<T[]>;
+		entities: TIn[]
+	): Promise<TOut[]>;
 
 	// -----
 	// ### Find
@@ -48,9 +46,9 @@ export interface DataSourceQuerier<T>{
 	 */
 	findOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions
-	): Promise<T | undefined>;
+	): Promise<TOut | undefined>;
 
 	/**
 	 * Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `findMany` itself.
@@ -60,9 +58,9 @@ export interface DataSourceQuerier<T>{
 	 */
 	findMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions
-	): Promise<T[]>;
+	): Promise<TOut[]>;
 
 	// -----
 	// ### Update
@@ -75,10 +73,10 @@ export interface DataSourceQuerier<T>{
 	 */
 	updateOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		update: Entities.IRawEntityAttributes,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
+		update: TIn,
 		options: QueryLanguage.QueryOptions
-	): Promise<T | undefined>;
+	): Promise<TOut | undefined>;
 
 	/**
 	 * Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateMany` itself.
@@ -88,10 +86,10 @@ export interface DataSourceQuerier<T>{
 	 */
 	updateMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		update: Entities.IRawEntityAttributes,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
+		update: TIn,
 		options: QueryLanguage.QueryOptions
-	): Promise<T[]>;
+	): Promise<TOut[]>;
 
 	// -----
 	// ### Delete
@@ -104,7 +102,7 @@ export interface DataSourceQuerier<T>{
 	 */
 	deleteOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions
 	): Promise<void>;
 
@@ -120,7 +118,7 @@ export interface DataSourceQuerier<T>{
 	 */
 	deleteMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.SelectQueryOrCondition,
 		options: QueryLanguage.QueryOptions
 	): Promise<void>;
 

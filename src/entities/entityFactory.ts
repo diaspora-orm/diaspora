@@ -2,48 +2,29 @@ import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
 import { Errors } from '../errors';
-import {
-	AdapterEntity,
-	Adapter,
-	IRawAdapterEntityAttributes,
-	IIdHash,
-} from '../adapters/base';
+import { AdapterEntity, Adapter } from '../adapters/base';
 import { Model } from '../model';
 import { ModelDescription } from '../types/modelDescription';
 import { DataAccessLayer, TDataSource } from '../adapters/dataAccessLayer';
+import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 
 export interface IOptions {
 	skipEvents?: boolean;
 }
-export interface IRawEntityAttributes {
-	[key: string]: any;
-}
-
-/**
- * Reflects the state of the entity.
- * 
- * @author Gerkin
- */
-export enum EEntityState {
-	ORPHAN = 'orphan',
-	SYNCING = 'syncing',
-	SYNC = 'sync',
-}
-export type EntityUid = string | number;
 
 export interface EntitySpawner {
 	model: Model;
 	name: string;
-	new ( source?: IRawEntityAttributes ): Entity;
+	new ( source?: IEntityAttributes ): Entity;
 }
 export interface IDataSourceMap<T extends AdapterEntity>
 extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
 
 
 const entityCtrSteps = {
-	castTypes( source: IRawAdapterEntityAttributes, modelDesc: ModelDescription ) {
+	castTypes( source: IEntityProperties, modelDesc: ModelDescription ) {
 		const attrs = modelDesc.attributes;
 		_.forEach( source, ( currentVal: any, attrName: string ) => {
 			const attrDesc = attrs[attrName];
@@ -61,7 +42,7 @@ const entityCtrSteps = {
 		} );
 		return source;
 	},
-	loadSource( this: Entity, source: IRawEntityAttributes ) {
+	loadSource( this: Entity, source: IEntityProperties ) {
 		return source;
 	},
 };
@@ -74,7 +55,7 @@ const entityCtrSteps = {
  */
 export abstract class Entity extends SequentialEvent {
 	public get attributes() {
-		return this._attributes;
+		return this.getAttributes();
 	}
 	
 	public get state() {
@@ -93,11 +74,7 @@ export abstract class Entity extends SequentialEvent {
 		return this.constructor as typeof Entity & EntitySpawner;
 	}
 	
-	public get id(){
-		return this.getId();
-	}
-	
-	private _attributes: IRawEntityAttributes | null = null;
+	private _attributes: IEntityAttributes | null = null;
 	
 	private _state: EEntityState = EEntityState.ORPHAN;
 	
@@ -121,7 +98,7 @@ export abstract class Entity extends SequentialEvent {
 		private readonly name: string,
 		private readonly modelDesc: ModelDescription,
 		private readonly model: Model,
-		source: AdapterEntity | IRawEntityAttributes = {}
+		source: AdapterEntity | IEntityAttributes = {}
 	) {
 		super();
 		const modelAttrsKeys = _.keys( modelDesc.attributes );
@@ -185,8 +162,8 @@ export abstract class Entity extends SequentialEvent {
 	 * @returns Object with Primitives-only types.
 	 */
 	public static serialize(
-		data: IRawEntityAttributes | null
-	): IRawEntityAttributes | undefined {
+		data: IEntityAttributes | null
+	): IEntityAttributes | undefined {
 		return data ? _.cloneDeep( data ) : undefined;
 	}
 	
@@ -198,8 +175,8 @@ export abstract class Entity extends SequentialEvent {
 	 * @returns Object with Primitives & non primitives types.
 	 */
 	public static deserialize(
-		data: IRawEntityAttributes | null
-	): IRawEntityAttributes | undefined {
+		data: IEntityAttributes | null
+	): IEntityAttributes | undefined {
 		return data ? _.cloneDeep( data ) : undefined;
 	}
 	
@@ -251,7 +228,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   newContent - Replacement content.
 	 * @returns Returns `this`.
 	 */
-	public replaceAttributes( newContent: IRawEntityAttributes = {} ) {
+	public replaceAttributes( newContent: IEntityAttributes = {} ) {
 		// newContent.idHash = this.idHash;
 		this._attributes = newContent;
 		return this;
@@ -263,8 +240,29 @@ export abstract class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @returns Attributes of this entity.
 	 */
-	public toObject() {
-		return _.cloneDeep( this.attributes );
+	public getAttributes( dataSource?: undefined ): IEntityAttributes | null;
+	public getAttributes( dataSource: TDataSource ): IEntityAttributes;
+	public getAttributes( dataSource?: TDataSource | undefined ): IEntityAttributes | null {
+		if ( dataSource ){
+			// Get the target data source
+			const dataSourceFixed = this.getDataSource( dataSource );
+			const adapterEntity = this._dataSources.get( dataSourceFixed );
+			return adapterEntity ? adapterEntity.attributes : null;
+		}
+		return this._attributes;
+	}
+	
+	/**
+	 * Returns a copy of this entity attributes.
+	 *
+	 * @author gerkin
+	 * @returns Attributes of this entity.
+	 */
+	public getProperties( dataSource: TDataSource ): IEntityProperties | null {
+		// Get the target data source
+		const dataSourceFixed = this.getDataSource( dataSource );
+		const adapterEntity = this._dataSources.get( dataSourceFixed );
+		return adapterEntity ? adapterEntity.properties : null;
 	}
 	
 	/**
@@ -380,7 +378,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   sourceName - Name of the source to get ID from.
 	 * @returns Id of this entity in requested data source.
 	 */
-	public getId( dataSource?: TDataSource ): EntityUid | null {
+	public getId( dataSource: TDataSource ): EntityUid | null {
 		const dataSourceFixed = this.getDataSource( dataSource );
 		const entity = this.dataSources.get( dataSourceFixed );
 		if ( entity ) {
@@ -397,14 +395,14 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Data source to diff with.
 	 * @returns Diff query.
 	 */
-	public getDiff( dataSource?: TDataSource ): IRawEntityAttributes | undefined {
+	public getDiff( dataSource?: TDataSource ): IEntityAttributes | undefined {
 		const dataSourceFixed = this.getDataSource( dataSource );
 		const dataStoreEntity = this.dataSources.get( dataSourceFixed );
 		// All is diff if not present
 		if ( _.isNil( dataStoreEntity ) || _.isNil( this.attributes ) ) {
 			return this.attributes || undefined;
 		}
-		const dataStoreObject = dataStoreEntity.toObject() as IRawEntityAttributes;
+		const dataStoreObject = dataStoreEntity.attributes;
 		const currentAttributes = this.attributes;
 		
 		const potentialChangedKeys = _.chain( currentAttributes )
@@ -415,11 +413,11 @@ export abstract class Entity extends SequentialEvent {
 		// Remove duplicates
 		.uniq();
 		
-		const diffKeys = potentialChangedKeys
 		// Omit values that did not changed between now & stored object
-		.reject( ( key: string ) => ['id', 'idHash'].includes( key ) || _.isEqual( dataStoreEntity.attributes[key], currentAttributes[key] ) );
+		const diffKeys = potentialChangedKeys
+		.reject( ( key: string ) => _.isEqual( dataStoreEntity.attributes[key], currentAttributes[key] ) );
 		
-		return diffKeys.transform( ( accumulator: IRawEntityAttributes, key: string ) => {
+		return diffKeys.transform( ( accumulator: IEntityAttributes, key: string ) => {
 			accumulator[key] = currentAttributes[key];
 			return accumulator;
 		}, {} ).value();
@@ -526,7 +524,7 @@ export abstract class Entity extends SequentialEvent {
 			// Set the state
 			this._state = EEntityState.SYNC;
 			const attrs = entityCtrSteps.castTypes(
-				dataSourceEntity.toObject(),
+				dataSourceEntity.properties,
 				this.modelDesc
 			);
 			this.idHash = attrs.idHash;

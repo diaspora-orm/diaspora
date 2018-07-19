@@ -9,6 +9,8 @@ import { QueryLanguage } from '../../src/types/queryLanguage';
 import { dataSources, getStyle } from '../utils';
 import { InMemoryEntity } from '../../src/adapters/inMemory';
 import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
+import { IEntityProperties } from '../../src/types/entity';
+import { Entity } from '../../src/entities/entityFactory';
 
 const getDataSourceLabel = name => {
 	return `${name}Adapter`;
@@ -16,6 +18,11 @@ const getDataSourceLabel = name => {
 
 const TABLE = 'test';
 
+const filterEntity = ( entity: AdapterEntity ) => {
+	const sentProperties = _.assign( {}, entity.properties );
+	delete sentProperties.idHash;
+	return sentProperties;
+};
 export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: number, endpoint: string, tableName: string ) => {
 	const parseQs = _.partialRight( _.mapValues, JSON.parse ) as (
 		str: string
@@ -32,9 +39,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		const body = req.body;
 		adapter.insertOne( tableName, body ).then( entity => {
 			if ( !_.isNil( entity ) ) {
-				entity.attributes.id = entity.attributes.idHash[tableName];
-				delete entity.attributes.idHash;
-				return res.json( entity.attributes );
+				return res.json( filterEntity( entity ) );
 			}
 			return res.json();
 		} );
@@ -43,13 +48,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		const body = req.body;
 		adapter.insertMany( tableName, body ).then( entities => {
 			if ( !_.isEmpty( entities ) ) {
-				return res.json(
-					_.map( entities, ( entity: AdapterEntity ) => {
-						entity.attributes.id = entity.attributes.idHash[tableName];
-						delete entity.attributes.idHash;
-						return entity.attributes;
-					} )
-				);
+				return res.json( _.map( entities, filterEntity ) );
 			}
 			return res.json();
 		} );
@@ -61,9 +60,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		.findOne( tableName, query.where, _.omit( query, ['where'] ) )
 		.then( entity => {
 			if ( !_.isNil( entity ) ) {
-				entity.attributes.id = entity.attributes.idHash[tableName];
-				delete entity.attributes.idHash;
-				return res.json( entity.attributes );
+				return res.json( filterEntity( entity ) );
 			}
 			return res.json();
 		} );
@@ -75,11 +72,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		.then( entities => {
 			if ( !_.isEmpty( entities ) ) {
 				return res.json(
-					_.map( entities, ( entity: AdapterEntity ) => {
-						entity.attributes.id = entity.attributes.idHash[tableName];
-						delete entity.attributes.idHash;
-						return entity.attributes;
-					} )
+					_.map( entities, filterEntity )
 				);
 			}
 			return res.json( [] );
@@ -93,9 +86,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		.updateOne( tableName, query.where, body, _.omit( query, ['where'] ) )
 		.then( entity => {
 			if ( !_.isNil( entity ) ) {
-				entity.attributes.id = entity.attributes.idHash[tableName];
-				delete entity.attributes.idHash;
-				return res.json( entity.attributes );
+				return res.json( filterEntity( entity ) );
 			}
 			return res.json( entity );
 		} );
@@ -108,11 +99,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		.then( entities => {
 			if ( !_.isEmpty( entities ) ) {
 				return res.json(
-					_.map( entities, ( entity: AdapterEntity ) => {
-						entity.attributes.id = entity.attributes.idHash[tableName];
-						delete entity.attributes.idHash;
-						return entity.attributes;
-					} )
+					_.map( entities, filterEntity )
 				);
 			}
 			return res.json( [] );

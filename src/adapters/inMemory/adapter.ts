@@ -1,18 +1,14 @@
 import * as _ from 'lodash';
 
-import {
-	Adapter,
-	EAdapterState,
-	IRawAdapterEntityAttributes,
-} from '../base';
-import { IRawEntityAttributes, EntityUid } from '../../entities/entityFactory';
+import { Adapter, EAdapterState } from '../base';
 import * as Utils from '../../utils';
 import { InMemoryEntity } from './entity';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
+import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
 interface IDataStoreHash {
-	[key: string]: { items: IRawAdapterEntityAttributes[] };
+	[key: string]: { items: IEntityProperties[] };
 }
 /**
  * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
@@ -49,8 +45,8 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 */
 	public async insertOne(
 		table: string,
-		entity: IRawEntityAttributes
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+		entity: IEntityAttributes
+	): Promise<IEntityProperties | undefined> {
 		const storeTable = this.ensureCollectionExists( table );
 		const adapterEntityAttributes = InMemoryEntity.setId(
 			_.omitBy( _.cloneDeep( entity ), _.isUndefined ),
@@ -77,7 +73,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+	): Promise<IEntityProperties | undefined> {
 		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, item =>
 			InMemoryEntity.matches( item, queryFind )
@@ -100,7 +96,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes[]> {
+	): Promise<IEntityProperties[]> {
 		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, item =>
 			InMemoryEntity.matches( item, queryFind )
@@ -126,16 +122,16 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	public async updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		update: IRawEntityAttributes,
+		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+	): Promise<IEntityProperties | undefined> {
 		const found = await this.findOne( table, queryFind, options );
 
 		if ( !_.isNil( found ) ) {
 			const storeTable = this.ensureCollectionExists( table );
 			const match = _.find( storeTable.items, {
 				id: found.id,
-			} ) as any as IRawAdapterEntityAttributes;
+			} ) as any as IEntityProperties;
 			if ( match ) {
 				Utils.applyUpdateEntity( update, match );
 				return match;
@@ -158,9 +154,9 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	public async updateMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		update: IRawEntityAttributes,
+		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes[]> {
+	): Promise<IEntityProperties[]> {
 		const foundEntity = await this.findMany( table, queryFind, options );
 
 		if ( !_.isNil( foundEntity ) && foundEntity.length > 0 ) {

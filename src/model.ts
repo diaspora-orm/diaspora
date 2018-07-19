@@ -1,12 +1,6 @@
 import * as _ from 'lodash';
 
-import {
-	EntityFactory,
-	EntitySpawner,
-	Entity,
-	IRawEntityAttributes,
-	EntityUid,
-} from './entities/entityFactory';
+import { EntityFactory, EntitySpawner, Entity } from './entities/entityFactory';
 import { Set } from './entities/set';
 import { deepFreeze } from './utils';
 import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
@@ -16,6 +10,7 @@ import { ModelDescriptionRaw, FieldDescriptor, SourcesHash } from './types/model
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
+import { EntityUid, IEntityAttributes } from './types/entity';
 
 /**
  * The model class is used to interact with the population of all data of the same type.
@@ -164,7 +159,7 @@ export class Model {
 	 * @param query      - Entity ID or query to potentialy transform
 	 * @param sourceName - Name of the source we want to query
 	 */
-	public ensureQueryObject( query: QueryLanguage.SelectQueryOrConditionRaw | EntityUid, sourceName: string = this.defaultDataSource ): QueryLanguage.SelectQueryOrConditionRaw {
+	public ensureQueryObject( query: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid, sourceName: string = this.defaultDataSource ): QueryLanguage.Raw.SelectQueryOrCondition {
 		if ( typeof query === 'object' ){
 			return query;
 		} else {
@@ -226,7 +221,7 @@ export class Model {
 	 * @returns Promise resolved with new *sync* {@link Entity entity}.
 	 */
 	public async insert(
-		source: IRawEntityAttributes,
+		source: IEntityAttributes,
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
 		return this.makeEntity( this.getDataSource( dataSourceName ).insertOne( this.name, source ) );
@@ -241,7 +236,7 @@ export class Model {
 	 * @returns Promise resolved with a {@link Set set} containing new *sync* entities.
 	 */
 	public async insertMany(
-		sources: IRawEntityAttributes[],
+		sources: IEntityAttributes[],
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
 		return this.makeSet( this.getDataSource( dataSourceName ).insertMany( this.name, sources ) );
@@ -257,8 +252,8 @@ export class Model {
 	 * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */
 	public async find(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
-		options: QueryLanguage.QueryOptionsRaw = {},
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid,
+		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
@@ -275,8 +270,8 @@ export class Model {
 	 * @returns Promise resolved with a {@link Set set} of found entities in *sync* state.
 	 */
 	public async findMany(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-		options: QueryLanguage.QueryOptionsRaw = {},
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
 		return this.makeSet( this.getDataSource( dataSourceName ).findMany( this.name, queryFind, options ) );
@@ -293,9 +288,9 @@ export class Model {
 	 * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */
 	public async update(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid,
 		update: object,
-		options: QueryLanguage.QueryOptionsRaw = {},
+		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
@@ -313,9 +308,9 @@ export class Model {
 	 * @returns Promise resolved with the {@link Set set} of found entities in *sync* state.
 	 */
 	public async updateMany(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
 		update: object,
-		options: QueryLanguage.QueryOptionsRaw = {},
+		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
 		return this.makeSet( this.getDataSource( dataSourceName ).updateMany( this.name, queryFind, update, options ) );
@@ -331,8 +326,8 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	public async delete(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw | EntityUid,
-		options: QueryLanguage.QueryOptionsRaw = {},
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid,
+		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
 		const queryFindNoId = this.ensureQueryObject( queryFind );
@@ -349,8 +344,8 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	public async deleteMany(
-		queryFind: QueryLanguage.SelectQueryOrConditionRaw,
-		options: QueryLanguage.QueryOptionsRaw = {},
+		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
 		return this.getDataSource( dataSourceName ).deleteMany( this.name, queryFind, options );

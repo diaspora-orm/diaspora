@@ -3,11 +3,12 @@ import { resolve } from 'path';
 import * as chalk from 'chalk';
 import { Adapter, AdapterEntity } from '../src/adapters/base';
 import { Model } from '../src/model';
-import { IRawEntityAttributes, Entity } from '../src/entities/entityFactory';
+import { Entity } from '../src/entities/entityFactory';
 import { Set as EntitySet } from '../src/entities/set';
 import { Diaspora } from '../src/diaspora';
 import { InMemoryAdapter } from '../src/adapters/inMemory';
 import { DataAccessLayer } from '../src/adapters/dataAccessLayer';
+import { IEntityAttributes } from '../src/types/entity';
 
 process.on( 'unhandledRejection', r => console.log( r ) );
 const projectPath = resolve( '../' );
@@ -58,55 +59,6 @@ export const importTest = ( name: string, modulePath: string ) => {
 	} );
 };
 
-const check = (
-	entity: Entity,
-	model: Model,
-	props: IRawEntityAttributes = {},
-	orphan?: boolean | string
-) => {
-	expect( entity ).toBeInstanceOf( Entity );
-	expect( entity.ctor.model ).toEqual( model );
-	const dataSourceName = 'string' === typeof orphan ? orphan : undefined;
-	const orphanState = dataSourceName ? false : orphan;
-	switch ( orphanState ) {
-		case true:
-		{
-			expect( entity.state ).toEqual( 'orphan' );
-		}
-		break;
-		
-		case false:
-		{
-			expect( entity.state ).not.toEqual( 'orphan' );
-		}
-		break;
-	}
-	if ( orphanState ) {
-		expect( entity.lastDataSource ).toEqual( null );
-		expect( entity.attributes ).not.toHaveProperty( 'id' );
-		expect( entity.attributes ).not.toHaveProperty( 'idHash' );
-	} else if ( null !== orphanState ) {
-		const lds = entity.lastDataSource;
-		if ( dataSourceName ) {
-			expect( lds ).toEqual( Diaspora.dataSources[dataSourceName] );
-		} else {
-			expect( lds ).not.toEqual( null );
-		}
-		
-		// Check dataSources weakmap
-		expect( entity.dataSources ).toBeInstanceOf( WeakMap );
-		expect( entity.dataSources.get( lds ) ).toBeAnAdapterEntity( lds );
-		
-		expect( entity.attributes ).toBeInstanceOf( Object );
-		expect( entity.attributes ).not.toHaveProperty( 'id' );
-		expect( entity.attributes ).not.toHaveProperty( 'idHash' );
-	}
-	_.forEach( ['persist', 'fetch', 'destroy', 'toObject'], word => {
-		expect( entity ).toImplementMethod( word );
-	} );
-	const toObj = entity.toObject();
-	expect( entity.attributes ).toMatchWithUndefined( props );
-};
 const hasOwnMethod = ( received: any, methodName: string ) => {
 	return !!( received && _.isFunction( received[methodName] ) );
 };
@@ -148,10 +100,59 @@ expect.extend( {
 	toBeAnEntity(
 		received: any,
 		expectedModel: Model,
-		expectedAttributes: IRawEntityAttributes,
+		expectedAttributes: IEntityAttributes,
 		expectedOrphan?: boolean | string
 	) {
-		check( received, expectedModel, expectedAttributes, expectedOrphan );
+		expect( received ).toBeInstanceOf( Entity );
+		expect( received.ctor.model ).toEqual( expectedModel );
+		const dataSourceName = 'string' === typeof expectedOrphan ? expectedOrphan : undefined;
+		const orphanState = dataSourceName ? false : expectedOrphan;
+		switch ( orphanState ) {
+			case true:
+			{
+				expect( received.state ).toEqual( 'orphan' );
+			}
+			break;
+			
+			case false:
+			{
+				expect( received.state ).not.toEqual( 'orphan' );
+			}
+			break;
+		}
+		expect( received.attributes ).toEqual( received.getAttributes() );
+		if ( orphanState ) {
+			expect( received.lastDataSource ).toEqual( null );
+			expect( received.attributes ).not.toHaveProperty( 'id' );
+			expect( received.attributes ).not.toHaveProperty( 'idHash' );
+			expect( received.attributes ).toEqual( received.getAttributes() );
+		} else if ( null !== orphanState ) {
+			const lds = received.lastDataSource;
+			if ( dataSourceName ) {
+				expect( lds ).toEqual( Diaspora.dataSources[dataSourceName] );
+			} else {
+				expect( lds ).not.toEqual( null );
+			}
+			
+			// Check dataSources weakmap
+			expect( received.dataSources ).toBeInstanceOf( WeakMap );
+			expect( received.dataSources.get( lds ) ).toBeAnAdapterEntity( lds );
+			
+			expect( received.attributes ).toBeInstanceOf( Object );
+			expect( received.attributes ).not.toHaveProperty( 'id' );
+			expect( received.attributes ).not.toHaveProperty( 'idHash' );
+			expect( received.getAttributes() ).toEqual( received.attributes );
+
+			expect( received.getProperties( dataSourceName ) ).toHaveProperty( 'id' );
+			expect( received.getProperties( dataSourceName ) ).toHaveProperty( 'idHash' );
+			expect( received.getProperties( dataSourceName ) ).toMatchObject( received.getAttributes( dataSourceName ) );
+
+			expect( received.attributes ).toEqual( received.getAttributes() );
+		}
+		_.forEach( ['persist', 'fetch', 'destroy' ], word => {
+			expect( received ).toImplementMethod( word );
+		} );
+		expect( received.attributes ).toMatchWithUndefined( expectedAttributes );
 		return {
 			message: () => '',
 			pass: true,
@@ -160,7 +161,7 @@ expect.extend( {
 	toBeAnEntitySet(
 		receivedSet: any,
 		expectedModel: Model,
-		expectedAttributesArray: IRawEntityAttributes | IRawEntityAttributes[],
+		expectedAttributesArray: IEntityAttributes | IEntityAttributes[],
 		expectedOrphan?: boolean | string
 	) {
 		expect( receivedSet ).toBeInstanceOf( EntitySet );
@@ -168,7 +169,7 @@ expect.extend( {
 		if ( _.isArray( expectedAttributesArray ) ) {
 			expect( receivedSet ).toHaveLength( expectedAttributesArray.length );
 		}
-		_.forEach( ['persist', 'fetch', 'destroy', 'toObject'], word => {
+		_.forEach( ['persist', 'fetch', 'destroy' ], word => {
 			expect( receivedSet ).toImplementMethod( word );
 		} );
 		receivedSet.entities.forEach( ( received, index ) => {
@@ -199,15 +200,16 @@ expect.extend( {
 		expect( receivedEntity.dataSource ).toBeInstanceOf( Adapter );
 		expect( receivedEntity.dataSource ).toEqual( expectedDataAccessLayer.adapter );
 		expect( receivedEntity.attributes ).toBeInstanceOf( Object );
-		expect( receivedEntity.attributes.idHash ).toBeInstanceOf( Object );
-		expect( receivedEntity.attributes ).toHaveProperty( 'id' );
-		expect( receivedEntity.attributes ).toHaveProperty( 'idHash' );
-		expect( receivedEntity.attributes.idHash ).toHaveProperty(
-			adapter.name,
-			receivedEntity.attributes.id
-		);
-		expect( receivedEntity.attributes.id ).not.toBeUndefined();
-		expect( receivedEntity.attributes.id ).not.toBeNull();
+		expect( receivedEntity.attributes ).not.toHaveProperty( 'idHash' );
+		expect( receivedEntity.attributes ).not.toHaveProperty( 'id' );
+		expect( receivedEntity.properties ).toBeInstanceOf( Object );
+		expect( receivedEntity.properties ).toHaveProperty( 'id' );
+		expect( receivedEntity.properties ).toHaveProperty( 'idHash' );
+		expect( receivedEntity.properties.idHash ).toBeInstanceOf( Object );
+		expect( receivedEntity.properties.idHash ).toHaveProperty( adapter.name, receivedEntity.properties.id );
+		expect( receivedEntity.properties.id ).not.toBeUndefined();
+		expect( receivedEntity.properties.id ).not.toBeNull();
+		expect( receivedEntity.properties ).toMatchObject( receivedEntity.attributes );
 		if ( 'undefined' === typeof window ) {
 			const baseName = (
 				adapter.name[0].toUpperCase() + adapter.name.substr( 1 )
@@ -256,12 +258,12 @@ declare global {
 			// Entity
 			toBeAnEntity(
 				expectedModel: Model,
-				expectedAttributes: IRawEntityAttributes,
+				expectedAttributes: IEntityAttributes,
 				expectedOrphan?: boolean | string
 			): void;
 			toBeAnEntitySet(
 				expectedModel: Model,
-				expectedAttributesArray: IRawEntityAttributes | IRawEntityAttributes[],
+				expectedAttributesArray: IEntityAttributes | IEntityAttributes[],
 				expectedOrphan?: boolean | string
 			): void;
 		}

@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
 
-import { Adapter, IRawAdapterEntityAttributes } from '../base';
+import { Adapter } from '../base';
 import { WebApiEntity } from './entity';
-import { IRawEntityAttributes } from '../../entities/entityFactory';
 import { DefaultQueryTransformerFactory } from './defaultQueryTransformer';
 import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
+import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
 export interface IXhrResponse extends XMLHttpRequest {
 	response: {
@@ -70,8 +70,8 @@ export interface IApiDescription {
 }
 
 export type TEntitiesJsonResponse =
-	| IRawAdapterEntityAttributes
-	| IRawAdapterEntityAttributes[]
+	| IEntityProperties
+	| IEntityProperties[]
 	| undefined;
 
 /**
@@ -183,7 +183,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * @param adapter  - Source of those entities
 	 */
 	private static maybeAddIdHashToEntities(
-		entities: IRawEntityAttributes[],
+		entities: IEntityAttributes[],
 		adapter: WebApiAdapter
 	) {
 		return _.map( entities, entity => WebApiEntity.setId( entity, adapter ) );
@@ -203,8 +203,8 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public async insertOne(
 		table: string,
-		entity: IRawEntityAttributes
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+		entity: IEntityAttributes
+	): Promise<IEntityProperties | undefined> {
 		let newEntity = await this.apiQuery( EHttpVerb.POST, table, entity );
 		if ( !_.isNil( newEntity ) ) {
 			return WebApiEntity.setId( newEntity, this );
@@ -224,8 +224,8 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public async insertMany(
 		table: string,
-		entities: IRawEntityAttributes[]
-	): Promise<IRawAdapterEntityAttributes[]> {
+		entities: IEntityAttributes[]
+	): Promise<IEntityProperties[]> {
 		let newEntities = await this.apiQuery(
 			EHttpVerb.POST,
 			this.getPluralEndpoint( table ),
@@ -252,7 +252,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+	): Promise<IEntityProperties | undefined> {
 		const apiDesc: IApiDescription = await this.emit(
 			'beforeQuery',
 			'find',
@@ -289,7 +289,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes[]> {
+	): Promise<IEntityProperties[]> {
 		const apiDesc = await this.emit(
 			'beforeQuery',
 			'find',
@@ -326,9 +326,9 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	public async updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		update: IRawEntityAttributes,
+		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+	): Promise<IEntityProperties | undefined> {
 		let entity = await this.apiQuery(
 			EHttpVerb.PATCH,
 			table,
@@ -357,9 +357,9 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	public async updateMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		update: IRawEntityAttributes,
+		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions
-	): Promise<IRawAdapterEntityAttributes[]> {
+	): Promise<IEntityProperties[]> {
 		let entities = await this.apiQuery(
 			EHttpVerb.PATCH,
 			this.getPluralEndpoint( table ),
@@ -464,13 +464,13 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		endPoint: string,
 		data?: object,
 		queryObject?: object
-	): Promise<IRawAdapterEntityAttributes | undefined>;
+	): Promise<IEntityProperties | undefined>;
 	private apiQuery(
 		verb: EHttpVerb,
 		endPoint: PluralEndpoint,
 		data?: object,
 		queryObject?: object
-	): Promise<IRawAdapterEntityAttributes[]>;
+	): Promise<IEntityProperties[]>;
 	private apiQuery(
 		verb: EHttpVerb,
 		endPoint: string,

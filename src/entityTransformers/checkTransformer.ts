@@ -3,8 +3,8 @@ import * as _ from 'lodash';
 import { EntityTransformer } from './entityTransformer';
 import { PathStack } from './pathStack';
 import { EntityValidationError } from '../errors/entityValidationError';
-import { IRawEntityAttributes } from '../entities/entityFactory';
 import { FieldDescriptor, ArrayFieldDescriptor, RelationalFieldDescriptor, ObjectFieldDescriptor, FieldDescriptorTypeChecks} from '../types/modelDescription';
+import { IEntityAttributes } from '../types/entity';
 
 /**
  * Prepare the check of each items in the array.
@@ -164,7 +164,7 @@ const VALIDATIONS = {
 			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: ObjectFieldDescriptor,
-			value: IRawEntityAttributes
+			value: IEntityAttributes
 		): ErrorObjectFinal | undefined {
 			if ( !_.isObject( value ) ) {
 				return {
@@ -403,7 +403,7 @@ export class CheckTransformer extends EntityTransformer {
 	 *
 	 * @author gerkin
 	 */
-	public apply( entity: IRawEntityAttributes ) {
+	public apply( entity: IEntityAttributes ) {
 		// Apply method `checkField` on each field described
 		const checkResults = _.chain( this._modelAttributes )
 			.mapValues( ( fieldDesc, field ) =>

@@ -1,45 +1,46 @@
 import * as _ from 'lodash';
 
-import { EntityUid, IRawEntityAttributes } from '../../entities/entityFactory';
 import { Adapter } from './adapter';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { DataAccessLayer } from '../dataAccessLayer';
-
-export interface IIdHash {
-	[key: string]: EntityUid;
-}
-export interface IRawAdapterEntityAttributes {
-	id: EntityUid;
-	idHash: IIdHash;
-	[key: string]: any;
-}
+import { IEntityAttributes, EntityUid, IEntityProperties } from '../../types/entity';
 
 export interface IAdapterEntityCtr<T extends AdapterEntity>{
-	new ( data: IRawEntityAttributes, adapter: Adapter<T> ): T;
+	new ( data: IEntityAttributes, adapter: Adapter<T> ): T;
 	
 	matches(
-		attributes: IRawAdapterEntityAttributes,
+		attributes: IEntityProperties,
 		query: QueryLanguage.SelectQuery
 	): boolean;
 
 	setId(
-		attributes: IRawEntityAttributes,
+		attributes: IEntityAttributes,
 		adapter: Adapter<T>,
 		propName: string,
 		id: EntityUid
-	): IRawAdapterEntityAttributes;
+	): IEntityProperties;
 }
 /**
  * AdapterEntity is the sub-entity reflecting a single source content. Values may differ from the Entity itself.
  */
 export abstract class AdapterEntity {
-	public get attributes() {
-		return this._attributes;
-	}
 	public readonly dataSource: Adapter;
 	public readonly dataAccessLayer: DataAccessLayer;
 
-	protected _attributes: IRawAdapterEntityAttributes;
+	protected _properties: IEntityProperties;
+	/**
+	 * Returns all attributes of this adapterEntity.
+	 * **Note:** Attributes does not include `id` nor `idHash`, that are managed. Use {@link properties} to get them.
+	 * 
+	 * @author Gerkin
+	 */
+	public get attributes() {
+		// TODO WARNING! Cast not OK
+		return _.omit( this.properties, ['idHash', 'id'] );
+	}
+	public get properties() {
+		return _.cloneDeep( this._properties );
+	}
 
 	/**
 	 * Construct a new data source entity with specified content & parent.
@@ -47,7 +48,7 @@ export abstract class AdapterEntity {
 	 * @author gerkin
 	 */
 	public constructor(
-		entity: IRawEntityAttributes,
+		entity: IEntityProperties,
 		dataSource: Adapter
 	) {
 		if ( _.isNil( entity ) ) {
@@ -63,7 +64,7 @@ export abstract class AdapterEntity {
 		}
 
 		_.merge( entity, { idHash: { [dataSource.name]: entity.id } } );
-		this._attributes = entity as IRawAdapterEntityAttributes;
+		this._properties = entity;
 		this.dataSource = dataSource;
 		this.dataAccessLayer = DataAccessLayer.retrieveAccessLayer( dataSource );
 	}
@@ -78,11 +79,11 @@ export abstract class AdapterEntity {
 	 * @param id         - Value of the ID
  	*/
 	public static setId(
-		attributes: IRawEntityAttributes,
+		attributes: IEntityAttributes,
 		adapter: Adapter,
 		propName: string = 'id',
 		id: EntityUid = attributes.id
-	): IRawAdapterEntityAttributes {
+	): IEntityProperties {
 		const adapterEntityAttributes = _.merge( attributes, {
 			id,
 			idHash: {
@@ -98,7 +99,7 @@ export abstract class AdapterEntity {
 	 * @param query Query to match entity against
 	 */
 	public static matches(
-		attributes: IRawAdapterEntityAttributes,
+		attributes: IEntityAttributes,
 		query: QueryLanguage.SelectQueryOrCondition
 	): boolean {
 		return false;
@@ -114,17 +115,6 @@ export abstract class AdapterEntity {
 	}
 
 	/**
-	 * Returns a plain object corresponding to this entity attributes.
-	 *
-	 * @author gerkin
-	 * @returns Plain object representing this entity.
-	 */
-	public toObject(): IRawAdapterEntityAttributes {
-		// TODO WARNING! Cast not OK
-		return _.omit( this.attributes, ['dataSource', 'id'] );
-	}
-
-	/**
 	 * Calls the static {@link AdapterEntity.setId} with provided arguments
 	 * 
 	 * @author Gerkin
@@ -137,7 +127,7 @@ export abstract class AdapterEntity {
 		propName: string = 'id',
 		id: EntityUid = this.attributes.id
 	): this {
-		this._attributes = AdapterEntity.setId(
+		this._properties = AdapterEntity.setId(
 			this.attributes,
 			adapter,
 			propName,

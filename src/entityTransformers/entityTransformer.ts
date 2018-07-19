@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
-import { IRawEntityAttributes } from '../entities/entityFactory';
 import { FieldDescriptor } from '../types/modelDescription';
 import { PathStack } from './pathStack';
+import { IEntityAttributes } from '../types/entity';
 
 /**
  * The Validator class is used to check an entity or its fields against a model description.
@@ -22,7 +22,7 @@ export abstract class EntityTransformer {
 	 *
 	 * @author gerkin
 	 */
-	public abstract apply( entity: IRawEntityAttributes ) : IRawEntityAttributes;
+	public abstract apply( entity: IEntityAttributes ) : IEntityAttributes;
 
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.

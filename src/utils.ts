@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 
-import { IRawEntityAttributes } from './entities/entityFactory';
-import { IRawAdapterEntityAttributes } from './adapters/base';
+import { IEntityAttributes, IEntityProperties } from './types/entity';
 import { QueryLanguage } from './types/queryLanguage';
 import { namedFunctions } from './staticStores';
 
@@ -14,9 +13,9 @@ import { namedFunctions } from './staticStores';
  * @returns Entity modified.
  */
 export const applyUpdateEntity = (
-	update: IRawEntityAttributes,
-	entity: IRawEntityAttributes
-): IRawEntityAttributes => {
+	update: IEntityAttributes,
+	entity: IEntityAttributes
+): IEntityAttributes => {
 	_.forEach( update, ( val, key ) => {
 		if ( _.isUndefined( val ) ) {
 			delete entity[key];
@@ -57,9 +56,9 @@ export const generateUUID = (): string => {
  * @returns Set with options applied.
  */
 export const applyOptionsToSet = (
-	set: IRawAdapterEntityAttributes[],
+	set: IEntityProperties[],
 	options: QueryLanguage.QueryOptions
-): IRawAdapterEntityAttributes[] => {
+): IEntityProperties[] => {
 	_.defaults( options, {
 		limit: Infinity,
 		skip: 0,

@@ -2,10 +2,12 @@ import { SequentialEvent } from 'sequential-event';
 import * as _ from 'lodash';
 
 import { Model } from '../model';
-import { Entity, EntitySpawner, IRawEntityAttributes } from './entityFactory';
+import { Entity, EntitySpawner } from './entityFactory';
 import { Errors } from '../errors';
 import * as Utils from '../utils';
 import { logger } from '../logger';
+import { TDataSource } from '../adapters/dataAccessLayer';
+import { IEntityAttributes } from '../types/entity';
 
 /**
  * Emit events on each entities.
@@ -77,8 +79,8 @@ export class Set {
 		}
 	}
 	public get toChainable() {
-		return _.chain( this._entities );
-	}
+				return _.chain( this._entities );
+			}
 
 	public get model() {
 		return this._model;
@@ -226,20 +228,10 @@ export class Set {
 	 * @param   newData - Attributes to change in each entity of the collection.
 	 * @returns `this`.
 	 */
-	public update( newData: IRawEntityAttributes ): Set {
+	public update( newData: IEntityAttributes ): Set {
 		this.entities.forEach( entity => {
 			Utils.applyUpdateEntity( newData, entity );
 		} );
 		return this;
-	}
-
-	/**
-	 * Returns a POJO representation of this set's data.
-	 *
-	 * @author gerkin
-	 * @returns POJO representation of set & children.
-	 */
-	public toObject(): Array<IRawEntityAttributes | null> {
-		return this.toChainable.map( entity => entity.toObject() ).value();
 	}
 }

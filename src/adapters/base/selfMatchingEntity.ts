@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 
 import { Constructable, OPERATORS } from './adapter-utils';
-import { AdapterEntity, IRawAdapterEntityAttributes } from './entity';
+import { AdapterEntity } from './entity';
 import { QueryLanguage } from '../../types/queryLanguage';
+import { IEntityProperties } from '../../types/entity';
 
 export const SelfMatchingAdapterEntity = <
 	T extends Constructable<AdapterEntity>
@@ -16,7 +17,7 @@ export const SelfMatchingAdapterEntity = <
 		 * @author gerkin
 		 */
 		public static matches(
-			attributes: IRawAdapterEntityAttributes,
+			attributes: IEntityProperties,
 			query: QueryLanguage.SelectQuery
 		): boolean {
 			// Iterate over every query keys to check each predicates
@@ -45,7 +46,7 @@ export const SelfMatchingAdapterEntity = <
 		 * @author gerkin
 		 */
 		public matches( query: QueryLanguage.SelectQuery ): boolean {
-			return SelfMatchingAdapterEntity.matches( this._attributes, query );
+			return SelfMatchingAdapterEntity.matches( this._properties, query );
 		}
 	};
 };

@@ -2,14 +2,9 @@ import * as _ from 'lodash';
 
 import { Diaspora } from '../../src/diaspora';
 import { Model } from '../../src/model';
-import {
-	Entity,
-	IRawEntityAttributes,
-	EntityUid,
-} from '../../src/entities/entityFactory';
-import * as Bluebird from 'bluebird';
+import { Entity } from '../../src/entities/entityFactory';
 import { InMemoryAdapter, InMemoryEntity } from '../../src/adapters/inMemory';
-import { IRawAdapterEntityAttributes, Adapter } from '../../src/adapters/base';
+import { Adapter } from '../../src/adapters/base';
 
 import '../utils';
 import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';

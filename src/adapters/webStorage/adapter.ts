@@ -1,15 +1,11 @@
 import * as _ from 'lodash';
 
-import {
-	Adapter,
-	EAdapterState,
-	IRawAdapterEntityAttributes,
-} from '../base';
-import { IRawEntityAttributes, EntityUid } from '../../entities/entityFactory';
+import { Adapter, EAdapterState } from '../base';
 import { WebStorageEntity } from './entity';
 import * as Utils from '../../utils';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
+import { EntityUid, IEntityAttributes, IEntityProperties } from '../../types/entity';
 
 export interface IWebStorageAdapterConfig {
 	/**
@@ -95,8 +91,8 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 */
 	public async insertOne(
 		table: string,
-		entity: IRawEntityAttributes
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+		entity: IEntityAttributes
+	): Promise<IEntityProperties | undefined> {
 		entity = _.cloneDeep( entity || {} );
 		const rawAdapterAttributes = WebStorageEntity.setId(
 			entity,
@@ -125,8 +121,8 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 */
 	public async insertMany(
 		table: string,
-		entities: IRawEntityAttributes[]
-	): Promise<IRawAdapterEntityAttributes[]> {
+		entities: IEntityAttributes[]
+	): Promise<IEntityProperties[]> {
 		entities = _.cloneDeep( entities );
 		const tableIndex = this.ensureCollectionExists( table );
 		const rawAdapterAttributesArr = entities.map( ( entity = {} ) => {
@@ -161,7 +157,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	public findOneById(
 		table: string,
 		id: string
-	): IRawAdapterEntityAttributes | undefined {
+	): IEntityProperties | undefined {
 		const item = this.source.getItem( WebStorageAdapter.getItemName( table, id ) );
 		if ( !_.isNil( item ) ) {
 			return JSON.parse( item );
@@ -183,7 +179,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+	): Promise<IEntityProperties | undefined> {
 		_.defaults( options, {
 			skip: 0,
 		} );
@@ -237,9 +233,9 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	public async updateOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		update: IRawEntityAttributes,
+		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions = this.normalizeOptions()
-	): Promise<IRawAdapterEntityAttributes | undefined> {
+	): Promise<IEntityProperties | undefined> {
 		_.defaults( options, {
 			skip: 0,
 		} );

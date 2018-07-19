@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
-import { AdapterEntity, Adapter, IRawAdapterEntityAttributes } from '../base';
-import { IRawEntityAttributes, EntityUid } from '../../entities/entityFactory';
+import { AdapterEntity, Adapter } from '../base';
 import { generateUUID } from '../../utils';
 import { Constructable } from './adapter-utils';
+import { IEntityAttributes, EntityUid, IEntityProperties } from '../../types/entity';
 
 export const AutoIdAdapterEntity = <T extends Constructable<AdapterEntity>>(
 	adapterEntity: T
@@ -19,11 +19,12 @@ export const AutoIdAdapterEntity = <T extends Constructable<AdapterEntity>>(
 		 * @param id         - Value of the ID
 		 */
 		public static setId(
-			attributes: IRawEntityAttributes,
+			attributes: IEntityAttributes
+			,
 			adapter: Adapter,
 			propName: string = 'id',
 			id: EntityUid = _.get( attributes, 'id', generateUUID() )
-		): IRawAdapterEntityAttributes {
+		): IEntityProperties {
 			const adapterEntityAttributes = _.merge( attributes, {
 				id,
 				idHash: {
@@ -46,7 +47,7 @@ export const AutoIdAdapterEntity = <T extends Constructable<AdapterEntity>>(
 			propName: string = 'id',
 			id: EntityUid = _.get( this, 'attributes.id', generateUUID() )
 		): this {
-			this._attributes = AutoIdAdapterEntity.setId(
+			this._properties = AutoIdAdapterEntity.setId(
 				this.attributes,
 				adapter,
 				propName,
