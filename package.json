@@ -31,9 +31,9 @@
 		"build:standalone:min": "rollup -c ./rollup/rollup.standalone.min.config.ts",
 		"build:module": "rollup -c ./rollup/rollup.module.config.ts",
 		"build:module:min": "rollup -c ./rollup/rollup.module.min.config.ts",
-		"build:all": "npm run build:standalone && npm run build:standalone:min && npm run build:module && npm run build:module:min",
+		"build:rollup": "npm run build:standalone && npm run build:standalone:min && npm run build:module && npm run build:module:min",
 		"build:typescript": "tsc --declaration true --module commonjs --outDir dist/lib --declarationDir dist/lib",
-		"build": "npm run build:typescript && npm run build:all && npm run doc",
+		"build": "npm run build:typescript && npm run build:rollup && npm run doc",
 		"start": "rollup -c ./rollup/rollup.module.config.ts -w",
 		"test": "jest",
 		"test:watch": "jest --watch",
@@ -45,7 +45,7 @@
 		"semantic-release-prepare": "ts-node tools/semantic-release-prepare",
 		"precommit": "lint-staged",
 		"conventional-changelog": "npx conventional-changelog-cli -p angular -i CHANGELOG.md -s",
-		"version": "npm run conventional-changelog && git add CHANGELOG.md",
+		"version": "npm run conventional-changelog && git add CHANGELOG.md && npm run doc && git add docs",
 		"prepack": "npm run build"
 	},
 	"keywords": [

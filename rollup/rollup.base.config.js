@@ -4,15 +4,20 @@ const sourceMaps = require('rollup-plugin-sourcemaps');
 const camelCase = require('lodash.camelcase');
 const uglify = require('rollup-plugin-uglify').uglify;
 const json = require('rollup-plugin-json');
-const ignore = require( 'rollup-plugin-ignore' );
+const hypothetical = require( 'rollup-plugin-hypothetical' );
 const minifyEs = require('uglify-es').minify;
 
 const pkg = require('../package.json')
 
-const libraryName = 'diaspora'
+const libraryName = 'Diaspora'
+
+const formatHypotheticalReplace = (str) => `// ===== HYPOTHETICAL REPLACE START ======
+${str}
+// =====  HYPOTHETICAL REPLACE END  ======
+`;
 
 module.exports = (minify, externalize) => {
-	const libName = camelCase(libraryName);
+	const fileName = camelCase(libraryName);
 	const getFileName = libFile => {
 		const extRegex = /(\.(t|j)sx?)/;
 		if(!externalize){
@@ -27,18 +32,18 @@ module.exports = (minify, externalize) => {
 		'lodash': '_',
 		'sequential-event': 'SE',
 	} : undefined
-
+	
 	const commonjsConfig = {
 		namedExports: {
 			'node_modules/lodash/lodash.js': Object.keys(require('lodash'))
 		}
 	};
-
+	
 	const config = {
 		input: 'dist/lib/index.js',
 		output: [
-			{ file: getFileName(`dist/umd/${libName}.js`), name: libName, format: 'umd', sourcemap: true, globals, exports: 'named' },
-			{ file: getFileName(`dist/es5/${libName}.js`), name: libName, format: 'es', sourcemap: true, globals, exports: 'named' },
+			{ file: getFileName(`dist/umd/${fileName}.js`), name: libraryName, format: 'umd', sourcemap: true, globals, exports: 'named' },
+			{ file: getFileName(`dist/es5/${fileName}.js`), name: libraryName, format: 'es', sourcemap: true, globals, exports: 'named' },
 		],
 		// Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
 		external: (externalize ? ['lodash', 'sequential-event'] : []).concat(['winston', 'request-promise', 'util', 'os']),
@@ -52,7 +57,35 @@ module.exports = (minify, externalize) => {
 			
 			json(),
 			
-			ignore('winston', 'request-promise', 'util', 'os'),
+			hypothetical({
+				allowRealFiles: true,
+				allowFallthrough: true,
+				files: {
+					'winston': `
+					export default null;
+					`,
+					'request-promise': `
+					export default null;
+					`,
+					'util': `
+					export default null;
+					`,
+					
+					
+					// Drop-in replacement classes
+					'./dist/lib/logger/index.js': formatHypotheticalReplace(`import { BrowserLogger } from './browserLogger';
+					/**
+					* Reference to the static logger instance for Diaspora.
+					*/
+					export const logger = new BrowserLogger();`),
+					'./dist/lib/adapters/webApi/adapterDeclaration.js': formatHypotheticalReplace(`import { BrowserWebApiAdapter } from './subAdapters/browserAdapter';
+
+export const declareWebApi = ( Diaspora ) => Diaspora.registerAdapter( 'webApi', BrowserWebApiAdapter );`),
+					'./dist/lib/adapters/webStorage/adapterDeclaration.js': formatHypotheticalReplace(`import { WebStorageAdapter } from './adapter';
+
+export const declareWebStorage = ( Diaspora ) => Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );`),
+				}
+			}),
 			// Allow node_modules resolution, so you can use 'external' to control
 			// which external modules to include in the bundle
 			// https://github.com/rollup/rollup-plugin-node-resolve#usage
