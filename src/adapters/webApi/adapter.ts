@@ -77,7 +77,7 @@ export type TEntitiesJsonResponse =
 /**
  * Adapter for RESTful HTTP APIs.
  *
- * @see https://www.npmjs.com/package/diaspora-server Diaspora-Server: Package built on Diaspora & Express.js to easily configure HTTP APIs compatible with this adapter.
+ * @see https://www.npmjs.com/package/@diaspora/plugin-server Diaspora Server plugin: Package built on Diaspora & Express.js to easily configure HTTP APIs compatible with this adapter.
  */
 export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	protected static readonly httpErrorFactories = {

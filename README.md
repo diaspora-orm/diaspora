@@ -130,6 +130,7 @@ features are incomplete or absent:
 ## Compatibility
 
 Diaspora requires:
+
 * Node `>=` 6.4.0
 * Browsers:
   * Edge `>=` 12

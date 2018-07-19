@@ -146,6 +146,11 @@ export abstract class Entity extends SequentialEvent {
 		} );
 	}
 
+	/**
+	 * Apply the default values using the {@link DefaultTransformer}.
+	 * 
+	 * @author Gerkin
+	 */
 	public applyDefaults(){
 		if ( this._attributes ){
 			return this.model.entityTransformers.default.apply( this._attributes );
