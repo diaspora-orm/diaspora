@@ -10,6 +10,17 @@ import { TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes } from '../types/entity';
 
 /**
+ * Transformation modes applyable to the set. You can use it to change the type of content of the set when casting it to {@link lodash} wrapper.
+ * 
+ * @author Gerkin
+ */
+export enum ETransformationMode{
+	ENTITY,
+	ATTRIBUTES,
+	PROPERTIES,
+}
+
+/**
  * Emit events on each entities.
  *
  * @author Gerkin
@@ -52,7 +63,7 @@ async function wrapEventsAction(
 	);
 	await _allEmit( 'before' );
 	await Promise.all(
-		this.toChainable
+		this.toChainable()
 			.map( entity =>
 				( entity as any )[action]( sourceName, {
 					skipEvents: true,
@@ -78,9 +89,30 @@ export class Set {
 			logger.warn( exception );
 		}
 	}
-	public get toChainable() {
+
+	/**
+	 * Returns the entities of the set as a {@link lodash} explicit wrapper, in the expected chain mode.
+	 * 
+	 * @author Gerkin
+	 * @param chainMode - Chain mode for the entities inside the wrapper. See {@link Set.asChainMode}.
+	 * @param source    - Data source to get entities from, if using {@link ETransformationMode.ATTRIBUTES} or {@link ETransformationMode.PROPERTIES}.
+	 */
+	public toChainable( chainMode?: ETransformationMode.ENTITY ): _.LoDashExplicitArrayWrapper<Entity>;
+	public toChainable( chainMode: ETransformationMode = ETransformationMode.ENTITY, source?: TDataSource ) {
+		switch ( chainMode ){
+			case ETransformationMode.ATTRIBUTES:{
+				return _.chain( this._entities ).map( entity => entity.getAttributes( source as any ) );
+			}
+
+			case ETransformationMode.PROPERTIES:{
+				return _.chain( this._entities ).map( entity => entity.getProperties( source as any ) );
+			}
+
+			case ETransformationMode.ENTITY:{
 				return _.chain( this._entities );
 			}
+		}
+	}
 
 	public get model() {
 		return this._model;
@@ -157,13 +189,13 @@ export class Set {
 	 * @see {@link EntityFactory.Entity#persist}
 	 */
 	public async persist( sourceName?: string ): Promise<Set> {
-		const suffixes = this.toChainable
+		const suffixes = this.toChainable()
 			.map( entity => ( 'orphan' === entity.state ? 'Create' : 'Update' ) )
 			.value();
 		const _allEmit = _.partial( allEmit, this.entities );
 		await _allEmit( 'Persist', 'before' );
 		await _allEmit( 'Validate', 'before' );
-		const validationResults = this.toChainable
+		const validationResults = this.toChainable()
 			.map( entity => {
 				try {
 					entity.validate();
@@ -179,7 +211,7 @@ export class Set {
 				validationResults
 			);
 		}
-		this.toChainable.map( entity => entity.applyDefaults() ).value();
+		this.toChainable().map( entity => entity.applyDefaults() ).value();
 		await _allEmit( 'Validate', 'after' );
 		await wrapEventsAction.call(
 			this,
