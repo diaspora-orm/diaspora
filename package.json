@@ -44,7 +44,7 @@
 		"semantic-release": "semantic-release pre && npm publish && semantic-release post",
 		"semantic-release-prepare": "ts-node tools/semantic-release-prepare",
 		"conventional-changelog": "npx conventional-changelog-cli -p angular -i CHANGELOG.md -s",
-		"version": "npm run conventional-changelog && git add CHANGELOG.md && npm run doc && git add docs",
+		"version": "npm run conventional-changelog && git add CHANGELOG.md && npm run doc && git add --force docs",
 		"prepack": "npm run build"
 	},
 	"keywords": [
