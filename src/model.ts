@@ -173,19 +173,25 @@ export class Model {
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
 	 *
 	 * @author gerkin
-	 * @throws  {Error} Thrown if requested source name does not exists.
+	 * @throws  {ReferenceError} Thrown if requested source name does not exists.
 	 * @param   dataSource - Name of the source to get. It corresponds to one of the sources you set in {@link Model#modelDesc}.Sources.
 	 * @returns Source adapter with requested name.
 	 */
 	public getDataSource(
 		dataSource: TDataSource = this.defaultDataSource
 	): DataAccessLayer {
+		// If argument is a data access layer, check that it is in our {@link _dataSources} hash.
 		if ( dataSource instanceof DataAccessLayer ){
+			if ( _.values( this._dataSources ).indexOf( dataSource ) === -1 ){
+				throw new ReferenceError( `Model does not contain data source "${dataSource.adapter.name}"` );
+			}
 			return dataSource;
-		} else if ( dataSource instanceof Adapter ){
-			return this._dataSources[dataSource.name];
 		} else {
-			return this._dataSources[dataSource];
+			const dataSourceName = dataSource instanceof Adapter ? dataSource.name : dataSource;
+			if ( !this._dataSources.hasOwnProperty( dataSourceName ) ){
+				throw new ReferenceError( `Model does not contain data source "${dataSourceName}"` );
+			}
+			return this._dataSources[dataSourceName];
 		}
 	}
 	
