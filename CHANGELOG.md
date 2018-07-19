@@ -1,3 +1,19 @@
+<a name="0.3.0-alpha.10"></a>
+# [0.3.0-alpha.10](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.9...v0.3.0-alpha.10) (2018-07-19)
+
+
+### Bug Fixes
+
+* **Adapter/AdapterUtils:** Fixed circular dependency ([3e98057](https://github.com/diaspora-orm/diaspora/commit/3e98057))
+
+
+### Features
+
+* **Entity,AdapterEntity:** Added the notion of `properties` and `attributes` ([1373fae](https://github.com/diaspora-orm/diaspora/commit/1373fae))
+* **Set:** `toChainable()` now takes an optional transformation mode & source ([96aaa2e](https://github.com/diaspora-orm/diaspora/commit/96aaa2e))
+
+
+
 <a name="0.3.0-alpha.9"></a>
 # [0.3.0-alpha.9](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.8...v0.3.0-alpha.9) (2018-07-02)
 
