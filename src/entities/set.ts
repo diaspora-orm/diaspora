@@ -7,7 +7,7 @@ import { Errors } from '../errors';
 import * as Utils from '../utils';
 import { logger } from '../logger';
 import { TDataSource } from '../adapters/dataAccessLayer';
-import { IEntityAttributes } from '../types/entity';
+import { IEntityAttributes, IEntityProperties } from '../types/entity';
 
 /**
  * Transformation modes applyable to the set. You can use it to change the type of content of the set when casting it to {@link lodash} wrapper.
@@ -97,6 +97,8 @@ export class Set {
 	 * @param chainMode - Chain mode for the entities inside the wrapper. See {@link Set.asChainMode}.
 	 * @param source    - Data source to get entities from, if using {@link ETransformationMode.ATTRIBUTES} or {@link ETransformationMode.PROPERTIES}.
 	 */
+	public toChainable( chainMode: ETransformationMode.ATTRIBUTES, source?: TDataSource ): _.LoDashExplicitArrayWrapper<IEntityAttributes>;
+	public toChainable( chainMode: ETransformationMode.PROPERTIES, source: TDataSource ): _.LoDashExplicitArrayWrapper<IEntityProperties>;
 	public toChainable( chainMode?: ETransformationMode.ENTITY ): _.LoDashExplicitArrayWrapper<Entity>;
 	public toChainable( chainMode: ETransformationMode = ETransformationMode.ENTITY, source?: TDataSource ) {
 		switch ( chainMode ){
