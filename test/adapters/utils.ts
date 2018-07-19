@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import express from 'express';
+import * as express from 'express';
 import {json, urlencoded} from 'body-parser';
 
 import { AdapterEntity, Adapter } from '../../src/adapters/base';
@@ -124,8 +124,8 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 	} );
 	
 	return new Promise( ( resolve, reject ) => {
+		
 		const server = app.listen( apiPort, () => {
-			//console.log( `Example app listening on port ${apiPort}!` );
 			return resolve( server );
 		} );
 	} );

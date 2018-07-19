@@ -74,8 +74,8 @@ const validateOption = (
  * @author gerkin
  * @see TODO remapping.
  */
-	adapter: Adapter,
 export const remapIO = <T extends IEntityAttributes>(
+	adapter: Adapter<AdapterEntity>,
 	tableName: string,
 	query: T,
 	input: boolean
@@ -96,7 +96,7 @@ export const remapIO = <T extends IEntityAttributes>(
 	const remaped = _.mapKeys( filtered, ( value, key ) => {
 		return _.get( adapter, ['remaps', tableName, remapType, key], key );
 	} );
-	return remaped;
+	return remaped as T;
 };
 
 export interface IQueryCheckFunction {

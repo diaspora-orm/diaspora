@@ -26,8 +26,8 @@ export enum EAdapterState {
 
 
 export interface IAdapterCtr<T extends AdapterEntity = AdapterEntity>
-extends Constructable<Adapter> {
-	new ( dataSourceName: string, ...args: any[] ): Adapter;
+extends Constructable<Adapter<T>> {
+	new ( dataSourceName: string, ...args: any[] ): Adapter<T>;
 }
 
 /**

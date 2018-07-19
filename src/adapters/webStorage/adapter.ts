@@ -125,7 +125,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	): Promise<IEntityProperties[]> {
 		entities = _.cloneDeep( entities );
 		const tableIndex = this.ensureCollectionExists( table );
-		const rawAdapterAttributesArr = entities.map( ( entity = {} ) => {
+		const rawAdapterAttributesArr = entities.map( entity => {
 			const rawAdapterAttributes = WebStorageEntity.setId(
 				entity,
 				this,
