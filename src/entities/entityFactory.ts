@@ -57,6 +57,10 @@ export abstract class Entity extends SequentialEvent {
 	public get attributes() {
 		return this.getAttributes();
 	}
+
+	public set attributes( newAttributes: IEntityAttributes | null ){
+		this._attributes = newAttributes;
+	}
 	
 	public get state() {
 		return this._state;
@@ -223,19 +227,6 @@ export abstract class Entity extends SequentialEvent {
 		if ( this.attributes ) {
 			this.ctor.model.entityTransformers.check.apply( this.attributes );
 		}
-		return this;
-	}
-	
-	/**
-	 * Remove all editable properties & replace them with provided object.
-	 *
-	 * @author gerkin
-	 * @param   newContent - Replacement content.
-	 * @returns Returns `this`.
-	 */
-	public replaceAttributes( newContent: IEntityAttributes = {} ) {
-		// newContent.idHash = this.idHash;
-		this._attributes = newContent;
 		return this;
 	}
 	
