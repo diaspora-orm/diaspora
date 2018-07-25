@@ -1,7 +1,11 @@
-import { BrowserLogger } from './browserLogger';
-import { NodeLogger } from './nodeLogger';
-
 /**
  * Reference to the static logger instance for Diaspora.
  */
-export const logger = process.browser ? new BrowserLogger() : new NodeLogger();
+/*#if _BROWSER
+import { BrowserLogger } from './browserLogger';
+export const logger = new BrowserLogger();
+//#else // */
+import { NodeLogger } from './nodeLogger';
+export const logger = new NodeLogger();
+// tslint:disable-next-line:comment-format
+//#endif

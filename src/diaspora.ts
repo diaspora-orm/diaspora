@@ -117,6 +117,9 @@ export class DiasporaStatic {
 		...config: any[]
 	) {
 		if ( !this.adapters.hasOwnProperty( adapterLabel ) ) {
+			/*#if _BROWSER
+			throw new Error(`Could't load dynamically the adapter ${adapterLabel} in browser build`);
+			//#else */
 			const moduleName = `diaspora-${adapterLabel}`;
 			try {
 				try {
@@ -134,6 +137,8 @@ export class DiasporaStatic {
 					`Could not load adapter "${adapterLabel}" (expected in module "${moduleName}"), an error was thrown: ${e}`
 				);
 			}
+			// tslint:disable-next-line:comment-format
+			//#endif
 		}
 		const adapterCtr = this.adapters[adapterLabel];
 		const baseAdapter = new adapterCtr( sourceName || adapterLabel, ...config );
@@ -214,9 +219,30 @@ export class DiasporaStatic {
 
 export const Diaspora = DiasporaStatic.instance;
 
-import {declareInMemory} from './adapters/inMemory/adapterDeclaration';
-declareInMemory( Diaspora );
-import {declareWebApi} from './adapters/webApi/adapterDeclaration';
-declareWebApi( Diaspora );
-import {declareWebStorage} from './adapters/webStorage/adapterDeclaration';
-declareWebStorage( Diaspora );
+import { InMemoryAdapter } from './adapters/inMemory/index';
+Diaspora.registerAdapter( 'inMemory', InMemoryAdapter );
+
+/*#ifset _BROWSER
+// tslint:disable-next-line:comment-format
+//#if _BROWSER
+import { WebStorageAdapter } from './adapters/webStorage/index';
+Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );
+import { BrowserWebApiAdapter } from './adapters/webApi/subAdapters/browserAdapter';
+Diaspora.registerAdapter( 'wepApi', BrowserWebApiAdapter );
+// tslint:disable-next-line:comment-format
+//#else
+import { NodeWebApiAdapter } from './adapters/webApi/subAdapters/nodeAdapter';
+Diaspora.registerAdapter( 'wepApi', NodeWebApiAdapter );
+// tslint:disable-next-line:comment-format
+//#endif
+
+// If we are in unbuilt state (like for unit tests), include all adapters aliased if required
+//#else //*/
+import { WebStorageAdapter } from './adapters/webStorage/index';
+Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );
+import { BrowserWebApiAdapter } from './adapters/webApi/subAdapters/browserAdapter';
+Diaspora.registerAdapter( 'webApiBrowser', BrowserWebApiAdapter );
+import { NodeWebApiAdapter } from './adapters/webApi/subAdapters/nodeAdapter';
+Diaspora.registerAdapter( 'webApiNode', NodeWebApiAdapter );
+// tslint:disable-next-line:comment-format
+//#endif

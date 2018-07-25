@@ -35,7 +35,7 @@ export const applyUpdateEntity = (
 export const generateUUID = (): string => {
 	let d = new Date().getTime();
 	// Use high-precision timer if available
-	const perf = ( global as any ).performance;
+	const perf = ( ( window || global ) as any ).performance;
 	if ( perf && 'function' === typeof perf.now ) {
 		d += perf.now();
 	}
