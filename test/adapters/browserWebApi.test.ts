@@ -10,9 +10,6 @@ import {
 	checkEachStandardMethods,
 	initMockApi,
 } from './utils';
-import { AdapterEntity, Adapter } from '../../src/adapters/base';
-import { QueryLanguage } from '../../src/types/queryLanguage';
-import { BrowserWebApiAdapter } from '../../src/adapters/webApi/subAdapters/browserAdapter';
 import { ELoggingLevel } from '../../src/logger/logger';
 
 const ADAPTER_LABEL = 'webApiBrowser';
@@ -21,7 +18,6 @@ const adapterConfig = getConfig( ADAPTER_LABEL ) as IWebApiAdapterConfig;
 ( global as any ).XMLHttpRequest = XMLHttpRequest;
 let server;
 
-Diaspora.registerAdapter( ADAPTER_LABEL, BrowserWebApiAdapter );
 createDataSource( ADAPTER_LABEL, adapterConfig );
 
 beforeAll( async () => {

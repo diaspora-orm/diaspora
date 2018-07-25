@@ -11,9 +11,6 @@ import {
 	checkEachStandardMethods,
 	initMockApi,
 } from './utils';
-import { AdapterEntity, Adapter } from '../../src/adapters/base';
-import { QueryLanguage } from '../../src/types/queryLanguage';
-import { NodeWebApiAdapter } from '../../src/adapters/webApi/subAdapters/nodeAdapter';
 import { ELoggingLevel } from '../../src/logger/logger';
 
 const ADAPTER_LABEL = 'webApiNode';
@@ -21,7 +18,6 @@ const adapterConfig = getConfig( ADAPTER_LABEL ) as IWebApiAdapterConfig;
 
 let server;
 
-Diaspora.registerAdapter( ADAPTER_LABEL, NodeWebApiAdapter );
 createDataSource( ADAPTER_LABEL, adapterConfig );
 
 beforeAll( async () => {
