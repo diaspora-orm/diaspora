@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IOptions | @diaspora/diaspora</title>
+	<title>IEntityFactory | @diaspora/diaspora</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -909,11 +909,16 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class="current tsd-kind-interface">
-			<a href="ioptions.html" class="tsd-kind-icon">IOptions</a>
+		<li class="current tsd-kind-class">
+			<a href="../classes/entity.html" class="tsd-kind-icon">Entity</a>
 			<ul>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="ioptions.html#skipevents" class="tsd-kind-icon">skip<wbr>Events</a>
+				<li class="current tsd-kind-interface tsd-parent-kind-class">
+					<a href="entity.ientityfactory.html" class="tsd-kind-icon">IEntity<wbr>Factory</a>
+					<ul>
+						<li class=" tsd-kind-property tsd-parent-kind-interface">
+							<a href="entity.ientityfactory.html#entity" class="tsd-kind-icon">Entity</a>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</li>
@@ -921,11 +926,72 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>This factory function generate a new class constructor, prepared for a specific model.</p>
+				</div>
+				<dl class="tsd-comment-tags">
+					<dt>author</dt>
+					<dd><p>Gerkin</p>
+					</dd>
+				</dl>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">IOptions</span>
+					<span class="target">IEntityFactory</span>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel">
+			<h3 class="tsd-before-signature">Callable</h3>
+			<ul class="tsd-signatures tsd-kind-interface tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">__call<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelDesc<span class="tsd-signature-symbol">: </span><a href="modeldescription.html" class="tsd-signature-type">ModelDescription</a>, model<span class="tsd-signature-symbol">: </span><a href="../classes/model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="entity.entityspawner.html" class="tsd-signature-type">EntitySpawner</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/entities/entityFactory.ts#L588">entities/entityFactory.ts:588</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This factory function generate a new class constructor, prepared for a specific model.</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>name: <span class="tsd-signature-type">string</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Name of this model.</p>
+								</div>
+							</div>
+						</li>
+						<li>
+							<h5>modelDesc: <a href="modeldescription.html" class="tsd-signature-type">ModelDescription</a></h5>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Model configuration that generated the associated <code>model</code>.</p>
+								</div>
+							</div>
+						</li>
+						<li>
+							<h5>model: <a href="../classes/model.html" class="tsd-signature-type">Model</a></h5>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Model that will spawn entities.</p>
+								</div>
+							</div>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="entity.entityspawner.html" class="tsd-signature-type">EntitySpawner</a></h4>
+					<p>Entity constructor to use with this model.</p>
 				</li>
 			</ul>
 		</section>
@@ -936,7 +1002,7 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ioptions.html#skipevents" class="tsd-kind-icon">skip<wbr>Events</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="entity.ientityfactory.html#entity" class="tsd-kind-icon">Entity</a></li>
 						</ul>
 					</section>
 				</div>
@@ -945,12 +1011,12 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="skipevents" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> skip<wbr>Events</h3>
-				<div class="tsd-signature tsd-kind-icon">skip<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
+				<a name="entity" class="tsd-anchor"></a>
+				<h3>Entity</h3>
+				<div class="tsd-signature tsd-kind-icon">Entity<span class="tsd-signature-symbol">:</span> <a href="../classes/entity.html" class="tsd-signature-type">Entity</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/e1fbc2b/src/entities/entityFactory.ts#L14">entities/entityFactory.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/entities/entityFactory.ts#L590">entities/entityFactory.ts:590</a></li>
 					</ul>
 				</aside>
 			</section>

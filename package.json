@@ -1,6 +1,6 @@
 {
 	"name": "@diaspora/diaspora",
-	"version": "0.3.0-alpha.10",
+	"version": "0.3.0-alpha.11",
 	"description": "Multi-Layer ORM for Javascript Client+Server",
 	"files": [
 		"docs",
@@ -9,7 +9,7 @@
 	],
 	"main": "./dist/node/umd/index.js",
 	"browser": "./dist/browser/umd/index.js",
-	"typings": "./dist/types", 
+	"typings": "./dist/types",
 	"directories": {
 		"doc": "doc",
 		"test": "test"

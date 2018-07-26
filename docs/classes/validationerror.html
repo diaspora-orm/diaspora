@@ -915,6 +915,9 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
 					<a href="validationerror.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a href="validationerror.html#ancestor" class="tsd-kind-icon">ancestor</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 					<a href="validationerror.html#message" class="tsd-kind-icon">message</a>
 				</li>
@@ -979,6 +982,7 @@ img { max-width: 100%; }
 					<section class="tsd-index-section tsd-is-inherited">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="validationerror.html#ancestor" class="tsd-kind-icon">ancestor</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="validationerror.html#message" class="tsd-kind-icon">message</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="validationerror.html#name" class="tsd-kind-icon">name</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-static"><a href="validationerror.html#stack" class="tsd-kind-icon">stack</a></li>
@@ -999,14 +1003,14 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Validation<wbr>Error<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, <span class="tsd-signature-symbol">...</span>errorArgs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="validationerror.html" class="tsd-signature-type">ValidationError</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Validation<wbr>Error<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, ancestor<span class="tsd-signature-symbol">?: </span><a href="../enums/elogginglevel.html#error" class="tsd-signature-type">Error</a>, filename<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, lineNumber<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="validationerror.html" class="tsd-signature-type">ValidationError</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="extendableerror.html">ExtendableError</a>.<a href="extendableerror.html#constructor">constructor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/e1fbc2b/src/errors/extendableError.ts#L6">errors/extendableError.ts:6</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/errors/extendableError.ts#L6">errors/extendableError.ts:6</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1030,12 +1034,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>errorArgs: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>Arguments to transfer to parent Error.</p>
-									</div>
-								</div>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> ancestor: <a href="../enums/elogginglevel.html#error" class="tsd-signature-type">Error</a></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> filename: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> lineNumber: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="validationerror.html" class="tsd-signature-type">ValidationError</a></h4>
@@ -1045,6 +1050,17 @@ img { max-width: 100%; }
 		</section>
 		<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+				<a name="ancestor" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> ancestor</h3>
+				<div class="tsd-signature tsd-kind-icon">ancestor<span class="tsd-signature-symbol">:</span> <a href="../enums/elogginglevel.html#error" class="tsd-signature-type">Error</a></div>
+				<aside class="tsd-sources">
+					<p>Inherited from <a href="extendableerror.html">ExtendableError</a>.<a href="extendableerror.html#ancestor">ancestor</a></p>
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/errors/extendableError.ts#L14">errors/extendableError.ts:14</a></li>
+					</ul>
+				</aside>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 				<a name="message" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> message</h3>
@@ -1092,7 +1108,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/e1fbc2b/src/errors/validationError.ts#L14">errors/validationError.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/errors/validationError.ts#L14">errors/validationError.ts:14</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

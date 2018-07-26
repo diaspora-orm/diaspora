@@ -1,3 +1,14 @@
+<a name="0.3.0-alpha.11"></a>
+# [0.3.0-alpha.11](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.10...v0.3.0-alpha.11) (2018-07-26)
+
+
+### Bug Fixes
+
+* **browser|node:** Fixed target specific code with rollup-jscc ([14a4652](https://github.com/diaspora-orm/diaspora/commit/14a4652))
+* **Entity.Entity:** Use same retrieved/generated ID for IDHash & ID update ([a3bc61e](https://github.com/diaspora-orm/diaspora/commit/a3bc61e))
+
+
+
 <a name="0.3.0-alpha.10"></a>
 # [0.3.0-alpha.10](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.9...v0.3.0-alpha.10) (2018-07-19)
 
