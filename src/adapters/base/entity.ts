@@ -82,12 +82,13 @@ export abstract class AdapterEntity {
 		attributes: IEntityAttributes,
 		adapter: Adapter,
 		propName: string = 'id',
-		id: EntityUid = attributes.id
+		id?: EntityUid,
 	): IEntityProperties {
+		const defaultedId = id || _.get( attributes, propName );
 		const adapterEntityAttributes = _.merge( attributes, {
-			id,
+			id: defaultedId,
 			idHash: {
-				[adapter.name]: attributes[propName],
+				[adapter.name]: defaultedId,
 			},
 		} );
 		return adapterEntityAttributes;

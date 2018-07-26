@@ -23,12 +23,13 @@ export const AutoIdAdapterEntity = <T extends Constructable<AdapterEntity>>(
 			,
 			adapter: Adapter,
 			propName: string = 'id',
-			id: EntityUid = _.get( attributes, 'id', generateUUID() )
+			id?: EntityUid,
 		): IEntityProperties {
+			const defaultedId = id || _.get( attributes, propName, generateUUID() );
 			const adapterEntityAttributes = _.merge( attributes, {
-				id,
+				id: defaultedId,
 				idHash: {
-					[adapter.name]: attributes[propName],
+					[adapter.name]: defaultedId,
 				},
 			} );
 			return adapterEntityAttributes;
