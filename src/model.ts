@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
 
-import { EntityFactory, EntitySpawner, Entity } from './entities/entityFactory';
+import { EntityFactory, Entity } from './entities/entityFactory';
 import { Set } from './entities/set';
 import { deepFreeze } from './utils';
 import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
-import { ModelDescriptionRaw, FieldDescriptor, SourcesHash } from './types/modelDescription';
+import { ModelDescriptionRaw, FieldDescriptor, SourcesHash, ModelDescription } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
@@ -19,11 +19,12 @@ export class Model {
 	public attributes: { [key: string]: FieldDescriptor };
 	
 	private readonly _dataSources: IDataSourceRegistry;
+	public modelDesc: ModelDescription;
 	public get dataSources() {
 		return this._dataSources;
 	}
 	private readonly defaultDataSource: string;
-	private readonly _entityFactory: EntitySpawner;
+	private readonly _entityFactory: Entity.EntitySpawner;
 	public get entityFactory() {
 		return this._entityFactory;
 	}
@@ -118,8 +119,12 @@ export class Model {
 		.keys()
 		.head()
 		.value() as string;
+
+		// Store & expose the model description
+		this.modelDesc = deepFreeze( _.assign( modelDesc, {attributes,sources: sourcesNormalized} ) );
 		// Prepare our entity factory
-		this._entityFactory = EntityFactory( name, _.assign( modelDesc, {attributes,sources: sourcesNormalized} ), this );
+		this._entityFactory = EntityFactory( name, this.modelDesc, this );
+
 	}
 	
 	/**

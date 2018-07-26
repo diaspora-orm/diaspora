@@ -92,7 +92,7 @@ export abstract class Entity extends SequentialEvent {
 		source: AdapterEntity | IEntityAttributes = {}
 	) {
 		super();
-		const modelAttrsKeys = _.keys( modelDesc.attributes );
+		const modelAttrsKeys = _.keys( this.model.modelDesc.attributes );
 		
 		// ### Init defaults
 		const sources = _.reduce(
@@ -129,7 +129,7 @@ export abstract class Entity extends SequentialEvent {
 		this._attributes = this.applyDefaults();
 		
 		// ### Load events
-		_.forEach( modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
+		_.forEach( this.model.modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
 			// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
 			_.forEach( _.castArray( eventFunctions ), eventFunction => {
 				this.on( eventName, eventFunction );
@@ -508,7 +508,7 @@ export abstract class Entity extends SequentialEvent {
 			this._state = EEntityState.SYNC;
 			const attrs = entityCtrSteps.castTypes(
 				dataSourceEntity.properties,
-				this.modelDesc
+				this.model.modelDesc
 			);
 			this.idHash = attrs.idHash;
 			this._attributes = _.omit( attrs, ['id', 'idHash'] );
