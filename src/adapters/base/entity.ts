@@ -16,8 +16,8 @@ export interface IAdapterEntityCtr<T extends AdapterEntity>{
 	setId(
 		attributes: IEntityAttributes,
 		adapter: Adapter<T>,
-		propName: string,
-		id: EntityUid
+		id?: EntityUid,
+		propName?: string
 	): IEntityProperties;
 }
 /**
@@ -81,8 +81,8 @@ export abstract class AdapterEntity {
 	public static setId(
 		attributes: IEntityAttributes,
 		adapter: Adapter,
-		propName: string = 'id',
 		id?: EntityUid,
+		propName: string = 'id'
 	): IEntityProperties {
 		const defaultedId = id || _.get( attributes, propName );
 		const adapterEntityAttributes = _.merge( attributes, {
@@ -125,14 +125,14 @@ export abstract class AdapterEntity {
 	 */
 	protected setId(
 		adapter: Adapter,
-		propName: string = 'id',
-		id: EntityUid = this.attributes.id
+		id?: EntityUid,
+		propName?: string
 	): this {
 		this._properties = AdapterEntity.setId(
 			this.attributes,
 			adapter,
-			propName,
-			id
+			id,
+			propName
 		);
 		return this;
 	}

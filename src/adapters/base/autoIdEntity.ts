@@ -19,11 +19,10 @@ export const AutoIdAdapterEntity = <T extends Constructable<AdapterEntity>>(
 		 * @param id         - Value of the ID
 		 */
 		public static setId(
-			attributes: IEntityAttributes
-			,
+			attributes: IEntityAttributes,
 			adapter: Adapter,
-			propName: string = 'id',
 			id?: EntityUid,
+			propName: string = 'id'
 		): IEntityProperties {
 			const defaultedId = id || _.get( attributes, propName, generateUUID() );
 			const adapterEntityAttributes = _.merge( attributes, {
@@ -51,8 +50,8 @@ export const AutoIdAdapterEntity = <T extends Constructable<AdapterEntity>>(
 			this._properties = AutoIdAdapterEntity.setId(
 				this.attributes,
 				adapter,
-				propName,
-				id
+				id,
+				propName
 			);
 			return this;
 		}

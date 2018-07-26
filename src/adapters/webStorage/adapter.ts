@@ -97,7 +97,6 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		const rawAdapterAttributes = WebStorageEntity.setId(
 			entity,
 			this,
-			undefined,
 			Utils.generateUUID()
 		);
 		const tableIndex = this.ensureCollectionExists( table );
@@ -129,7 +128,6 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 			const rawAdapterAttributes = WebStorageEntity.setId(
 				entity,
 				this,
-				undefined,
 				Utils.generateUUID()
 			);
 			tableIndex.push( rawAdapterAttributes.id as string );
