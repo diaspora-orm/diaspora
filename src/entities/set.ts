@@ -2,23 +2,12 @@ import { SequentialEvent } from 'sequential-event';
 import * as _ from 'lodash';
 
 import { Model } from '../model';
-import { Entity, EntitySpawner } from './entityFactory';
+import { Entity } from './entityFactory';
 import { Errors } from '../errors';
 import * as Utils from '../utils';
 import { logger } from '../logger';
 import { TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes, IEntityProperties } from '../types/entity';
-
-/**
- * Transformation modes applyable to the set. You can use it to change the type of content of the set when casting it to {@link lodash} wrapper.
- * 
- * @author Gerkin
- */
-export enum ETransformationMode{
-	ENTITY,
-	ATTRIBUTES,
-	PROPERTIES,
-}
 
 /**
  * Emit events on each entities.
@@ -95,22 +84,22 @@ export class Set {
 	 * 
 	 * @author Gerkin
 	 * @param chainMode - Chain mode for the entities inside the wrapper. See {@link Set.asChainMode}.
-	 * @param source    - Data source to get entities from, if using {@link ETransformationMode.ATTRIBUTES} or {@link ETransformationMode.PROPERTIES}.
+	 * @param source    - Data source to get entities from, if using {@link Set.ETransformationMode.ATTRIBUTES} or {@link Set.ETransformationMode.PROPERTIES}.
 	 */
-	public toChainable( chainMode: ETransformationMode.ATTRIBUTES, source?: TDataSource ): _.LoDashExplicitArrayWrapper<IEntityAttributes>;
-	public toChainable( chainMode: ETransformationMode.PROPERTIES, source: TDataSource ): _.LoDashExplicitArrayWrapper<IEntityProperties>;
-	public toChainable( chainMode?: ETransformationMode.ENTITY ): _.LoDashExplicitArrayWrapper<Entity>;
-	public toChainable( chainMode: ETransformationMode = ETransformationMode.ENTITY, source?: TDataSource ) {
+	public toChainable( chainMode: Set.ETransformationMode.ATTRIBUTES, source?: TDataSource ): _.LoDashExplicitArrayWrapper<IEntityAttributes>;
+	public toChainable( chainMode: Set.ETransformationMode.PROPERTIES, source: TDataSource ): _.LoDashExplicitArrayWrapper<IEntityProperties>;
+	public toChainable( chainMode?: Set.ETransformationMode.ENTITY ): _.LoDashExplicitArrayWrapper<Entity>;
+	public toChainable( chainMode: Set.ETransformationMode = Set.ETransformationMode.ENTITY, source?: TDataSource ) {
 		switch ( chainMode ){
-			case ETransformationMode.ATTRIBUTES:{
+			case Set.ETransformationMode.ATTRIBUTES:{
 				return _.chain( this._entities ).map( entity => entity.getAttributes( source as any ) );
 			}
 
-			case ETransformationMode.PROPERTIES:{
+			case Set.ETransformationMode.PROPERTIES:{
 				return _.chain( this._entities ).map( entity => entity.getProperties( source as any ) );
 			}
 
-			case ETransformationMode.ENTITY:{
+			case Set.ETransformationMode.ENTITY:{
 				return _.chain( this._entities );
 			}
 		}
@@ -170,7 +159,7 @@ export class Set {
 	 */
 	public static checkEntitiesFromModel( entities: Entity[], model: Model ): void {
 		entities.forEach( ( entity, index ) => {
-			if ( ( entity.constructor as EntitySpawner ).model !== model ) {
+			if ( ( entity.constructor as Entity.EntitySpawner ).model !== model ) {
 				throw new TypeError(
 					`Provided entity n°${index} ${entity} is not from model ${model} (${
 						model.name
@@ -267,5 +256,17 @@ export class Set {
 			Utils.applyUpdateEntity( newData, entity );
 		} );
 		return this;
+	}
+}
+export namespace Set{
+	/**
+	 * Transformation modes applyable to the set. You can use it to change the type of content of the set when casting it to {@link lodash} wrapper.
+	 * 
+	 * @author Gerkin
+	 */
+	export const enum ETransformationMode{
+		ENTITY,
+		ATTRIBUTES,
+		PROPERTIES,
 	}
 }

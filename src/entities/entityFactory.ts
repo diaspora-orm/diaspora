@@ -10,19 +10,6 @@ import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid 
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 
-export interface IOptions {
-	skipEvents?: boolean;
-}
-
-export interface EntitySpawner {
-	model: Model;
-	name: string;
-	new ( source?: IEntityAttributes ): Entity;
-}
-export interface IDataSourceMap<T extends AdapterEntity>
-extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
-
-
 const entityCtrSteps = {
 	castTypes( source: IEntityProperties, modelDesc: ModelDescription ) {
 		const attrs = modelDesc.attributes;
@@ -75,7 +62,7 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	public get ctor() {
-		return this.constructor as typeof Entity & EntitySpawner;
+		return this.constructor as typeof Entity & Entity.EntitySpawner;
 	}
 	
 	private _attributes: IEntityAttributes | null = null;
@@ -84,7 +71,7 @@ export abstract class Entity extends SequentialEvent {
 	
 	private _lastDataSource: DataAccessLayer | null;
 	
-	private readonly _dataSources: IDataSourceMap<AdapterEntity>;
+	private readonly _dataSources: Entity.IDataSourceMap<AdapterEntity>;
 	
 	private idHash: IIdHash;
 	
@@ -110,7 +97,7 @@ export abstract class Entity extends SequentialEvent {
 		// ### Init defaults
 		const sources = _.reduce(
 			model.dataSources,
-			( acc: IDataSourceMap<AdapterEntity>, adapter ) => acc.set( adapter, null ),
+			( acc: Entity.IDataSourceMap<AdapterEntity>, adapter ) => acc.set( adapter, null ),
 			new WeakMap()
 		);
 		this._dataSources = Object.seal( sources );
@@ -271,7 +258,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is saved. Resolved with `this`.
 	 */
-	public async persist( dataSource?: TDataSource, options: IOptions = {} ) {
+	public async persist( dataSource?: TDataSource, options: Entity.IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
@@ -315,7 +302,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options            - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is reloaded. Resolved with `this`.
 	 */
-	public async fetch( dataSource?: TDataSource, options: IOptions = {} ) {
+	public async fetch( dataSource?: TDataSource, options: Entity.IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
@@ -348,7 +335,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is destroyed. Resolved with `this`.
 	 */
-	public async destroy( dataSource?: TDataSource, options: IOptions = {} ) {
+	public async destroy( dataSource?: TDataSource, options: Entity.IOptions = {} ) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
@@ -456,7 +443,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param events     - Event name(s) to trigger
 	 */
 	private async maybeEmit(
-		options: IOptions,
+		options: Entity.IOptions,
 		eventsArgs: any[],
 		events: string | string[]
 	): Promise<this> {
@@ -566,7 +553,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param dataSource - Data source to persist entity into
 	 * @param options    - Optional options hash for the `update` operation
 	 */
-	private async persistUpdate( dataSource: DataAccessLayer, options?: IOptions ) {
+	private async persistUpdate( dataSource: DataAccessLayer, options?: Entity.IOptions ) {
 		const diff = this.getDiff( dataSource );
 		return diff
 		? ( ( dataSource.updateOne(
@@ -579,6 +566,20 @@ export abstract class Entity extends SequentialEvent {
 	}
 }
 
+export namespace Entity{
+	export interface IOptions {
+		skipEvents?: boolean;
+	}
+	
+	export interface EntitySpawner {
+		model: Model;
+		name: string;
+		new ( source?: IEntityAttributes ): Entity;
+	}
+	export interface IDataSourceMap<T extends AdapterEntity>
+	extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
+	
+	
 /**
  * This factory function generate a new class constructor, prepared for a specific model.
  *
@@ -591,6 +592,7 @@ export abstract class Entity extends SequentialEvent {
 export interface IEntityFactory {
 	( name: string, modelDesc: ModelDescription, model: Model ): EntitySpawner;
 	Entity: Entity;
+}
 }
 
 // We init the function as any to define the Entity property later.
@@ -629,10 +631,10 @@ const ef: any = ( name: string, modelDesc: ModelDescription, model: Model ) => {
 			( SubEntity as any )[staticMethodName] = staticMethod;
 		}
 	);
-	return SubEntity.bind( SubEntity, name, modelDesc, model ) as EntitySpawner;
+	return SubEntity.bind( SubEntity, name, modelDesc, model ) as Entity.EntitySpawner;
 };
 ef.Entity = Entity;
-export const EntityFactory: IEntityFactory = ef;
+export const EntityFactory: Entity.IEntityFactory = ef;
 
 // =====
 // ## Lifecycle Events
