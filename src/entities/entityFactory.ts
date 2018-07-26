@@ -79,16 +79,12 @@ export abstract class Entity extends SequentialEvent {
 	 * Create a new entity.
 	 *
 	 * @author gerkin
-	 * @param name        - Name of this model.
 	 * @param modelDesc   - Model configuration that generated the associated `model`.
-	 * @param model       - Model that will spawn entities.
 	 * @param source - Hash with properties to copy on the new object.
 	 *        If provided object inherits AdapterEntity, the constructed entity is built in `sync` state.
 	 */
 	public constructor(
-		private readonly name: string,
-		private readonly modelDesc: ModelDescription,
-		private readonly model: Model,
+		public readonly model: Model,
 		source: AdapterEntity | IEntityAttributes = {}
 	) {
 		super();
@@ -199,7 +195,7 @@ export abstract class Entity extends SequentialEvent {
 	 */
 	public collectionName( dataSource?: TDataSource ) {
 		// Will be used later
-		return this.name;
+		return this.model.name;
 	}
 	
 	/**
@@ -580,19 +576,19 @@ export namespace Entity{
 	extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
 	
 	
-/**
- * This factory function generate a new class constructor, prepared for a specific model.
- *
- * @author Gerkin
- * @param   name      - Name of this model.
- * @param   modelDesc - Model configuration that generated the associated `model`.
- * @param   model     - Model that will spawn entities.
- * @returns Entity constructor to use with this model.
- */
-export interface IEntityFactory {
-	( name: string, modelDesc: ModelDescription, model: Model ): EntitySpawner;
-	Entity: Entity;
-}
+	/**
+	 * This factory function generate a new class constructor, prepared for a specific model.
+	 *
+	 * @author Gerkin
+	 * @param   name      - Name of this model.
+	 * @param   modelDesc - Model configuration that generated the associated `model`.
+	 * @param   model     - Model that will spawn entities.
+	 * @returns Entity constructor to use with this model.
+	 */
+	export interface IEntityFactory {
+		( name: string, modelDesc: ModelDescription, model: Model ): EntitySpawner;
+		Entity: Entity;
+	}
 }
 
 // We init the function as any to define the Entity property later.
@@ -631,7 +627,7 @@ const ef: any = ( name: string, modelDesc: ModelDescription, model: Model ) => {
 			( SubEntity as any )[staticMethodName] = staticMethod;
 		}
 	);
-	return SubEntity.bind( SubEntity, name, modelDesc, model ) as Entity.EntitySpawner;
+	return SubEntity.bind( SubEntity, model ) as Entity.EntitySpawner;
 };
 ef.Entity = Entity;
 export const EntityFactory: Entity.IEntityFactory = ef;
