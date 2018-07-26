@@ -9,7 +9,6 @@ import { logger } from './logger';
 import { BrowserLogger } from './logger/browserLogger';
 import { NodeLogger } from './logger/nodeLogger';
 
-
 export { Adapter, AdapterEntity };
 
 interface IAdapterRegistry {
