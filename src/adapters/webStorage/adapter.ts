@@ -87,7 +87,6 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		table: string,
 		entity: IEntityAttributes
 	): Promise<IEntityProperties | undefined> {
-		entity = _.cloneDeep( entity || {} );
 		const rawAdapterAttributes = WebStorageEntity.setId(
 			entity,
 			this,
@@ -170,7 +169,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	public async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties | undefined> {
 		_.defaults( options, {
 			skip: 0,
@@ -231,7 +230,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
 		update: IEntityAttributes,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties | undefined> {
 		_.defaults( options, {
 			skip: 0,
@@ -265,7 +264,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	public async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<void> {
 		const entityToDelete = await this.findOne( table, queryFind, options );
 
@@ -293,7 +292,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	public async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions = this.normalizeOptions()
+		options: QueryLanguage.QueryOptions
 	): Promise<void> {
 		const entitiesToDelete = await this.findMany( table, queryFind, options );
 

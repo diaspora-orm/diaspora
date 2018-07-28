@@ -75,7 +75,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 					_.map( entities, filterEntity )
 				);
 			}
-			return res.json( [] );
+			return res.json( );
 		} );
 	} );
 	
@@ -102,7 +102,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 					_.map( entities, filterEntity )
 				);
 			}
-			return res.json( [] );
+			return res.json( );
 		} );
 	} );
 	
@@ -407,6 +407,12 @@ export const checkEachStandardMethods = adapterLabel => {
 				};
 				const entity = await adapter.insertOne( TABLE, object );
 				expect( entity ).toBeAnAdapterEntity( adapter, object );
+				expect( await adapter.findMany( TABLE, {} ) ).toHaveLength( 1 );
+			} );
+			it( getTestLabel( 'insertOne empty' ), async () => {
+				const entity = await adapter.insertOne( TABLE, undefined );
+				expect( entity ).toBeAnAdapterEntity( adapter, {} );
+				expect( await adapter.findMany( TABLE, {} ) ).toHaveLength( 1 );
 			} );
 			it( getTestLabel( 'insertMany' ), async () => {
 				const objects = [
@@ -438,12 +444,43 @@ export const checkEachStandardMethods = adapterLabel => {
 					const entity = await adapter.findOne( TABLE, object );
 					expect( entity ).toBeAnAdapterEntity( adapter, object );
 				} );
+				it( getTestLabel( 'findOne not found' ), async () => {
+					const object = {
+						a: 42,
+					};
+					const entity = await adapter.findOne( TABLE, object );
+					expect( entity ).toBeUndefined();
+				} );
+				it( getTestLabel( 'findOne by id' ), async () => {
+					const object = {
+						a: 4,
+					};
+					const entity = await adapter.findOne( TABLE, object );
+					const reFound = await adapter.findOne( TABLE, entity.properties.id );
+					expect( reFound ).toBeAnAdapterEntity( adapter, object );
+					expect( reFound ).toStrictEqual( entity );
+				} );
+				it( getTestLabel( 'findOne by id not found' ), async () => {
+					const object = {
+						a: 4,
+					};
+					const found = await adapter.findOne( TABLE, 'this_should_really_not_exists' );
+					expect( found ).toBeUndefined();
+				} );
 				it( getTestLabel( 'findMany' ), async () => {
 					const objects = {
 						b: 3,
 					};
 					const entities = await adapter.findMany( TABLE, objects );
 					expect( entities ).toHaveLength( 2 );
+					expect( entities ).toBeAnAdapterEntitySet( adapter, objects );
+				} );
+				it( getTestLabel( 'findMany not found' ), async () => {
+					const objects = {
+						b: 42,
+					};
+					const entities = await adapter.findMany( TABLE, objects );
+					expect( entities ).toHaveLength( 0 );
 					expect( entities ).toBeAnAdapterEntitySet( adapter, objects );
 				} );
 				it( 'Find all', async () => {
@@ -459,6 +496,26 @@ export const checkEachStandardMethods = adapterLabel => {
 					const entity = await adapter.updateOne( TABLE, fromObj, targetObj );
 					expect( entity ).toBeAnAdapterEntity( adapter, _.assign( {c: 5}, fromObj, targetObj ) );
 				} );
+				it( getTestLabel( 'updateOne not found' ), async () => {
+					const fromObj = { a: 42 };
+					const targetObj = { b: 3 };
+					const entity = await adapter.updateOne( TABLE, fromObj, targetObj );
+					expect( entity ).toBeUndefined();
+				} );
+				it( getTestLabel( 'updateOne by id' ), async () => {
+					const fromObj = { a: 4 };
+					const targetObj = { b: 3 };
+					const entity = await adapter.updateOne( TABLE, fromObj, targetObj );
+					const updatedEntity = await adapter.updateOne( TABLE, entity.properties.id, targetObj );
+					expect( entity ).toBeAnAdapterEntity( adapter, _.assign( {}, fromObj, targetObj ) );
+				} );
+				it( getTestLabel( 'updateOne by id not found' ), async () => {
+					const object = {
+						a: 4,
+					};
+					const found = await adapter.updateOne( TABLE, 'this_should_really_not_exists', {foo:42} );
+					expect( found ).toBeUndefined();
+				} );
 				it( getTestLabel( 'updateMany' ), async () => {
 					const fromObj = { b: 3 };
 					const targetObj = { a: 4 };
@@ -468,6 +525,13 @@ export const checkEachStandardMethods = adapterLabel => {
 						adapter,
 						_.map( [{a: 1}, {}], item => _.assign( item, fromObj, targetObj ) )
 					);
+				} );
+				it( getTestLabel( 'updateMany not found' ), async () => {
+					const fromObj = { b: 42 };
+					const targetObj = { a: 4 };
+					const entities = await adapter.updateMany( TABLE, fromObj, targetObj );
+					expect( entities ).toHaveLength( 0 );
+					expect( entities ).toBeAnAdapterEntitySet( adapter );
 				} );
 				it( getTestLabel( 'updateOne not found' ), async () => {
 					const fromObj = {
@@ -491,14 +555,23 @@ export const checkEachStandardMethods = adapterLabel => {
 				} );
 			} );
 			describe( '❌ Delete methods', () => {
-				it( getTestLabel( 'deleteOne' ), () => {
+				it( getTestLabel( 'deleteOne' ), async () => {
 					const obj = {
-						qux: 1,
+						a: 1,
 					};
-					return adapter.deleteOne( TABLE, obj ).then( ( ...args ) => {
-						expect( args ).toEqual( [undefined] );
-						return Promise.resolve();
-					} );
+					const deleteReturn = await adapter.deleteOne( TABLE, obj );
+					expect( deleteReturn ).toEqual( undefined );
+					const entities = await adapter.findMany( TABLE, {} );
+					expect( entities ).toHaveLength( 2 );
+				} );
+				it( getTestLabel( 'deleteOne not found' ), async () => {
+					const obj = {
+						a: 42,
+					};
+					const deleteReturn = await adapter.deleteOne( TABLE, obj );
+					expect( deleteReturn ).toEqual( undefined );
+					const entities = await adapter.findMany( TABLE, {} );
+					expect( entities ).toHaveLength( 3 );
 				} );
 				it( getTestLabel( 'deleteMany' ), async () => {
 					const obj = {

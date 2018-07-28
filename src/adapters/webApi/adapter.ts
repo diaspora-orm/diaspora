@@ -161,7 +161,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 			entities
 		);
 		newEntities = WebApiAdapter.maybeAddIdHashToEntities( newEntities, this );
-		return newEntities || [];
+		return newEntities;
 	}
 
 	// -----
@@ -234,8 +234,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 			apiDesc.body,
 			apiDesc.queryString
 		);
-		newEntities = WebApiAdapter.maybeAddIdHashToEntities( newEntities, this );
-		return newEntities || [];
+		return WebApiAdapter.maybeAddIdHashToEntities( newEntities, this );
 	}
 
 	// -----
@@ -295,8 +294,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 			update,
 			WebApiAdapter.getQueryObject( queryFind, options )
 		);
-		entities = WebApiAdapter.maybeAddIdHashToEntities( entities, this );
-		return entities || [];
+		return WebApiAdapter.maybeAddIdHashToEntities( entities, this );
 	}
 
 	// -----
@@ -399,7 +397,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		endPoint: PluralEndpoint,
 		data?: object,
 		queryObject?: object
-	): Promise<IEntityProperties[]>;
+	): Promise<IEntityProperties[] | undefined>;
 	private apiQuery(
 		verb: WebApiAdapter.EHttpVerb,
 		endPoint: string,
