@@ -1,7 +1,7 @@
 import { createMockModel } from '../../utils';
 
 const { model, MODEL_NAME, SOURCE } = createMockModel(
-	'entity-various'
+	'entity-change-detection'
 );
 
 it( 'Diff on entity', async () => {
