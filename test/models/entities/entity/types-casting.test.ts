@@ -5,7 +5,7 @@ import { EFieldType } from '../../../../src';
 const ADAPTER_TABLE = 'entity-types-casting';
 const { model, MODEL_NAME, SOURCE, adapter, dal } = createMockModel( ADAPTER_TABLE, {
 	foo: {
-		type: EFieldType.DATE,
+		type: EFieldType.DATETIME,
 	},
 } );
 const store = ( ( adapter as any ).store as InMemoryAdapter.IDataStoreHash );

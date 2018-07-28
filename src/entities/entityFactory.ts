@@ -11,30 +11,6 @@ import { QueryLanguage } from '../types/queryLanguage';
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 
-const entityCtrSteps = {
-	castTypes( source: IEntityProperties, modelDesc: ModelDescription ) {
-		const attrs = modelDesc.attributes;
-		_.forEach( source, ( currentVal: any, attrName: string ) => {
-			const attrDesc = attrs[attrName];
-			if ( _.isObject( attrDesc ) ) {
-				switch ( attrDesc.type ) {
-					case 'date':
-					{
-						if ( _.isString( currentVal ) || _.isInteger( currentVal ) ) {
-							source[attrName] = new Date( currentVal );
-						}
-					}
-					break;
-				}
-			}
-		} );
-		return source;
-	},
-	loadSource( this: Entity, source: IEntityProperties ) {
-		return source;
-	},
-};
-
 /**
  * The entity is the class you use to manage a single document in all data sources managed by your model.
  * > Note that this class is proxied: you may try to access to undocumented class properties to get entity's data attributes
@@ -432,6 +408,32 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	/**
+	 * Cast fields from their raw type to their expected type
+	 * 
+	 * @author Gerkin
+	 * @param source - Raw entity properties to cast
+	 * @returns the casted properties
+	 */
+	private castTypes( source: IEntityProperties ) {
+		const attrs = this.model.modelDesc.attributes;
+		_.forEach( source, ( currentVal: any, attrName: string ) => {
+			const attrDesc = attrs[attrName];
+			if ( _.isObject( attrDesc ) ) {
+				switch ( attrDesc.type ) {
+					case 'datetime':
+					{
+						if ( _.isString( currentVal ) || _.isInteger( currentVal ) ) {
+							source[attrName] = new Date( currentVal );
+						}
+					}
+					break;
+				}
+			}
+		} );
+		return source;
+	}
+
+	/**
 	 * Conditionaly triggers the provided events names with provided arguments if the options requires it.
 	 * 
 	 * @author Gerkin
@@ -503,10 +505,7 @@ export abstract class Entity extends SequentialEvent {
 		if ( dataSourceEntity ) {
 			// Set the state
 			this._state = EEntityState.SYNC;
-			const attrs = entityCtrSteps.castTypes(
-				dataSourceEntity.properties,
-				this.model.modelDesc
-			);
+			const attrs = this.castTypes( dataSourceEntity.properties );
 			this.idHash = attrs.idHash;
 			this._attributes = _.omit( attrs, ['id', 'idHash'] );
 		} else {

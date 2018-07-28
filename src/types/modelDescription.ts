@@ -9,7 +9,7 @@ export enum EType{
 	STRING = 'string',
 	INTEGER = 'integer',
 	FLOAT = 'float',
-	DATE = 'date',
+	DATETIME = 'datetime',
 	BOOLEAN = 'boolean',
 	ANY = 'any',
 	OBJECT = 'object',
@@ -132,7 +132,7 @@ export interface INonRelationalFieldDescriptor extends IBaseFieldDescriptor{
 	enum?: any[];
 }
 export interface INativeFieldDescriptor extends INonRelationalFieldDescriptor{
-	type: EType.ANY | EType.BOOLEAN | EType.DATE | EType.FLOAT | EType.INTEGER | EType.STRING;
+	type: EType.ANY | EType.BOOLEAN | EType.DATETIME | EType.FLOAT | EType.INTEGER | EType.STRING;
 }
 export interface IArrayFieldDescriptor extends INonRelationalFieldDescriptor {
 	type: EType.ARRAY;

@@ -7,9 +7,6 @@ import { QueryLanguage } from '../../types/queryLanguage';
 import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
-interface IDataStoreHash {
-	[key: string]: { items: IEntityProperties[] };
-}
 /**
  * This class is used to use the memory as a data store. Every data you insert are stored in an array contained by this class. This adapter can be used by both the browser & Node.JS.
  */
@@ -19,7 +16,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 *
 	 * @author Gerkin
 	 */
-	private readonly store: IDataStoreHash = {};
+	private readonly store: InMemoryAdapter.IDataStoreHash = {};
 
 	/**
 	 * Create a new instance of in memory adapter.
@@ -260,5 +257,11 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 				items: [],
 			} );
 		}
+	}
+}
+
+export namespace InMemoryAdapter{
+	export interface IDataStoreHash {
+		[key: string]: { items: IEntityProperties[] };
 	}
 }
