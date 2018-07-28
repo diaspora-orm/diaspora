@@ -1,13 +1,8 @@
 import * as _ from 'lodash';
 
-import { EntityFactory, Entity } from './entities/entityFactory';
-import { Set } from './entities/set';
+import { Entity, Set, EntityFactory } from './entities';
 import { deepFreeze } from './utils';
-import {
-	EntityTransformer,
-	CheckTransformer,
-	DefaultTransformer
-} from './entityTransformers';
+import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
 import {

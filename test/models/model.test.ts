@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { Diaspora } from '../../src/diaspora';
 import { Model } from '../../src/model';
-import { Entity } from '../../src/entities/entityFactory';
+import { Entity } from '../../src/entities';
 import { InMemoryAdapter, InMemoryEntity } from '../../src/adapters/inMemory';
 import { Adapter } from '../../src/adapters/base';
 

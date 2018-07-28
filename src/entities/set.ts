@@ -2,7 +2,7 @@ import { SequentialEvent } from 'sequential-event';
 import * as _ from 'lodash';
 
 import { Model } from '../model';
-import { Entity } from './entityFactory';
+import { Entity } from './entity';
 import { Errors } from '../errors';
 import * as Utils from '../utils';
 import { logger } from '../logger';

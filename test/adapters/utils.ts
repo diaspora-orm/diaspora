@@ -12,7 +12,7 @@ import { dataSources, getStyle } from '../utils';
 import { InMemoryEntity } from '../../src/adapters/inMemory';
 import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
 import { IEntityProperties } from '../../src/types/entity';
-import { Entity } from '../../src/entities/entityFactory';
+import { Entity } from '../../src/entities';
 
 const getDataSourceLabel = name => `${name}Adapter`;
 

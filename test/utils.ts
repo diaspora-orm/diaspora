@@ -3,8 +3,7 @@ import { resolve } from 'path';
 import * as chalk from 'chalk';
 import { Adapter, AdapterEntity } from '../src/adapters/base';
 import { Model } from '../src/model';
-import { Entity } from '../src/entities/entityFactory';
-import { Set as EntitySet } from '../src/entities/set';
+import { Entity, Set } from '../src/entities';
 import { Diaspora } from '../src/diaspora';
 import { InMemoryAdapter } from '../src/adapters/inMemory';
 import { DataAccessLayer } from '../src/adapters/dataAccessLayer';
@@ -162,7 +161,7 @@ expect.extend( {
 		expectedAttributesArray: IEntityAttributes | IEntityAttributes[],
 		expectedOrphan?: boolean | string
 	) {
-		expect( receivedSet ).toBeInstanceOf( EntitySet );
+		expect( receivedSet ).toBeInstanceOf( Set );
 		expect( receivedSet ).toHaveProperty( 'length' );
 		if ( _.isArray( expectedAttributesArray ) ) {
 			expect( receivedSet ).toHaveLength( expectedAttributesArray.length );
