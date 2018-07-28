@@ -8,9 +8,9 @@ import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
 import { Raw, FieldDescriptor, SourcesHash, ModelDescription, EType, FieldDescriptorTypeChecks, INativeFieldDescriptor } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
-import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
+import { DataAccessLayer, TDataSource, EntityUid } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
-import { EntityUid, IEntityAttributes } from './types/entity';
+import { IEntityAttributes } from './types/entity';
 
 /**
  * The model class is used to interact with the population of all data of the same type.
@@ -164,7 +164,7 @@ export class Model {
 	 * @param query      - Entity ID or query to potentialy transform
 	 * @param sourceName - Name of the source we want to query
 	 */
-	public ensureQueryObject( query: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid, sourceName: string = this.defaultDataSource ): QueryLanguage.Raw.SelectQueryOrCondition {
+	public ensureQueryObject( query: QueryLanguage.Raw.SearchQuery | undefined, sourceName: string = this.defaultDataSource ): QueryLanguage.Raw.SelectQueryOrCondition {
 		if ( typeof query === 'object' ){
 			return query;
 		} else {
@@ -263,7 +263,7 @@ export class Model {
 	 * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
 	 */
 	public async find(
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid,
+		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
@@ -281,7 +281,7 @@ export class Model {
 	 * @returns Promise resolved with a {@link Set set} of found entities in *sync* state.
 	 */
 	public async findMany(
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
@@ -299,7 +299,7 @@ export class Model {
 	 * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
 	 */
 	public async update(
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid,
+		queryFind: QueryLanguage.Raw.SearchQuery | undefined,
 		update: object,
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
@@ -319,7 +319,7 @@ export class Model {
 	 * @returns Promise resolved with the {@link Set set} of found entities in *sync* state.
 	 */
 	public async updateMany(
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		queryFind: QueryLanguage.Raw.SearchQuery | undefined,
 		update: object,
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
@@ -337,7 +337,7 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	public async delete(
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid,
+		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
@@ -355,7 +355,7 @@ export class Model {
 	 * @returns Promise resolved with `undefined`.
 	 */
 	public async deleteMany(
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {

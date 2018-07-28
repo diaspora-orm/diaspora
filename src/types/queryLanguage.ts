@@ -1,4 +1,5 @@
 import * as ConstrainedTypes from './constrainedTypes';
+import { EntityUid } from './entity';
 
 export namespace QueryLanguage {
 	export namespace Raw{
@@ -166,6 +167,7 @@ export namespace QueryLanguage {
 		}
 
 		export type SelectQueryOrCondition = SelectQuery | SelectQueryCondition;
+		export type SearchQuery = SelectQueryOrCondition | EntityUid;
 	}
 
 	/**

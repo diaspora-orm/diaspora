@@ -8,7 +8,7 @@ export interface IRemapsHash extends IEnumeratedHash<any> {}
 
 export interface IFiltersHash extends IEnumeratedHash<any> {}
 
-export interface DataSourceQuerier<TIn, TOut extends TIn>{
+export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage.SelectQueryOrCondition, TOptions = QueryLanguage.QueryOptions>{
 	
 	// -----
 	// ### Insert
@@ -46,8 +46,8 @@ export interface DataSourceQuerier<TIn, TOut extends TIn>{
 	 */
 	findOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		queryFind: TQuery,
+		options: TOptions
 	): Promise<TOut | undefined>;
 
 	/**
@@ -58,8 +58,8 @@ export interface DataSourceQuerier<TIn, TOut extends TIn>{
 	 */
 	findMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		queryFind: TQuery,
+		options: TOptions
 	): Promise<TOut[]>;
 
 	// -----
@@ -73,9 +73,9 @@ export interface DataSourceQuerier<TIn, TOut extends TIn>{
 	 */
 	updateOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQueryOrCondition,
+		queryFind: TQuery,
 		update: TIn,
-		options: QueryLanguage.QueryOptions
+		options: TOptions
 	): Promise<TOut | undefined>;
 
 	/**
@@ -86,9 +86,9 @@ export interface DataSourceQuerier<TIn, TOut extends TIn>{
 	 */
 	updateMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQueryOrCondition,
+		queryFind: TQuery,
 		update: TIn,
-		options: QueryLanguage.QueryOptions
+		options: TOptions
 	): Promise<TOut[]>;
 
 	// -----
@@ -102,8 +102,8 @@ export interface DataSourceQuerier<TIn, TOut extends TIn>{
 	 */
 	deleteOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		queryFind: TQuery,
+		options: TOptions
 	): Promise<void>;
 
 	/**
@@ -118,8 +118,8 @@ export interface DataSourceQuerier<TIn, TOut extends TIn>{
 	 */
 	deleteMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		queryFind: TQuery,
+		options: TOptions
 	): Promise<void>;
 
 	// -----

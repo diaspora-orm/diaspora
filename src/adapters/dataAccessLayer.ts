@@ -28,7 +28,12 @@ const isEntityUid = ( query: any ): query is EntityUid => {
 export class DataAccessLayer<
 TEntity extends AdapterEntity = AdapterEntity,
 TAdapter extends Adapter<TEntity> = Adapter<TEntity>
-> extends SequentialEvent implements DataSourceQuerier<TEntity, TEntity>{
+> extends SequentialEvent implements DataSourceQuerier<
+	TEntity,
+	TEntity,
+	QueryLanguage.Raw.SearchQuery | undefined,
+	QueryLanguage.Raw.QueryOptions | undefined
+>{
 
 	public get classEntity(){
 		return this.adapter.classEntity;
@@ -150,18 +155,18 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * 
 	 * @author Gerkin
 	 * @param collectionName - Name of the collection to search into
-	 * @param queryFind      - Description of the entity to find
+	 * @param searchQuery    - Description of the entity to find
 	 * @param options        - Options to apply to the query
 	 */
 	public async findOne(
 		collectionName: string,
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( searchQuery, optionsNormalized ) );
 		const foundEntity = await this.adapter.findOne( collectionName, finalSearchQuery, optionsNormalized );
 		if ( foundEntity ){
 			const foundEntityRemapped = this.remapOutput(
@@ -179,19 +184,19 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * 
 	 * @author Gerkin
 	 * @param collectionName - Name of the collection to search into
-	 * @param queryFind      - Description of the entities to find
+	 * @param searchQuery    - Description of the entities to find
 	 * @param options        - Options to apply to the query
 	 */
 	public async findMany(
 		collectionName: string,
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
 
-		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( searchQuery, optionsNormalized ) );
 		const foundEntities = await this.adapter.findMany( collectionName, finalSearchQuery, optionsNormalized );
 		return _.map( foundEntities, foundEntity => {
 			const foundEntityRemapped = this.remapOutput(
@@ -210,13 +215,13 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * 
 	 * @author Gerkin
 	 * @param collectionName - Name of the collection to update
-	 * @param queryFind      - Description of the entity to update
+	 * @param searchQuery     - Description of the entity to update
 	 * @param update         - Properties to modify on the matched entity
 	 * @param options        - Options to apply to the query
 	 */
 	public async updateOne(
 		collectionName: string,
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
 		update: IEntityAttributes,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
@@ -224,7 +229,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( searchQuery, optionsNormalized ) );
 		const updatedEntity = await this.adapter.updateOne( collectionName, finalSearchQuery, updateRemappedIn, optionsNormalized );
 		if ( updatedEntity ){
 			const updatedEntityRemapped = this.remapOutput(
@@ -242,13 +247,13 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * 
 	 * @author Gerkin
 	 * @param collectionName - Name of the collection to update
-	 * @param queryFind      - Description of the entities to update
+	 * @param searchQuery    - Description of the entities to update
 	 * @param update         - Properties to modify on the matched entities
 	 * @param options        - Options to apply to the query
 	 */
 	public async updateMany(
 		collectionName: string,
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
 		update: IEntityAttributes,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
@@ -256,7 +261,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( searchQuery, optionsNormalized ) );
 		const updatedEntities = await this.adapter.updateMany( collectionName, finalSearchQuery, updateRemappedIn, optionsNormalized );
 		return _.map( updatedEntities, updatedEntity => {
 			const updatedEntityRemapped = this.remapOutput(
@@ -275,18 +280,18 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * 
 	 * @author Gerkin
 	 * @param collectionName - Name of the collection to delete entity from
-	 * @param queryFind      - Description of the entity to delete
+	 * @param searchQuery    - Description of the entity to delete
 	 * @param options        - Options to apply to the query
 	 */
 	public async deleteOne(
 		collectionName: string,
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( searchQuery, optionsNormalized ) );
 		return this.adapter.deleteOne( collectionName, finalSearchQuery, optionsNormalized );
 	}
 	
@@ -295,18 +300,18 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * 
 	 * @author Gerkin
 	 * @param collectionName - Name of the collection to delete entities from
-	 * @param queryFind      - Description of the entities to delete
+	 * @param searchQuery    - Description of the entities to delete
 	 * @param options        - Options to apply to the query
 	 */
 	public async deleteMany(
 		collectionName: string,
-		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
+		searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( searchQuery, optionsNormalized ) );
 		return this.adapter.deleteMany( collectionName, finalSearchQuery, optionsNormalized );
 	}
 	

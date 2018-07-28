@@ -7,6 +7,7 @@ import { Model } from '../model';
 import { ModelDescription } from '../types/modelDescription';
 import { DataAccessLayer, TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
+import { QueryLanguage } from '../types/queryLanguage';
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 
@@ -179,7 +180,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Data source to get query for.
 	 * @returns Query to find this entity.
 	 */
-	public uidQuery( dataSource?: TDataSource ): object {
+	public uidQuery( dataSource?: TDataSource ): QueryLanguage.Raw.SelectQueryOrCondition {
 		const dataSourceFixed = this.getDataSource( dataSource );
 		// Todo: precise return type
 		return {
