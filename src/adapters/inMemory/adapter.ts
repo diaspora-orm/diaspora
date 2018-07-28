@@ -17,7 +17,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @author Gerkin
 	 */
 	private readonly store: InMemoryAdapter.IDataStoreHash = {};
-
+	
 	/**
 	 * Create a new instance of in memory adapter.
 	 *
@@ -27,10 +27,10 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		super( InMemoryEntity as any, dataSourceName );
 		this.state = EAdapterState.READY;
 	}
-
+	
 	// -----
 	// ### Insert
-
+	
 	/**
 	 * Insert a single entity in the memory store.
 	 *
@@ -52,10 +52,10 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		storeTable.items.push( adapterEntityAttributes );
 		return adapterEntityAttributes;
 	}
-
+	
 	// -----
 	// ### Find
-
+	
 	/**
 	 * Retrieve a single entity from the memory.
 	 *
@@ -68,8 +68,8 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 */
 	public async findOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties | undefined> {
 		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, item =>
@@ -78,7 +78,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		const reducedMatches = Utils.applyOptionsToSet( matches, options );
 		return _.first( reducedMatches );
 	}
-
+	
 	/**
 	 * Retrieve several entities from the memory.
 	 *
@@ -91,8 +91,8 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 */
 	public async findMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties[]> {
 		const storeTable = this.ensureCollectionExists( table );
 		const matches = _.filter( storeTable.items, item =>
@@ -101,10 +101,10 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		const reducedMatches = Utils.applyOptionsToSet( matches, options );
 		return reducedMatches || [];
 	}
-
+	
 	// -----
 	// ### Update
-
+	
 	/**
 	 * Update a single entity in the memory.
 	 *
@@ -118,17 +118,17 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 */
 	public async updateOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.ISelectQuery,
 		update: IEntityAttributes,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties | undefined> {
 		const found = await this.findOne( table, queryFind, options );
-
+		
 		if ( !_.isNil( found ) ) {
 			const storeTable = this.ensureCollectionExists( table );
-			const match = _.find( storeTable.items, {
+			const match = ( _.find( storeTable.items, {
 				id: found.id,
-			} ) as any as IEntityProperties;
+			} ) as any ) as IEntityProperties;
 			if ( match ) {
 				Utils.applyUpdateEntity( update, match );
 				return match;
@@ -136,7 +136,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		}
 		return undefined;
 	}
-
+	
 	/**
 	 * Update several entities in the memory.
 	 *
@@ -150,12 +150,12 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 */
 	public async updateMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.ISelectQuery,
 		update: IEntityAttributes,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties[]> {
 		const foundEntity = await this.findMany( table, queryFind, options );
-
+		
 		if ( !_.isNil( foundEntity ) && foundEntity.length > 0 ) {
 			const storeTable = this.ensureCollectionExists( table );
 			const foundIds = _.map( foundEntity, 'id' );
@@ -171,10 +171,10 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 			return [];
 		}
 	}
-
+	
 	// -----
 	// ### Delete
-
+	
 	/**
 	 * Delete a single entity from the memory.
 	 *
@@ -187,12 +187,12 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 */
 	public async deleteOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<void> {
 		const storeTable = this.ensureCollectionExists( table );
 		const entityToDelete = await this.findOne( table, queryFind, options );
-
+		
 		if ( !_.isNil( entityToDelete ) ) {
 			storeTable.items = _.reject(
 				storeTable.items,
@@ -200,7 +200,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 			);
 		}
 	}
-
+	
 	/**
 	 * Delete several entities from the memory.
 	 *
@@ -213,8 +213,8 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 */
 	public async deleteMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<void> {
 		const storeTable = this.ensureCollectionExists( table );
 		const entitiesToDelete = await this.findMany( table, queryFind, options );
@@ -223,7 +223,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 			_.includes( entitiesIds, entity.id )
 		);
 	}
-
+	
 	/**
 	 * Create the data store and call {@link Adapters.DiasporaAdapter#configureCollection}.
 	 *
@@ -241,7 +241,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 		this.ensureCollectionExists( tableName );
 		return this;
 	}
-
+	
 	/**
 	 * Get or create the store hash.
 	 *
@@ -260,7 +260,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	}
 }
 
-export namespace InMemoryAdapter{
+export namespace InMemoryAdapter {
 	export interface IDataStoreHash {
 		[key: string]: { items: IEntityProperties[] };
 	}

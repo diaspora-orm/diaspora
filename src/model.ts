@@ -3,10 +3,22 @@ import * as _ from 'lodash';
 import { EntityFactory, Entity } from './entities/entityFactory';
 import { Set } from './entities/set';
 import { deepFreeze } from './utils';
-import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
+import {
+	EntityTransformer,
+	CheckTransformer,
+	DefaultTransformer
+} from './entityTransformers';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
-import { Raw, FieldDescriptor, SourcesHash, ModelDescription, EType, FieldDescriptorTypeChecks, INativeFieldDescriptor } from './types/modelDescription';
+import {
+	Raw,
+	FieldDescriptor,
+	ISourcesHash,
+	IModelDescription,
+	EType,
+	FieldDescriptorTypeChecks,
+	INativeFieldDescriptor
+} from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
@@ -19,19 +31,19 @@ export class Model {
 	public attributes: { [key: string]: FieldDescriptor };
 	
 	private readonly _dataSources: IDataSourceRegistry;
-	public modelDesc: ModelDescription;
+	public modelDesc: IModelDescription;
 	public get dataSources() {
 		return this._dataSources;
 	}
 	private readonly defaultDataSource: string;
-	private readonly _entityFactory: Entity.EntitySpawner;
+	private readonly _entityFactory: Entity.IEntitySpawner;
 	public get entityFactory() {
 		return this._entityFactory;
 	}
 	private readonly _entityTransformers: {
-		default:DefaultTransformer;
-		check:CheckTransformer;
-		[key:string]:EntityTransformer|undefined;
+		default: DefaultTransformer;
+		check: CheckTransformer;
+		[key: string]: EntityTransformer | undefined;
 	};
 	public get entityTransformers() {
 		return this._entityTransformers;
@@ -40,16 +52,24 @@ export class Model {
 	public get ctor() {
 		return this.constructor as typeof Model;
 	}
-
+	
 	/**
 	 * Modifies the raw attributes description to standardize it
-	 * 
+	 *
 	 * @param desc - Attributes description map to transform
 	 * @returns Attributes description map normalized, with properties defaulted
 	 * @author Gerkin
 	 */
-	private static normalizeAttributesDescription( desc:{ [key: string]: FieldDescriptor | EType } ): { [key: string]: FieldDescriptor}{
-		return _.mapValues( desc, val => FieldDescriptorTypeChecks.isFieldDescriptor( val ) ?  val : {type:val} as INativeFieldDescriptor );
+	private static normalizeAttributesDescription( desc: {
+		[key: string]: FieldDescriptor | EType;
+	} ): { [key: string]: FieldDescriptor } {
+		return _.mapValues(
+			desc,
+			val =>
+			FieldDescriptorTypeChecks.isFieldDescriptor( val )
+			? val
+			: ( { type: val } as INativeFieldDescriptor )
+		);
 	}
 	
 	/**
@@ -59,46 +79,15 @@ export class Model {
 	 * @param name      - Name of the model.
 	 * @param modelDesc - Hash representing the configuration of the model.
 	 */
-	public constructor(
-		public name: string,
-		modelDesc: Raw.ModelDescription
-	) {
-		// Check model configuration
-		if (
-			!modelDesc.hasOwnProperty( 'sources' ) ||
-			!(
-				_.isArrayLike( modelDesc.sources ) ||
-				_.isObject( modelDesc.sources ) ||
-				_.isString( modelDesc.sources )
-			)
-		) {
-			throw new TypeError(
-				`Expect model sources to be either a string, an array or an object, had ${JSON.stringify(
-					modelDesc.sources
-				)}.`
-			);
-		}
+	public constructor( public name: string, modelDesc: Raw.IModelDescription ) {
 		// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
 		const sourcesNormalized = Model.normalizeRemaps( modelDesc );
 		// List sources required by this model
 		const sourceNames = _.keys( sourcesNormalized );
-		const modelSources = _.pick(
-			dataSourceRegistry,
-			sourceNames
-		);
+		const modelSources = _.pick( dataSourceRegistry, sourceNames );
 		const missingSources = _.difference( sourceNames, _.keys( modelSources ) );
 		if ( 0 !== missingSources.length ) {
-			throw new Error(
-				`Missing data sources ${missingSources.map( v => `"${v}"` ).join( ', ' )}`
-			);
-		}
-		
-		if ( !_.isObject( modelDesc.attributes ) ) {
-			throw new TypeError(
-				`Model attributes should be an object, have ${JSON.stringify(
-					modelDesc.attributes
-				)}`
-			);
+			throw new Error( `Missing data sources ${missingSources.map( v => `"${v}"` ).join( ', ' )}` );
 		}
 		
 		// Now, we are sure that config is valid. We can configure our _dataSources with model options, and set `this` properties.
@@ -115,31 +104,31 @@ export class Model {
 			modelSources[sourceName].configureCollection( name, remap );
 		} );
 		this._dataSources = modelSources;
-		this.defaultDataSource = _.chain( modelSources )
-		.keys()
-		.head()
-		.value() as string;
-
+		this.defaultDataSource = _.chain( modelSources ).keys().head().value() as string;
+		
 		// Store & expose the model description
-		this.modelDesc = deepFreeze( _.assign( modelDesc, {attributes,sources: sourcesNormalized} ) );
+		this.modelDesc = deepFreeze( _.assign( modelDesc, { attributes, sources: sourcesNormalized } ) );
 		// Prepare our entity factory
 		this._entityFactory = EntityFactory( name, this.modelDesc, this );
-
 	}
 	
 	/**
 	 * TODO
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param modelDesc - Description of the model to normalize remaps for
 	 */
-	protected static normalizeRemaps( modelDesc: Raw.ModelDescription ){
+	protected static normalizeRemaps( modelDesc: Raw.IModelDescription ) {
 		const sourcesRaw = modelDesc.sources;
-		let sources: SourcesHash;
+		let sources: ISourcesHash;
 		if ( _.isString( sourcesRaw ) ) {
 			sources = { [sourcesRaw]: {} };
 		} else if ( _.isArrayLike( sourcesRaw ) ) {
-			sources = _.zipObject( sourcesRaw, _.times( sourcesRaw.length, _.constant( {} ) ) );
+			sources = _.zipObject(
+				sourcesRaw,
+				// TODO: What does it do?
+				_.times( sourcesRaw.length, _.constant( {} as any ) )
+			);
 		} else {
 			sources = _.mapValues( sourcesRaw, ( remap, dataSourceName ) => {
 				if ( true === remap ) {
@@ -170,15 +159,20 @@ export class Model {
 		dataSource: TDataSource = this.defaultDataSource
 	): DataAccessLayer {
 		// If argument is a data access layer, check that it is in our {@link _dataSources} hash.
-		if ( dataSource instanceof DataAccessLayer ){
-			if ( _.values( this._dataSources ).indexOf( dataSource ) === -1 ){
-				throw new ReferenceError( `Model does not contain data source "${dataSource.adapter.name}"` );
+		if ( dataSource instanceof DataAccessLayer ) {
+			if ( _.values( this._dataSources ).indexOf( dataSource ) === -1 ) {
+				throw new ReferenceError(
+					`Model does not contain data source "${dataSource.adapter.name}"`
+				);
 			}
 			return dataSource;
 		} else {
-			const dataSourceName = dataSource instanceof Adapter ? dataSource.name : dataSource;
-			if ( !this._dataSources.hasOwnProperty( dataSourceName ) ){
-				throw new ReferenceError( `Model does not contain data source "${dataSourceName}"` );
+			const dataSourceName =
+			dataSource instanceof Adapter ? dataSource.name : dataSource;
+			if ( !this._dataSources.hasOwnProperty( dataSourceName ) ) {
+				throw new ReferenceError(
+					`Model does not contain data source "${dataSourceName}"`
+				);
 			}
 			return this._dataSources[dataSourceName];
 		}
@@ -219,7 +213,9 @@ export class Model {
 		source: IEntityAttributes,
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
-		return this.makeEntity( this.getDataSource( dataSourceName ).insertOne( this.name, source ) );
+		return this.makeEntity(
+			this.getDataSource( dataSourceName ).insertOne( this.name, source )
+		);
 	}
 	
 	/**
@@ -234,7 +230,9 @@ export class Model {
 		sources: IEntityAttributes[],
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		return this.makeSet( this.getDataSource( dataSourceName ).insertMany( this.name, sources ) );
+		return this.makeSet(
+			this.getDataSource( dataSourceName ).insertMany( this.name, sources )
+		);
 	}
 	
 	/**
@@ -248,10 +246,12 @@ export class Model {
 	 */
 	public async find(
 		queryFind?: QueryLanguage.Raw.SearchQuery,
-		options: QueryLanguage.Raw.QueryOptions = {},
+		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
-		return this.makeEntity( this.getDataSource( dataSourceName ).findOne( this.name, queryFind, options ) );
+		return this.makeEntity(
+			this.getDataSource( dataSourceName ).findOne( this.name, queryFind, options )
+		);
 	}
 	
 	/**
@@ -265,10 +265,12 @@ export class Model {
 	 */
 	public async findMany(
 		queryFind?: QueryLanguage.Raw.SearchQuery,
-		options: QueryLanguage.Raw.QueryOptions = {},
+		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		return this.makeSet( this.getDataSource( dataSourceName ).findMany( this.name, queryFind, options ) );
+		return this.makeSet(
+			this.getDataSource( dataSourceName ).findMany( this.name, queryFind, options )
+		);
 	}
 	
 	/**
@@ -284,10 +286,17 @@ export class Model {
 	public async update(
 		queryFind: QueryLanguage.Raw.SearchQuery | undefined,
 		update: object,
-		options: QueryLanguage.Raw.QueryOptions = {},
+		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
-		return this.makeEntity( this.getDataSource( dataSourceName ).updateOne( this.name, queryFind, update, options ) );
+		return this.makeEntity(
+			this.getDataSource( dataSourceName ).updateOne(
+				this.name,
+				queryFind,
+				update,
+				options
+			)
+		);
 	}
 	
 	/**
@@ -303,10 +312,17 @@ export class Model {
 	public async updateMany(
 		queryFind: QueryLanguage.Raw.SearchQuery | undefined,
 		update: object,
-		options: QueryLanguage.Raw.QueryOptions = {},
+		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set> {
-		return this.makeSet( this.getDataSource( dataSourceName ).updateMany( this.name, queryFind, update, options ) );
+		return this.makeSet(
+			this.getDataSource( dataSourceName ).updateMany(
+				this.name,
+				queryFind,
+				update,
+				options
+			)
+		);
 	}
 	
 	/**
@@ -320,10 +336,14 @@ export class Model {
 	 */
 	public async delete(
 		queryFind?: QueryLanguage.Raw.SearchQuery,
-		options: QueryLanguage.Raw.QueryOptions = {},
+		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
-		return this.getDataSource( dataSourceName ).deleteOne( this.name, queryFind, options );
+		return this.getDataSource( dataSourceName ).deleteOne(
+			this.name,
+			queryFind,
+			options
+		);
 	}
 	
 	/**
@@ -337,40 +357,44 @@ export class Model {
 	 */
 	public async deleteMany(
 		queryFind?: QueryLanguage.Raw.SearchQuery,
-		options: QueryLanguage.Raw.QueryOptions = {},
+		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
-		return this.getDataSource( dataSourceName ).deleteMany( this.name, queryFind, options );
+		return this.getDataSource( dataSourceName ).deleteMany(
+			this.name,
+			queryFind,
+			options
+		);
 	}
 	
 	/**
 	 * Generate a new Set containing provided `AdapterEntities` wrapped in `Entities`
-	 * 
+	 *
 	 * @param dataSourceEntitiesPromise - Promise that may return adapter entities to wrap in a newly created `Set`
 	 */
 	protected async makeSet(
 		dataSourceEntitiesPromise: Promise<Array<AdapterEntity | undefined>>
-	){
+	) {
 		const dataSourceEntities = await dataSourceEntitiesPromise;
 		const newEntities = _.chain( dataSourceEntities )
-				.map( dataSourceEntity => new this.entityFactory( dataSourceEntity ) )
-				.compact()
-				.value();
+		.map( dataSourceEntity => new this.entityFactory( dataSourceEntity ) )
+		.compact()
+		.value();
 		const set = new Set( this, newEntities );
 		return set;
 	}
 	
 	/**
 	 * Generate a new entity from the promise's result
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param dataSourceEntityPromise - Promise that may return an adapter entity to wrap in a newly created `Entity`
 	 */
 	protected async makeEntity(
 		dataSourceEntityPromise: Promise<AdapterEntity | undefined>
-	){
+	) {
 		const dataSourceEntity = await dataSourceEntityPromise;
-		if ( _.isNil( dataSourceEntity ) ){
+		if ( _.isNil( dataSourceEntity ) ) {
 			return null;
 		}
 		return new this.entityFactory( dataSourceEntity );

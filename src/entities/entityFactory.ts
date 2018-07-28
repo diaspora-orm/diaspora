@@ -4,9 +4,15 @@ import { SequentialEvent } from 'sequential-event';
 import { Errors } from '../errors';
 import { AdapterEntity, Adapter } from '../adapters/base';
 import { Model } from '../model';
-import { ModelDescription } from '../types/modelDescription';
+import { IModelDescription } from '../types/modelDescription';
 import { DataAccessLayer, TDataSource } from '../adapters/dataAccessLayer';
-import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
+import {
+	IEntityAttributes,
+	EEntityState,
+	IIdHash,
+	IEntityProperties,
+	EntityUid
+} from '../types/entity';
 import { QueryLanguage } from '../types/queryLanguage';
 import { logger } from '../logger/index';
 
@@ -22,8 +28,8 @@ export abstract class Entity extends SequentialEvent {
 	public get attributes() {
 		return this.getAttributes();
 	}
-
-	public set attributes( newAttributes: IEntityAttributes | null ){
+	
+	public set attributes( newAttributes: IEntityAttributes | null ) {
 		this._attributes = newAttributes;
 	}
 	
@@ -40,7 +46,7 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	public get ctor() {
-		return this.constructor as typeof Entity & Entity.EntitySpawner;
+		return this.constructor as typeof Entity & Entity.IEntitySpawner;
 	}
 	
 	private _attributes: IEntityAttributes | null = null;
@@ -71,7 +77,8 @@ export abstract class Entity extends SequentialEvent {
 		// ### Init defaults
 		const sources = _.reduce(
 			model.dataSources,
-			( acc: Entity.IDataSourceMap<AdapterEntity>, adapter ) => acc.set( adapter, null ),
+			( acc: Entity.IDataSourceMap<AdapterEntity>, adapter ) =>
+			acc.set( adapter, null ),
 			new WeakMap()
 		);
 		this._dataSources = Object.seal( sources );
@@ -81,7 +88,10 @@ export abstract class Entity extends SequentialEvent {
 		// ### Load datas from source
 		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 		if ( source instanceof AdapterEntity ) {
-			this.setLastDataSourceEntity( DataAccessLayer.retrieveAccessLayer( source.dataSource ), source );
+			this.setLastDataSourceEntity(
+				DataAccessLayer.retrieveAccessLayer( source.dataSource ),
+				source
+			);
 		}
 		
 		// ### Final validation
@@ -103,21 +113,24 @@ export abstract class Entity extends SequentialEvent {
 		this._attributes = this.applyDefaults();
 		
 		// ### Load events
-		_.forEach( this.model.modelDesc.lifecycleEvents, ( eventFunctions, eventName ) => {
-			// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
-			_.forEach( _.castArray( eventFunctions ), eventFunction => {
-				this.on( eventName, eventFunction );
-			} );
-		} );
+		_.forEach(
+			this.model.modelDesc.lifecycleEvents,
+			( eventFunctions, eventName ) => {
+				// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
+				_.forEach( _.castArray( eventFunctions ), eventFunction => {
+					this.on( eventName, eventFunction );
+				} );
+			}
+		);
 	}
-
+	
 	/**
 	 * Apply the default values using the {@link DefaultTransformer}.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
-	public applyDefaults(){
-		if ( this._attributes ){
+	public applyDefaults() {
+		if ( this._attributes ) {
 			return this.model.entityTransformers.default.apply( this._attributes );
 		} else {
 			return this;
@@ -157,7 +170,9 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   dataSource - Data source to get query for.
 	 * @returns Query to find this entity.
 	 */
-	public uidQuery( dataSource?: TDataSource ): QueryLanguage.Raw.SelectQueryOrCondition {
+	public uidQuery(
+		dataSource?: TDataSource
+	): QueryLanguage.Raw.SelectQueryOrCondition {
 		const dataSourceFixed = this.getDataSource( dataSource );
 		// Todo: precise return type
 		return {
@@ -199,8 +214,10 @@ export abstract class Entity extends SequentialEvent {
 	 */
 	public getAttributes( dataSource?: undefined ): IEntityAttributes | null;
 	public getAttributes( dataSource: TDataSource ): IEntityAttributes;
-	public getAttributes( dataSource?: TDataSource | undefined ): IEntityAttributes | null {
-		if ( dataSource ){
+	public getAttributes(
+		dataSource?: TDataSource | undefined
+	): IEntityAttributes | null {
+		if ( dataSource ) {
 			// Get the target data source
 			const dataSourceFixed = this.getDataSource( dataSource );
 			const adapterEntity = this._dataSources.get( dataSourceFixed );
@@ -232,7 +249,10 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is saved. Resolved with `this`.
 	 */
-	public async persist( dataSource?: TDataSource, options: Entity.IOptions = {} ) {
+	public async persist(
+		dataSource?: TDataSource,
+		options: Entity.IOptions = {}
+	) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
@@ -254,9 +274,9 @@ export abstract class Entity extends SequentialEvent {
 		await _maybeEmit( ['afterValidate', `beforePersist${suffix}`] );
 		
 		// Depending on state, we are going to perform a different operation
-		const dataStoreEntity: AdapterEntity | undefined = await ( ( beforeState === 'orphan' ) ?
-		this.persistCreate( dataSourceFixed ) :
-		this.persistUpdate( dataSourceFixed, options ) );
+		const dataStoreEntity: AdapterEntity | undefined = await ( beforeState === 'orphan'
+		? this.persistCreate( dataSourceFixed )
+		: this.persistUpdate( dataSourceFixed, options ) );
 		if ( !dataStoreEntity ) {
 			throw new Error( 'Insert/Update returned nothing.' );
 		}
@@ -309,7 +329,10 @@ export abstract class Entity extends SequentialEvent {
 	 * @param   options    - Hash of options for this query. You should not use this parameter yourself: Diaspora uses it internally.
 	 * @returns Promise resolved once entity is destroyed. Resolved with `this`.
 	 */
-	public async destroy( dataSource?: TDataSource, options: Entity.IOptions = {} ) {
+	public async destroy(
+		dataSource?: TDataSource,
+		options: Entity.IOptions = {}
+	) {
 		_.defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
@@ -371,28 +394,27 @@ export abstract class Entity extends SequentialEvent {
 		.uniq();
 		
 		// Omit values that did not changed between now & stored object
-		const diffKeys = potentialChangedKeys
-		.reject( ( key: string ) => _.isEqual( dataStoreEntity.attributes[key], currentAttributes[key] ) );
+		const diffKeys = potentialChangedKeys.reject( ( key: string ) => _.isEqual( dataStoreEntity.attributes[key], currentAttributes[key] ) );
 		
 		return diffKeys.transform( ( accumulator: IEntityAttributes, key: string ) => {
 			accumulator[key] = currentAttributes[key];
 			return accumulator;
-		}, {} ).value();
+		},                         {} ).value();
 	}
 	
 	/**
 	 * Get the data access layer object that matches with the input type.
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param dataSource - String, Adapter or DataAccessLayer to get in the DataAccessLayer form
 	 */
-	protected getDataSource( dataSource?: TDataSource ){
+	protected getDataSource( dataSource?: TDataSource ) {
 		return this.ctor.model.getDataSource( dataSource );
 	}
 	
 	/**
 	 * Serialize an entity
-	 * 
+	 *
 	 * TODO: a real description
 	 */
 	protected serialize() {
@@ -401,7 +423,7 @@ export abstract class Entity extends SequentialEvent {
 	
 	/**
 	 * Deserialize an entity
-	 * 
+	 *
 	 * TODO: a real description
 	 */
 	protected deserialize() {
@@ -410,7 +432,7 @@ export abstract class Entity extends SequentialEvent {
 	
 	/**
 	 * Cast fields from their raw type to their expected type
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param source - Raw entity properties to cast
 	 * @returns the casted properties
@@ -425,8 +447,11 @@ export abstract class Entity extends SequentialEvent {
 					{
 						if ( _.isString( currentVal ) || _.isInteger( currentVal ) ) {
 							source[attrName] = new Date( currentVal );
-						} else if ( !( currentVal instanceof Date ) ){
-							logger.error( 'Incoherent data type received, expected DateTime castable data, but received: ' + currentVal );
+						} else if ( !( currentVal instanceof Date ) ) {
+							logger.error(
+								'Incoherent data type received, expected DateTime castable data, but received: ' +
+								currentVal
+							);
 							source[attrName] = undefined;
 						}
 					}
@@ -436,10 +461,10 @@ export abstract class Entity extends SequentialEvent {
 		} );
 		return source;
 	}
-
+	
 	/**
 	 * Conditionaly triggers the provided events names with provided arguments if the options requires it.
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param options    - Options of the current entity operation
 	 * @param eventsArgs - Arguments to transmit by the events
@@ -465,34 +490,40 @@ export abstract class Entity extends SequentialEvent {
 	
 	/**
 	 * Runs the provided query if the entity is not in {@link EEntityState.ORPHAN} mode.
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param beforeState - The last stable state of the entity (before the current operation)
-	 * @param dataSource  - 
-	 * @param method      - 
+	 * @param dataSource  -
+	 * @param method      -
 	 */
 	private execIfOkState<T extends AdapterEntity>(
 		beforeState: EEntityState,
 		dataSource: DataAccessLayer,
 		// TODO: precise it
 		method: string
-	): Promise<T>{
+	): Promise<T> {
 		// Depending on state, we are going to perform a different operation
 		if ( EEntityState.ORPHAN === beforeState ) {
-			return Promise.reject( new Errors.EntityStateError( "Can't fetch an orphan entity." ) );
+			return Promise.reject(
+				new Errors.EntityStateError( "Can't fetch an orphan entity." )
+			);
 		} else {
 			this._lastDataSource = dataSource;
 			const execMethod: (
 				collectionName: string,
 				query: object
 			) => Promise<T> = ( dataSource as any )[method];
-			return execMethod.call( dataSource, this.collectionName( dataSource.name ), this.uidQuery( dataSource ) );
+			return execMethod.call(
+				dataSource,
+				this.collectionName( dataSource.name ),
+				this.uidQuery( dataSource )
+			);
 		}
 	}
 	
 	/**
 	 * Refresh last data source, attributes, state & data source entity
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param dataSource       - Data source to set as last used
 	 * @param dataSourceEntity - New entity returned by this data source
@@ -533,14 +564,16 @@ export abstract class Entity extends SequentialEvent {
 	
 	/**
 	 * Persist the entity in the data source by performing an `insertOne` action
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param dataSource     - Data source to persist entity into
 	 */
 	private async persistCreate( dataSource: DataAccessLayer ) {
-		
 		if ( this.attributes ) {
-			return ( dataSource.insertOne( this.collectionName( dataSource ), this.attributes ) );
+			return dataSource.insertOne(
+				this.collectionName( dataSource ),
+				this.attributes
+			);
 		} else {
 			return undefined;
 		}
@@ -548,37 +581,39 @@ export abstract class Entity extends SequentialEvent {
 	
 	/**
 	 * Persist the entity in the data source by performing an `updateOne` action
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param dataSource - Data source to persist entity into
 	 * @param options    - Optional options hash for the `update` operation
 	 */
-	private async persistUpdate( dataSource: DataAccessLayer, options?: Entity.IOptions ) {
+	private async persistUpdate(
+		dataSource: DataAccessLayer,
+		options?: Entity.IOptions
+	) {
 		const diff = this.getDiff( dataSource );
 		return diff
-		? ( ( dataSource.updateOne(
+		? dataSource.updateOne(
 			this.collectionName( dataSource ),
 			this.uidQuery( dataSource ),
 			diff,
 			options as any
-		) ) )
+		)
 		: undefined;
 	}
 }
 
-export namespace Entity{
+export namespace Entity {
 	export interface IOptions {
 		skipEvents?: boolean;
 	}
 	
-	export interface EntitySpawner {
+	export interface IEntitySpawner {
 		model: Model;
 		name: string;
 		new ( source?: IEntityAttributes ): Entity;
 	}
 	export interface IDataSourceMap<T extends AdapterEntity>
 	extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
-	
 	
 	/**
 	 * This factory function generate a new class constructor, prepared for a specific model.
@@ -590,13 +625,13 @@ export namespace Entity{
 	 * @returns Entity constructor to use with this model.
 	 */
 	export interface IEntityFactory {
-		( name: string, modelDesc: ModelDescription, model: Model ): EntitySpawner;
+		( name: string, modelDesc: IModelDescription, model: Model ): IEntitySpawner;
 		Entity: Entity;
 	}
 }
 
 // We init the function as any to define the Entity property later.
-const ef: any = ( name: string, modelDesc: ModelDescription, model: Model ) => {
+const ef: any = ( name: string, modelDesc: IModelDescription, model: Model ) => {
 	/**
 	 * @ignore
 	 */
@@ -631,7 +666,7 @@ const ef: any = ( name: string, modelDesc: ModelDescription, model: Model ) => {
 			( SubEntity as any )[staticMethodName] = staticMethod;
 		}
 	);
-	return SubEntity.bind( SubEntity, model ) as Entity.EntitySpawner;
+	return SubEntity.bind( SubEntity, model ) as Entity.IEntitySpawner;
 };
 ef.Entity = Entity;
 export const EntityFactory: Entity.IEntityFactory = ef;

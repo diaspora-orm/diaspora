@@ -8,6 +8,7 @@ import { Adapter } from '../../src/adapters/base';
 
 import '../utils';
 import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
+import { EFieldType } from '../../src';
 
 let testModel: Model;
 const MODEL_NAME = 'model-test';
@@ -21,10 +22,10 @@ beforeAll( () => {
 		sources: [SOURCE],
 		attributes: {
 			foo: {
-				type: 'string',
+				type: EFieldType.STRING,
 			},
 			baz: {
-				type: 'string',
+				type: EFieldType.STRING,
 			},
 		},
 	} );

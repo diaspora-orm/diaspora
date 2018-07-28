@@ -6,16 +6,21 @@ import {
 	remapIO,
 	CANONICAL_OPERATORS,
 	QUERY_OPTIONS_TRANSFORMS,
-	Constructable,
+	IConstructable
 } from './adapter-utils';
 import { QueryLanguage } from '../../types/queryLanguage';
-import { IRemapsHash, IFiltersHash, DataSourceQuerier, IEnumeratedHash } from '../../types/dataSourceQuerier';
+import {
+	IRemapsHash,
+	IFiltersHash,
+	IDataSourceQuerier,
+	IEnumeratedHash
+} from '../../types/dataSourceQuerier';
 import { logger } from '../../logger';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
 /**
  * Represents the current state of the adapter. Those states corresponds to event names emitted by the adapter when they are passed.
- * 
+ *
  * @author Gerkin
  */
 export enum EAdapterState {
@@ -24,9 +29,8 @@ export enum EAdapterState {
 	PREPARING = 'preparing',
 }
 
-
 export interface IAdapterCtr<T extends AdapterEntity = AdapterEntity>
-extends Constructable<Adapter<T>> {
+extends IConstructable<Adapter<T>> {
 	new ( dataSourceName: string, ...args: any[] ): Adapter<T>;
 }
 
@@ -36,9 +40,9 @@ extends Constructable<Adapter<T>> {
  * @author gerkin
  * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
  */
-export abstract class Adapter<
-T extends AdapterEntity = AdapterEntity
-> extends SequentialEvent implements DataSourceQuerier<IEntityAttributes, IEntityProperties> {
+export abstract class Adapter<T extends AdapterEntity = AdapterEntity>
+extends SequentialEvent
+implements IDataSourceQuerier<IEntityAttributes, IEntityProperties> {
 	public get classEntity() {
 		return this._classEntity;
 	}
@@ -113,17 +117,17 @@ T extends AdapterEntity = AdapterEntity
 	
 	/**
 	 * Runs the query in loops to fulfill requirements in the options hash
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param options - Hash of options that forms the query
 	 * @param query   - Query function to loop
 	 */
 	private static async iterateLimit(
-		options: QueryLanguage.QueryOptions,
+		options: QueryLanguage.IQueryOptions,
 		query: (
-			options: QueryLanguage.QueryOptions
+			options: QueryLanguage.IQueryOptions
 		) => Promise<IEntityProperties | undefined>
-	){
+	) {
 		const foundEntities: IEntityProperties[] = [];
 		const localOptions = _.assign( {}, options );
 		let origSkip = options.skip;
@@ -131,7 +135,7 @@ T extends AdapterEntity = AdapterEntity
 		// We are going to loop until we find enough items
 		while ( foundEntities.length < localOptions.limit ) {
 			const found = await query( localOptions );
-			if ( _.isNil( found ) ){
+			if ( _.isNil( found ) ) {
 				return foundEntities;
 			} else {
 				foundEntities.push( found );
@@ -177,11 +181,10 @@ T extends AdapterEntity = AdapterEntity
 				return reject( this.error );
 			}
 			
-			this.on( EAdapterState.READY, () => {
-				return resolve( this );
-			} ).on( EAdapterState.ERROR, ( err: Error ) => {
-				return reject( err );
-			} );
+			this.on( EAdapterState.READY, () => resolve( this ) ).on(
+				EAdapterState.ERROR,
+				( err: Error ) => reject( err )
+			);
 		} );
 	}
 	
@@ -223,8 +226,8 @@ T extends AdapterEntity = AdapterEntity
 	 * @returns Transformed options (also called `canonical options`).
 	 */
 	public normalizeOptions(
-		opts: QueryLanguage.Raw.QueryOptions = {}
-	): QueryLanguage.QueryOptions {
+		opts: QueryLanguage.Raw.IQueryOptions = {}
+	): QueryLanguage.IQueryOptions {
 		opts = _.cloneDeep( opts );
 		_.forEach( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
 			if ( opts.hasOwnProperty( optionName ) ) {
@@ -239,6 +242,39 @@ T extends AdapterEntity = AdapterEntity
 		} );
 		return optsDefaulted;
 	}
+
+	/**
+	 * Normalize a single field query and checks types
+	 * 
+	 * @author Gerkin
+	 * @param attrSearch - Search query to apply to the field
+	 */
+	protected static normalizeFieldQuery( attrSearch: QueryLanguage.Raw.ISelectQuery ): QueryLanguage.ISelectQuery{
+		// Replace operations alias by canonical expressions
+		const attrSearchCanonical = _.mapKeys( attrSearch, ( val, operator, obj ) => {
+			if ( CANONICAL_OPERATORS.hasOwnProperty( operator ) ) {
+				// ... check for conflict with canonical operation name...
+				if ( obj.hasOwnProperty( CANONICAL_OPERATORS[operator] ) ) {
+					throw new Error( `Search can't have both "${operator}" and "${CANONICAL_OPERATORS[operator]}" keys, as they are synonyms` );
+				}
+				return CANONICAL_OPERATORS[operator];
+			}
+			return operator;
+		} );
+		// For arithmetic comparison, check if values are numeric
+		_.forEach( ['$less', '$lessEqual', '$greater', '$greaterEqual'], operation => {
+			if (
+				attrSearchCanonical.hasOwnProperty( operation ) &&
+				!(
+					_.isNumber( attrSearchCanonical[operation] ) ||
+					_.isDate( attrSearchCanonical[operation] )
+				)
+			) {
+				throw new TypeError( `Expect "${operation}" in ${JSON.stringify( attrSearchCanonical )} to be a numeric value` );
+			}
+		} );
+		return attrSearchCanonical;
+	}
 	
 	/**
 	 * Transform a search query to its canonical form, replacing aliases or shorthands by full query.
@@ -247,57 +283,18 @@ T extends AdapterEntity = AdapterEntity
 	 */
 	public normalizeQuery(
 		originalQuery: QueryLanguage.Raw.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): QueryLanguage.SelectQueryOrCondition {
-		if ( _.isString( originalQuery ) ) {
-			originalQuery = { id: originalQuery };
-		}
-		const normalizedQuery =
-		true === options.remapInput
-		? _.chain( _.cloneDeep( originalQuery ) )
-		.mapValues( attrSearch => {
+		const normalizedQuery = options.remapInput
+		? _.chain( originalQuery ).cloneDeep().mapValues( attrSearch => {
 			if ( _.isUndefined( attrSearch ) ) {
 				return { $exists: false };
 			} else if ( !( attrSearch instanceof Object ) ) {
 				return { $equal: attrSearch };
 			} else {
-				// Replace operations alias by canonical expressions
-				attrSearch = _.mapKeys( attrSearch, ( val, operator, obj ) => {
-					if ( CANONICAL_OPERATORS.hasOwnProperty( operator ) ) {
-						// ... check for conflict with canonical operation name...
-						if ( obj.hasOwnProperty( CANONICAL_OPERATORS[operator] ) ) {
-							throw new Error(
-								`Search can't have both "${operator}" and "${
-									CANONICAL_OPERATORS[operator]
-								}" keys, as they are synonyms`
-							);
-						}
-						return CANONICAL_OPERATORS[operator];
-					}
-					return operator;
-				} );
-				// For arithmetic comparison, check if values are numeric (TODO later: support date)
-				_.forEach(
-					['$less', '$lessEqual', '$greater', '$greaterEqual'],
-					operation => {
-						if (
-							attrSearch.hasOwnProperty( operation ) &&
-							!(
-								_.isNumber( attrSearch[operation] ) || _.isDate( attrSearch[operation] )
-							)
-						) {
-							throw new TypeError(
-								`Expect "${operation}" in ${JSON.stringify(
-									attrSearch
-								)} to be a numeric value`
-							);
-						}
-					}
-				);
-				return attrSearch;
+				return Adapter.normalizeFieldQuery( attrSearch );
 			}
-		} )
-		.value()
+		} ).value()
 		: _.cloneDeep( originalQuery );
 		return normalizedQuery;
 	}
@@ -362,7 +359,7 @@ T extends AdapterEntity = AdapterEntity
 	public async findOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties | undefined> {
 		options.limit = 1;
 		return _.first( await this.findMany( table, queryFind, options ) );
@@ -377,7 +374,7 @@ T extends AdapterEntity = AdapterEntity
 	public async findMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties[]> {
 		const boundQuery = this.findOne.bind( this, table, queryFind );
 		return Adapter.iterateLimit( options, boundQuery );
@@ -396,7 +393,7 @@ T extends AdapterEntity = AdapterEntity
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		update: IEntityAttributes,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties | undefined> {
 		options.limit = 1;
 		return _.first( await this.updateMany( table, queryFind, update, options ) );
@@ -412,7 +409,7 @@ T extends AdapterEntity = AdapterEntity
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
 		update: IEntityAttributes,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties[]> {
 		return Adapter.iterateLimit(
 			options,
@@ -432,7 +429,7 @@ T extends AdapterEntity = AdapterEntity
 	public async deleteOne(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	) {
 		options.limit = 1;
 		await this.deleteMany( table, queryFind, options );
@@ -451,7 +448,7 @@ T extends AdapterEntity = AdapterEntity
 	public async deleteMany(
 		table: string,
 		queryFind: QueryLanguage.SelectQueryOrCondition,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	) {
 		const boundQuery = this.deleteOne.bind( this, table, queryFind );
 		await Adapter.iterateLimit( options, boundQuery );

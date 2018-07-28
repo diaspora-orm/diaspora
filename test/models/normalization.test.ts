@@ -1,6 +1,7 @@
 import { Diaspora } from '../../src/diaspora';
 import { generateUUID } from '../../src/utils';
 import { dataSourceRegistry } from '../../src/staticStores';
+import { EFieldType } from '../../src';
 
 describe( 'Checking model description normalization', () => {
 	it( 'Should normalize key/string attributes', () => {
@@ -8,16 +9,16 @@ describe( 'Checking model description normalization', () => {
 		const model = Diaspora.declareModel( 'model_' + generateUUID(), {
 			sources: 'temp',
 			attributes: {
-				foo: 'string',
-				bar: 'number',
+				foo: EFieldType.STRING,
+				bar: EFieldType.INTEGER,
 			},
 		} );
 		expect( model.attributes ).toEqual( {
 			foo: {
-				type: 'string',
+				type: EFieldType.STRING,
 			},
 			bar: {
-				type: 'number',
+				type: EFieldType.INTEGER,
 			},
 		} );
 	} );

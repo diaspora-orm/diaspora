@@ -1,15 +1,11 @@
 import * as _ from 'lodash';
+// tslint:disable-next-line:no-implicit-dependencies
 import { XMLHttpRequest } from 'xmlhttprequest';
 
 import { Diaspora } from '../../src/diaspora';
 import { WebApiAdapter } from '../../src/adapters/webApi/adapter';
 import { getConfig } from '../utils';
-import {
-	createDataSource,
-	checkSpawnedAdapter,
-	checkEachStandardMethods,
-	initMockApi,
-} from './utils';
+import { createDataSource, checkSpawnedAdapter, checkEachStandardMethods, initMockApi } from './utils';
 import { ELoggingLevel } from '../../src/logger/logger';
 import { BrowserWebApiAdapter } from '../../src/adapters/webApi/subAdapters/browserAdapter';
 

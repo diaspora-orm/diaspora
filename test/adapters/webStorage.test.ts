@@ -1,5 +1,6 @@
 import {clone} from 'lodash';
 import { getConfig } from '../utils';
+// tslint:disable-next-line:no-implicit-dependencies
 import { LocalStorage } from 'node-localstorage';
 
 ( global as any ).localStorage = clone( new LocalStorage( './.localstorage' ) );

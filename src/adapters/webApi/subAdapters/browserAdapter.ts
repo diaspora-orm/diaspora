@@ -3,51 +3,61 @@ import * as _ from 'lodash';
 import { WebApiAdapter } from '../index';
 import { QueryLanguage } from '../../../index';
 
-export interface QueryObject{
+export interface IQueryObject {
 	where: QueryLanguage.SelectQueryOrCondition;
-	options?: QueryLanguage.QueryOptions;
+	options?: QueryLanguage.IQueryOptions;
 }
 
-export class BrowserWebApiAdapter extends WebApiAdapter{
+export class BrowserWebApiAdapter extends WebApiAdapter {
 	public constructor(
 		dataSourceName: string,
-		config: WebApiAdapter.IWebApiAdapterConfig ,
-		eventProviders?: WebApiAdapter.IEventProvider []
+		config: WebApiAdapter.IWebApiAdapterConfig,
+		eventProviders?: WebApiAdapter.IEventProvider[]
 	) {
 		const defaultedConfig = _.defaults( config, {
 			scheme: false,
 			host: false,
 			port: false,
 		} );
-		const baseEndPoint = false === defaultedConfig.host ? defaultedConfig.path : undefined;
-		super( dataSourceName, _.assign( {baseEndPoint}, defaultedConfig ), eventProviders );
+		const baseEndPoint =
+		false === defaultedConfig.host ? defaultedConfig.path : undefined;
+		super(
+			dataSourceName,
+			_.assign( { baseEndPoint }, defaultedConfig ),
+			eventProviders
+		);
 	}
 	
 	/**
 	 * Serialize a query object to be injected in a query string.
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param queryObject - Query to serialize for a query string
 	 */
-	private static queryObjectToString( queryObject?: QueryObject ) {
+	private static queryObjectToString( queryObject?: IQueryObject ) {
 		const filteredQueryObject = _.cloneDeep( queryObject ) as any;
-		if ( filteredQueryObject && filteredQueryObject.options ){
-			filteredQueryObject.options = _.omitBy( filteredQueryObject.options, v => _.isNumber( v ) && !isFinite( v ) );
+		if ( filteredQueryObject && filteredQueryObject.options ) {
+			filteredQueryObject.options = _.omitBy(
+				filteredQueryObject.options,
+				v => _.isNumber( v ) && !isFinite( v )
+			);
 		}
-		return _.chain( filteredQueryObject )
-		.thru( _.cloneDeep )
-		.omitBy( val => _.isObject( val ) && _.isEmpty( val ) )
-		// { foo: 1, bar: { baz: 2 } }
-		.mapValues( _.unary( JSON.stringify ) )
-		// { foo: '1', bar: '{"baz": "2"}' }
-		.toPairs()
-		// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
-		.map( _.partial( _.map, _.partial.placeholder, encodeURIComponent ) )
-		// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
-		.map( arr => `${arr[0]}=${arr[1]}` )
-		// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
-		.join( '&' )
-		.value();
+		return (
+			_.chain( filteredQueryObject )
+			.thru( _.cloneDeep )
+			.omitBy( val => _.isObject( val ) && _.isEmpty( val ) )
+			// { foo: 1, bar: { baz: 2 } }
+			.mapValues( _.unary( JSON.stringify ) )
+			// { foo: '1', bar: '{"baz": "2"}' }
+			.toPairs()
+			// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
+			.map( _.partial( _.map, _.partial.placeholder, encodeURIComponent ) )
+			// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
+			.map( arr => `${arr[0]}=${arr[1]}` )
+			// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
+			.join( '&' )
+			.value()
+		);
 	}
 	
 	/**
@@ -62,51 +72,62 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 		xhr: XMLHttpRequest,
 		resolve: (
 			thenableOrResult?:
-			| WebApiAdapter.TEntitiesJsonResponse 
-			| PromiseLike<WebApiAdapter.TEntitiesJsonResponse >
+			| WebApiAdapter.TEntitiesJsonResponse
+			| PromiseLike<WebApiAdapter.TEntitiesJsonResponse>
 			| undefined
 		) => void,
 		reject: ( thenableOrResult?: {} | PromiseLike<any> | undefined ) => void
 	) {
 		xhr.onload = () => {
-			try{
+			try {
 				if ( _.inRange( xhr.status, 200, 299 ) ) {
-					if ( xhr.responseText === '' ){
+					if ( xhr.responseText === '' ) {
 						return resolve( undefined );
 					} else {
 						return resolve( JSON.parse( xhr.responseText ) );
 					}
 				} else {
-					reject( BrowserWebApiAdapter.handleError( JSON.parse( xhr.responseText ), xhr.status ) );
+					reject(
+						BrowserWebApiAdapter.handleError(
+							JSON.parse( xhr.responseText ),
+							xhr.status
+						)
+					);
 				}
-			} catch ( err ){
+			} catch ( err ) {
 				return reject( BrowserWebApiAdapter.handleError( {}, xhr.status ) );
 			}
 		};
-		xhr.onerror = () => {
-			return reject( BrowserWebApiAdapter.handleError( {message: xhr.responseText}, xhr.status ) );
-		};
+		xhr.onerror = () =>
+		reject(
+			BrowserWebApiAdapter.handleError(
+				{ message: xhr.responseText },
+				xhr.status
+			)
+		);
 		return xhr;
 	}
-
+	
 	/**
 	 * Creates a request, send it and get the result
-	 * 
+	 *
 	 * @param method      - HTTP verb that describes the request type
 	 * @param endPoint    - Url to send on
 	 * @param data        - Object to send
 	 * @param queryObject - Object to put in query string
 	 */
 	protected async httpRequest(
-		method: WebApiAdapter.EHttpVerb ,
+		method: WebApiAdapter.EHttpVerb,
 		endPoint: string,
 		data?: object,
-		queryObject?: QueryObject
-	): Promise<WebApiAdapter.TEntitiesJsonResponse > {
+		queryObject?: IQueryObject
+	): Promise<WebApiAdapter.TEntitiesJsonResponse> {
 		return new Promise(
 			(
 				resolve: (
-					value?: WebApiAdapter.TEntitiesJsonResponse  | PromiseLike<WebApiAdapter.TEntitiesJsonResponse >
+					value?:
+					| WebApiAdapter.TEntitiesJsonResponse
+					| PromiseLike<WebApiAdapter.TEntitiesJsonResponse>
 				) => void,
 				reject
 			) => {
@@ -116,9 +137,15 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 					resolve,
 					reject
 				);
-				const queryString = BrowserWebApiAdapter.queryObjectToString( queryObject );
+				const queryString = BrowserWebApiAdapter.queryObjectToString(
+					queryObject
+				);
 				xhr.responseType = 'json';
-				xhr.open( method, `${endPoint}${queryString ? `?${queryString}` : ''}`, true );
+				xhr.open(
+					method,
+					`${endPoint}${queryString ? `?${queryString}` : ''}`,
+					true
+				);
 				xhr.setRequestHeader( 'Content-Type', 'application/json' );
 				xhr.send( _.isNil( data ) ? undefined : JSON.stringify( data ) );
 			}

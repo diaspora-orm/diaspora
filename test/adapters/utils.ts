@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
+// tslint:disable-next-line:no-implicit-dependencies
 import * as express from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
 import {json, urlencoded} from 'body-parser';
 
 import { AdapterEntity, Adapter } from '../../src/adapters/base';
@@ -12,9 +14,7 @@ import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
 import { IEntityProperties } from '../../src/types/entity';
 import { Entity } from '../../src/entities/entityFactory';
 
-const getDataSourceLabel = name => {
-	return `${name}Adapter`;
-};
+const getDataSourceLabel = name => `${name}Adapter`;
 
 const TABLE = 'test';
 
@@ -24,7 +24,7 @@ const filterEntity = ( entity: AdapterEntity ) => {
 	return sentProperties;
 };
 export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: number, endpoint: string, tableName: string ) => {
-	const parseQs = _.partialRight( _.mapValues, JSON.parse ) as ( str: string ) => { where?: any } & QueryLanguage.QueryOptions;
+	const parseQs = _.partialRight( _.mapValues, JSON.parse ) as ( str: string ) => { where?: any } & QueryLanguage.IQueryOptions;
 	
 	const app = express();
 	app.use( urlencoded( {
@@ -108,30 +108,25 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		const query = parseQs( req.query );
 		adapter
 		.deleteOne( tableName, query.where, _.omit( query, ['where'] ) )
-		.then( () => {
-			return res.json();
-		} );
+		.then( () =>
+			res.json() );
 	} );
 	app.delete( `${endpoint}s`, ( req, res ) => {
 		const query = parseQs( req.query );
 		adapter
 		.deleteMany( tableName, query.where, _.omit( query, ['where'] ) )
-		.then( () => {
-			return res.json();
-		} );
+		.then( () =>
+			res.json() );
 	} );
-	app.get( '/api/:code', ( req, res ) => {
-		return res.status( req.params.code ).send( {message: 'This is an error message'} );
-	} );
-	app.get( '/api/nomsg/:code', ( req, res ) => {
-		return res.status( req.params.code ).send();
-	} );
+	app.get( '/api/:code', ( req, res ) =>
+		res.status( req.params.code ).send( {message: 'This is an error message'} ) );
+	app.get( '/api/nomsg/:code', ( req, res ) =>
+		res.status( req.params.code ).send() );
 	
 	return new Promise( ( resolve, reject ) => {
 		
-		const server = app.listen( apiPort, () => {
-			return resolve( server );
-		} );
+		const server = app.listen( apiPort, () =>
+			resolve( server ) );
 	} );
 };
 export const createDataSource = ( adapterLabel: string, ...config: any[] ) => {
@@ -606,8 +601,8 @@ export const checkEachStandardMethods = adapterLabel => {
 					_.map( objects, object => _.omitBy( object, _.isUndefined ) )
 				);
 			} );
-			it( `${getStyle( 'bold', '~' )} ($exists) operator`, () => {
-				return Promise.all( [
+			it( `${getStyle( 'bold', '~' )} ($exists) operator`, () =>
+				Promise.all( [
 					adapter
 					.findOne( TABLE, {
 						b: {
@@ -630,10 +625,9 @@ export const checkEachStandardMethods = adapterLabel => {
 							b: undefined,
 						} );
 					} ),
-				] );
-			} );
-			it( `${getStyle( 'bold', '==' )} ($equal) operator`, () => {
-				return adapter
+				] ) );
+			it( `${getStyle( 'bold', '==' )} ($equal) operator`, () =>
+				adapter
 				.findOne( TABLE, {
 					b: {
 						'==': 1,
@@ -643,10 +637,9 @@ export const checkEachStandardMethods = adapterLabel => {
 					expect( output ).toBeAnAdapterEntity( adapter, {
 						b: 1,
 					} );
-				} );
-			} );
-			it( `${getStyle( 'bold', '!=' )} ($diff) operator`, () => {
-				return Promise.all( [
+				} ) );
+			it( `${getStyle( 'bold', '!=' )} ($diff) operator`, () =>
+				Promise.all( [
 					adapter
 					.findOne( TABLE, {
 						bar: {
@@ -678,8 +671,7 @@ export const checkEachStandardMethods = adapterLabel => {
 							b: 1,
 						} );
 					} ),
-				] );
-			} );
+				] ) );
 			it( `${getStyle( 'bold', '<' )} ($less) operator`, async () => {
 				const outputs = await adapter.findMany( TABLE, { bar: { '<': 2 } } );
 				expect( outputs ).toHaveLength( 1 );

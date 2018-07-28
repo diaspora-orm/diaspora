@@ -1,6 +1,6 @@
 /**
  * Reflects the state of the entity.
- * 
+ *
  * @author Gerkin
  */
 export enum EEntityState {

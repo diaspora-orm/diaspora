@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 
 import { CheckTransformer } from '../../src/entityTransformers';
 import { Errors } from '../../src/errors';
+import { EFieldType } from '../../src';
 
 
 interface IPartition<T> extends Array<T[]> {
@@ -25,27 +26,26 @@ const obj2 = { foo: 'bar' };
 const arr1 = [];
 const arr2 = [1, 2, 3];
 const exampleValues = {
-	any: ['', 'foo', 0, 1, 1.5, date1, obj1, arr1] as any[],
-	string: ['', 'foo'] as string[],
-	integer: [0, 1] as number[],
-	float: [1.5, 0, 1] as number[],
-	date: [date1, date2] as Date[],
-	object: [obj1, date1, arr1, obj2, date2, arr2] as object[],
-	array: [arr1, arr2] as any[][],
+	[EFieldType.ANY]: ['', 'foo', 0, 1, 1.5, date1, obj1, arr1] as any[],
+	[EFieldType.STRING]: ['', 'foo'] as string[],
+	[EFieldType.INTEGER]: [0, 1] as number[],
+	[EFieldType.FLOAT]: [1.5, 0, 1] as number[],
+	[EFieldType.DATETIME]: [date1, date2] as Date[],
+	[EFieldType.OBJECT]: [obj1, date1, arr1, obj2, date2, arr2] as object[],
+	[EFieldType.ARRAY]: [arr1, arr2] as any[][],
 };
 const getValues = ( keys: string | string[] = [] ): [any[], any[]] => {
 	keys = _.castArray( keys );
 	const partition = [_.pick( exampleValues, keys ), _.omit( exampleValues, keys )];
-	const partedValues = _.map( partition, val => {
-		return _.reduce(
+	const partedValues = _.map( partition, val =>
+		_.reduce(
 			val,
 			( acc, valSub ) => {
 				const vals = _.isArray( valSub ) ? valSub : _.values( valSub );
 				return _.union( acc, vals );
 			},
 			[]
-		);
-	} );
+		) );
 	const partedFiltered = [
 		partedValues[0],
 		_.difference( partedValues[1], partedValues[0] ),
@@ -56,16 +56,14 @@ const getValues = ( keys: string | string[] = [] ): [any[], any[]] => {
 	return partedFiltered;
 };
 
-const THROWING = ( desc, obj ) => {
-	return `Validation ${JSON.stringify( desc )} throwing for ${JSON.stringify(
+const THROWING = ( desc, obj ) =>
+	`Validation ${JSON.stringify( desc )} throwing for ${JSON.stringify(
 		obj
 	)}`;
-};
-const NOT_THROWING = ( desc, obj ) => {
-	return `Validation ${JSON.stringify(
+const NOT_THROWING = ( desc, obj ) =>
+	`Validation ${JSON.stringify(
 		desc
 	)} NOT throwing correctly for ${JSON.stringify( obj )}`;
-};
 
 const runTests = (
 	validator: CheckTransformer,
@@ -87,9 +85,8 @@ const runTests = (
 };
 
 const wrapTest = ( partition: IPartition<any> ): IPartition<{ test: any }> => {
-	const partitionMapped = partition.map( ( values: any[] ) => {
-		return values.map( ( value: any ) => ( { test: value } ) );
-	} );
+	const partitionMapped = partition.map( ( values: any[] ) =>
+		values.map( ( value: any ) => ( { test: value } ) ) );
 	return partitionMapped as IPartition<{ test: any }>;
 };
 const canBeNil = ( partition: IPartition<any> ) => {
@@ -107,7 +104,7 @@ describe( 'Default values', () => {
 	it( 'Check field', async () => {
 		const validator = new CheckTransformer( {
 			foo:{
-				type: 'string',
+				type: EFieldType.STRING,
 				default: 'bar',
 			},
 		} );
@@ -116,7 +113,7 @@ describe( 'Default values', () => {
 	describe( 'Check all', async () => {
 		describe( 'Basic tests with types', () => {
 			describe( 'Not required', () => {
-				_.forEach( exampleValues, ( v, type ) => {
+				_.forEach( exampleValues, ( v, type: any ) => {
 					it( `Check type "${type}"`, () => {
 						const validator = new CheckTransformer( {
 							test: {
@@ -130,7 +127,7 @@ describe( 'Default values', () => {
 				} );
 			} );
 			describe( 'Required', () => {
-				_.forEach( exampleValues, ( v, type ) => {
+				_.forEach( exampleValues, ( v, type: any ) => {
 					it( `Check type "${type}"`, () => {
 						const validator = new CheckTransformer( {
 							test: {
@@ -150,10 +147,10 @@ describe( 'Default values', () => {
 				it( 'Optional property in optional object', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'object',
+							type: EFieldType.OBJECT,
 							attributes: {
 								string: {
-									type: 'string',
+									type: EFieldType.STRING,
 								},
 							},
 						},
@@ -167,11 +164,11 @@ describe( 'Default values', () => {
 				it( 'Optional property in required object', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'object',
+							type: EFieldType.OBJECT,
 							required: true,
 							attributes: {
 								string: {
-									type: 'string',
+									type: EFieldType.STRING,
 								},
 							},
 						},
@@ -185,10 +182,10 @@ describe( 'Default values', () => {
 				it( 'Required property in optional object', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'object',
+							type: EFieldType.OBJECT,
 							attributes: {
 								string: {
-									type: 'string',
+									type: EFieldType.STRING,
 									required: true,
 								},
 							},
@@ -203,11 +200,11 @@ describe( 'Default values', () => {
 				it( 'Required property in required object', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'object',
+							type: EFieldType.OBJECT,
 							required: true,
 							attributes: {
 								string: {
-									type: 'string',
+									type: EFieldType.STRING,
 									required: true,
 								},
 							},
@@ -222,19 +219,19 @@ describe( 'Default values', () => {
 				it( 'In-depth required property in required object', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'object',
+							type: EFieldType.OBJECT,
 							required: true,
 							attributes: {
 								obj: {
-									type: 'object',
+									type: EFieldType.OBJECT,
 									required: true,
 									attributes: {
 										obj: {
-											type: 'object',
+											type: EFieldType.OBJECT,
 											required: true,
 											attributes: {
 												test: {
-													type: 'string',
+													type: EFieldType.STRING,
 													required: true,
 												},
 											},
@@ -256,9 +253,9 @@ describe( 'Default values', () => {
 					it( 'Optional single definition in optional object', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								of: {
-									type: 'integer',
+									type: EFieldType.INTEGER,
 								},
 							},
 						} );
@@ -271,10 +268,10 @@ describe( 'Default values', () => {
 					it( 'Optional single definition in required object', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								required: true,
 								of: {
-									type: 'integer',
+									type: EFieldType.INTEGER,
 								},
 							},
 						} );
@@ -287,9 +284,9 @@ describe( 'Default values', () => {
 					it( 'Required single definition in optional object', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								of: {
-									type: 'integer',
+									type: EFieldType.INTEGER,
 									required: true,
 								},
 							},
@@ -303,10 +300,10 @@ describe( 'Default values', () => {
 					it( 'Required single definition in required object', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								required: true,
 								of: {
-									type: 'integer',
+									type: EFieldType.INTEGER,
 									required: true,
 								},
 							},
@@ -320,16 +317,16 @@ describe( 'Default values', () => {
 					it( 'In-depth required element in required arrays', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								required: true,
 								of: {
-									type: 'array',
+									type: EFieldType.ARRAY,
 									required: true,
 									of: {
-										type: 'array',
+										type: EFieldType.ARRAY,
 										required: true,
 										of: {
-											type: 'string',
+											type: EFieldType.STRING,
 											required: true,
 										},
 									},
@@ -347,8 +344,8 @@ describe( 'Default values', () => {
 					it( 'Optional multiple definitions in optional array', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
-								of: [{ type: 'integer' }, { type: 'date' }],
+								type: EFieldType.ARRAY,
+								of: [{ type: EFieldType.INTEGER }, { type: EFieldType.DATETIME }],
 							},
 						} );
 						const testObjects = wrapTest( [
@@ -372,9 +369,9 @@ describe( 'Default values', () => {
 					it( 'Optional multiple definitions in required array', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								required: true,
-								of: [{ type: 'integer' }, { type: 'date' }],
+								of: [{ type: EFieldType.INTEGER }, { type: EFieldType.DATETIME }],
 							},
 						} );
 						const testObjects = wrapTest( [
@@ -396,14 +393,14 @@ describe( 'Default values', () => {
 					it( 'Required multiple definitions in optional array', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								of: [
 									{
-										type: 'integer',
+										type: EFieldType.INTEGER,
 										required: true,
 									},
 									{
-										type: 'date',
+										type: EFieldType.DATETIME,
 										required: true,
 									},
 								],
@@ -433,15 +430,15 @@ describe( 'Default values', () => {
 					it( 'Required multiple definitions in required array', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								required: true,
 								of: [
 									{
-										type: 'integer',
+										type: EFieldType.INTEGER,
 										required: true,
 									},
 									{
-										type: 'date',
+										type: EFieldType.DATETIME,
 										required: true,
 									},
 								],
@@ -464,13 +461,13 @@ describe( 'Default values', () => {
 					it( 'Required & optional definitions in array', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								of: [
 									{
-										type: 'integer',
+										type: EFieldType.INTEGER,
 										required: true,
 									},
-									{ type: 'date' },
+									{ type: EFieldType.DATETIME },
 								],
 							},
 						} );
@@ -495,31 +492,31 @@ describe( 'Default values', () => {
 					it( 'In-depth required element in required arrays', () => {
 						const validator = new CheckTransformer( {
 							test: {
-								type: 'array',
+								type: EFieldType.ARRAY,
 								required: true,
 								of: [
 									{
-										type: 'array',
+										type: EFieldType.ARRAY,
 										required: true,
 										of: [
 											{
-												type: 'array',
+												type: EFieldType.ARRAY,
 												required: true,
 												of: [
 													{
-														type: 'integer',
+														type: EFieldType.INTEGER,
 														required: true,
 													},
 												],
 											},
 											{
-												type: 'integer',
+												type: EFieldType.INTEGER,
 												required: true,
 											},
 										],
 									},
 									{
-										type: 'integer',
+										type: EFieldType.INTEGER,
 										required: true,
 									},
 								],
@@ -539,7 +536,7 @@ describe( 'Default values', () => {
 				it( 'Not required enum of any type', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'any',
+							type: EFieldType.ANY,
 							enum: [1, 2, 'aze'],
 						},
 					} );
@@ -552,7 +549,7 @@ describe( 'Default values', () => {
 				it( 'Not required enum of a specific type', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'integer',
+							type: EFieldType.INTEGER,
 							enum: [1, 2, 'aze'],
 						},
 					} );
@@ -565,7 +562,7 @@ describe( 'Default values', () => {
 				it( 'Not required enum matching with regex', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'string',
+							type: EFieldType.STRING,
 							enum: [/^foo/, /bar$/],
 						},
 					} );
@@ -580,7 +577,7 @@ describe( 'Default values', () => {
 				it( 'Required enum of any type', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'any',
+							type: EFieldType.ANY,
 							required: true,
 							enum: [1, 2, 'aze'],
 						},
@@ -594,7 +591,7 @@ describe( 'Default values', () => {
 				it( 'Required enum of a specific type', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'integer',
+							type: EFieldType.INTEGER,
 							required: true,
 							enum: [1, 2, 'aze'],
 						},
@@ -608,7 +605,7 @@ describe( 'Default values', () => {
 				it( 'Required enum matching with regex', () => {
 					const validator = new CheckTransformer( {
 						test: {
-							type: 'string',
+							type: EFieldType.STRING,
 							required: true,
 							enum: [/^foo/, /bar$/],
 						},

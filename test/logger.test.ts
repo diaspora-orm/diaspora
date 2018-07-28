@@ -1,3 +1,4 @@
+// tslint:disable-next-line:no-implicit-dependencies
 const intercept = require( 'intercept-stdout' );
 
 import { BrowserLogger } from '../src/logger/browserLogger';

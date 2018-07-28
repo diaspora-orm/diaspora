@@ -40,7 +40,7 @@ export const generateUUID = (): string => {
 		d += perf.now();
 	}
 	const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, c => {
-		const r = ( ( d + Math.random() * 16 ) % 16 ) | 0;
+		const r = ( d + Math.random() * 16 ) % 16 | 0;
 		d = Math.floor( d / 16 );
 		return ( 'x' === c ? r : ( r & 0x3 ) | 0x8 ).toString( 16 );
 	} );
@@ -57,7 +57,7 @@ export const generateUUID = (): string => {
  */
 export const applyOptionsToSet = (
 	set: IEntityProperties[],
-	options: QueryLanguage.QueryOptions
+	options: QueryLanguage.IQueryOptions
 ): IEntityProperties[] => {
 	_.defaults( options, {
 		limit: Infinity,
@@ -72,23 +72,26 @@ export const applyOptionsToSet = (
 
 /**
  * Totally freeze an object, preventing any modifications on it.
- * 
+ *
  * @author gerkin
  * @param object - Object to freeze
  * @returns The frozen object
  */
 export const deepFreeze = <T>( object: T ) => {
-	const deepMap = ( obj: T, mapper: Function ): T => {
-		return mapper( _.isObject( obj ) ?
-			_.mapValues( obj as any as object, function( v ) {
-				return _.isPlainObject( v ) ? deepMap( v, mapper ) : v;
-			} ) : obj
-		);
-	};
+	const deepMap = ( obj: T, mapper: Function ): T =>
+	mapper(
+		_.isObject( obj )
+		? _.mapValues( ( obj as any ) as object, function( v ) {
+			return _.isPlainObject( v ) ? deepMap( v, mapper ) : v;
+		} )
+		: obj
+	);
 	return deepMap( object, Object.freeze );
 };
 
-export const getDefaultFunction = ( identifier: string ): ( ( ...args: any[] ) => any ) => {
+export const getDefaultFunction = (
+	identifier: string
+): ( ( ...args: any[] ) => any ) => {
 	const match = identifier.match( /^(.+?)(?:::(.+?))+$/ );
 	if ( match ) {
 		const parts = identifier.split( '::' );
@@ -101,9 +104,9 @@ export const getDefaultFunction = ( identifier: string ): ( ( ...args: any[] ) =
 };
 
 export const getDefaultValue = ( value: any ) => {
-	if ( _.isFunction( value ) ){
+	if ( _.isFunction( value ) ) {
 		return value();
-	} else if ( _.isString( value ) ){
+	} else if ( _.isString( value ) ) {
 		return getDefaultFunction( value )( value );
 	}
 	return value;

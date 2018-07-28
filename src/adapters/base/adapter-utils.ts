@@ -5,7 +5,7 @@ import { QueryLanguage } from '../../types/queryLanguage';
 import { IEnumeratedHash } from '../../types/dataSourceQuerier';
 import { IEntityAttributes } from '../../types/entity';
 
-export interface Constructable<T> {
+export interface IConstructable<T> {
 	new ( ...args: any[] ): T;
 }
 
@@ -36,7 +36,9 @@ const validations = {
 		},
 	},
 	rng( key: string, val: string | number, range: string ) {
-		const rangeMatch = range.match( /^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/ );
+		const rangeMatch = range.match(
+			/^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/
+		);
 		if ( rangeMatch ) {
 			const lower = getNum( rangeMatch.splice( 2, 3 ) );
 			const upper = getNum( rangeMatch.splice( 2, 3 ) );
@@ -78,7 +80,7 @@ export const remapIO = <T extends IEntityAttributes>(
 	query: T,
 	input: boolean
 ) => {
-	const direction = true === input ? 'input' : 'output';
+	const direction = input ? 'input' : 'output';
 	const filtered = _.mapValues( query, ( value, key ) => {
 		const filter = _.get(
 			adapter,
@@ -90,16 +92,12 @@ export const remapIO = <T extends IEntityAttributes>(
 		}
 		return value;
 	} );
-	const remapType = true === input ? 'normal' : 'inverted';
-	const remaped = _.mapKeys( filtered, ( value, key ) => {
-		return _.get( adapter, ['remaps', tableName, remapType, key], key );
-	} );
+	const remapType = input ? 'normal' : 'inverted';
+	const remaped = _.mapKeys( filtered, ( value, key ) => _.get( adapter, ['remaps', tableName, remapType, key], key ) );
 	return remaped as T;
 };
 
-export interface IQueryCheckFunction {
-	( entityVal: any, targetVal: any ): boolean;
-}
+export type IQueryCheckFunction = ( entityVal: any, targetVal: any ) => boolean;
 
 export const OPERATORS: IEnumeratedHash<IQueryCheckFunction | undefined> = {
 	$exists: ( entityVal: any, targetVal: any ) =>
@@ -117,7 +115,9 @@ export const OPERATORS: IEnumeratedHash<IQueryCheckFunction | undefined> = {
 	$greaterEqual: ( entityVal: any, targetVal: any ) =>
 	!_.isUndefined( entityVal ) && entityVal >= targetVal,
 	$contains: ( entityVal: any, targetVal: any ) =>
-	!_.isUndefined( entityVal ) && _.isArray( entityVal ) && _.some( entityVal, ( val ) => _.isEqual( val, targetVal ) ),
+	!_.isUndefined( entityVal ) &&
+	_.isArray( entityVal ) &&
+	_.some( entityVal, val => _.isEqual( val, targetVal ) ),
 };
 export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'~': '$exists',
@@ -129,21 +129,21 @@ export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'>=': '$greaterEqual',
 };
 export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
-( ( ops: QueryLanguage.Raw.QueryOptions ) => void )
+( ( ops: QueryLanguage.Raw.IQueryOptions ) => void )
 > = {
-	limit( opts: QueryLanguage.Raw.QueryOptions ) {
+	limit( opts: QueryLanguage.Raw.IQueryOptions ) {
 		opts.limit = validateOption( 'limit', opts.limit as number, {
 			type: 'int',
 			rng: '[0,∞]',
 		} );
 	},
-	skip( opts: QueryLanguage.Raw.QueryOptions ) {
+	skip( opts: QueryLanguage.Raw.IQueryOptions ) {
 		opts.skip = validateOption( 'skip', opts.skip as number, {
 			type: 'int',
 			rng: '[0,∞[',
 		} );
 	},
-	page( opts: QueryLanguage.Raw.QueryOptions ) {
+	page( opts: QueryLanguage.Raw.IQueryOptions ) {
 		if ( !opts.hasOwnProperty( 'limit' ) ) {
 			throw new ReferenceError(
 				'Usage of "options.page" requires "options.limit" to be defined.'

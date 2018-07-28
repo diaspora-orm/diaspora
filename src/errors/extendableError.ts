@@ -11,9 +11,14 @@ export abstract class ExtendableError extends Error {
 	 * @param message   - Message of this error.
 	 * @param errorArgs - Arguments to transfer to parent Error.
 	 */
-	public constructor( message?: string, public readonly ancestor?: Error, filename?: string, lineNumber?: number ) {
+	public constructor(
+		message?: string,
+		public readonly ancestor?: Error,
+		filename?: string,
+		lineNumber?: number
+	) {
 		// Little hack to use browser unstandardized [Error prototype](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Error#Syntax)
-		super( ...[message, filename, lineNumber] as any );
+		super( ...( [message, filename, lineNumber] as any ) );
 		this.name = new.target.name;
 		if ( message ) {
 			this.message = message;
@@ -25,7 +30,7 @@ export abstract class ExtendableError extends Error {
 		}
 		// restore prototype chain
 		const actualProto = new.target.prototype;
-
+		
 		if ( Object.setPrototypeOf ) {
 			Object.setPrototypeOf( this, actualProto );
 		} else {

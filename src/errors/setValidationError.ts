@@ -8,7 +8,7 @@ import { EntityValidationError } from './entityValidationError';
  */
 export class SetValidationError extends ValidationError {
 	private readonly validationErrors: EntityValidationError[];
-
+	
 	/**
 	 * Construct a new set validation error.
 	 *
@@ -27,23 +27,23 @@ export class SetValidationError extends ValidationError {
 		this.validationErrors = validationErrors;
 		this.message += `[\n${this.stringifyValidationError()}\n]`;
 	}
-
+	
 	/**
 	 * Concatenate each validation error to generate a readable message
-	 * 
+	 *
 	 * @author Gerkin
 	 */
 	protected stringifyValidationError() {
 		return _.chain( this.validationErrors )
-			.map( ( error, index ) => {
-				if ( _.isNil( error ) ) {
-					return false;
-				} else {
-					return `${index}: ${error.message.replace( /\n/g, '\n	' )}`;
-				}
-			} )
-			.filter( _.identity )
-			.join( ',\n' )
-			.value();
+		.map( ( error, index ) => {
+			if ( _.isNil( error ) ) {
+				return false;
+			} else {
+				return `${index}: ${error.message.replace( /\n/g, '\n	' )}`;
+			}
+		} )
+		.filter( _.identity )
+		.join( ',\n' )
+		.value();
 	}
 }

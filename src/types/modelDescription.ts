@@ -2,36 +2,36 @@ import { IEventHandler } from 'sequential-event';
 
 /**
  * Lists types recognized by Diaspora
- * 
+ *
  * @author Gerkin
  */
-export enum EType{
-	STRING = 'string',
-	INTEGER = 'integer',
-	FLOAT = 'float',
-	DATETIME = 'datetime',
-	BOOLEAN = 'boolean',
+export enum EType {
 	ANY = 'any',
-	OBJECT = 'object',
 	ARRAY = 'array',
+	BOOLEAN = 'boolean',
+	DATETIME = 'datetime',
+	FLOAT = 'float',
+	INTEGER = 'integer',
+	OBJECT = 'object',
 	RELATION = 'relation',
+	STRING = 'string',
 }
 
-export interface SourcesHash {
+export interface ISourcesHash {
 	[key: string]: object;
 }
 
-export namespace Raw{
-	export interface IAttributesDescription{
+export namespace Raw {
+	export interface IAttributesDescription {
 		[key: string]: FieldDescriptor | EType;
 	}
-
+	
 	/**
 	 * Object describing a model.
 	 *
 	 * @author gerkin
 	 */
-	export interface ModelDescription {
+	export interface IModelDescription {
 		/**
 		 * List of sources to use with this model.
 		 *
@@ -63,13 +63,12 @@ export namespace Raw{
 		 */
 		lifecycleEvents?: { [key: string]: IEventHandler | IEventHandler[] };
 	}
-
 }
 
-export interface IAttributesDescription{
+export interface IAttributesDescription {
 	[key: string]: FieldDescriptor;
 }
-export interface ModelDescription {
+export interface IModelDescription {
 	/**
 	 * Attributes of the model.
 	 *
@@ -81,7 +80,7 @@ export interface ModelDescription {
 	 *
 	 * @author gerkin
 	 */
-	sources: SourcesHash;
+	sources: ISourcesHash;
 	/**
 	 * Methods to add to entities prototype.
 	 *
@@ -128,11 +127,17 @@ export interface IBaseFieldDescriptor {
 	required?: boolean;
 	default?: Function | any;
 }
-export interface INonRelationalFieldDescriptor extends IBaseFieldDescriptor{
+export interface INonRelationalFieldDescriptor extends IBaseFieldDescriptor {
 	enum?: any[];
 }
-export interface INativeFieldDescriptor extends INonRelationalFieldDescriptor{
-	type: EType.ANY | EType.BOOLEAN | EType.DATETIME | EType.FLOAT | EType.INTEGER | EType.STRING;
+export interface INativeFieldDescriptor extends INonRelationalFieldDescriptor {
+	type:
+	| EType.ANY
+	| EType.BOOLEAN
+	| EType.DATETIME
+	| EType.FLOAT
+	| EType.INTEGER
+	| EType.STRING;
 }
 export interface IArrayFieldDescriptor extends INonRelationalFieldDescriptor {
 	type: EType.ARRAY;
@@ -162,16 +167,25 @@ export const FieldDescriptorTypeChecks = {
 	isFieldDescriptor(
 		fieldDescriptor: FieldDescriptor | EType
 	): fieldDescriptor is FieldDescriptor {
-		return fieldDescriptor.hasOwnProperty( 'type' ) || fieldDescriptor.hasOwnProperty( 'model' );
+		return (
+			fieldDescriptor.hasOwnProperty( 'type' ) ||
+			fieldDescriptor.hasOwnProperty( 'model' )
+		);
 	},
 	isRelationalFieldDescriptor(
 		fieldDescriptor: FieldDescriptor
-	): fieldDescriptor is IRelationalFieldDescriptor{
-		return !fieldDescriptor.hasOwnProperty( 'type' ) || fieldDescriptor.type === EType.RELATION;
+	): fieldDescriptor is IRelationalFieldDescriptor {
+		return (
+			!fieldDescriptor.hasOwnProperty( 'type' ) ||
+			fieldDescriptor.type === EType.RELATION
+		);
 	},
 };
 
-export type NonRelationalFieldDescriptor = INativeFieldDescriptor
+export type NonRelationalFieldDescriptor =
+| INativeFieldDescriptor
 | IArrayFieldDescriptor
 | IObjectFieldDescriptor;
-export type FieldDescriptor = NonRelationalFieldDescriptor | IRelationalFieldDescriptor;
+export type FieldDescriptor =
+| NonRelationalFieldDescriptor
+| IRelationalFieldDescriptor;

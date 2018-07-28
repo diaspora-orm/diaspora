@@ -1,9 +1,4 @@
-import {
-	createDataSource,
-	checkSpawnedAdapter,
-	checkEachStandardMethods,
-	checkApplications,
-} from './utils';
+import { createDataSource, checkSpawnedAdapter, checkEachStandardMethods, checkApplications } from './utils';
 
 const ADAPTER_LABEL = 'inMemory';
 

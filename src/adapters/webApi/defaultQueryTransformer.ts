@@ -13,12 +13,16 @@ export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory
 	function getPluralEndpoint( endPoint: string ) {
 		return _.get( config, ['pluralApis', endPoint], `${endPoint}s` );
 	}
-
+	
 	return {
-		beforeQuery( queryDesc: WebApiAdapter.IQueryDescriptor ): WebApiAdapter.IQueryDescriptor {
+		beforeQuery(
+			queryDesc: WebApiAdapter.IQueryDescriptor
+		): WebApiAdapter.IQueryDescriptor {
 			const {
-				queryType, queryNum,
-				modelName, select,
+				queryType,
+				queryNum,
+				modelName,
+				select,
 				update,
 				options,
 				apiDesc,
@@ -29,22 +33,16 @@ export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory
 				delete: 'DELETE',
 				insert: 'POST',
 			} as any )[queryType] as WebApiAdapter.EHttpVerb;
-
-			return _.defaultsDeep(
-				{ apiDesc: {
-					method,
-					endPoint: ( queryNum === 'many'
-						? getPluralEndpoint( modelName )
-						: modelName
-					).toLowerCase(),
-					queryString: {
-						where: select,
-						options,
-					},
-					body: update,
-				}},
-				queryDesc
-			);
+			
+			return _.defaultsDeep( { apiDesc: {
+				method,
+				endPoint: ( queryNum === 'many' ? getPluralEndpoint( modelName ) : modelName ).toLowerCase(),
+				queryString: {
+					where: select,
+					options,
+				},
+				body: update,
+			} },                   queryDesc );
 		},
 	};
 };

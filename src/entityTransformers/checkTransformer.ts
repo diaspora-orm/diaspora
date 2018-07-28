@@ -3,7 +3,14 @@ import * as _ from 'lodash';
 import { EntityTransformer } from './entityTransformer';
 import { PathStack } from './pathStack';
 import { EntityValidationError } from '../errors/entityValidationError';
-import { FieldDescriptor, IArrayFieldDescriptor, IRelationalFieldDescriptor, IObjectFieldDescriptor, FieldDescriptorTypeChecks, EType} from '../types/modelDescription';
+import {
+	FieldDescriptor,
+	IArrayFieldDescriptor,
+	IRelationalFieldDescriptor,
+	IObjectFieldDescriptor,
+	FieldDescriptorTypeChecks,
+	EType
+} from '../types/modelDescription';
 import { IEntityAttributes } from '../types/entity';
 
 /**
@@ -18,61 +25,57 @@ const validateArrayItems = (
 	validator: CheckTransformer,
 	fieldDesc: IArrayFieldDescriptor,
 	keys: PathStack
-) => {
-	return (
-		propVal: any,
-		index: number
-	): ErrorObjectFinal[] | ErrorObjectFinal | null => {
-		if ( fieldDesc.hasOwnProperty( 'of' ) ) {
-			const ofArray = _.castArray( fieldDesc.of );
-			const subErrors = _.chain( ofArray ).map( ( desc, subIndex ) =>
-				validator.applyField(
-					propVal,
-					keys
-						.clone()
-						.pushValidationProp( 'of', ( _.isArray( fieldDesc.of )
-							? String( subIndex )
-							: undefined ) as string )
-						.pushEntityProp( String( index ) ),
-					{ getProps: false }
-				)
-			);
-
-			if ( !_.isArray( fieldDesc.of ) ) {
-				// Just get the first or default to null
-				return subErrors.get( 0 ).value();
-			} else if ( subErrors.every( subError => !_.isNil( subError ) ).value() ) {
-				return subErrors.compact().value();
-			}
+) => (
+	propVal: any,
+	index: number
+): IErrorObjectFinal[] | IErrorObjectFinal | null => {
+	if ( fieldDesc.hasOwnProperty( 'of' ) ) {
+		const ofArray = _.castArray( fieldDesc.of );
+		const subErrors = _.chain( ofArray ).map( ( desc, subIndex ) =>
+		validator.applyField(
+			propVal,
+			keys
+			.clone()
+			.pushValidationProp( 'of', ( _.isArray( fieldDesc.of )
+			? String( subIndex )
+			: undefined ) as string )
+			.pushEntityProp( String( index ) ),
+			{ getProps: false } )
+		);
+		
+		if ( !_.isArray( fieldDesc.of ) ) {
+			// Just get the first or default to null
+			return subErrors.get( 0 ).value();
+		} else if ( subErrors.every( subError => !_.isNil( subError ) ).value() ) {
+			return subErrors.compact().value();
 		}
-		return null;
-	};
+	}
+	return null;
 };
 
-const messageRequired = ( keys: PathStack, fieldDesc: FieldDescriptor ) => {
-	return `${keys.toValidatePath()} is a required property of ${
-		_.isNil( fieldDesc.type ) || fieldDesc.type === EType.RELATION
-			? `model "${( fieldDesc as IRelationalFieldDescriptor ).model}"`
-			: `type "${fieldDesc.type}"`
-	}`;
-};
+const messageRequired = ( keys: PathStack, fieldDesc: FieldDescriptor ) =>
+`${keys.toValidatePath()} is a required property of ${
+	_.isNil( fieldDesc.type ) || fieldDesc.type === EType.RELATION
+	? `model "${( fieldDesc as IRelationalFieldDescriptor ).model}"`
+	: `type "${fieldDesc.type}"`
+}`;
 
-export interface ErrorObject {
+export interface IErrorObject {
 	validate?: string;
 	type?: string;
 	spec?: string;
 	required?: string;
 	enum?: string;
-	children?: ErrorObjectFinal[] | { [key: string]: ErrorObjectFinal };
+	children?: IErrorObjectFinal[] | { [key: string]: IErrorObjectFinal };
 }
 
-export interface ErrorObjectFinal extends ErrorObject {
+export interface IErrorObjectFinal extends IErrorObject {
 	value: any;
 }
 
 export type TypeChecker = ( value: any ) => boolean;
 
-export interface TypeErrorObject extends ErrorObject {
+export interface ITypeErrorObject extends IErrorObject {
 	type: string;
 }
 
@@ -90,7 +93,7 @@ type CheckFunction = (
 	keys: PathStack,
 	fieldDesc: FieldDescriptor,
 	value: any
-) => ErrorObjectFinal | undefined;
+) => IErrorObjectFinal | undefined;
 
 /**
  * Execute the simple tester and return an error component if it returns falsey.
@@ -98,20 +101,18 @@ type CheckFunction = (
  * @param   tester - The test function to invoke.
  * @returns Function to execute to validate the type.
  */
-const validateWrongType = ( tester: TypeChecker ): CheckFunction => {
-	return (
-		keys: PathStack,
-		fieldDesc: FieldDescriptor,
-		value: any
-	): ErrorObjectFinal | undefined => {
-		if ( !tester( value ) ) {
-			return {
-				type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
-				value,
-			};
-		}
-		return undefined;
-	};
+const validateWrongType = ( tester: TypeChecker ): CheckFunction => (
+	keys: PathStack,
+	fieldDesc: FieldDescriptor,
+	value: any
+): IErrorObjectFinal | undefined => {
+	if ( !tester( value ) ) {
+		return {
+			type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
+			value,
+		};
+	}
+	return undefined;
 };
 
 /**
@@ -126,31 +127,31 @@ const VALIDATIONS = {
 		 *
 		 * @author Gerkin
 		 */
-		string: validateWrongType( _.isString ),
+		[EType.STRING]: validateWrongType( _.isString ),
 		/**
 		 * Integer type checker
 		 *
 		 * @author Gerkin
 		 */
-		integer: validateWrongType( _.isInteger ),
+		[EType.INTEGER]: validateWrongType( _.isInteger ),
 		/**
 		 * Float type checker. Any numeric other NaN or ±Infinity is accepted
 		 *
 		 * @author Gerkin
 		 */
-		float: validateWrongType( _.isNumber ),
+		[EType.FLOAT]: validateWrongType( _.isNumber ),
 		/**
 		 * Date type checker
 		 *
 		 * @author Gerkin
 		 */
-		date: validateWrongType( _.isDate ),
+		[EType.DATETIME]: validateWrongType( _.isDate ),
 		/**
 		 * Boolean type checker
 		 *
 		 * @author Gerkin
 		 */
-		boolean: validateWrongType( _.isBoolean ),
+		[EType.BOOLEAN]: validateWrongType( _.isBoolean ),
 		/**
 		 * Object type checker
 		 *
@@ -160,12 +161,12 @@ const VALIDATIONS = {
 		 * @param value     - Entity attributes to check
 		 * @author Gerkin
 		 */
-		object(
+		[EType.OBJECT](
 			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: IObjectFieldDescriptor,
 			value: IEntityAttributes
-		): ErrorObjectFinal | undefined {
+		): IErrorObjectFinal | undefined {
 			if ( !_.isObject( value ) ) {
 				return {
 					type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
@@ -173,22 +174,22 @@ const VALIDATIONS = {
 				};
 			} else {
 				const deepTest = ( _.isObject( fieldDesc.attributes )
-					? _.chain( _.assign( {}, fieldDesc.attributes, value ) )
-							.mapValues( ( pv, propName ) => {
-								const propVal = value[propName];
-								return this.applyField(
-									propVal,
-									keys
-										.clone()
-										.pushValidationProp( 'attributes' )
-										.pushProp( propName ),
-									{ getProps: false }
-								);
-							} )
-							.omitBy( _.isEmpty )
-							.omitBy( _.isNil )
-							.value()
-					: {} ) as { [key: string]: ErrorObjectFinal };
+				? _.chain( _.assign( {}, fieldDesc.attributes, value ) )
+				.mapValues( ( pv, propName ) => {
+					const propVal = value[propName];
+					return this.applyField(
+						propVal,
+						keys
+						.clone()
+						.pushValidationProp( 'attributes' )
+						.pushProp( propName ),
+						{ getProps: false }
+					);
+				} )
+				.omitBy( _.isEmpty )
+				.omitBy( _.isNil )
+				.value()
+				: {} ) as { [key: string]: IErrorObjectFinal };
 				if ( !_.isEmpty( deepTest ) ) {
 					return { children: deepTest, value };
 				} else {
@@ -205,12 +206,12 @@ const VALIDATIONS = {
 		 * @param value     - Entity attributes to check
 		 * @author Gerkin
 		 */
-		array(
+		[EType.ARRAY](
 			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: IArrayFieldDescriptor,
 			value: any[]
-		): ErrorObjectFinal | undefined {
+		): IErrorObjectFinal | undefined {
 			if ( !_.isArray( value ) ) {
 				return {
 					type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
@@ -218,12 +219,12 @@ const VALIDATIONS = {
 				};
 			} else {
 				const deepTest = ( _.isObject( fieldDesc.of )
-					? _.chain( value )
-							.map( validateArrayItems( this, fieldDesc, keys ) )
-							.omitBy( _.isEmpty )
-							.omitBy( _.isNil )
-							.value()
-					: [] ) as ErrorObjectFinal[];
+				? _.chain( value )
+				.map( validateArrayItems( this, fieldDesc, keys ) )
+				.omitBy( _.isEmpty )
+				.omitBy( _.isNil )
+				.value()
+				: [] ) as IErrorObjectFinal[];
 				if ( !_.isEmpty( deepTest ) ) {
 					return { children: deepTest, value };
 				} else {
@@ -240,25 +241,25 @@ const VALIDATIONS = {
 		 * @param value     - Entity attributes to check
 		 * @author Gerkin
 		 */
-		any(
+		[EType.ANY](
 			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
-		): ErrorObjectFinal | undefined {
+		): IErrorObjectFinal | undefined {
 			return _.isNil( value )
-				? {
-						type: `${keys.toValidatePath()} expected to be assigned with any type`,
-						value,
-				  }
-				: undefined;
+			? {
+				type: `${keys.toValidatePath()} expected to be assigned with any type`,
+				value,
+			}
+			: undefined;
 		},
 		_(
 			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
 			value: any
-		): ErrorObjectFinal | undefined {
+		): IErrorObjectFinal | undefined {
 			return {
 				type: `${keys.toValidatePath()} requires to be unhandled type "${
 					fieldDesc.type
@@ -268,26 +269,19 @@ const VALIDATIONS = {
 		},
 	},
 };
-// Add aliases
-_.assign( VALIDATIONS.TYPE, {
-	bool: VALIDATIONS.TYPE.boolean,
-	int: VALIDATIONS.TYPE.integer,
-	str: VALIDATIONS.TYPE.string,
-	text: VALIDATIONS.TYPE.string,
-} );
 
 /**
  * This object can be passed through each validation steps.
  *
  * @author Gerkin
  */
-interface ValidationStepArgs {
+interface IValidationStepArgs {
 	/**
 	 * Error object to extend.
 	 *
 	 * @author Gerkin
 	 */
-	error: ErrorObject;
+	error: IErrorObject;
 	/**
 	 * Description of the field.
 	 *
@@ -320,20 +314,23 @@ const VALIDATION_STEPS = [
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
-	function checkCustoms( this: CheckTransformer, validationArgs: ValidationStepArgs ) {
+	function checkCustoms(
+		this: CheckTransformer,
+		validationArgs: IValidationStepArgs
+	) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// It the field has a `validate` property, try to use it
 		const validateFcts = _.chain( fieldDesc.validate as Function[] )
-			.castArray()
-			.compact()
-			.value();
+		.castArray()
+		.compact()
+		.value();
 		validateFcts.forEach( validateFct => {
 			if ( !validateFct.call( this, value, fieldDesc ) ) {
 				error.validate = `${keys.toValidatePath()} custom validation failed`;
 			}
 		} );
 	},
-
+	
 	/**
 	 * Check if the type & the existence matches the `type` & `required` specifications.
 	 *
@@ -342,7 +339,7 @@ const VALIDATION_STEPS = [
 	 */
 	function checkTypeRequired(
 		this: CheckTransformer,
-		validationArgs: ValidationStepArgs
+		validationArgs: IValidationStepArgs
 	) {
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// Check the type and the required status
@@ -356,27 +353,25 @@ const VALIDATION_STEPS = [
 				_.get(
 					VALIDATIONS,
 					// TODO: If relation, check is done another way
-					!FieldDescriptorTypeChecks.isRelationalFieldDescriptor( fieldDesc ) ?
-						['TYPE', fieldDesc.type] :
-						[],
+					!FieldDescriptorTypeChecks.isRelationalFieldDescriptor( fieldDesc )
+					? ['TYPE', fieldDesc.type]
+					: [],
 					VALIDATIONS.TYPE._
-				).call(
-					this,
-					keys,
-					fieldDesc,
-					value
-				)
+				).call( this, keys, fieldDesc, value )
 			);
 		}
 	},
-
+	
 	/**
 	 * Verify if the value correspond to a value in the `enum` property.
 	 *
 	 * @param   validationArgs - Validation step argument.
 	 * @returns This function returns nothing.
 	 */
-	function checkEnum( this: CheckTransformer, validationArgs: ValidationStepArgs ) {
+	function checkEnum(
+		this: CheckTransformer,
+		validationArgs: IValidationStepArgs
+	) {
 		const { error, keys, value } = validationArgs;
 		const fieldDesc = validationArgs.fieldDesc;
 		// Check enum values
@@ -392,7 +387,7 @@ const VALIDATION_STEPS = [
 					return value === enumVal;
 				}
 			} );
-			if ( false === result ) {
+			if ( !result ) {
 				error.enum = `${keys.toValidatePath()} expected to have one of enumerated values "${JSON.stringify(
 					fieldDesc.enum
 				)}"`;
@@ -405,7 +400,6 @@ const VALIDATION_STEPS = [
  * The Validator class is used to check an entity or its fields against a model description.
  */
 export class CheckTransformer extends EntityTransformer {
-
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
@@ -414,19 +408,18 @@ export class CheckTransformer extends EntityTransformer {
 	public apply( entity: IEntityAttributes ) {
 		// Apply method `checkField` on each field described
 		const checkResults = _.chain( this._modelAttributes )
-			.mapValues( ( fieldDesc, field ) =>
-				this.applyField( entity[field], new PathStack().pushProp( field ), {
-					getProps: false,
-				} )
-			)
-			.omitBy( _.isEmpty )
-			.value() as { [key: string]: ErrorObjectFinal };
+		.mapValues( ( fieldDesc, field ) =>
+		this.applyField( entity[field], new PathStack().pushProp( field ), {
+			getProps: false,
+		} ) )
+		.omitBy( _.isEmpty )
+		.value() as { [key: string]: IErrorObjectFinal };
 		if ( !_.isNil( checkResults ) && !_.isEmpty( checkResults ) ) {
 			throw new EntityValidationError( checkResults, 'Validation failed' );
 		}
 		return entity;
 	}
-
+	
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
@@ -441,34 +434,34 @@ export class CheckTransformer extends EntityTransformer {
 		value: any,
 		keys: PathStack | string[],
 		options: { getProps: boolean } = { getProps: false }
-	): ErrorObjectFinal | null {
+	): IErrorObjectFinal | null {
 		_.defaults( options, { getProps: true } );
 		if ( !( keys instanceof PathStack ) ) {
 			keys = new PathStack( keys );
 		}
-
+		
 		const val = options.getProps ? _.get( value, keys.segmentsEntity ) : value;
 		const fieldDesc = _.get( this.modelAttributes, keys.segmentsValidation );
 		// TODO: Add checks for strict models (like if we are using MySQL)
 		if ( !_.isObject( fieldDesc ) ) {
 			return null;
 		}
-
-		const error: ErrorObject = {};
-
+		
+		const error: IErrorObject = {};
+		
 		const stepsArgs = {
 			error,
 			fieldDesc,
 			keys,
 			value: val,
 		};
-
+		
 		_.forEach( VALIDATION_STEPS, validationStep =>
 			validationStep.call( this, stepsArgs )
 		);
-
+		
 		if ( !_.isEmpty( error ) ) {
-			const finalError = _.defaults( { value } as ErrorObjectFinal, error );
+			const finalError = _.defaults( { value } as IErrorObjectFinal, error );
 			return finalError;
 		} else {
 			return null;

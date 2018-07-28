@@ -1,6 +1,6 @@
 /**
  * Function used to give feedback to the user about errors or other infos communicated by Diaspora. It can print directly to stdout, or can use Winston transport if configured so on server environment.
- * 
+ *
  * @param args - Things to log to the console
  * @author Gerkin
  */
@@ -8,10 +8,10 @@ export type LoggingFunction = ( ...args: any[] ) => void;
 
 /**
  * Enumeration of logging levels handled by the logger
- * 
+ *
  * @author Gerkin
  */
-export enum ELoggingLevel{
+export enum ELoggingLevel {
 	Silly,
 	Verbose,
 	Debug,
@@ -25,24 +25,23 @@ export enum ELoggingLevel{
  * Logger exposed by Diaspora.
  * On server environment, you can use it to configure the underlying Winston instance.
  * On the browser, it wraps calls to the browser's {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/console console}.
- * 
+ *
  * @author Gerkin
  */
-export interface ILoggerInterface{
-	silly:   LoggingFunction;
+export interface ILoggerInterface {
+	silly: LoggingFunction;
 	verbose: LoggingFunction;
-	debug:   LoggingFunction;
-	log:     LoggingFunction;
-	warn:    LoggingFunction;
-	error:   LoggingFunction;
+	debug: LoggingFunction;
+	log: LoggingFunction;
+	warn: LoggingFunction;
+	error: LoggingFunction;
 }
 
-export abstract class Logger implements ILoggerInterface{
-
+export abstract class Logger implements ILoggerInterface {
 	protected _level = ELoggingLevel.Silly;
 	public abstract get level();
 	public abstract set level( level: ELoggingLevel );
-	public constructor( logProvider: ILoggerInterface ){
+	public constructor( logProvider: ILoggerInterface ) {
 		this.silly = logProvider.silly;
 		this.verbose = logProvider.verbose;
 		this.debug = logProvider.debug;
@@ -50,7 +49,7 @@ export abstract class Logger implements ILoggerInterface{
 		this.warn = logProvider.warn;
 		this.error = logProvider.error;
 	}
-
+	
 	public silly: LoggingFunction;
 	public verbose: LoggingFunction;
 	public debug: LoggingFunction;

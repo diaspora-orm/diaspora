@@ -5,7 +5,11 @@ import { WebStorageEntity } from './entity';
 import * as Utils from '../../utils';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
-import { EntityUid, IEntityAttributes, IEntityProperties } from '../../types/entity';
+import {
+	EntityUid,
+	IEntityAttributes,
+	IEntityProperties
+} from '../../types/entity';
 
 /**
  * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
@@ -19,9 +23,9 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 * @see {@link Adapters.WebStorageDiasporaAdapter}:config.session parameter.
 	 */
 	private readonly source: Storage;
-
+	
 	private readonly config: WebStorageAdapter.IOptions;
-
+	
 	/**
 	 * Create a new instance of local storage adapter.
 	 *
@@ -37,10 +41,11 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 			session: false,
 		} );
 		this.state = EAdapterState.READY;
-		this.source =
-			true === this.config.session ? window.sessionStorage : window.localStorage;
+		this.source = this.config.session
+		? window.sessionStorage
+		: window.localStorage;
 	}
-
+	
 	/**
 	 * Deduce the item name from table name and item ID.
 	 *
@@ -52,7 +57,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	private static getItemName( table: string, id: EntityUid ): string {
 		return `${table}.id=${id}`;
 	}
-
+	
 	/**
 	 * Create the collection index and call {@link Adapters.DiasporaAdapter#configureCollection}.
 	 *
@@ -70,10 +75,10 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		this.ensureCollectionExists( tableName );
 		return this;
 	}
-
+	
 	// -----
 	// ### Insert
-
+	
 	/**
 	 * Insert a single entity in the local storage.
 	 *
@@ -101,7 +106,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		);
 		return rawAdapterAttributes;
 	}
-
+	
 	/**
 	 * Insert several entities in the local storage.
 	 *
@@ -133,10 +138,10 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		this.source.setItem( table, JSON.stringify( tableIndex ) );
 		return rawAdapterAttributesArr;
 	}
-
+	
 	// -----
 	// ### Find
-
+	
 	/**
 	 * Find a single local storage entity using its id.
 	 *
@@ -145,17 +150,14 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 * @param   id    - Id of the entity to search.
 	 * @returns Found entity, or undefined if not found.
 	 */
-	public findOneById(
-		table: string,
-		id: string
-	): IEntityProperties | undefined {
+	public findOneById( table: string, id: string ): IEntityProperties | undefined {
 		const item = this.source.getItem( WebStorageAdapter.getItemName( table, id ) );
 		if ( !_.isNil( item ) ) {
 			return JSON.parse( item );
 		}
 		return undefined;
 	}
-
+	
 	/**
 	 * Retrieve a single entity from the local storage.
 	 *
@@ -168,8 +170,8 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 */
 	public async findOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties | undefined> {
 		_.defaults( options, {
 			skip: 0,
@@ -211,10 +213,10 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		} );
 		return returnedItem;
 	}
-
+	
 	// -----
 	// ### Update
-
+	
 	/**
 	 * Update a single entity in the memory.
 	 *
@@ -228,15 +230,15 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 */
 	public async updateOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.ISelectQuery,
 		update: IEntityAttributes,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties | undefined> {
 		_.defaults( options, {
 			skip: 0,
 		} );
 		const entity = await this.findOne( table, queryFind, options );
-
+		
 		if ( _.isNil( entity ) ) {
 			return undefined;
 		}
@@ -247,10 +249,10 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		);
 		return entity;
 	}
-
+	
 	// -----
 	// ### Delete
-
+	
 	/**
 	 * Delete a single entity from the local storage.
 	 *
@@ -263,11 +265,11 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 */
 	public async deleteOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<void> {
 		const entityToDelete = await this.findOne( table, queryFind, options );
-
+		
 		if ( !entityToDelete ) {
 			return;
 		}
@@ -278,7 +280,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 			WebStorageAdapter.getItemName( table, entityToDelete.id )
 		);
 	}
-
+	
 	/**
 	 * Delete several entities from the local storage.
 	 *
@@ -291,11 +293,11 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 */
 	public async deleteMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<void> {
 		const entitiesToDelete = await this.findMany( table, queryFind, options );
-
+		
 		const tableIndex = this.ensureCollectionExists( table );
 		_.pullAll( tableIndex, _.map( entitiesToDelete, 'id' ) );
 		this.source.setItem( table, JSON.stringify( tableIndex ) );
@@ -305,7 +307,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 			);
 		} );
 	}
-
+	
 	/**
 	 * Create the table key if it does not exist.
 	 *
@@ -325,11 +327,11 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	}
 }
 
-export namespace WebStorageAdapter{
-	export interface IOptions{
+export namespace WebStorageAdapter {
+	export interface IOptions {
 		session: boolean;
 	}
-	export interface IOptionsRaw{
+	export interface IOptionsRaw {
 		session?: boolean;
 	}
 }

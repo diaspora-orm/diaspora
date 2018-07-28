@@ -20,12 +20,8 @@ const { model, adapter, MODEL_NAME, SOURCE } = createMockModel( 'entity-validati
 
 it( 'Should reject persistance of badly configured entities (spawnMany).', async () => {
 	const fail1 = model.spawnMany( [
-		{
-			prop1: 1,
-			prop2: 2,
-		}, {
-			prop2: 2,
-		},
+		{ prop1: 1, prop2: 2 },
+		{ prop2: 2 },
 	] ).persist();
 	expect( fail1 ).rejects.toBeInstanceOf( SetValidationError );
 	await fail1.catch( error => {
@@ -39,11 +35,8 @@ it( 'Should reject persistance of badly configured entities (spawnMany).', async
 		} );
 
 	const fail2 = model.spawnMany( [
-		{
-			prop2: 0,
-		}, {
-			prop2: 'foo',
-		},
+		{ prop2: 0 },
+		{ prop2: 'foo' },
 	] ).persist();
 	expect( fail2 ).rejects.toBeInstanceOf( SetValidationError );
 	await fail2.catch( error => {

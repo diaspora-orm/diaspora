@@ -49,9 +49,8 @@ export const getStyle = ( styleName: string, text: string ) => {
 	return text;
 };
 
-export const getConfig = ( adapterName: string ): object => {
-	return ( config && config[adapterName] ) || {};
-};
+export const getConfig = ( adapterName: string ): object =>
+	( config && config[adapterName] ) || {};
 
 export const importTest = ( name: string, modulePath: string ) => {
 	describe( name, () => {
@@ -59,9 +58,8 @@ export const importTest = ( name: string, modulePath: string ) => {
 	} );
 };
 
-const hasOwnMethod = ( received: any, methodName: string ) => {
-	return !!( received && _.isFunction( received[methodName] ) );
-};
+const hasOwnMethod = ( received: any, methodName: string ) =>
+	!!( received && _.isFunction( received[methodName] ) );
 
 expect.extend( {
 	toImplementMethod( received: any, methodName: string ) {
@@ -243,6 +241,7 @@ expect.extend( {
 
 declare global {
 	namespace jest {
+		// tslint:disable-next-line:interface-name
 		interface Matchers<R> {
 			// Method implementation
 			toImplementMethod( methodName: string ): void;

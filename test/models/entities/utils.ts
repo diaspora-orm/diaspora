@@ -44,9 +44,8 @@ export const bindEvents = ( category: string, entity: Entity | Set ) => {
 	);
 
 	_.forEach( eventsFlags, eventDescriptor => {
-		const parts = _.partition( eventsFlags, eventFlags => {
-			return eventDescriptor.index <= eventFlags.index;
-		} );
+		const parts = _.partition( eventsFlags, eventFlags =>
+			eventDescriptor.index <= eventFlags.index );
 		const bindEntity = ( entity: Entity ) => {
 			entity.once( eventDescriptor.name, () => {
 				_.forEach( parts[0], subEventDescriptor => {

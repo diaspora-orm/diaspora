@@ -16,14 +16,14 @@ export abstract class EntityTransformer {
 	public constructor(
 		protected readonly _modelAttributes: { [key: string]: FieldDescriptor }
 	) {}
-
+	
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
 	 * @author gerkin
 	 */
-	public abstract apply( entity: IEntityAttributes ) : IEntityAttributes;
-
+	public abstract apply( entity: IEntityAttributes ): IEntityAttributes;
+	
 	/**
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
@@ -46,7 +46,7 @@ export abstract class EntityTransformer {
 	public get modelAttributes(): object {
 		return _.cloneDeep( this._modelAttributes );
 	}
-
+	
 	/**
 	 * Get the PathStack constructor.
 	 */

@@ -1,10 +1,11 @@
 import { DefaultTransformer } from '../../src/entityTransformers';
+import { EFieldType } from '../../src';
 
 describe( 'Default values', () => {
 	it( 'Default field', async () => {
 		const validator = new DefaultTransformer( {
 			foo:{
-				type: 'string',
+				type: EFieldType.STRING,
 				default: 'bar',
 			},
 		} );
@@ -13,7 +14,7 @@ describe( 'Default values', () => {
 	it( 'Default all', async () => {
 		const validator = new DefaultTransformer( {
 			foo:{
-				type: 'string',
+				type: EFieldType.STRING,
 				default: 'bar',
 			},
 		} );

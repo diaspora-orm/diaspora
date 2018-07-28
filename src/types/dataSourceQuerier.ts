@@ -1,28 +1,29 @@
 import { QueryLanguage } from './queryLanguage';
 
 export interface IEnumeratedHash<T> {
-	[key: string]: T;
+  [key: string]: T;
 }
 
 export interface IRemapsHash extends IEnumeratedHash<any> {}
 
 export interface IFiltersHash extends IEnumeratedHash<any> {}
 
-export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage.SelectQueryOrCondition, TOptions = QueryLanguage.QueryOptions>{
-	
+export interface IDataSourceQuerier<
+	TIn,
+	TOut extends TIn,
+	TQuery = QueryLanguage.SelectQueryOrCondition,
+	TOptions = QueryLanguage.IQueryOptions
+> {
 	// -----
 	// ### Insert
-	
+
 	/**
 	 * Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertOne` itself.
 	 *
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	insertOne(
-		table: string,
-		entity: TIn
-	): Promise<TOut | undefined>;
+	insertOne( table: string, entity: TIn ): Promise<TOut | undefined>;
 
 	/**
 	 * Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself.
@@ -30,10 +31,7 @@ export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	insertMany(
-		table: string,
-		entities: TIn[]
-	): Promise<TOut[]>;
+	insertMany( table: string, entities: TIn[] ): Promise<TOut[]>;
 
 	// -----
 	// ### Find
@@ -45,9 +43,9 @@ export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage
 	 * @author gerkin
 	 */
 	findOne(
-		table: string,
-		queryFind: TQuery,
-		options: TOptions
+	table: string,
+	queryFind: TQuery,
+	options: TOptions
 	): Promise<TOut | undefined>;
 
 	/**
@@ -57,9 +55,9 @@ export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage
 	 * @author gerkin
 	 */
 	findMany(
-		table: string,
-		queryFind: TQuery,
-		options: TOptions
+	table: string,
+	queryFind: TQuery,
+	options: TOptions
 	): Promise<TOut[]>;
 
 	// -----
@@ -72,10 +70,10 @@ export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage
 	 * @author gerkin
 	 */
 	updateOne(
-		table: string,
-		queryFind: TQuery,
-		update: TIn,
-		options: TOptions
+	table: string,
+	queryFind: TQuery,
+	update: TIn,
+	options: TOptions
 	): Promise<TOut | undefined>;
 
 	/**
@@ -85,10 +83,10 @@ export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage
 	 * @author gerkin
 	 */
 	updateMany(
-		table: string,
-		queryFind: TQuery,
-		update: TIn,
-		options: TOptions
+	table: string,
+	queryFind: TQuery,
+	update: TIn,
+	options: TOptions
 	): Promise<TOut[]>;
 
 	// -----
@@ -100,11 +98,7 @@ export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage
 	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
 	 */
-	deleteOne(
-		table: string,
-		queryFind: TQuery,
-		options: TOptions
-	): Promise<void>;
+	deleteOne( table: string, queryFind: TQuery, options: TOptions ): Promise<void>;
 
 	/**
 	 * Delete several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteMany` itself.
@@ -117,24 +111,24 @@ export interface DataSourceQuerier<TIn, TOut extends TIn, TQuery = QueryLanguage
 	 * @returns Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
 	deleteMany(
-		table: string,
-		queryFind: TQuery,
-		options: TOptions
+	table: string,
+	queryFind: TQuery,
+	options: TOptions
 	): Promise<void>;
 
 	// -----
 	// ### Utils
-	
+
 	waitReady(): Promise<this>;
-	
+
 	/**
 	 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
 	 *
 	 * @author gerkin
 	 */
 	configureCollection(
-		tableName: string,
-		remaps: IRemapsHash,
-		filters: IFiltersHash
+	tableName: string,
+	remaps: IRemapsHash,
+	filters: IFiltersHash
 	): this;
 }

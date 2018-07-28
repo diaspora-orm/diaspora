@@ -20,21 +20,15 @@ export class DefaultTransformer extends EntityTransformer {
 	 */
 	public apply( entity: IEntityAttributes ) {
 		// Apply method `defaultField` on each field described
-		return _.defaults(
-			entity,
-			_.omitBy(
-				_.chain( this._modelAttributes )
-				.mapValues( ( fieldDesc, field ) =>
-					this.applyField( entity, new PathStack().pushProp( field ), {
-						getProps: true,
-					} )
-				)
-				.value(),
-				_.isUndefined
-			)
-		);
+		return _.defaults( entity, _.omitBy(
+			_.chain( this._modelAttributes ).mapValues( ( fieldDesc, field ) =>
+			this.applyField( entity, new PathStack().pushProp( field ), {
+				getProps: true,
+			} ) ) .value(),
+			_.isUndefined
+		) );
 	}
-
+	
 	/**
 	 * Set the default on a single field according to its description.
 	 *
@@ -52,16 +46,18 @@ export class DefaultTransformer extends EntityTransformer {
 		if ( !( keys instanceof PathStack ) ) {
 			keys = new PathStack( keys );
 		}
-
+		
 		const val = options.getProps ? _.get( value, keys.segmentsEntity ) : value;
 		const fieldDesc = _.get(
 			this.modelAttributes,
 			keys.segmentsValidation
 		) as FieldDescriptor;
-
+		
 		// Return the `default` if value is undefined
-		const valOrBaseDefault = _.isNil( val ) ? getDefaultValue( fieldDesc.default ) : val;
-
+		const valOrBaseDefault = _.isNil( val )
+		? getDefaultValue( fieldDesc.default )
+		: val;
+		
 		// Recurse if we are defaulting an object
 		if (
 			fieldDesc.type === EType.OBJECT &&

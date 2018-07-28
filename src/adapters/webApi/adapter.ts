@@ -7,7 +7,7 @@ import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
-interface PluralEndpoint extends String {}
+interface IPluralEndpoint extends String {}
 
 /**
  * Adapter for RESTful HTTP APIs.
@@ -17,26 +17,34 @@ interface PluralEndpoint extends String {}
 export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	protected static readonly httpErrorFactories = {
 		400: ( response: WebApiAdapter.IErrorMessage, statusCode: number ) =>
-			new Error(
-				`Bad Request: Posted data through HTTP is invalid; message ${WebApiAdapter.getMessage( response )}`
-			),
+		new Error(
+			`Bad Request: Posted data through HTTP is invalid; message ${WebApiAdapter.getMessage(
+				response
+			)}`
+		),
 		404: ( response: WebApiAdapter.IErrorMessage, statusCode: number ) =>
-			new Error( `Not Found: Reached 404, message is ${WebApiAdapter.getMessage( response )}` ),
+		new Error(
+			`Not Found: Reached 404, message is ${WebApiAdapter.getMessage(
+				response
+			)}`
+		),
 		_: ( response: WebApiAdapter.IErrorMessage, statusCode: number ) =>
-			new Error(
-				`Unhandled HTTP error with status code ${statusCode} & message ${WebApiAdapter.getMessage( response )}`
-			),
+		new Error(
+			`Unhandled HTTP error with status code ${statusCode} & message ${WebApiAdapter.getMessage(
+				response
+			)}`
+		),
 	};
-
+	
 	private readonly baseEndPoint: string;
-
+	
 	/**
 	 * Hash mapping singular API names to plural API names
 	 *
 	 * @author Gerkin
 	 */
 	private readonly pluralApis: { [key: string]: string };
-
+	
 	/**
 	 * Create a new instance of web api adapter.
 	 *
@@ -47,55 +55,69 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	public constructor(
 		dataSourceName: string,
 		config: WebApiAdapter.IWebApiAdapterInternalConfig,
-		eventProviders: WebApiAdapter.IEventProvider[] = [DefaultQueryTransformerFactory()]
+		eventProviders: WebApiAdapter.IEventProvider[] = [
+			DefaultQueryTransformerFactory(),
+		]
 	) {
 		super( WebApiEntity as any, dataSourceName );
 		
-		if ( typeof config.baseEndPoint === 'undefined' ){
-			this.baseEndPoint = this.generateBaseEndPoint( config.scheme, config.host, config.port, config.path );
+		if ( typeof config.baseEndPoint === 'undefined' ) {
+			this.baseEndPoint = this.generateBaseEndPoint(
+				config.scheme,
+				config.host,
+				config.port,
+				config.path
+			);
 		} else {
 			this.baseEndPoint = config.baseEndPoint;
 		}
-
+		
 		this.pluralApis = config.pluralApis || {};
-
+		
 		// Bind lifecycle events
 		_.map( eventProviders, eventProvider =>
 			_.forIn( eventProvider, ( listener, event ) => this.on( event, listener ) )
 		);
-
+		
 		if ( this.has( 'initialize' ) ) {
 			this.emit( 'initialize' )
-				.then( () => this.emit( 'ready' ) )
-				.catch( err => this.emit( 'error', err ) );
+			.then( () => this.emit( 'ready' ) )
+			.catch( err => this.emit( 'error', err ) );
 		} else {
 			this.emit( 'ready' ).catch( err => this.emit( 'error', err ) );
 		}
 	}
-
-	private beforeQuery( apiDesc: WebApiAdapter.IQueryDescriptor ): Promise<WebApiAdapter.IQueryDescriptor>{
+	
+	/**
+	 * Triggers the `beforeQuery` event that serves to generate the API call description
+	 * 
+	 * @param apiDesc - Raw description sent by the adapter
+	 */
+	private beforeQuery(
+		apiDesc: WebApiAdapter.IQueryDescriptor
+	): Promise<WebApiAdapter.IQueryDescriptor> {
 		return this.emit( 'beforeQuery', apiDesc );
 	}
-
+	
 	/**
 	 * Gets the field 'message' in an XHR
 	 * TODO: Check if relevant
-	 * 
+	 *
 	 * @param xhr - XHR to get field from
 	 */
-	protected static getMessage( response: {message?: string} ) {
+	protected static getMessage( response: { message?: string } ) {
 		return `"${response.message || 'NULL'}"`;
 	}
-
+	
 	/**
 	 * Filters the query object for non-http query relevant informations
-	 * 
+	 *
 	 * @param queryFind - Selection query object
 	 * @param options   - Options object
 	 */
 	private static getQueryObject(
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	) {
 		if ( 0 === options.skip ) {
 			delete options.skip;
@@ -103,15 +125,15 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		if ( !isFinite( options.limit ) ) {
 			delete options.limit;
 		}
-
+		
 		return _.assign( {}, _.omit( options, ['remapInput', 'remapOutput'] ), {
 			where: queryFind,
 		} );
 	}
-
+	
 	/**
 	 * Fills the id of entities
-	 * 
+	 *
 	 * @param entities - Entities received
 	 * @param adapter  - Source of those entities
 	 */
@@ -121,10 +143,10 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	) {
 		return _.map( entities, entity => WebApiEntity.setId( entity, adapter ) );
 	}
-
+	
 	// -----
 	// ### Insert
-
+	
 	/**
 	 * Insert a single entity through an HTTP API.
 	 *
@@ -138,14 +160,18 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		entity: IEntityAttributes
 	): Promise<IEntityProperties | undefined> {
-		let newEntity = await this.apiQuery( WebApiAdapter.EHttpVerb.POST, table, entity );
+		let newEntity = await this.apiQuery(
+			WebApiAdapter.EHttpVerb.POST,
+			table,
+			entity
+		);
 		if ( !_.isNil( newEntity ) ) {
 			return WebApiEntity.setId( newEntity, this );
 		} else {
 			return undefined;
 		}
 	}
-
+	
 	/**
 	 * Insert several entities through an HTTP API.
 	 *
@@ -167,10 +193,10 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		newEntities = WebApiAdapter.maybeAddIdHashToEntities( newEntities, this );
 		return newEntities;
 	}
-
+	
 	// -----
 	// ### Find
-
+	
 	/**
 	 * Find a single entity from the web api store
 	 *
@@ -183,10 +209,10 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public async findOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties | undefined> {
-		const {apiDesc} = await this.beforeQuery( {
+		const { apiDesc } = await this.beforeQuery( {
 			queryType: 'find',
 			queryNum: 'one',
 			modelName: table,
@@ -206,7 +232,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 			return newEntity;
 		}
 	}
-
+	
 	/**
 	 * Find several entities from the web api store
 	 *
@@ -219,10 +245,10 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public async findMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties[]> {
-		const {apiDesc} = await this.beforeQuery( {
+		const { apiDesc } = await this.beforeQuery( {
 			queryType: 'find',
 			queryNum: 'many',
 			modelName: table,
@@ -232,16 +258,16 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		} );
 		const newEntities = await this.apiQuery(
 			apiDesc.method,
-			apiDesc.endPoint as PluralEndpoint,
+			apiDesc.endPoint as IPluralEndpoint,
 			apiDesc.body,
 			apiDesc.queryString
 		);
 		return WebApiAdapter.maybeAddIdHashToEntities( newEntities, this );
 	}
-
+	
 	// -----
 	// ### Update
-
+	
 	/**
 	 * Update a single entity from the web api store
 	 *
@@ -255,11 +281,11 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public async updateOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.ISelectQuery,
 		update: IEntityAttributes,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties | undefined> {
-		const {apiDesc} = await this.beforeQuery( {
+		const { apiDesc } = await this.beforeQuery( {
 			queryType: 'update',
 			queryNum: 'one',
 			modelName: table,
@@ -281,7 +307,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		}
 		return entity;
 	}
-
+	
 	/**
 	 * Update several entities from the web api store
 	 *
@@ -295,11 +321,11 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public async updateMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
+		queryFind: QueryLanguage.ISelectQuery,
 		update: IEntityAttributes,
-		options: QueryLanguage.QueryOptions
+		options: QueryLanguage.IQueryOptions
 	): Promise<IEntityProperties[]> {
-		const {apiDesc} = await this.beforeQuery( {
+		const { apiDesc } = await this.beforeQuery( {
 			queryType: 'update',
 			queryNum: 'many',
 			modelName: table,
@@ -310,16 +336,16 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		} );
 		const entities = await this.apiQuery(
 			apiDesc.method,
-			apiDesc.endPoint as PluralEndpoint,
+			apiDesc.endPoint as IPluralEndpoint,
 			apiDesc.body,
 			apiDesc.queryString
 		);
 		return WebApiAdapter.maybeAddIdHashToEntities( entities, this );
 	}
-
+	
 	// -----
 	// ### Delete
-
+	
 	/**
 	 * Destroy a single entity from the web api store
 	 *
@@ -332,10 +358,10 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public async deleteOne(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<void> {
-		const {apiDesc} = await this.beforeQuery( {
+		const { apiDesc } = await this.beforeQuery( {
 			queryType: 'delete',
 			queryNum: 'one',
 			modelName: table,
@@ -350,7 +376,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 			apiDesc.queryString
 		);
 	}
-
+	
 	/**
 	 * Destroy several entities from the web api store
 	 *
@@ -363,10 +389,10 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public async deleteMany(
 		table: string,
-		queryFind: QueryLanguage.SelectQuery,
-		options: QueryLanguage.QueryOptions
+		queryFind: QueryLanguage.ISelectQuery,
+		options: QueryLanguage.IQueryOptions
 	): Promise<void> {
-		const {apiDesc} = await this.beforeQuery( {
+		const { apiDesc } = await this.beforeQuery( {
 			queryType: 'delete',
 			queryNum: 'many',
 			modelName: table,
@@ -376,15 +402,15 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		} );
 		await this.apiQuery(
 			apiDesc.method,
-			apiDesc.endPoint as PluralEndpoint,
+			apiDesc.endPoint as IPluralEndpoint,
 			apiDesc.body,
 			apiDesc.queryString
 		);
 	}
-
+	
 	/**
 	 * Creates a request, send it and get the result
-	 * 
+	 *
 	 * @param method      - HTTP verb that describes the request type
 	 * @param endPoint    - Url to send on
 	 * @param data        - Object to send
@@ -396,22 +422,27 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		data?: object,
 		queryObject?: object
 	): Promise<WebApiAdapter.TEntitiesJsonResponse>;
-
+	
 	/**
 	 * Generates the URL to the base of the API
-	 * 
+	 *
 	 * @param scheme - Represents the protocol (`http` or `https` most of the time)
 	 * @param host   - Hostname to target (domain name, IP, ...)
 	 * @param port   - Port of the target to point to
 	 * @param path   - Absolute URI on the API
 	 * @returns The URI string to the base of the API
 	 */
-	protected generateBaseEndPoint( scheme: string | false, host: string | false, port: number | false, path: string ){
+	protected generateBaseEndPoint(
+		scheme: string | false,
+		host: string | false,
+		port: number | false,
+		path: string
+	) {
 		const portString = port ? `:${port}` : '';
 		const schemeString = scheme ? `${scheme}:` : '';
 		return `${schemeString}//${host}${portString}${path}`;
 	}
-
+	
 	/**
 	 * Send an http query to the targeted `endPoint` using `method` as verb.
 	 *
@@ -430,7 +461,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	): Promise<IEntityProperties | undefined>;
 	private apiQuery(
 		verb: WebApiAdapter.EHttpVerb,
-		endPoint: PluralEndpoint,
+		endPoint: IPluralEndpoint,
 		data?: object,
 		queryObject?: object
 	): Promise<IEntityProperties[] | undefined>;
@@ -447,10 +478,10 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 			queryObject
 		);
 	}
-
+	
 	/**
 	 * Send the query, and log inputs & outputs
-	 * 
+	 *
 	 * @see WebApiAdapter.httpRequest
 	 * @author Gerkin
 	 * @param method      - HTTP verb that describes the request type
@@ -468,36 +499,34 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 			body,
 			queryString,
 		} );
-		const response = await this.httpRequest(
-			verb,
-			endPoint,
-			body,
-			queryString
-		);
+		const response = await this.httpRequest( verb, endPoint, body, queryString );
 		logger.silly( 'HTTP Request response:', response );
 		return response;
 	}
-
+	
 	/**
 	 * Returns the endpoint that corresponds to the plural variant of the provided endpoint.
-	 * 
+	 *
 	 * @see WebApiAdapter.pluralApis
 	 * @author Gerkin
 	 * @param endpoint - Name of the endpoint
 	 */
-	private getPluralEndpoint( endpoint: string ): PluralEndpoint {
+	private getPluralEndpoint( endpoint: string ): IPluralEndpoint {
 		return _.get( this.pluralApis, endpoint, endpoint + 's' );
 	}
-
+	
 	/**
 	 * Generates the error corresponding to the status code & message.
-	 * 
+	 *
 	 * @author Gerkin
 	 * @param response   - Object containing the raw response of the server
 	 * @param statusCode - Status code of the response
 	 * @returns the constructed error to throw
 	 */
-	protected static handleError( response: WebApiAdapter.IErrorMessage | undefined, statusCode: number ){
+	protected static handleError(
+		response: WebApiAdapter.IErrorMessage | undefined,
+		statusCode: number
+	) {
 		// Retrieve the function that will generate the error
 		const errorBuilder = _.get(
 			WebApiAdapter.httpErrorFactories,
@@ -508,14 +537,13 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	}
 }
 
-export namespace WebApiAdapter{
-
+export namespace WebApiAdapter {
 	export interface IXhrResponse extends XMLHttpRequest {
 		response: {
 			message?: string;
 		};
 	}
-
+	
 	export interface IWebApiAdapterConfig {
 		/**
 		 * Hostname of the endpoint. On server environment, this parameter is *required*.
@@ -538,8 +566,8 @@ export namespace WebApiAdapter{
 		 */
 		pluralApis?: { [key: string]: string };
 	}
-
-	export interface IWebApiAdapterInternalConfig extends IWebApiAdapterConfig{
+	
+	export interface IWebApiAdapterInternalConfig extends IWebApiAdapterConfig {
 		host: string | false;
 		scheme: string | false;
 		port: number | false;
@@ -547,15 +575,13 @@ export namespace WebApiAdapter{
 		pluralApis?: { [key: string]: string };
 		baseEndPoint?: string;
 	}
-
-	export interface IEventProviderFactory {
-		( ...args: any[] ): IEventProvider;
-	}
+	
+	export type IEventProviderFactory = ( ...args: any[] ) => IEventProvider;
 	export interface IEventProvider {}
-
+	
 	/**
 	 * Defines the HTTP verbs usable by a query.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
 	export enum EHttpVerb {
@@ -570,22 +596,22 @@ export namespace WebApiAdapter{
 		body: object;
 		queryString: object;
 	}
-
-	export interface IErrorMessage{
+	
+	export interface IErrorMessage {
 		message?: string;
 	}
 	export type TEntitiesJsonResponse =
-		| IEntityProperties
-		| IEntityProperties[]
-		| undefined;
-
-	export interface IQueryDescriptor{
+	| IEntityProperties
+	| IEntityProperties[]
+	| undefined;
+	
+	export interface IQueryDescriptor {
 		queryType: 'find' | 'update' | 'delete' | 'insert';
 		queryNum: 'one' | 'many';
 		modelName: string;
 		select: QueryLanguage.SelectQueryOrCondition;
 		update?: IEntityAttributes;
-		options: QueryLanguage.QueryOptions;
-		apiDesc: WebApiAdapter.IApiDescription;
+		options: QueryLanguage.IQueryOptions;
+		apiDesc: IApiDescription;
 	}
 }
