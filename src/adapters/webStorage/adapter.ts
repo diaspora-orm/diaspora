@@ -20,6 +20,8 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 */
 	private readonly source: Storage;
 
+	private readonly config: WebStorageAdapter.IOptions;
+
 	/**
 	 * Create a new instance of local storage adapter.
 	 *
@@ -30,14 +32,13 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		dataSourceName: string,
 		config?: WebStorageAdapter.IOptionsRaw
 	) {
-		super( WebStorageEntity, dataSourceName );
-		_.defaults( config, {
+		super( WebStorageEntity as any, dataSourceName );
+		this.config = _.defaults( config, {
 			session: false,
 		} );
 		this.state = EAdapterState.READY;
-		const win = ( global as any as Window );
 		this.source =
-			true === ( config as any ).session ? win.sessionStorage : win.localStorage;
+			true === this.config.session ? window.sessionStorage : window.localStorage;
 	}
 
 	/**
