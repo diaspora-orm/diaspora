@@ -27,7 +27,7 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	 * @author gerkin
 	 */
 	public constructor( dataSourceName: string ) {
-		super( InMemoryEntity, dataSourceName );
+		super( InMemoryEntity as any, dataSourceName );
 		this.state = EAdapterState.READY;
 	}
 

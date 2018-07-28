@@ -14,8 +14,6 @@
 		"outDir": "dist/es",
 		"sourceMap": true,
 		"strict": true,
-		"strictFunctionTypes": false,
-		"strictNullChecks": true,
 		"target": "es2015",
 		"typeRoots": [
 			"node_modules/@types"
