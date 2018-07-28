@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { resolve, basename } from 'path';
 
 import { IAdapterCtr, Adapter, AdapterEntity } from './adapters/base';
 import { Model } from './model';
@@ -21,21 +22,21 @@ interface IAdapterRegistry {
  * @author gerkin
  */
 export class DiasporaStatic {
-	public static get instance() {
-		if ( DiasporaStatic._instance ) {
+	public static get instance(){
+		return new this();
+	}
+	/**
+	 * This class is a singleton: the constructor may return the already created instance
+	 */
+	private constructor(){
+		if ( DiasporaStatic._instance ){
 			return DiasporaStatic._instance;
 		} else {
-			return ( DiasporaStatic._instance = new this() );
+			DiasporaStatic._instance = this;
 		}
 	}
 
 	private static _instance: DiasporaStatic;
-
-	private static readonly ERRORS = {
-		NON_EMPTY_STR: _.template(
-			'<%= c %> <%= p %> must be a non empty string, had "<%= v %>"'
-		),
-	};
 
 	/**
 	 * Logger used by Diaspora and its adapters.
@@ -83,22 +84,75 @@ export class DiasporaStatic {
 	 */
 	private readonly _models: IModelRegistry = modelRegistry;
 
+	// tslint:disable-next-line:comment-format
+	//#if !_BROWSER
 	/**
-	 * Old useless error handling code. TODO: remove
+	 * Get the name of the closest function caller in another file
 	 * 
-	 * @param classname - garbage
-	 * @param value     - junk
+	 * @see https://stackoverflow.com/a/29581862/4839162
 	 */
-	private static requireName( classname: string, value: any ) {
-		if ( !_.isString( value ) && value.length > 0 ) {
+	private static getCallerFile() {
+		const originalFunc = Error.prepareStackTrace;
+		try {
+			const err = new Error();
+			let callerfile: string | undefined;
+			
+			Error.prepareStackTrace = function ( er: Error, stack: any ) { return stack; };
+			
+			const stack = err.stack as any;
+			
+			const currentfile = stack.shift().getFileName();
+			do {
+				callerfile = stack.shift().getFileName();
+	
+				if ( currentfile !== callerfile ) {
+					return callerfile;
+				}
+			} while ( stack.length );
+		} finally {
+			Error.prepareStackTrace = originalFunc; 
+		}
+		return undefined;
+	}
+	// tslint:disable-next-line:comment-format
+	//#endif
+
+	/**
+	 * Import the desired adapter after having auto-resolved it, then register it
+	 * 
+	 * @param adapterLabel - Name of the adapter to import
+	 * @throws {Error} if the module does not exists or does not inherit the base Adapter class.
+	 */
+	private loadAdapter( adapterLabel: string ): string{
+		/*#if _BROWSER
+		throw new Error(`Could't load dynamically the adapter ${adapterLabel} in browser build`);
+		//#else */
+		const moduleName = adapterLabel.match( /^\.{1,2}[/\\].+/ ) ?
+			// If relative path (typically starting with `./` or `../`)
+			resolve( DiasporaStatic.getCallerFile() || __dirname, '..', adapterLabel ) :
+			// If node_module
+			`adapter-${adapterLabel}` ;
+		try {
+			try {
+				require.resolve( moduleName );
+			} catch ( e ) {
+				throw new Error(
+					`Unknown adapter "${adapterLabel}" (expected in module "${moduleName}"). Available currently are ${Object.keys(
+						this.adapters
+					).join( ', ' )}. Additionnaly, an error was thrown: ${e}`
+				);
+			}
+			const requiredAdapter = require( moduleName );
+			const adapterLabelNormalized = basename( adapterLabel.replace( /\.\w{2,3}$/, '' ) );
+			this.registerAdapter( adapterLabelNormalized, requiredAdapter );
+			return adapterLabelNormalized;
+		} catch ( e ) {
 			throw new Error(
-				DiasporaStatic.ERRORS.NON_EMPTY_STR( {
-					c: classname,
-					p: 'name',
-					v: value,
-				} )
+				`Could not load adapter "${adapterLabel}" (expected in module "${moduleName}"), an error was thrown: ${e}`
 			);
 		}
+		// tslint:disable-next-line:comment-format
+		//#endif
 	}
 
 	/**
@@ -116,28 +170,7 @@ export class DiasporaStatic {
 		...config: any[]
 	) {
 		if ( !this.adapters.hasOwnProperty( adapterLabel ) ) {
-			/*#if _BROWSER
-			throw new Error(`Could't load dynamically the adapter ${adapterLabel} in browser build`);
-			//#else */
-			const moduleName = `diaspora-${adapterLabel}`;
-			try {
-				try {
-					require.resolve( moduleName );
-				} catch ( e ) {
-					throw new Error(
-						`Unknown adapter "${adapterLabel}" (expected in module "${moduleName}"). Available currently are ${Object.keys(
-							this.adapters
-						).join( ', ' )}. Additionnaly, an error was thrown: ${e}`
-					);
-				}
-				require( moduleName );
-			} catch ( e ) {
-				throw new Error(
-					`Could not load adapter "${adapterLabel}" (expected in module "${moduleName}"), an error was thrown: ${e}`
-				);
-			}
-			// tslint:disable-next-line:comment-format
-			//#endif
+			adapterLabel = this.loadAdapter( adapterLabel );
 		}
 		const adapterCtr = this.adapters[adapterLabel];
 		const baseAdapter = new adapterCtr( sourceName || adapterLabel, ...config );
@@ -160,7 +193,6 @@ export class DiasporaStatic {
 		adapterLabel: string,
 		...otherConfig: any[]
 	) {
-		DiasporaStatic.requireName( 'DataSource', sourceName );
 		const dataSource = this.createDataSource(
 			adapterLabel,
 			sourceName,
@@ -177,18 +209,11 @@ export class DiasporaStatic {
 	 * Create a new Model with provided description.
 	 *
 	 * @author gerkin
-	 * @throws  {Error} Thrown if parameters are incorrect.
 	 * @param   name      - Name associated with this datasource.
 	 * @param   modelDesc - Description of the model to define.
 	 * @returns Model created.
 	 */
 	public declareModel( name: string, modelDesc: Raw.ModelDescription ) {
-		if ( _.isString( name ) && name.length > 0 ) {
-			DiasporaStatic.requireName( 'Model', name );
-		}
-		if ( !_.isObject( modelDesc ) ) {
-			throw new Error( '"modelDesc" must be an object' );
-		}
 		const model = new Model( name, modelDesc );
 		this._models[name] = model;
 		return model;
@@ -205,13 +230,12 @@ export class DiasporaStatic {
 	 * @returns This function does not return anything.
 	 */
 	public registerAdapter( label: string, adapter: IAdapterCtr ) {
+		if ( !( adapter.prototype instanceof Adapter ) ){
+			throw new TypeError( 'Required adapter does not extends the base Adapter type' );
+		}
 		if ( this.adapters.hasOwnProperty( label ) ) {
 			throw new Error( `Adapter with label "${label}" already exists.` );
 		}
-		// Check inheritance of adapter
-		/*if ( !( adapter.prototype instanceof Diaspora.components.Adapters.Adapter )) {
-			throw new TypeError( `Trying to register an adapter with label "${ label }", but it does not extends DiasporaAdapter.` );
-		}*/
 		this.adapters[label] = adapter;
 	}
 }
