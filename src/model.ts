@@ -159,22 +159,6 @@ export class Model {
 	}
 	
 	/**
-	 * Generates a query object if the only provided parameter is an {@link EntityUid}.
-	 * 
-	 * @param query      - Entity ID or query to potentialy transform
-	 * @param sourceName - Name of the source we want to query
-	 */
-	public ensureQueryObject( query: QueryLanguage.Raw.SearchQuery | undefined, sourceName: string = this.defaultDataSource ): QueryLanguage.Raw.SelectQueryOrCondition {
-		if ( typeof query === 'object' ){
-			return query;
-		} else {
-			return {
-				id: query,
-			};
-		}
-	}
-	
-	/**
 	 * Create a new Model that is allowed to interact with all entities of data sources tables selected.
 	 *
 	 * @author gerkin
@@ -267,8 +251,7 @@ export class Model {
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
-		const queryFindNoId = this.ensureQueryObject( queryFind );
-		return this.makeEntity( this.getDataSource( dataSourceName ).findOne( this.name, queryFindNoId, options ) );
+		return this.makeEntity( this.getDataSource( dataSourceName ).findOne( this.name, queryFind, options ) );
 	}
 	
 	/**
@@ -304,8 +287,7 @@ export class Model {
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity | null> {
-		const queryFindNoId = this.ensureQueryObject( queryFind );
-		return this.makeEntity( this.getDataSource( dataSourceName ).updateOne( this.name, queryFindNoId, update, options ) );
+		return this.makeEntity( this.getDataSource( dataSourceName ).updateOne( this.name, queryFind, update, options ) );
 	}
 	
 	/**
@@ -341,8 +323,7 @@ export class Model {
 		options: QueryLanguage.Raw.QueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
 	): Promise<void> {
-		const queryFindNoId = this.ensureQueryObject( queryFind );
-		return this.getDataSource( dataSourceName ).deleteOne( this.name, queryFindNoId, options );
+		return this.getDataSource( dataSourceName ).deleteOne( this.name, queryFind, options );
 	}
 	
 	/**

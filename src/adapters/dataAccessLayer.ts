@@ -26,8 +26,8 @@ const isEntityUid = ( query: any ): query is EntityUid => {
  * @author Gerkin
  */
 export class DataAccessLayer<
-TEntity extends AdapterEntity = AdapterEntity,
-TAdapter extends Adapter<TEntity> = Adapter<TEntity>
+	TEntity extends AdapterEntity = AdapterEntity,
+	TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 > extends SequentialEvent implements DataSourceQuerier<
 	TEntity,
 	TEntity,
@@ -60,7 +60,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * @param options       - Options to apply to the query
 	 * @returns Returns the normalized query.
 	 */
-	public normalizeQuery( originalQuery: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid | undefined, options: QueryLanguage.QueryOptions ){
+	public normalizeQuery( originalQuery: QueryLanguage.Raw.SearchQuery | undefined, options: QueryLanguage.QueryOptions ){
 		const canonicalQuery = this.ensureQueryObject( originalQuery );
 		return this.adapter.normalizeQuery( canonicalQuery, options );
 	}
@@ -324,7 +324,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	 * 
 	 * @param query - Entity ID or query to potentialy transform
 	 */
-	public ensureQueryObject( query?: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid ): QueryLanguage.Raw.SelectQueryOrCondition {
+	public ensureQueryObject( query?: QueryLanguage.Raw.SearchQuery ): QueryLanguage.Raw.SelectQueryOrCondition {
 		if ( _.isNil( query ) ){
 			return {};
 		} else if ( isEntityUid( query ) ) {
