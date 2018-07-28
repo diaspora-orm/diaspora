@@ -15,15 +15,14 @@ export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory
 	}
 
 	return {
-		beforeQuery(
-			queryType: string,
-			queryNum: string,
-			modelName: string,
-			select: any,
-			update: any,
-			options: any,
-			apiDesc: WebApiAdapter.IApiDescription
-		): WebApiAdapter.IApiDescription {
+		beforeQuery( queryDesc: WebApiAdapter.IQueryDescriptor ): WebApiAdapter.IQueryDescriptor {
+			const {
+				queryType, queryNum,
+				modelName, select,
+				update,
+				options,
+				apiDesc,
+			} = queryDesc;
 			const method = ( {
 				find: 'GET',
 				update: 'PATCH',
@@ -32,7 +31,7 @@ export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory
 			} as any )[queryType] as WebApiAdapter.EHttpVerb;
 
 			return _.defaultsDeep(
-				{
+				{ apiDesc: {
 					method,
 					endPoint: ( queryNum === 'many'
 						? getPluralEndpoint( modelName )
@@ -43,8 +42,8 @@ export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory
 						options,
 					},
 					body: update,
-				},
-				apiDesc
+				}},
+				queryDesc
 			);
 		},
 	};

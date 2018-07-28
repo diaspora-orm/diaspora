@@ -73,6 +73,10 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		}
 	}
 
+	private beforeQuery( apiDesc: WebApiAdapter.IQueryDescriptor ): Promise<WebApiAdapter.IQueryDescriptor>{
+		return this.emit( 'beforeQuery', apiDesc );
+	}
+
 	/**
 	 * Gets the field 'message' in an XHR
 	 * TODO: Check if relevant
@@ -182,15 +186,14 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties | undefined> {
-		const apiDesc: WebApiAdapter.IApiDescription = await this.emit(
-			'beforeQuery',
-			'find',
-			'one',
-			table,
-			queryFind,
-			null,
-			options
-		);
+		const {apiDesc} = await this.beforeQuery( {
+			queryType: 'find',
+			queryNum: 'one',
+			modelName: table,
+			select: queryFind,
+			options: options,
+			apiDesc: undefined as any,
+		} );
 		const newEntity = await this.apiQuery(
 			apiDesc.method,
 			apiDesc.endPoint,
@@ -219,16 +222,15 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties[]> {
-		const apiDesc = await this.emit(
-			'beforeQuery',
-			'find',
-			'many',
-			table,
-			queryFind,
-			null,
-			options
-		);
-		let newEntities = await this.apiQuery(
+		const {apiDesc} = await this.beforeQuery( {
+			queryType: 'find',
+			queryNum: 'many',
+			modelName: table,
+			select: queryFind,
+			options: options,
+			apiDesc: undefined as any,
+		} );
+		const newEntities = await this.apiQuery(
 			apiDesc.method,
 			apiDesc.endPoint as PluralEndpoint,
 			apiDesc.body,
@@ -257,11 +259,20 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties | undefined> {
-		let entity = await this.apiQuery(
-			WebApiAdapter.EHttpVerb.PATCH,
-			table,
+		const {apiDesc} = await this.beforeQuery( {
+			queryType: 'update',
+			queryNum: 'one',
+			modelName: table,
+			select: queryFind,
 			update,
-			WebApiAdapter.getQueryObject( queryFind, options )
+			options: options,
+			apiDesc: undefined as any,
+		} );
+		const entity = await this.apiQuery(
+			apiDesc.method,
+			apiDesc.endPoint,
+			apiDesc.body,
+			apiDesc.queryString
 		);
 		if ( !_.isNil( entity ) ) {
 			entity.idHash = {
@@ -288,11 +299,20 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		update: IEntityAttributes,
 		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties[]> {
-		let entities = await this.apiQuery(
-			WebApiAdapter.EHttpVerb.PATCH,
-			this.getPluralEndpoint( table ),
+		const {apiDesc} = await this.beforeQuery( {
+			queryType: 'update',
+			queryNum: 'many',
+			modelName: table,
+			select: queryFind,
 			update,
-			WebApiAdapter.getQueryObject( queryFind, options )
+			options: options,
+			apiDesc: undefined as any,
+		} );
+		const entities = await this.apiQuery(
+			apiDesc.method,
+			apiDesc.endPoint as PluralEndpoint,
+			apiDesc.body,
+			apiDesc.queryString
 		);
 		return WebApiAdapter.maybeAddIdHashToEntities( entities, this );
 	}
@@ -315,11 +335,19 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
 	): Promise<void> {
+		const {apiDesc} = await this.beforeQuery( {
+			queryType: 'delete',
+			queryNum: 'one',
+			modelName: table,
+			select: queryFind,
+			options: options,
+			apiDesc: undefined as any,
+		} );
 		await this.apiQuery(
-			WebApiAdapter.EHttpVerb.DELETE,
-			table,
-			undefined,
-			WebApiAdapter.getQueryObject( queryFind, options )
+			apiDesc.method,
+			apiDesc.endPoint,
+			apiDesc.body,
+			apiDesc.queryString
 		);
 	}
 
@@ -338,11 +366,19 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
 	): Promise<void> {
+		const {apiDesc} = await this.beforeQuery( {
+			queryType: 'delete',
+			queryNum: 'many',
+			modelName: table,
+			select: queryFind,
+			options: options,
+			apiDesc: undefined as any,
+		} );
 		await this.apiQuery(
-			WebApiAdapter.EHttpVerb.DELETE,
-			this.getPluralEndpoint( table ),
-			undefined,
-			WebApiAdapter.getQueryObject( queryFind, options )
+			apiDesc.method,
+			apiDesc.endPoint as PluralEndpoint,
+			apiDesc.body,
+			apiDesc.queryString
 		);
 	}
 
@@ -542,4 +578,14 @@ export namespace WebApiAdapter{
 		| IEntityProperties
 		| IEntityProperties[]
 		| undefined;
+
+	export interface IQueryDescriptor{
+		queryType: 'find' | 'update' | 'delete' | 'insert';
+		queryNum: 'one' | 'many';
+		modelName: string;
+		select: QueryLanguage.SelectQueryOrCondition;
+		update?: IEntityAttributes;
+		options: QueryLanguage.QueryOptions;
+		apiDesc: WebApiAdapter.IApiDescription;
+	}
 }
