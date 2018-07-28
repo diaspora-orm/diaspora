@@ -3,7 +3,7 @@ import express from 'express';
 import {json, urlencoded} from 'body-parser';
 
 import { Diaspora } from '../../src/diaspora';
-import { IWebApiAdapterConfig } from '../../src/adapters/webApi/adapter';
+import { WebApiAdapter } from '../../src/adapters/webApi/adapter';
 import { getConfig } from '../utils';
 import {
 	createDataSource,
@@ -14,7 +14,7 @@ import {
 import { ELoggingLevel } from '../../src/logger/logger';
 
 const ADAPTER_LABEL = 'webApiNode';
-const adapterConfig = getConfig( ADAPTER_LABEL ) as IWebApiAdapterConfig;
+const adapterConfig = getConfig( ADAPTER_LABEL ) as WebApiAdapter.IWebApiAdapterConfig;
 
 let server;
 

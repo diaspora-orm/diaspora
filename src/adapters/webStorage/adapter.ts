@@ -7,13 +7,6 @@ import { QueryLanguage } from '../../types/queryLanguage';
 import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
 import { EntityUid, IEntityAttributes, IEntityProperties } from '../../types/entity';
 
-export interface IWebStorageAdapterConfig {
-	/**
-	 * @param config - Set to true to use sessionStorage instead of localStorage.
-	 */
-	session: boolean;
-}
-
 /**
  * This class is used to use local storage or session storage as a data store. This adapter should be used only by the browser.
  */
@@ -35,7 +28,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 	 */
 	public constructor(
 		dataSourceName: string,
-		config: IWebStorageAdapterConfig = { session: false }
+		config?: WebStorageAdapter.IOptionsRaw
 	) {
 		super( WebStorageEntity, dataSourceName );
 		_.defaults( config, {
@@ -44,7 +37,7 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		this.state = EAdapterState.READY;
 		const win = ( global as any as Window );
 		this.source =
-			true === config.session ? win.sessionStorage : win.localStorage;
+			true === ( config as any ).session ? win.sessionStorage : win.localStorage;
 	}
 
 	/**
@@ -181,31 +174,36 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		_.defaults( options, {
 			skip: 0,
 		} );
-		if ( !_.isObject( queryFind ) ) {
-			// TODO: Still needed?
-			return this.findOneById( table, queryFind as any );
-		} else if (
+		if (
 			_.isEqual( _.keys( queryFind ), ['id'] ) &&
 			_.isEqual( _.keys( queryFind.id ), ['$equal'] )
 		) {
 			return this.findOneById( table, queryFind.id.$equal );
 		}
-		const items = this.ensureCollectionExists( table );
+		const itemIds = this.ensureCollectionExists( table );
 		let returnedItem;
 		let matched = 0;
-		_.each( items, itemId => {
+		// Iterate on each item ID, to test each one.
+		_.each( itemIds, itemId => {
+			// Retrieve the item...
 			const itemInWebStorage = this.source.getItem(
+				// ... by its complete name
 				WebStorageAdapter.getItemName( table, itemId )
 			);
+			// If the item simply does not exist, just ignore and skip to the next
+			// TODO: Repair the table?
 			if ( !itemInWebStorage ) {
 				return true;
 			}
+			// Parse the item to match against its content
 			const item = JSON.parse( itemInWebStorage );
+			// Following tests are to match the entity and skip the right number of items
 			if ( WebStorageEntity.matches( item, queryFind ) ) {
 				matched++;
 				// If we matched enough items
 				if ( matched > options.skip ) {
 					returnedItem = item;
+					// Kill the iteration
 					return false;
 				}
 			}
@@ -324,5 +322,14 @@ export class WebStorageAdapter extends Adapter<WebStorageEntity> {
 		} else {
 			return JSON.parse( index ) as string[];
 		}
+	}
+}
+
+export namespace WebStorageAdapter{
+	export interface IOptions{
+		session: boolean;
+	}
+	export interface IOptionsRaw{
+		session?: boolean;
 	}
 }

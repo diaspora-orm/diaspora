@@ -192,10 +192,10 @@ T extends AdapterEntity = AdapterEntity
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	public remapInput<T extends IEntityAttributes>(
+	public remapInput<TProps extends IEntityAttributes>(
 		tableName: string,
-		query: T
-	) {
+		query: TProps
+	): TProps {
 		return remapIO( this, tableName, query, true );
 	}
 	
@@ -206,10 +206,10 @@ T extends AdapterEntity = AdapterEntity
 	 * @see TODO remapping.
 	 * @see {@link Adapters.Adapter#remapIO remapIO}
 	 */
-	public remapOutput<T extends IEnumeratedHash<any>>(
+	public remapOutput<TProps extends IEnumeratedHash<any>>(
 		tableName: string,
-		query: T
-	) {
+		query: TProps
+	): TProps {
 		return remapIO( this, tableName, query, false );
 	}
 	

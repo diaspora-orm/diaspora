@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
-import { EHttpVerb, IEventProviderFactory, IApiDescription } from '.';
+import { WebApiAdapter } from '.';
 
-export const DefaultQueryTransformerFactory: IEventProviderFactory = (
+export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory = (
 	config: any
 ) => {
 	/**
@@ -22,14 +22,14 @@ export const DefaultQueryTransformerFactory: IEventProviderFactory = (
 			select: any,
 			update: any,
 			options: any,
-			apiDesc: IApiDescription
-		): IApiDescription {
+			apiDesc: WebApiAdapter.IApiDescription
+		): WebApiAdapter.IApiDescription {
 			const method = ( {
 				find: 'GET',
 				update: 'PATCH',
 				delete: 'DELETE',
 				insert: 'POST',
-			} as any )[queryType] as EHttpVerb;
+			} as any )[queryType] as WebApiAdapter.EHttpVerb;
 
 			return _.defaultsDeep(
 				{

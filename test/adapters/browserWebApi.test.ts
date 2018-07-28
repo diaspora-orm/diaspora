@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { XMLHttpRequest } from 'xmlhttprequest';
 
 import { Diaspora } from '../../src/diaspora';
-import { IWebApiAdapterConfig } from '../../src/adapters/webApi/adapter';
+import { WebApiAdapter } from '../../src/adapters/webApi/adapter';
 import { getConfig } from '../utils';
 import {
 	createDataSource,
@@ -13,7 +13,7 @@ import {
 import { ELoggingLevel } from '../../src/logger/logger';
 
 const ADAPTER_LABEL = 'webApiBrowser';
-const adapterConfig = getConfig( ADAPTER_LABEL ) as IWebApiAdapterConfig;
+const adapterConfig = getConfig( ADAPTER_LABEL ) as WebApiAdapter.IWebApiAdapterConfig;
 
 ( global as any ).XMLHttpRequest = XMLHttpRequest;
 let server;

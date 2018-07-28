@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as requestPromise from 'request-promise';
 
-import { WebApiAdapter, EHttpVerb, TEntitiesJsonResponse, IWebApiAdapterConfig, IEventProvider } from '../index';
+import { WebApiAdapter } from '../index';
 
-export interface INodeWebApiAdapterConfig extends IWebApiAdapterConfig {
+export interface INodeWebApiAdapterConfig extends WebApiAdapter.IWebApiAdapterConfig  {
 	/**
 	 * Hostname of the endpoint. On server environment, this parameter is *required*.
 	 */
@@ -18,7 +18,7 @@ export class NodeWebApiAdapter extends WebApiAdapter{
 	public constructor(
 		dataSourceName: string,
 		config: INodeWebApiAdapterConfig,
-		eventProviders?: IEventProvider[]
+		eventProviders?: WebApiAdapter.IEventProvider []
 	) {
 		const defaultedConfig = _.defaults( config, {
 			port: false,
@@ -34,11 +34,11 @@ export class NodeWebApiAdapter extends WebApiAdapter{
 	 * @param queryObject - Object to put in query string
 	 */
 	protected async httpRequest(
-		method: EHttpVerb,
+		method: WebApiAdapter.EHttpVerb ,
 		endPoint: string,
 		data?: object | true,
 		queryObject?: object
-	): Promise<TEntitiesJsonResponse> {
+	): Promise<WebApiAdapter.TEntitiesJsonResponse > {
 		if ( _.isNil( data ) ) {
 			data = true;
 		}
@@ -48,7 +48,7 @@ export class NodeWebApiAdapter extends WebApiAdapter{
 			json: data,
 			qs: _.mapValues(
 				queryObject,
-				data => ( _.isPlainObject( data ) ? JSON.stringify( data ) : data )
+			data => ( _.isPlainObject( data ) ? JSON.stringify( data ) : data )
 			),
 		} );
 	}

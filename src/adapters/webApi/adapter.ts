@@ -7,72 +7,7 @@ import { logger } from '../../logger';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
-export interface IXhrResponse extends XMLHttpRequest {
-	response: {
-		message?: string;
-	};
-}
-
-export interface IWebApiAdapterConfig {
-	/**
-	 * Hostname of the endpoint. On server environment, this parameter is *required*.
-	 */
-	host?: string | false;
-	/**
-	 * Scheme to use. On server environment, this parameter is *required*. On browser environment, it defaults to a relative scheme (IE ``). Note that it will be suffixed with `//`.
-	 */
-	scheme?: string | false;
-	/**
-	 * Port of the endpoint.
-	 */
-	port?: number | false;
-	/**
-	 * Path to the endpoint.
-	 */
-	path: string;
-	/**
-	 * Hash with keys being the singular name of the endpoint, and values being the associated plural name of the same endpoint.
-	 */
-	pluralApis?: { [key: string]: string };
-}
-
-export interface IWebApiAdapterInternalConfig extends IWebApiAdapterConfig{
-	host: string | false;
-	scheme: string | false;
-	port: number | false;
-	path: string;
-	pluralApis?: { [key: string]: string };
-	baseEndPoint?: string;
-}
-
-export interface IEventProviderFactory {
-	( ...args: any[] ): IEventProvider;
-}
-export interface IEventProvider {}
-
-/**
- * Defines the HTTP verbs usable by a query.
- * 
- * @author Gerkin
- */
-export enum EHttpVerb {
-	GET = 'GET',
-	POST = 'POST',
-	PATCH = 'PATCH',
-	DELETE = 'DELETE',
-}
 interface PluralEndpoint extends String {}
-export interface IApiDescription {
-	method: EHttpVerb;
-	endPoint: string;
-	body: object;
-	queryString: object;
-}
-
-export type TEntitiesJsonResponse =
-	| IEntityProperties
-	| IEntityProperties[]
-	| undefined;
 
 /**
  * Adapter for RESTful HTTP APIs.
@@ -81,15 +16,15 @@ export type TEntitiesJsonResponse =
  */
 export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	protected static readonly httpErrorFactories = {
-		400: ( xhr: IXhrResponse ) =>
+		400: ( xhr: WebApiAdapter.IXhrResponse ) =>
 			new Error(
 				`Posted data through HTTP is invalid; message ${WebApiAdapter.getMessage(
 					xhr
 				)}`
 			),
-		404: ( xhr: IXhrResponse ) =>
+		404: ( xhr: WebApiAdapter.IXhrResponse ) =>
 			new Error( `Reached 404, message is ${WebApiAdapter.getMessage( xhr )}` ),
-		_: ( xhr: IXhrResponse ) =>
+		_: ( xhr: WebApiAdapter.IXhrResponse ) =>
 			new Error(
 				`Unhandled HTTP error with status code ${
 					xhr.status
@@ -115,8 +50,8 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	public constructor(
 		dataSourceName: string,
-		config: IWebApiAdapterInternalConfig,
-		eventProviders: IEventProvider[] = [DefaultQueryTransformerFactory()]
+		config: WebApiAdapter.IWebApiAdapterInternalConfig,
+		eventProviders: WebApiAdapter.IEventProvider[] = [DefaultQueryTransformerFactory()]
 	) {
 		super( WebApiEntity, dataSourceName );
 		
@@ -148,7 +83,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * 
 	 * @param xhr - XHR to get field from
 	 */
-	private static getMessage( xhr: IXhrResponse ) {
+	private static getMessage( xhr: WebApiAdapter.IXhrResponse ) {
 		return _.get( xhr, 'response.message' )
 			? `"${( xhr as { response: { message: string } } ).response.message}"`
 			: 'NULL';
@@ -205,7 +140,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		table: string,
 		entity: IEntityAttributes
 	): Promise<IEntityProperties | undefined> {
-		let newEntity = await this.apiQuery( EHttpVerb.POST, table, entity );
+		let newEntity = await this.apiQuery( WebApiAdapter.EHttpVerb.POST, table, entity );
 		if ( !_.isNil( newEntity ) ) {
 			return WebApiEntity.setId( newEntity, this );
 		} else {
@@ -227,7 +162,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		entities: IEntityAttributes[]
 	): Promise<IEntityProperties[]> {
 		let newEntities = await this.apiQuery(
-			EHttpVerb.POST,
+			WebApiAdapter.EHttpVerb.POST,
 			this.getPluralEndpoint( table ),
 			entities
 		);
@@ -253,7 +188,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		queryFind: QueryLanguage.SelectQuery,
 		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties | undefined> {
-		const apiDesc: IApiDescription = await this.emit(
+		const apiDesc: WebApiAdapter.IApiDescription = await this.emit(
 			'beforeQuery',
 			'find',
 			'one',
@@ -330,7 +265,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties | undefined> {
 		let entity = await this.apiQuery(
-			EHttpVerb.PATCH,
+			WebApiAdapter.EHttpVerb.PATCH,
 			table,
 			update,
 			WebApiAdapter.getQueryObject( queryFind, options )
@@ -361,7 +296,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		options: QueryLanguage.QueryOptions
 	): Promise<IEntityProperties[]> {
 		let entities = await this.apiQuery(
-			EHttpVerb.PATCH,
+			WebApiAdapter.EHttpVerb.PATCH,
 			this.getPluralEndpoint( table ),
 			update,
 			WebApiAdapter.getQueryObject( queryFind, options )
@@ -389,7 +324,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		options: QueryLanguage.QueryOptions
 	): Promise<void> {
 		await this.apiQuery(
-			EHttpVerb.DELETE,
+			WebApiAdapter.EHttpVerb.DELETE,
 			table,
 			undefined,
 			WebApiAdapter.getQueryObject( queryFind, options )
@@ -412,7 +347,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		options: QueryLanguage.QueryOptions
 	): Promise<void> {
 		await this.apiQuery(
-			EHttpVerb.DELETE,
+			WebApiAdapter.EHttpVerb.DELETE,
 			this.getPluralEndpoint( table ),
 			undefined,
 			WebApiAdapter.getQueryObject( queryFind, options )
@@ -428,11 +363,11 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * @param queryObject - Object to put in query string
 	 */
 	protected abstract async httpRequest(
-		method: EHttpVerb,
+		method: WebApiAdapter.EHttpVerb,
 		endPoint: string,
 		data?: object | true,
 		queryObject?: object
-	): Promise<TEntitiesJsonResponse>;
+	): Promise<WebApiAdapter.TEntitiesJsonResponse>;
 
 	/**
 	 * Generates the URL to the base of the API
@@ -460,23 +395,23 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * @returns Promise resolved with the resulting data.
 	 */
 	private apiQuery(
-		verb: EHttpVerb,
+		verb: WebApiAdapter.EHttpVerb,
 		endPoint: string,
 		data?: object,
 		queryObject?: object
 	): Promise<IEntityProperties | undefined>;
 	private apiQuery(
-		verb: EHttpVerb,
+		verb: WebApiAdapter.EHttpVerb,
 		endPoint: PluralEndpoint,
 		data?: object,
 		queryObject?: object
 	): Promise<IEntityProperties[]>;
 	private apiQuery(
-		verb: EHttpVerb,
+		verb: WebApiAdapter.EHttpVerb,
 		endPoint: string,
 		data?: object,
 		queryObject?: object
-	): Promise<TEntitiesJsonResponse> {
+	): Promise<WebApiAdapter.TEntitiesJsonResponse> {
 		return this.sendRequest(
 			verb,
 			`${this.baseEndPoint}/${endPoint.toLowerCase()}`,
@@ -496,7 +431,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * @param queryObject - Object to put in query string
 	 */
 	private async sendRequest(
-		verb: EHttpVerb,
+		verb: WebApiAdapter.EHttpVerb,
 		endPoint: string,
 		body?: object,
 		queryString?: object
@@ -525,4 +460,76 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	private getPluralEndpoint( endpoint: string ): PluralEndpoint {
 		return _.get( this.pluralApis, endpoint, endpoint + 's' );
 	}
+}
+
+export namespace WebApiAdapter{
+
+	export interface IXhrResponse extends XMLHttpRequest {
+		response: {
+			message?: string;
+		};
+	}
+
+	export interface IWebApiAdapterConfig {
+		/**
+		 * Hostname of the endpoint. On server environment, this parameter is *required*.
+		 */
+		host?: string | false;
+		/**
+		 * Scheme to use. On server environment, this parameter is *required*. On browser environment, it defaults to a relative scheme (IE ``). Note that it will be suffixed with `//`.
+		 */
+		scheme?: string | false;
+		/**
+		 * Port of the endpoint.
+		 */
+		port?: number | false;
+		/**
+		 * Path to the endpoint.
+		 */
+		path: string;
+		/**
+		 * Hash with keys being the singular name of the endpoint, and values being the associated plural name of the same endpoint.
+		 */
+		pluralApis?: { [key: string]: string };
+	}
+
+	export interface IWebApiAdapterInternalConfig extends IWebApiAdapterConfig{
+		host: string | false;
+		scheme: string | false;
+		port: number | false;
+		path: string;
+		pluralApis?: { [key: string]: string };
+		baseEndPoint?: string;
+	}
+
+	export interface IEventProviderFactory {
+		( ...args: any[] ): IEventProvider;
+	}
+	export interface IEventProvider {}
+
+	/**
+	 * Defines the HTTP verbs usable by a query.
+	 * 
+	 * @author Gerkin
+	 */
+	export enum EHttpVerb {
+		GET = 'GET',
+		POST = 'POST',
+		PATCH = 'PATCH',
+		DELETE = 'DELETE',
+	}
+	export interface IApiDescription {
+		method: EHttpVerb;
+		endPoint: string;
+		body: object;
+		queryString: object;
+	}
+
+	export interface IErrorMessage{
+		message?: string;
+	}
+	export type TEntitiesJsonResponse =
+		| IEntityProperties
+		| IEntityProperties[]
+		| undefined;
 }

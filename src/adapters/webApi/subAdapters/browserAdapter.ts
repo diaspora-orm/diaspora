@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { WebApiAdapter, EHttpVerb, TEntitiesJsonResponse, IWebApiAdapterConfig, IEventProvider } from '../index';
+import { WebApiAdapter } from '../index';
 import { QueryLanguage } from '../../../index';
 
 export interface QueryObject{
@@ -11,8 +11,8 @@ export interface QueryObject{
 export class BrowserWebApiAdapter extends WebApiAdapter{
 	public constructor(
 		dataSourceName: string,
-		config: IWebApiAdapterConfig,
-		eventProviders?: IEventProvider[]
+		config: WebApiAdapter.IWebApiAdapterConfig ,
+		eventProviders?: WebApiAdapter.IEventProvider []
 	) {
 		const defaultedConfig = _.defaults( config, {
 			scheme: false,
@@ -62,8 +62,8 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 		xhr: XMLHttpRequest,
 		resolve: (
 			thenableOrResult?:
-			| TEntitiesJsonResponse
-			| PromiseLike<TEntitiesJsonResponse>
+			| WebApiAdapter.TEntitiesJsonResponse 
+			| PromiseLike<WebApiAdapter.TEntitiesJsonResponse >
 			| undefined
 		) => void,
 		reject: ( thenableOrResult?: {} | PromiseLike<any> | undefined ) => void
@@ -104,15 +104,15 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 	 * @param queryObject - Object to put in query string
 	 */
 	protected async httpRequest(
-		method: EHttpVerb,
+		method: WebApiAdapter.EHttpVerb ,
 		endPoint: string,
 		data?: object | true,
 		queryObject?: QueryObject
-	): Promise<TEntitiesJsonResponse> {
+	): Promise<WebApiAdapter.TEntitiesJsonResponse > {
 		return new Promise(
 			(
 				resolve: (
-					value?: TEntitiesJsonResponse | PromiseLike<TEntitiesJsonResponse>
+					value?: WebApiAdapter.TEntitiesJsonResponse  | PromiseLike<WebApiAdapter.TEntitiesJsonResponse >
 				) => void,
 				reject
 			) => {
