@@ -24,9 +24,7 @@ const filterEntity = ( entity: AdapterEntity ) => {
 	return sentProperties;
 };
 export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: number, endpoint: string, tableName: string ) => {
-	const parseQs = _.partialRight( _.mapValues, JSON.parse ) as (
-		str: string
-	) => { where: any } & QueryLanguage.QueryOptions;
+	const parseQs = _.partialRight( _.mapValues, JSON.parse ) as ( str: string ) => { where?: any } & QueryLanguage.QueryOptions;
 	
 	const app = express();
 	app.use( urlencoded( {

@@ -8,7 +8,7 @@ import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
 import { Raw, FieldDescriptor, SourcesHash, ModelDescription, EType, FieldDescriptorTypeChecks, INativeFieldDescriptor } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
-import { DataAccessLayer, TDataSource, EntityUid } from './adapters/dataAccessLayer';
+import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
 import { IEntityAttributes } from './types/entity';
 
