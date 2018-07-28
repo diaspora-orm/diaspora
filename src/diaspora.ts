@@ -2,12 +2,12 @@ import * as _ from 'lodash';
 
 import { IAdapterCtr, Adapter, AdapterEntity } from './adapters/base';
 import { Model } from './model';
-import { ModelDescriptionRaw } from './types/modelDescription';
 import { DataAccessLayer } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry, modelRegistry, IModelRegistry } from './staticStores';
 import { logger } from './logger';
 import { BrowserLogger } from './logger/browserLogger';
 import { NodeLogger } from './logger/nodeLogger';
+import { Raw } from './types/modelDescription';
 
 export { Adapter, AdapterEntity };
 
@@ -182,7 +182,7 @@ export class DiasporaStatic {
 	 * @param   modelDesc - Description of the model to define.
 	 * @returns Model created.
 	 */
-	public declareModel( name: string, modelDesc: ModelDescriptionRaw ) {
+	public declareModel( name: string, modelDesc: Raw.ModelDescription ) {
 		if ( _.isString( name ) && name.length > 0 ) {
 			DiasporaStatic.requireName( 'Model', name );
 		}

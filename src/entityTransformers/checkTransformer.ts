@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { EntityTransformer } from './entityTransformer';
 import { PathStack } from './pathStack';
 import { EntityValidationError } from '../errors/entityValidationError';
-import { FieldDescriptor, ArrayFieldDescriptor, RelationalFieldDescriptor, ObjectFieldDescriptor, FieldDescriptorTypeChecks} from '../types/modelDescription';
+import { FieldDescriptor, IArrayFieldDescriptor, IRelationalFieldDescriptor, IObjectFieldDescriptor, FieldDescriptorTypeChecks, EType} from '../types/modelDescription';
 import { IEntityAttributes } from '../types/entity';
 
 /**
@@ -16,7 +16,7 @@ import { IEntityAttributes } from '../types/entity';
  */
 const validateArrayItems = (
 	validator: CheckTransformer,
-	fieldDesc: ArrayFieldDescriptor,
+	fieldDesc: IArrayFieldDescriptor,
 	keys: PathStack
 ) => {
 	return (
@@ -51,8 +51,8 @@ const validateArrayItems = (
 
 const messageRequired = ( keys: PathStack, fieldDesc: FieldDescriptor ) => {
 	return `${keys.toValidatePath()} is a required property of ${
-		fieldDesc.type === 'Relation'
-			? `model "${( fieldDesc as RelationalFieldDescriptor ).model}"`
+		_.isNil( fieldDesc.type ) || fieldDesc.type === EType.RELATION
+			? `model "${( fieldDesc as IRelationalFieldDescriptor ).model}"`
 			: `type "${fieldDesc.type}"`
 	}`;
 };
@@ -163,7 +163,7 @@ const VALIDATIONS = {
 		object(
 			this: CheckTransformer,
 			keys: PathStack,
-			fieldDesc: ObjectFieldDescriptor,
+			fieldDesc: IObjectFieldDescriptor,
 			value: IEntityAttributes
 		): ErrorObjectFinal | undefined {
 			if ( !_.isObject( value ) ) {
@@ -208,7 +208,7 @@ const VALIDATIONS = {
 		array(
 			this: CheckTransformer,
 			keys: PathStack,
-			fieldDesc: ArrayFieldDescriptor,
+			fieldDesc: IArrayFieldDescriptor,
 			value: any[]
 		): ErrorObjectFinal | undefined {
 			if ( !_.isArray( value ) ) {
@@ -353,7 +353,14 @@ const VALIDATION_STEPS = [
 			_.assign(
 				error,
 				// Get the validator. Default to unhandled type
-				_.get( VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._ ).call(
+				_.get(
+					VALIDATIONS,
+					// TODO: If relation, check is done another way
+					!FieldDescriptorTypeChecks.isRelationalFieldDescriptor( fieldDesc ) ?
+						['TYPE', fieldDesc.type] :
+						[],
+					VALIDATIONS.TYPE._
+				).call(
 					this,
 					keys,
 					fieldDesc,
@@ -375,7 +382,8 @@ const VALIDATION_STEPS = [
 		// Check enum values
 		if (
 			!_.isNil( value ) &&
-			FieldDescriptorTypeChecks.isEnumFieldDescriptor( fieldDesc )
+			!FieldDescriptorTypeChecks.isRelationalFieldDescriptor( fieldDesc ) &&
+			_.isArray( fieldDesc.enum )
 		) {
 			const result = _.some( fieldDesc.enum, enumVal => {
 				if ( enumVal instanceof RegExp ) {

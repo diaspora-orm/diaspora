@@ -6,7 +6,7 @@ import { deepFreeze } from './utils';
 import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
 import { Adapter } from './adapters/base/adapter';
 import { AdapterEntity } from './adapters/base/entity';
-import { ModelDescriptionRaw, FieldDescriptor, SourcesHash, ModelDescription } from './types/modelDescription';
+import { Raw, FieldDescriptor, SourcesHash, ModelDescription, EType, FieldDescriptorTypeChecks, INativeFieldDescriptor } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
@@ -48,8 +48,8 @@ export class Model {
 	 * @returns Attributes description map normalized, with properties defaulted
 	 * @author Gerkin
 	 */
-	private static normalizeAttributesDescription( desc:{ [key: string]: FieldDescriptor | string } ): { [key: string]: FieldDescriptor}{
-		return _.mapValues( desc, val => _.isString( val ) ? {type:val} : val );
+	private static normalizeAttributesDescription( desc:{ [key: string]: FieldDescriptor | EType } ): { [key: string]: FieldDescriptor}{
+		return _.mapValues( desc, val => FieldDescriptorTypeChecks.isFieldDescriptor( val ) ?  val : {type:val} as INativeFieldDescriptor );
 	}
 	
 	/**
@@ -61,7 +61,7 @@ export class Model {
 	 */
 	public constructor(
 		public name: string,
-		modelDesc: ModelDescriptionRaw
+		modelDesc: Raw.ModelDescription
 	) {
 		// Check model configuration
 		if (
@@ -133,7 +133,7 @@ export class Model {
 	 * @author Gerkin
 	 * @param modelDesc - Description of the model to normalize remaps for
 	 */
-	protected static normalizeRemaps( modelDesc: ModelDescriptionRaw ){
+	protected static normalizeRemaps( modelDesc: Raw.ModelDescription ){
 		const sourcesRaw = modelDesc.sources;
 		let sources: SourcesHash;
 		if ( _.isString( sourcesRaw ) ) {

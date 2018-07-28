@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { EntityTransformer } from './entityTransformer';
 import { PathStack } from './pathStack';
-import { FieldDescriptor, FieldDescriptorTypeChecks } from '../types/modelDescription';
+import { FieldDescriptor, EType } from '../types/modelDescription';
 import { getDefaultValue } from '../utils';
 import { IEntityAttributes } from '../types/entity';
 
@@ -64,7 +64,7 @@ export class DefaultTransformer extends EntityTransformer {
 
 		// Recurse if we are defaulting an object
 		if (
-			FieldDescriptorTypeChecks.isObjectFieldDescriptor( fieldDesc ) &&
+			fieldDesc.type === EType.OBJECT &&
 			_.keys( fieldDesc.attributes ).length > 0 &&
 			!_.isNil( valOrBaseDefault )
 		) {
