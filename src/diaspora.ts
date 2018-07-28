@@ -143,16 +143,13 @@ export class DiasporaStatic {
 			try {
 				require.resolve( moduleName );
 			} catch ( e ) {
+				const adapterKeys = Object.keys( this.adapters ).join( ', ' );
 				throw new Error(
-					`Unknown adapter "${adapterLabel}" (expected in module "${moduleName}"). Available currently are ${Object.keys(
-						this.adapters
-					).join( ', ' )}. Additionnaly, an error was thrown: ${e}`
+					`Unknown adapter "${adapterLabel}" (expected in module "${moduleName}"). Available currently are ${adapterKeys}. Additionnaly, an error was thrown: ${e}`
 				);
 			}
 			const requiredAdapter = require( moduleName );
-			const adapterLabelNormalized = basename(
-				adapterLabel.replace( /\.\w{2,3}$/, '' )
-			);
+			const adapterLabelNormalized = basename( adapterLabel.replace( /\.\w{2,3}$/, '' ) );
 			this.registerAdapter( adapterLabelNormalized, requiredAdapter );
 			return adapterLabelNormalized;
 		} catch ( e ) {

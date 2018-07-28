@@ -7,20 +7,25 @@ import json  from 'rollup-plugin-json';
 import { minify as minifyEs }  from 'uglify-es';
 import jscc from 'rollup-plugin-jscc';
 import typescript from 'rollup-plugin-typescript2';
-import {compact, defaults} from 'lodash';
+import { compact, defaults } from 'lodash';
 
 const libraryName = 'Diaspora';
 
 export default options => {
-	const {minify, externalize, browser, useGlobals} = defaults(options, {
+	const {
+		minify,
+		externalize,
+		browser,
+		useGlobals
+	} = defaults(options, {
 		browser: true,
 		useGlobals: options.externalize,
-	})
+	});
 	const getFileName = type => {
-		return `dist/${browser ? 'browser' : 'node' }/${type}/${externalize ? '' : 'standalone/'}index${minify ? '.min' : '' }.js`
+		return `dist/${ browser ? 'browser' : 'node' }/${ type }/${ externalize ? '' : 'standalone/' }index${ minify ? '.min' : '' }.js`
 	};
 	const globals = useGlobals ? {
-		lodash: '_',
+		lodash:             '_',
 		'sequential-event': 'SE',
 	} : {};
 	
@@ -33,8 +38,22 @@ export default options => {
 	const config = {
 		input: 'src/index.ts',
 		output: [
-			{ file: getFileName( 'umd' ), name: libraryName, format: 'umd', sourcemap: true, globals, exports: 'named' },
-			{ file: getFileName( 'es5' ), name: libraryName, format: 'es', sourcemap: true, globals, exports: 'named' },
+			{
+				file: getFileName( 'umd' ),
+				name: libraryName,
+				format: 'umd',
+				sourcemap: true,
+				globals,
+				exports: 'named'
+			},
+			{
+				file: getFileName( 'es5' ),
+				name: libraryName,
+				format: 'es',
+				sourcemap: true,
+				globals,
+				exports: 'named'
+			},
 		],
 		// Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
 		external: ( externalize ? ['lodash', 'sequential-event'] : [] ).concat( ['winston', 'request-promise', 'util', 'logform'] ),

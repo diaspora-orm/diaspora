@@ -185,18 +185,12 @@ const VALIDATIONS = {
 						.pushProp( propName ),
 						{ getProps: false }
 					);
-				} )
-				.omitBy( _.isEmpty )
-				.omitBy( _.isNil )
-				.value()
+				} ).omitBy( _.isEmpty ).omitBy( _.isNil ).value()
 				: {} ) as { [key: string]: IErrorObjectFinal };
-				if ( !_.isEmpty( deepTest ) ) {
-					return { children: deepTest, value };
-				} else {
-					return undefined;
-				}
+				return _.isEmpty( deepTest ) ? undefined : { children: deepTest, value };
 			}
 		},
+		
 		/**
 		 * Array type checker
 		 *

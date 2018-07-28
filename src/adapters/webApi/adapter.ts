@@ -101,7 +101,6 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	
 	/**
 	 * Gets the field 'message' in an XHR
-	 * TODO: Check if relevant
 	 *
 	 * @param xhr - XHR to get field from
 	 */

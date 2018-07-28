@@ -8,6 +8,8 @@ export interface IQueryObject {
 	options?: QueryLanguage.IQueryOptions;
 }
 
+type ResolveResponse = ( value?: | WebApiAdapter.TEntitiesJsonResponse | PromiseLike<WebApiAdapter.TEntitiesJsonResponse> ) => void;
+
 export class BrowserWebApiAdapter extends WebApiAdapter {
 	public constructor(
 		dataSourceName: string,
@@ -81,30 +83,21 @@ export class BrowserWebApiAdapter extends WebApiAdapter {
 		xhr.onload = () => {
 			try {
 				if ( _.inRange( xhr.status, 200, 299 ) ) {
-					if ( xhr.responseText === '' ) {
-						return resolve( undefined );
-					} else {
-						return resolve( JSON.parse( xhr.responseText ) );
-					}
+					return resolve( xhr.responseText === '' ? undefined : JSON.parse( xhr.responseText ) );
 				} else {
-					reject(
-						BrowserWebApiAdapter.handleError(
-							JSON.parse( xhr.responseText ),
-							xhr.status
-						)
-					);
+					reject( BrowserWebApiAdapter.handleError(
+						JSON.parse( xhr.responseText ),
+						xhr.status
+					) );
 				}
 			} catch ( err ) {
 				return reject( BrowserWebApiAdapter.handleError( {}, xhr.status ) );
 			}
 		};
-		xhr.onerror = () =>
-		reject(
-			BrowserWebApiAdapter.handleError(
-				{ message: xhr.responseText },
-				xhr.status
-			)
-		);
+		xhr.onerror = () => reject( BrowserWebApiAdapter.handleError(
+			{ message: xhr.responseText },
+			xhr.status
+		) );
 		return xhr;
 	}
 	
@@ -122,33 +115,23 @@ export class BrowserWebApiAdapter extends WebApiAdapter {
 		data?: object,
 		queryObject?: IQueryObject
 	): Promise<WebApiAdapter.TEntitiesJsonResponse> {
-		return new Promise(
-			(
-				resolve: (
-					value?:
-					| WebApiAdapter.TEntitiesJsonResponse
-					| PromiseLike<WebApiAdapter.TEntitiesJsonResponse>
-				) => void,
+		return new Promise( ( resolve: ResolveResponse, reject ) => {
+			const xhr = BrowserWebApiAdapter.defineXhrEvents(
+				new XMLHttpRequest(),
+				resolve,
 				reject
-			) => {
-				/* globals XMLHttpRequest: false */
-				const xhr = BrowserWebApiAdapter.defineXhrEvents(
-					new XMLHttpRequest(),
-					resolve,
-					reject
-				);
-				const queryString = BrowserWebApiAdapter.queryObjectToString(
-					queryObject
-				);
-				xhr.responseType = 'json';
-				xhr.open(
-					method,
-					`${endPoint}${queryString ? `?${queryString}` : ''}`,
-					true
-				);
-				xhr.setRequestHeader( 'Content-Type', 'application/json' );
-				xhr.send( _.isNil( data ) ? undefined : JSON.stringify( data ) );
-			}
-		);
+			);
+			const queryString = BrowserWebApiAdapter.queryObjectToString(
+				queryObject
+			);
+			xhr.responseType = 'json';
+			xhr.open(
+				method,
+				`${endPoint}${queryString ? `?${queryString}` : ''}`,
+				true
+			);
+			xhr.setRequestHeader( 'Content-Type', 'application/json' );
+			xhr.send( _.isNil( data ) ? undefined : JSON.stringify( data ) );
+		} );
 	}
 }
