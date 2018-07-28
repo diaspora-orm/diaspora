@@ -8,6 +8,7 @@ import { ModelDescription } from '../types/modelDescription';
 import { DataAccessLayer, TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
 import { QueryLanguage } from '../types/queryLanguage';
+import { logger } from '../logger/index';
 
 const DEFAULT_OPTIONS = { skipEvents: false };
 
@@ -424,6 +425,9 @@ export abstract class Entity extends SequentialEvent {
 					{
 						if ( _.isString( currentVal ) || _.isInteger( currentVal ) ) {
 							source[attrName] = new Date( currentVal );
+						} else if ( !( currentVal instanceof Date ) ){
+							logger.error( 'Incoherent data type received, expected DateTime castable data, but received: ' + currentVal );
+							source[attrName] = undefined;
 						}
 					}
 					break;

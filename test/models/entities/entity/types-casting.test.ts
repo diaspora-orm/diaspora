@@ -52,4 +52,41 @@ describe( 'DateTime', () => {
 		expect( retrievedEntity.attributes.foo ).toBeInstanceOf( Date );
 		expect( retrievedEntity.attributes.foo ).toEqual( sampleDate );
 	} );
+	
+	it( 'From date', async () => {
+		// Retrieve item
+		const storeItems = store[ADAPTER_TABLE + '-test'].items;
+		expect( storeItems ).toBeArrayOfSize( 1 );
+		// Check the itegrity of the item
+		const storeItem = storeItems[0];
+		expect( storeItem ).toHaveProperty( 'foo' );
+		expect( storeItem ).toHaveProperty( 'id' );
+		expect( storeItem ).toHaveProperty( 'idHash' );
+
+		// Modify its property
+		const sampleDate = new Date();
+		storeItem.foo = sampleDate;
+		// Retrieve it
+		const retrievedEntity = await model.find( storeItem.id );
+		expect( retrievedEntity.attributes.foo ).toBeInstanceOf( Date );
+		expect( retrievedEntity.attributes.foo ).toEqual( sampleDate );
+	} );
+	
+	it( 'Error', async () => {
+		// Retrieve item
+		const storeItems = store[ADAPTER_TABLE + '-test'].items;
+		expect( storeItems ).toBeArrayOfSize( 1 );
+		// Check the itegrity of the item
+		const storeItem = storeItems[0];
+		expect( storeItem ).toHaveProperty( 'foo' );
+		expect( storeItem ).toHaveProperty( 'id' );
+		expect( storeItem ).toHaveProperty( 'idHash' );
+
+		// Modify its property
+		const sampleDate = new Date();
+		storeItem.foo = /foo/;
+		// Retrieve it
+		const retrievedEntity = await model.find( storeItem.id );
+		expect( retrievedEntity.attributes.foo ).toBeUndefined();
+	} );
 } );
