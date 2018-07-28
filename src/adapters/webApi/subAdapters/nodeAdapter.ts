@@ -36,20 +36,22 @@ export class NodeWebApiAdapter extends WebApiAdapter{
 	protected async httpRequest(
 		method: WebApiAdapter.EHttpVerb ,
 		endPoint: string,
-		data?: object | true,
+		data?: object,
 		queryObject?: object
 	): Promise<WebApiAdapter.TEntitiesJsonResponse > {
-		if ( _.isNil( data ) ) {
-			data = true;
-		}
 		const methodNormalized = method.toLowerCase() as 'get' | 'post' | 'put' | 'delete' | 'options';
 		// requestPromise typings does not support the `options` method. Thus, cast as any
-		return ( requestPromise as any )[methodNormalized]( endPoint, {
-			json: data,
-			qs: _.mapValues(
-				queryObject,
-			data => ( _.isPlainObject( data ) ? JSON.stringify( data ) : data )
-			),
-		} );
+		
+		try {
+			return await ( requestPromise as any )[methodNormalized]( endPoint, {
+				json: _.isNil( data ) ? true : data,
+				qs: _.mapValues(
+					queryObject,
+					qsData => JSON.stringify( qsData )
+				),
+			} );
+		} catch ( error ){
+			throw NodeWebApiAdapter.handleError( error.error, error.statusCode );
+		}
 	}
 }

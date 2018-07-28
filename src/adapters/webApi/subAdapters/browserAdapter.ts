@@ -77,24 +77,18 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 						return resolve( JSON.parse( xhr.responseText ) );
 					}
 				} else {
-					// Retrieve the function that will generate the error
-					const errorBuilder = _.get(
-						WebApiAdapter.httpErrorFactories,
-						xhr.status,
-						WebApiAdapter.httpErrorFactories._
-					);
-					throw errorBuilder( xhr );
+					reject( BrowserWebApiAdapter.handleError( JSON.parse( xhr.responseText ), xhr.status ) );
 				}
 			} catch ( err ){
-				return reject( err );
+				return reject( BrowserWebApiAdapter.handleError( {}, xhr.status ) );
 			}
 		};
 		xhr.onerror = () => {
-			return reject( WebApiAdapter.httpErrorFactories._( xhr ) );
+			return reject( BrowserWebApiAdapter.handleError( {message: xhr.responseText}, xhr.status ) );
 		};
 		return xhr;
 	}
-	
+
 	/**
 	 * Creates a request, send it and get the result
 	 * 
@@ -106,7 +100,7 @@ export class BrowserWebApiAdapter extends WebApiAdapter{
 	protected async httpRequest(
 		method: WebApiAdapter.EHttpVerb ,
 		endPoint: string,
-		data?: object | true,
+		data?: object,
 		queryObject?: QueryObject
 	): Promise<WebApiAdapter.TEntitiesJsonResponse > {
 		return new Promise(

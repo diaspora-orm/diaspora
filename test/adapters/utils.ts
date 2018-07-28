@@ -122,6 +122,12 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 			return res.json();
 		} );
 	} );
+	app.get( '/api/:code', ( req, res ) => {
+		return res.status( req.params.code ).send( {message: 'This is an error message'} );
+	} );
+	app.get( '/api/nomsg/:code', ( req, res ) => {
+		return res.status( req.params.code ).send();
+	} );
 	
 	return new Promise( ( resolve, reject ) => {
 		

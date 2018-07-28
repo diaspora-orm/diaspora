@@ -12,23 +12,19 @@ interface PluralEndpoint extends String {}
 /**
  * Adapter for RESTful HTTP APIs.
  *
- * @see https://www.npmjs.com/package/@diaspora/plugin-server Diaspora Server plugin: Package built on Diaspora & Express.js to easily configure HTTP APIs compatible with this adapter.
+ * @see https://www.npmjs.com/package/%40diaspora/plugin-server Diaspora Server plugin: Package built on Diaspora & Express.js to easily configure HTTP APIs compatible with this adapter.
  */
 export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	protected static readonly httpErrorFactories = {
-		400: ( xhr: WebApiAdapter.IXhrResponse ) =>
+		400: ( response: WebApiAdapter.IErrorMessage, statusCode: number ) =>
 			new Error(
-				`Posted data through HTTP is invalid; message ${WebApiAdapter.getMessage(
-					xhr
-				)}`
+				`Bad Request: Posted data through HTTP is invalid; message ${WebApiAdapter.getMessage( response )}`
 			),
-		404: ( xhr: WebApiAdapter.IXhrResponse ) =>
-			new Error( `Reached 404, message is ${WebApiAdapter.getMessage( xhr )}` ),
-		_: ( xhr: WebApiAdapter.IXhrResponse ) =>
+		404: ( response: WebApiAdapter.IErrorMessage, statusCode: number ) =>
+			new Error( `Not Found: Reached 404, message is ${WebApiAdapter.getMessage( response )}` ),
+		_: ( response: WebApiAdapter.IErrorMessage, statusCode: number ) =>
 			new Error(
-				`Unhandled HTTP error with status code ${
-					xhr.status
-				} & message ${WebApiAdapter.getMessage( xhr )}`
+				`Unhandled HTTP error with status code ${statusCode} & message ${WebApiAdapter.getMessage( response )}`
 			),
 	};
 
@@ -53,7 +49,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 		config: WebApiAdapter.IWebApiAdapterInternalConfig,
 		eventProviders: WebApiAdapter.IEventProvider[] = [DefaultQueryTransformerFactory()]
 	) {
-		super( WebApiEntity, dataSourceName );
+		super( WebApiEntity as any, dataSourceName );
 		
 		if ( typeof config.baseEndPoint === 'undefined' ){
 			this.baseEndPoint = this.generateBaseEndPoint( config.scheme, config.host, config.port, config.path );
@@ -83,10 +79,8 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * 
 	 * @param xhr - XHR to get field from
 	 */
-	private static getMessage( xhr: WebApiAdapter.IXhrResponse ) {
-		return _.get( xhr, 'response.message' )
-			? `"${( xhr as { response: { message: string } } ).response.message}"`
-			: 'NULL';
+	protected static getMessage( response: {message?: string} ) {
+		return `"${response.message || 'NULL'}"`;
 	}
 
 	/**
@@ -118,7 +112,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * @param adapter  - Source of those entities
 	 */
 	private static maybeAddIdHashToEntities(
-		entities: IEntityAttributes[],
+		entities: IEntityAttributes[] | undefined,
 		adapter: WebApiAdapter
 	) {
 		return _.map( entities, entity => WebApiEntity.setId( entity, adapter ) );
@@ -365,7 +359,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	protected abstract async httpRequest(
 		method: WebApiAdapter.EHttpVerb,
 		endPoint: string,
-		data?: object | true,
+		data?: object,
 		queryObject?: object
 	): Promise<WebApiAdapter.TEntitiesJsonResponse>;
 
@@ -459,6 +453,24 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 */
 	private getPluralEndpoint( endpoint: string ): PluralEndpoint {
 		return _.get( this.pluralApis, endpoint, endpoint + 's' );
+	}
+
+	/**
+	 * Generates the error corresponding to the status code & message.
+	 * 
+	 * @author Gerkin
+	 * @param response   - Object containing the raw response of the server
+	 * @param statusCode - Status code of the response
+	 * @returns the constructed error to throw
+	 */
+	protected static handleError( response: WebApiAdapter.IErrorMessage | undefined, statusCode: number ){
+		// Retrieve the function that will generate the error
+		const errorBuilder = _.get(
+			WebApiAdapter.httpErrorFactories,
+			statusCode,
+			WebApiAdapter.httpErrorFactories._
+		);
+		return errorBuilder( response || {}, statusCode );
 	}
 }
 
