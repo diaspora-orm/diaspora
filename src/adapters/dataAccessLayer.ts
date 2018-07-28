@@ -8,6 +8,18 @@ import { IEntityAttributes } from '../types/entity';
 
 export { IEnumeratedHash, IAdapterEntityCtr};
 
+// TODO: Replace with a decorator to register type validation.
+// For instance, mongo may use the new decorator to declare a checking class that may recognize a class instance as an entity uid.
+// It would allow the mongo adapter to use normal mongo uuid as EntityUid type member
+export class EntityUid {
+	public static [Symbol.hasInstance]( instance: any ) {
+		return Array.isArray( instance );
+	}
+}
+const isEntityUid = ( query: any ): query is EntityUid => {
+	return query instanceof EntityUid;
+};
+
 /**
  * The Data Access Layer class is the components that wraps adapter calls to provide standard inputs & outputs. Typically, it casts raw query & raw query options in standard query & standard query options, and casts POJO from the output of the adapter's query in adapter entity.
  * 
@@ -34,8 +46,18 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		return this.adapter.normalizeOptions;
 	}
 
-	public get normalizeQuery(){
-		return this.adapter.normalizeQuery;
+	/**
+	 * Normalize the query to cast it from its most user-friendly form to a standard one.
+	 * If the parameter is an ID, it will be wrapped in correct query.
+	 * 
+	 * @author Gerkin
+	 * @param originalQuery - Query to cast to its canonical form
+	 * @param options       - Options to apply to the query
+	 * @returns Returns the normalized query.
+	 */
+	public normalizeQuery( originalQuery: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid | undefined, options: QueryLanguage.QueryOptions ){
+		const canonicalQuery = this.ensureQueryObject( originalQuery );
+		return this.adapter.normalizeQuery( canonicalQuery, options );
 	}
 
 	public get name(){
@@ -53,7 +75,7 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 	public constructor( public adapter: TAdapter ){
 		super();
 		// TODO: Fix typings problems
-		DataAccessLayer.dataAccessLayersRegistry.set( adapter, this );
+		DataAccessLayer.dataAccessLayersRegistry.set( adapter as any, this as any );
 	}
 	
 	/**
@@ -136,12 +158,11 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
-		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		const queryFindNormalized = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const foundEntity = await this.adapter.findOne( collectionName, queryFindNormalized, optionsNormalized );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const foundEntity = await this.adapter.findOne( collectionName, finalSearchQuery, optionsNormalized );
 		if ( foundEntity ){
 			const foundEntityRemapped = this.remapOutput(
 				collectionName,
@@ -166,12 +187,12 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
-		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		const queryFindNormalized = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const foundEntities = await this.adapter.findMany( collectionName, queryFindNormalized, optionsNormalized );
+
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const foundEntities = await this.adapter.findMany( collectionName, finalSearchQuery, optionsNormalized );
 		return _.map( foundEntities, foundEntity => {
 			const foundEntityRemapped = this.remapOutput(
 				collectionName,
@@ -199,13 +220,12 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		update: IEntityAttributes,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
-		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		const updateRemappedIn = this.remapInput( collectionName, update );
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const updatedEntity = await this.adapter.updateOne( collectionName, queryFind, updateRemappedIn, optionsNormalized );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const updatedEntity = await this.adapter.updateOne( collectionName, finalSearchQuery, updateRemappedIn, optionsNormalized );
 		if ( updatedEntity ){
 			const updatedEntityRemapped = this.remapOutput(
 				collectionName,
@@ -232,13 +252,12 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		update: IEntityAttributes,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
-		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		const updateRemappedIn = this.remapInput( collectionName, update );
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		const updatedEntities = await this.adapter.updateMany( collectionName, queryFind, updateRemappedIn, optionsNormalized );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		const updatedEntities = await this.adapter.updateMany( collectionName, finalSearchQuery, updateRemappedIn, optionsNormalized );
 		return _.map( updatedEntities, updatedEntity => {
 			const updatedEntityRemapped = this.remapOutput(
 				collectionName,
@@ -264,12 +283,11 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
-		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		return this.adapter.deleteOne( collectionName, queryFind, optionsNormalized );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		return this.adapter.deleteOne( collectionName, finalSearchQuery, optionsNormalized );
 	}
 	
 	/**
@@ -285,17 +303,34 @@ TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 		queryFind: QueryLanguage.Raw.SelectQueryOrCondition,
 		options: QueryLanguage.Raw.QueryOptions = {}
 	){
-		const queryFindRemappedIn = this.remapInput( collectionName, queryFind );
 		// Options to canonical
 		const optionsNormalized = this.normalizeOptions( options );
 		// Query search to cannonical
-		queryFind = this.normalizeQuery( queryFindRemappedIn, optionsNormalized );
-		return this.adapter.deleteMany( collectionName, queryFind, optionsNormalized );
+		const finalSearchQuery = this.remapInput( collectionName, this.normalizeQuery( queryFind, optionsNormalized ) );
+		return this.adapter.deleteMany( collectionName, finalSearchQuery, optionsNormalized );
 	}
 	
 	// -----
 	// ### Utils
 	
+	
+	/**
+	 * Generates a query object if the only provided parameter is an {@link EntityUid}.
+	 * 
+	 * @param query - Entity ID or query to potentialy transform
+	 */
+	public ensureQueryObject( query?: QueryLanguage.Raw.SelectQueryOrCondition | EntityUid ): QueryLanguage.Raw.SelectQueryOrCondition {
+		if ( _.isNil( query ) ){
+			return {};
+		} else if ( isEntityUid( query ) ) {
+			return {
+				id: query,
+			};
+		} else {
+			return query;
+		}
+	}
+
 	/**
 	 * Waits for the underlying adapter to be ready.
 	 * 
