@@ -1,6 +1,5 @@
 import { Diaspora } from '../../../../src/diaspora';
 import { Model } from '../../../../src/model';
-import { Entity } from '../../../../src/entities/entityFactory';
 import { InMemoryAdapter } from '../../../../src/adapters/inMemory';
 import { createMockModel } from '../../utils';
 import { EntityStateError } from '../../../../src/errors/entityStateError';

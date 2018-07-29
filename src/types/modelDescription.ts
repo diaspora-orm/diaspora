@@ -5,7 +5,7 @@ import { IEventHandler } from 'sequential-event';
  *
  * @author Gerkin
  */
-export enum EType {
+export enum EFieldType {
 	ANY = 'any',
 	ARRAY = 'array',
 	BOOLEAN = 'boolean',
@@ -13,7 +13,6 @@ export enum EType {
 	FLOAT = 'float',
 	INTEGER = 'integer',
 	OBJECT = 'object',
-	RELATION = 'relation',
 	STRING = 'string',
 }
 
@@ -21,11 +20,7 @@ export interface ISourcesHash {
 	[key: string]: object;
 }
 
-export namespace Raw {
-	export interface IAttributesDescription {
-		[key: string]: FieldDescriptor | EType;
-	}
-	
+export namespace Raw {	
 	/**
 	 * Object describing a model.
 	 *
@@ -63,11 +58,69 @@ export namespace Raw {
 		 */
 		lifecycleEvents?: { [key: string]: IEventHandler | IEventHandler[] };
 	}
+
+	export interface IAttributesDescription {
+		[key: string]: FieldDescriptor | EFieldType;
+	}
+
+	export type FieldDescriptor = FieldDescriptor.IPrimitiveFieldDescriptor
+	| FieldDescriptor.IArrayFieldDescriptor
+	| FieldDescriptor.IObjectFieldDescriptor;
+
+	export namespace FieldDescriptor{
+		export interface IBaseFieldDescriptor {
+			/**
+			 * Expected type of the value. Either `type` or `model` should be defined, or none.
+			 *
+			 * @author gerkin
+			 */
+			type?: EFieldType;
+			/**
+			 * Custom validation callback.
+			 *
+			 * @author gerkin
+			 */
+			validate?: Function | Function[];
+			/**
+			 * Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
+			 *
+			 * @author gerkin
+			 */
+			required?: boolean;
+			default?: Function | any;
+			enum?: any[];
+		}
+		export interface IPrimitiveFieldDescriptor extends IBaseFieldDescriptor {
+			type: EFieldType.ANY
+			| EFieldType.BOOLEAN
+			| EFieldType.DATETIME
+			| EFieldType.FLOAT
+			| EFieldType.INTEGER
+			| EFieldType.STRING;
+		}
+		export interface IArrayFieldDescriptor extends IBaseFieldDescriptor {
+			type: EFieldType.ARRAY;
+			/**
+			 * Description (or array of descriptions) of possible values for this field
+			 *
+			 * @author gerkin
+			 */
+			of?: Array<FieldDescriptor | EFieldType> | FieldDescriptor | EFieldType;
+		}
+		export interface IObjectFieldDescriptor extends IBaseFieldDescriptor {
+			type: EFieldType.OBJECT;
+			attributes?: { [key: string]: FieldDescriptor | EFieldType };
+		}
+		export const FieldDescriptorTypeChecks = {
+			isFieldDescriptor(
+				fieldDescriptor: FieldDescriptor | EFieldType
+			): fieldDescriptor is FieldDescriptor {
+				return typeof fieldDescriptor === 'object' && fieldDescriptor.hasOwnProperty( 'type' );
+			},
+		};
+	}
 }
 
-export interface IAttributesDescription {
-	[key: string]: FieldDescriptor;
-}
 export interface IModelDescription {
 	/**
 	 * Attributes of the model.
@@ -101,91 +154,57 @@ export interface IModelDescription {
 	lifecycleEvents?: { [key: string]: IEventHandler | IEventHandler[] };
 }
 
-/**
- * Object describing the attributes of a {@link Model~Model}.
- *
- * @author gerkin
- */
-export interface IBaseFieldDescriptor {
-	/**
-	 * Expected type of the value. Either `type` or `model` should be defined, or none.
-	 *
-	 * @author gerkin
-	 */
-	type?: EType;
-	/**
-	 * Custom validation callback.
-	 *
-	 * @author gerkin
-	 */
-	validate?: Function | Function[];
-	/**
-	 * Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
-	 *
-	 * @author gerkin
-	 */
-	required?: boolean;
-	default?: Function | any;
+export interface IAttributesDescription {
+	[key: string]: FieldDescriptor;
 }
-export interface INonRelationalFieldDescriptor extends IBaseFieldDescriptor {
-	enum?: any[];
-}
-export interface INativeFieldDescriptor extends INonRelationalFieldDescriptor {
-	type:
-	| EType.ANY
-	| EType.BOOLEAN
-	| EType.DATETIME
-	| EType.FLOAT
-	| EType.INTEGER
-	| EType.STRING;
-}
-export interface IArrayFieldDescriptor extends INonRelationalFieldDescriptor {
-	type: EType.ARRAY;
-	/**
-	 * Description (or array of descriptions) of possible values for this field
-	 *
-	 * @author gerkin
-	 */
-	of: FieldDescriptor | FieldDescriptor[];
-}
-export interface IObjectFieldDescriptor extends INonRelationalFieldDescriptor {
-	type: EType.OBJECT;
-	attributes: { [key: string]: FieldDescriptor };
-}
+export type FieldDescriptor = FieldDescriptor.IPrimitiveFieldDescriptor
+| FieldDescriptor.IArrayFieldDescriptor
+| FieldDescriptor.IObjectFieldDescriptor;
 
-export interface IRelationalFieldDescriptor extends IBaseFieldDescriptor {
-	type: undefined | EType.RELATION;
-	/**
-	 * Expected model of the value. Either `type` or `model` should be defined, or none.
-	 *
-	 * @author gerkin
-	 */
-	model: string;
+export namespace FieldDescriptor{
+	export interface IBaseFieldDescriptor {
+		/**
+		 * Expected type of the value. Either `type` or `model` should be defined, or none.
+		 *
+		 * @author gerkin
+		 */
+		type: EFieldType;
+		/**
+		 * Custom validation callback.
+		 *
+		 * @author gerkin
+		 */
+		validate?: Function | Function[];
+		/**
+		 * Set to `true` to require a value. Even when `true`, empty arrays are allowed. To require at least one element in an array, use the `minLength` property
+		 *
+		 * @author gerkin
+		 */
+		required: boolean;
+		default: Function | any;
+		enum?: any[];
+	}
+	export interface IPrimitiveFieldDescriptor extends IBaseFieldDescriptor {
+		type: EFieldType.ANY
+		| EFieldType.BOOLEAN
+		| EFieldType.DATETIME
+		| EFieldType.FLOAT
+		| EFieldType.INTEGER
+		| EFieldType.STRING;
+	}
+	export interface IArrayFieldDescriptor extends IBaseFieldDescriptor {
+		type: EFieldType.ARRAY;
+		/**
+		 * Description (or array of descriptions) of possible values for this field
+		 *
+		 * @author gerkin
+		 */
+		of?: FieldDescriptor[] | FieldDescriptor;
+	}
+	export interface IObjectFieldDescriptor extends IBaseFieldDescriptor {
+		type: EFieldType.OBJECT;
+		attributes?: { [key: string]: FieldDescriptor };
+	}
+	export const FieldDescriptorTypeChecks = {
+	};
 }
-
-export const FieldDescriptorTypeChecks = {
-	isFieldDescriptor(
-		fieldDescriptor: FieldDescriptor | EType
-	): fieldDescriptor is FieldDescriptor {
-		return (
-			fieldDescriptor.hasOwnProperty( 'type' ) ||
-			fieldDescriptor.hasOwnProperty( 'model' )
-		);
-	},
-	isRelationalFieldDescriptor(
-		fieldDescriptor: FieldDescriptor
-	): fieldDescriptor is IRelationalFieldDescriptor {
-		return (
-			!fieldDescriptor.hasOwnProperty( 'type' ) ||
-			fieldDescriptor.type === EType.RELATION
-		);
-	},
-};
-
-export type NonRelationalFieldDescriptor =
-| INativeFieldDescriptor
-| IArrayFieldDescriptor
-| IObjectFieldDescriptor;
-export type FieldDescriptor =
-| NonRelationalFieldDescriptor
-| IRelationalFieldDescriptor;

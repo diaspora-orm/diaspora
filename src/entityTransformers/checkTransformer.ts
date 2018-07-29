@@ -3,14 +3,7 @@ import * as _ from 'lodash';
 import { EntityTransformer } from './entityTransformer';
 import { PathStack } from './pathStack';
 import { EntityValidationError } from '../errors/entityValidationError';
-import {
-	FieldDescriptor,
-	IArrayFieldDescriptor,
-	IRelationalFieldDescriptor,
-	IObjectFieldDescriptor,
-	FieldDescriptorTypeChecks,
-	EType
-} from '../types/modelDescription';
+import { FieldDescriptor, EFieldType, Raw } from '../types/modelDescription';
 import { IEntityAttributes } from '../types/entity';
 
 /**
@@ -23,7 +16,7 @@ import { IEntityAttributes } from '../types/entity';
  */
 const validateArrayItems = (
 	validator: CheckTransformer,
-	fieldDesc: IArrayFieldDescriptor,
+	fieldDesc: Raw.FieldDescriptor.IArrayFieldDescriptor,
 	keys: PathStack
 ) => (
 	propVal: any,
@@ -54,11 +47,7 @@ const validateArrayItems = (
 };
 
 const messageRequired = ( keys: PathStack, fieldDesc: FieldDescriptor ) =>
-`${keys.toValidatePath()} is a required property of ${
-	_.isNil( fieldDesc.type ) || fieldDesc.type === EType.RELATION
-	? `model "${( fieldDesc as IRelationalFieldDescriptor ).model}"`
-	: `type "${fieldDesc.type}"`
-}`;
+`${keys.toValidatePath()} is a required property of $type "${fieldDesc.type}"`;
 
 export interface IErrorObject {
 	validate?: string;
@@ -127,31 +116,31 @@ const VALIDATIONS = {
 		 *
 		 * @author Gerkin
 		 */
-		[EType.STRING]: validateWrongType( _.isString ),
+		[EFieldType.STRING]: validateWrongType( _.isString ),
 		/**
 		 * Integer type checker
 		 *
 		 * @author Gerkin
 		 */
-		[EType.INTEGER]: validateWrongType( _.isInteger ),
+		[EFieldType.INTEGER]: validateWrongType( _.isInteger ),
 		/**
 		 * Float type checker. Any numeric other NaN or ±Infinity is accepted
 		 *
 		 * @author Gerkin
 		 */
-		[EType.FLOAT]: validateWrongType( _.isNumber ),
+		[EFieldType.FLOAT]: validateWrongType( _.isNumber ),
 		/**
 		 * Date type checker
 		 *
 		 * @author Gerkin
 		 */
-		[EType.DATETIME]: validateWrongType( _.isDate ),
+		[EFieldType.DATETIME]: validateWrongType( _.isDate ),
 		/**
 		 * Boolean type checker
 		 *
 		 * @author Gerkin
 		 */
-		[EType.BOOLEAN]: validateWrongType( _.isBoolean ),
+		[EFieldType.BOOLEAN]: validateWrongType( _.isBoolean ),
 		/**
 		 * Object type checker
 		 *
@@ -161,10 +150,10 @@ const VALIDATIONS = {
 		 * @param value     - Entity attributes to check
 		 * @author Gerkin
 		 */
-		[EType.OBJECT](
+		[EFieldType.OBJECT](
 			this: CheckTransformer,
 			keys: PathStack,
-			fieldDesc: IObjectFieldDescriptor,
+			fieldDesc: FieldDescriptor.IObjectFieldDescriptor,
 			value: IEntityAttributes
 		): IErrorObjectFinal | undefined {
 			if ( !_.isObject( value ) ) {
@@ -200,10 +189,10 @@ const VALIDATIONS = {
 		 * @param value     - Entity attributes to check
 		 * @author Gerkin
 		 */
-		[EType.ARRAY](
+		[EFieldType.ARRAY](
 			this: CheckTransformer,
 			keys: PathStack,
-			fieldDesc: IArrayFieldDescriptor,
+			fieldDesc: FieldDescriptor.IArrayFieldDescriptor,
 			value: any[]
 		): IErrorObjectFinal | undefined {
 			if ( !_.isArray( value ) ) {
@@ -235,7 +224,7 @@ const VALIDATIONS = {
 		 * @param value     - Entity attributes to check
 		 * @author Gerkin
 		 */
-		[EType.ANY](
+		[EFieldType.ANY](
 			this: CheckTransformer,
 			keys: PathStack,
 			fieldDesc: FieldDescriptor,
@@ -338,20 +327,13 @@ const VALIDATION_STEPS = [
 		const { error, fieldDesc, keys, value } = validationArgs;
 		// Check the type and the required status
 		// Apply the `required` modifier
-		if ( true === fieldDesc.required && _.isNil( value ) ) {
+		if ( fieldDesc.required && _.isNil( value ) ) {
 			error.required = messageRequired( keys, fieldDesc );
 		} else if ( !_.isNil( value ) ) {
 			_.assign(
 				error,
 				// Get the validator. Default to unhandled type
-				_.get(
-					VALIDATIONS,
-					// TODO: If relation, check is done another way
-					!FieldDescriptorTypeChecks.isRelationalFieldDescriptor( fieldDesc )
-					? ['TYPE', fieldDesc.type]
-					: [],
-					VALIDATIONS.TYPE._
-				).call( this, keys, fieldDesc, value )
+				_.get( VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._ ).call( this, keys, fieldDesc, value )
 			);
 		}
 	},
@@ -371,7 +353,6 @@ const VALIDATION_STEPS = [
 		// Check enum values
 		if (
 			!_.isNil( value ) &&
-			!FieldDescriptorTypeChecks.isRelationalFieldDescriptor( fieldDesc ) &&
 			_.isArray( fieldDesc.enum )
 		) {
 			const result = _.some( fieldDesc.enum, enumVal => {
@@ -391,7 +372,7 @@ const VALIDATION_STEPS = [
 ];
 
 /**
- * The Validator class is used to check an entity or its fields against a model description.
+ * The CheckTransformer class is used to check an entity or its fields against a model description.
  */
 export class CheckTransformer extends EntityTransformer {
 	/**

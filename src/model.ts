@@ -10,9 +10,8 @@ import {
 	FieldDescriptor,
 	ISourcesHash,
 	IModelDescription,
-	EType,
-	FieldDescriptorTypeChecks,
-	INativeFieldDescriptor
+	EFieldType,
+	IAttributesDescription,
 } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
@@ -55,15 +54,13 @@ export class Model {
 	 * @returns Attributes description map normalized, with properties defaulted
 	 * @author Gerkin
 	 */
-	private static normalizeAttributesDescription( desc: {
-		[key: string]: FieldDescriptor | EType;
-	} ): { [key: string]: FieldDescriptor } {
+	private static normalizeAttributesDescription( desc: Raw.IAttributesDescription ): IAttributesDescription {
 		return _.mapValues(
 			desc,
-			val =>
-			FieldDescriptorTypeChecks.isFieldDescriptor( val )
-			? val
-			: ( { type: val } as INativeFieldDescriptor )
+			val => {
+				const fieldDescriptorToDefault = Raw.FieldDescriptor.FieldDescriptorTypeChecks.isFieldDescriptor( val ) ? val : { type: val } ;
+				return _.defaults( fieldDescriptorToDefault , {required: false } ) as any;
+			}
 		);
 	}
 	
@@ -392,6 +389,6 @@ export class Model {
 		if ( _.isNil( dataSourceEntity ) ) {
 			return null;
 		}
-		return new this.entityFactory( dataSourceEntity );
+  return new this.entityFactory( dataSourceEntity );
 	}
 }

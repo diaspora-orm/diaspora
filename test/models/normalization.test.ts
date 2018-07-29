@@ -16,9 +16,11 @@ describe( 'Checking model description normalization', () => {
 		expect( model.attributes ).toEqual( {
 			foo: {
 				type: EFieldType.STRING,
+				required: false,
 			},
 			bar: {
 				type: EFieldType.INTEGER,
+				required: false,
 			},
 		} );
 	} );

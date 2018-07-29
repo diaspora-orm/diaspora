@@ -2,12 +2,12 @@ import * as _ from 'lodash';
 
 import { EntityTransformer } from './entityTransformer';
 import { PathStack } from './pathStack';
-import { FieldDescriptor, EType } from '../types/modelDescription';
+import { FieldDescriptor, EFieldType } from '../types/modelDescription';
 import { getDefaultValue } from '../utils';
 import { IEntityAttributes } from '../types/entity';
 
 /**
- * The Validator class is used to check an entity or its fields against a model description.
+ * The DefaultTransformer class is used to apply default values to an entity or its fields against a model description.
  */
 export class DefaultTransformer extends EntityTransformer {
 	/**
@@ -60,7 +60,7 @@ export class DefaultTransformer extends EntityTransformer {
 		
 		// Recurse if we are defaulting an object
 		if (
-			fieldDesc.type === EType.OBJECT &&
+			fieldDesc.type === EFieldType.OBJECT &&
 			_.keys( fieldDesc.attributes ).length > 0 &&
 			!_.isNil( valOrBaseDefault )
 		) {

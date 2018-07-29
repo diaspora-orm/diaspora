@@ -3,7 +3,7 @@ export * from './diaspora';
 export * from './entities';
 export * from './errors';
 export * from './types/queryLanguage';
-export { EType as EFieldType } from './types/modelDescription';
+export { EFieldType } from './types/modelDescription';
 
 export * from './entityTransformers';
 export * from './model';

@@ -1,14 +1,14 @@
 import { Diaspora } from '../../src/diaspora';
 
 import '../utils';
-import { Raw, EType } from '../../src/types/modelDescription';
+import { Raw, EFieldType } from '../../src/types/modelDescription';
 
 export const createMockModel = ( scope: string, attributesDescription: Raw.IAttributesDescription = {
 	foo: {
-		type: EType.STRING,
+		type: EFieldType.STRING,
 	},
 	baz: {
-		type: EType.STRING,
+		type: EFieldType.STRING,
 	},
 } ) => {
 	const MODEL_NAME = `${scope}-test`;

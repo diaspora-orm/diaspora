@@ -1,19 +1,19 @@
 import { Diaspora } from '../../../../src';
-import { EType } from '../../../../src/types/modelDescription';
+import { EFieldType } from '../../../../src/types/modelDescription';
 import { EntityValidationError } from '../../../../src/errors/entityValidationError';
 import { createMockModel } from '../../utils';
 
 const { model, adapter, MODEL_NAME, SOURCE } = createMockModel( 'entity-validation', {
 	prop1: {
-		type: EType.STRING,
+		type: EFieldType.STRING,
 	},
 	prop2: {
-		type:     EType.INTEGER,
+		type:     EFieldType.INTEGER,
 		enum:     [ 1, 2, 3, 4, 'foo' ],
 		required: true,
 	},
 	prop3: {
-		type:    EType.FLOAT,
+		type:    EFieldType.FLOAT,
 		default: 0.1,
 	},
 } );
