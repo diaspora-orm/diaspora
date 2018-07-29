@@ -7,7 +7,7 @@ import { EntityValidationError } from './entityValidationError';
  * This class represents an error related to validation on a set.
  */
 export class SetValidationError extends ValidationError {
-	private readonly validationErrors: EntityValidationError[];
+	public readonly validationErrors: EntityValidationError[];
 	
 	/**
 	 * Construct a new set validation error.
