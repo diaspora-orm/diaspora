@@ -910,13 +910,16 @@ img { max-width: 100%; }
 <nav class="tsd-navigation secondary">
 	<ul>
 		<li class=" tsd-kind-interface tsd-parent-kind-module">
-			<a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-kind-icon">Query<wbr>Options</a>
+			<a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-kind-icon">IQuery<wbr>Options</a>
 		</li>
 		<li class=" tsd-kind-interface tsd-parent-kind-module">
-			<a href="../interfaces/querylanguage.raw.selectquery.html" class="tsd-kind-icon">Select<wbr>Query</a>
+			<a href="../interfaces/querylanguage.raw.iselectquery.html" class="tsd-kind-icon">ISelect<wbr>Query</a>
 		</li>
 		<li class=" tsd-kind-interface tsd-parent-kind-module">
-			<a href="../interfaces/querylanguage.raw.selectquerycondition.html" class="tsd-kind-icon">Select<wbr>Query<wbr>Condition</a>
+			<a href="../interfaces/querylanguage.raw.iselectquerycondition.html" class="tsd-kind-icon">ISelect<wbr>Query<wbr>Condition</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+			<a href="querylanguage.raw.html#searchquery" class="tsd-kind-icon">Search<wbr>Query</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 			<a href="querylanguage.raw.html#selectqueryorcondition" class="tsd-kind-icon">Select<wbr>Query<wbr>OrCondition</a>
@@ -932,14 +935,15 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Interfaces</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-kind-icon">Query<wbr>Options</a></li>
-							<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/querylanguage.raw.selectquery.html" class="tsd-kind-icon">Select<wbr>Query</a></li>
-							<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/querylanguage.raw.selectquerycondition.html" class="tsd-kind-icon">Select<wbr>Query<wbr>Condition</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-kind-icon">IQuery<wbr>Options</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/querylanguage.raw.iselectquery.html" class="tsd-kind-icon">ISelect<wbr>Query</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/querylanguage.raw.iselectquerycondition.html" class="tsd-kind-icon">ISelect<wbr>Query<wbr>Condition</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Type aliases</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="querylanguage.raw.html#searchquery" class="tsd-kind-icon">Search<wbr>Query</a></li>
 							<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="querylanguage.raw.html#selectqueryorcondition" class="tsd-kind-icon">Select<wbr>Query<wbr>OrCondition</a></li>
 						</ul>
 					</section>
@@ -949,12 +953,22 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Type aliases</h2>
 			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-				<a name="selectqueryorcondition" class="tsd-anchor"></a>
-				<h3>Select<wbr>Query<wbr>OrCondition</h3>
-				<div class="tsd-signature tsd-kind-icon">Select<wbr>Query<wbr>OrCondition<span class="tsd-signature-symbol">:</span> <a href="../interfaces/querylanguage.raw.selectquery.html" class="tsd-signature-type">SelectQuery</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/querylanguage.raw.selectquerycondition.html" class="tsd-signature-type">SelectQueryCondition</a></div>
+				<a name="searchquery" class="tsd-anchor"></a>
+				<h3>Search<wbr>Query</h3>
+				<div class="tsd-signature tsd-kind-icon">Search<wbr>Query<span class="tsd-signature-symbol">:</span> <a href="querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../classes/entityuid.html" class="tsd-signature-type">EntityUid</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/types/queryLanguage.ts#L168">types/queryLanguage.ts:168</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/types/queryLanguage.ts#L169">types/queryLanguage.ts:169</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+				<a name="selectqueryorcondition" class="tsd-anchor"></a>
+				<h3>Select<wbr>Query<wbr>OrCondition</h3>
+				<div class="tsd-signature tsd-kind-icon">Select<wbr>Query<wbr>OrCondition<span class="tsd-signature-symbol">:</span> <a href="../interfaces/querylanguage.raw.iselectquery.html" class="tsd-signature-type">ISelectQuery</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/querylanguage.raw.iselectquerycondition.html" class="tsd-signature-type">ISelectQueryCondition</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/types/queryLanguage.ts#L168">types/queryLanguage.ts:168</a></li>
 					</ul>
 				</aside>
 			</section>

@@ -912,6 +912,36 @@ img { max-width: 100%; }
 		<li class="current tsd-kind-class">
 			<a href="webapiadapter.html" class="tsd-kind-icon">Web<wbr>Api<wbr>Adapter</a>
 			<ul>
+				<li class=" tsd-kind-enum tsd-parent-kind-class tsd-is-static">
+					<a href="../enums/webapiadapter.ehttpverb.html" class="tsd-kind-icon">EHttp<wbr>Verb</a>
+				</li>
+				<li class=" tsd-kind-interface tsd-parent-kind-class">
+					<a href="../interfaces/webapiadapter.iapidescription.html" class="tsd-kind-icon">IApi<wbr>Description</a>
+				</li>
+				<li class=" tsd-kind-interface tsd-parent-kind-class">
+					<a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-kind-icon">IError<wbr>Message</a>
+				</li>
+				<li class=" tsd-kind-interface tsd-parent-kind-class">
+					<a href="../interfaces/webapiadapter.ieventprovider.html" class="tsd-kind-icon">IEvent<wbr>Provider</a>
+				</li>
+				<li class=" tsd-kind-interface tsd-parent-kind-class">
+					<a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-kind-icon">IQuery<wbr>Descriptor</a>
+				</li>
+				<li class=" tsd-kind-interface tsd-parent-kind-class">
+					<a href="../interfaces/webapiadapter.iwebapiadapterconfig.html" class="tsd-kind-icon">IWeb<wbr>Api<wbr>Adapter<wbr>Config</a>
+				</li>
+				<li class=" tsd-kind-interface tsd-parent-kind-class">
+					<a href="../interfaces/webapiadapter.iwebapiadapterinternalconfig.html" class="tsd-kind-icon">IWeb<wbr>Api<wbr>Adapter<wbr>Internal<wbr>Config</a>
+				</li>
+				<li class=" tsd-kind-interface tsd-parent-kind-class">
+					<a href="../interfaces/webapiadapter.ixhrresponse.html" class="tsd-kind-icon">IXhr<wbr>Response</a>
+				</li>
+				<li class=" tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+					<a href="webapiadapter.html#ieventproviderfactory" class="tsd-kind-icon">IEvent<wbr>Provider<wbr>Factory</a>
+				</li>
+				<li class=" tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+					<a href="webapiadapter.html#tentitiesjsonresponse" class="tsd-kind-icon">TEntities<wbr>Json<wbr>Response</a>
+				</li>
 				<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<a href="webapiadapter.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
@@ -950,6 +980,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a href="webapiadapter.html#apiquery" class="tsd-kind-icon">api<wbr>Query</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a href="webapiadapter.html#beforequery" class="tsd-kind-icon">before<wbr>Query</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a href="webapiadapter.html#configurecollection" class="tsd-kind-icon">configure<wbr>Collection</a>
@@ -1026,14 +1059,20 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a href="webapiadapter.html#waitready" class="tsd-kind-icon">wait<wbr>Ready</a>
 				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
 					<a href="webapiadapter.html#getmessage" class="tsd-kind-icon">get<wbr>Message</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
 					<a href="webapiadapter.html#getqueryobject" class="tsd-kind-icon">get<wbr>Query<wbr>Object</a>
 				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="webapiadapter.html#handleerror" class="tsd-kind-icon">handle<wbr>Error</a>
+				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
 					<a href="webapiadapter.html#maybeaddidhashtoentities" class="tsd-kind-icon">maybe<wbr>Add<wbr>IdHash<wbr>ToEntities</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+					<a href="webapiadapter.html#normalizefieldquery" class="tsd-kind-icon">normalize<wbr>Field<wbr>Query</a>
 				</li>
 				<li class=" tsd-kind-object-literal tsd-parent-kind-class tsd-is-protected tsd-is-static">
 					<a href="webapiadapter.html#httperrorfactories" class="tsd-kind-icon">http<wbr>Error<wbr>Factories</a>
@@ -1051,7 +1090,7 @@ img { max-width: 100%; }
 				</div>
 				<dl class="tsd-comment-tags">
 					<dt>see</dt>
-					<dd><p><a href="https://www.npmjs.com/package/@diaspora/plugin-server">https://www.npmjs.com/package/@diaspora/plugin-server</a> Diaspora Server plugin: Package built on Diaspora &amp; Express.js to easily configure HTTP APIs compatible with this adapter.</p>
+					<dd><p><a href="https://www.npmjs.com/package/%40diaspora/plugin-server">https://www.npmjs.com/package/%40diaspora/plugin-server</a> Diaspora Server plugin: Package built on Diaspora &amp; Express.js to easily configure HTTP APIs compatible with this adapter.</p>
 					</dd>
 				</dl>
 			</div>
@@ -1080,13 +1119,38 @@ img { max-width: 100%; }
 		<section class="tsd-panel">
 			<h3>Implements</h3>
 			<ul class="tsd-hierarchy">
-				<li><a href="../interfaces/datasourcequerier.html" class="tsd-signature-type">DataSourceQuerier</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li><a href="../interfaces/idatasourcequerier.html" class="tsd-signature-type">IDataSourceQuerier</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
+					<section class="tsd-index-section ">
+						<h3>Enumerations</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-enum tsd-parent-kind-class tsd-is-static"><a href="../enums/webapiadapter.ehttpverb.html" class="tsd-kind-icon">EHttp<wbr>Verb</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
+						<h3>Interfaces</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.iapidescription.html" class="tsd-kind-icon">IApi<wbr>Description</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-kind-icon">IError<wbr>Message</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.ieventprovider.html" class="tsd-kind-icon">IEvent<wbr>Provider</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-kind-icon">IQuery<wbr>Descriptor</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.iwebapiadapterconfig.html" class="tsd-kind-icon">IWeb<wbr>Api<wbr>Adapter<wbr>Config</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.iwebapiadapterinternalconfig.html" class="tsd-kind-icon">IWeb<wbr>Api<wbr>Adapter<wbr>Internal<wbr>Config</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.ixhrresponse.html" class="tsd-kind-icon">IXhr<wbr>Response</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
+						<h3>Type aliases</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-type-alias tsd-parent-kind-class tsd-is-static"><a href="webapiadapter.html#ieventproviderfactory" class="tsd-kind-icon">IEvent<wbr>Provider<wbr>Factory</a></li>
+							<li class="tsd-kind-type-alias tsd-parent-kind-class tsd-is-static"><a href="webapiadapter.html#tentitiesjsonresponse" class="tsd-kind-icon">TEntities<wbr>Json<wbr>Response</a></li>
+						</ul>
+					</section>
 					<section class="tsd-index-section ">
 						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
@@ -1118,6 +1182,7 @@ img { max-width: 100%; }
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="webapiadapter.html#apiquery" class="tsd-kind-icon">api<wbr>Query</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="webapiadapter.html#beforequery" class="tsd-kind-icon">before<wbr>Query</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="webapiadapter.html#configurecollection" class="tsd-kind-icon">configure<wbr>Collection</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="webapiadapter.html#deletemany" class="tsd-kind-icon">delete<wbr>Many</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="webapiadapter.html#deleteone" class="tsd-kind-icon">delete<wbr>One</a></li>
@@ -1143,9 +1208,11 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="webapiadapter.html#updatemany" class="tsd-kind-icon">update<wbr>Many</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="webapiadapter.html#updateone" class="tsd-kind-icon">update<wbr>One</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="webapiadapter.html#waitready" class="tsd-kind-icon">wait<wbr>Ready</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="webapiadapter.html#getmessage" class="tsd-kind-icon">get<wbr>Message</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="webapiadapter.html#getmessage" class="tsd-kind-icon">get<wbr>Message</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="webapiadapter.html#getqueryobject" class="tsd-kind-icon">get<wbr>Query<wbr>Object</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="webapiadapter.html#handleerror" class="tsd-kind-icon">handle<wbr>Error</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="webapiadapter.html#maybeaddidhashtoentities" class="tsd-kind-icon">maybe<wbr>Add<wbr>IdHash<wbr>ToEntities</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static"><a href="webapiadapter.html#normalizefieldquery" class="tsd-kind-icon">normalize<wbr>Field<wbr>Query</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section tsd-is-private-protected">
@@ -1158,19 +1225,63 @@ img { max-width: 100%; }
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Type aliases</h2>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+				<a name="ieventproviderfactory" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> IEvent<wbr>Provider<wbr>Factory</h3>
+				<div class="tsd-signature tsd-kind-icon">IEvent<wbr>Provider<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L578">adapters/webApi/adapter.ts:578</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-siganture">
+							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.ieventprovider.html" class="tsd-signature-type">IEventProvider</a></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-parameters-title">Parameters</h4>
+									<ul class="tsd-parameters">
+										<li>
+											<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+										</li>
+									</ul>
+									<h4 class="tsd-returns-title">Returns <a href="../interfaces/webapiadapter.ieventprovider.html" class="tsd-signature-type">IEventProvider</a></h4>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+				<a name="tentitiesjsonresponse" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> TEntities<wbr>Json<wbr>Response</h3>
+				<div class="tsd-signature tsd-kind-icon">TEntities<wbr>Json<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L602">adapters/webApi/adapter.ts:602</a></li>
+					</ul>
+				</aside>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Constructors</h2>
 			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Web<wbr>Api<wbr>Adapter<span class="tsd-signature-symbol">(</span>dataSourceName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, config<span class="tsd-signature-symbol">: </span><a href="../interfaces/iwebapiadapterinternalconfig.html" class="tsd-signature-type">IWebApiAdapterInternalConfig</a>, eventProviders<span class="tsd-signature-symbol">?: </span><a href="../interfaces/ieventprovider.html" class="tsd-signature-type">IEventProvider</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="webapiadapter.html" class="tsd-signature-type">WebApiAdapter</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Web<wbr>Api<wbr>Adapter<span class="tsd-signature-symbol">(</span>dataSourceName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, config<span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.iwebapiadapterinternalconfig.html" class="tsd-signature-type">IWebApiAdapterInternalConfig</a>, eventProviders<span class="tsd-signature-symbol">?: </span><a href="../interfaces/webapiadapter.ieventprovider.html" class="tsd-signature-type">IEventProvider</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="webapiadapter.html" class="tsd-signature-type">WebApiAdapter</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#constructor">constructor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L107">adapters/webApi/adapter.ts:107</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L46">adapters/webApi/adapter.ts:46</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1189,7 +1300,7 @@ img { max-width: 100%; }
 								<h5>dataSourceName: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>config: <a href="../interfaces/iwebapiadapterinternalconfig.html" class="tsd-signature-type">IWebApiAdapterInternalConfig</a></h5>
+								<h5>config: <a href="../interfaces/webapiadapter.iwebapiadapterinternalconfig.html" class="tsd-signature-type">IWebApiAdapterInternalConfig</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Configuration of this adapter.</p>
@@ -1197,7 +1308,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> eventProviders: <a href="../interfaces/ieventprovider.html" class="tsd-signature-type">IEventProvider</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[DefaultQueryTransformerFactory()]</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> eventProviders: <a href="../interfaces/webapiadapter.ieventprovider.html" class="tsd-signature-type">IEventProvider</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[DefaultQueryTransformerFactory(),]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Event providers that will catch requests and pre/post process around them.</p>
@@ -1235,7 +1346,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#_classentity">_classEntity</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L91">adapters/base/adapter.ts:91</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L95">adapters/base/adapter.ts:95</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1245,7 +1356,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">base<wbr>End<wbr>Point<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L100">adapters/webApi/adapter.ts:100</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L39">adapters/webApi/adapter.ts:39</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1256,7 +1367,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#error">error</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L72">adapters/base/adapter.ts:72</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L76">adapters/base/adapter.ts:76</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1277,7 +1388,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#filters">filters</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L51">adapters/base/adapter.ts:51</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L55">adapters/base/adapter.ts:55</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1298,7 +1409,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#name">name</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L92">adapters/base/adapter.ts:92</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L96">adapters/base/adapter.ts:96</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1308,7 +1419,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">plural<wbr>Apis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L107">adapters/webApi/adapter.ts:107</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L46">adapters/webApi/adapter.ts:46</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1337,7 +1448,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#remaps">remaps</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L58">adapters/base/adapter.ts:58</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L62">adapters/base/adapter.ts:62</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1358,7 +1469,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#remapsinverted">remapsInverted</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L65">adapters/base/adapter.ts:65</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L69">adapters/base/adapter.ts:69</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1379,7 +1490,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#state">state</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L79">adapters/base/adapter.ts:79</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L83">adapters/base/adapter.ts:83</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1403,7 +1514,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#classentity">classEntity</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L42">adapters/base/adapter.ts:42</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L46">adapters/base/adapter.ts:46</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1414,14 +1525,14 @@ img { max-width: 100%; }
 				<a name="apiquery" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> api<wbr>Query</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">api<wbr>Query<span class="tsd-signature-symbol">(</span>verb<span class="tsd-signature-symbol">: </span><a href="../enums/ehttpverb.html" class="tsd-signature-type">EHttpVerb</a>, endPoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, queryObject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
-					<li class="tsd-signature tsd-kind-icon">api<wbr>Query<span class="tsd-signature-symbol">(</span>verb<span class="tsd-signature-symbol">: </span><a href="../enums/ehttpverb.html" class="tsd-signature-type">EHttpVerb</a>, endPoint<span class="tsd-signature-symbol">: </span><a href="../interfaces/pluralendpoint.html" class="tsd-signature-type">PluralEndpoint</a>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, queryObject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">api<wbr>Query<span class="tsd-signature-symbol">(</span>verb<span class="tsd-signature-symbol">: </span><a href="../enums/webapiadapter.ehttpverb.html" class="tsd-signature-type">EHttpVerb</a>, endPoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, queryObject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">api<wbr>Query<span class="tsd-signature-symbol">(</span>verb<span class="tsd-signature-symbol">: </span><a href="../enums/webapiadapter.ehttpverb.html" class="tsd-signature-type">EHttpVerb</a>, endPoint<span class="tsd-signature-symbol">: </span><a href="../interfaces/ipluralendpoint.html" class="tsd-signature-type">IPluralEndpoint</a>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, queryObject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L462">adapters/webApi/adapter.ts:462</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L455">adapters/webApi/adapter.ts:455</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1436,7 +1547,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>verb: <a href="../enums/ehttpverb.html" class="tsd-signature-type">EHttpVerb</a></h5>
+								<h5>verb: <a href="../enums/webapiadapter.ehttpverb.html" class="tsd-signature-type">EHttpVerb</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Valid HTTP verb. This adapter uses <code>GET</code>, <code>POST</code>, <code>PATCH</code> &amp; <code>DELETE</code>.</p>
 								</div>
@@ -1466,16 +1577,16 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L468">adapters/webApi/adapter.ts:468</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L461">adapters/webApi/adapter.ts:461</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>verb: <a href="../enums/ehttpverb.html" class="tsd-signature-type">EHttpVerb</a></h5>
+								<h5>verb: <a href="../enums/webapiadapter.ehttpverb.html" class="tsd-signature-type">EHttpVerb</a></h5>
 							</li>
 							<li>
-								<h5>endPoint: <a href="../interfaces/pluralendpoint.html" class="tsd-signature-type">PluralEndpoint</a></h5>
+								<h5>endPoint: <a href="../interfaces/ipluralendpoint.html" class="tsd-signature-type">IPluralEndpoint</a></h5>
 							</li>
 							<li>
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></h5>
@@ -1484,7 +1595,38 @@ img { max-width: 100%; }
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> queryObject: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+				<a name="beforequery" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> before<wbr>Query</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<li class="tsd-signature tsd-kind-icon">before<wbr>Query<span class="tsd-signature-symbol">(</span>apiDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-signature-type">IQueryDescriptor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-signature-type">IQueryDescriptor</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L96">adapters/webApi/adapter.ts:96</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Triggers the <code>beforeQuery</code> event that serves to generate the API call description</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>apiDesc: <a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-signature-type">IQueryDescriptor</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Raw description sent by the adapter</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-signature-type">IQueryDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1497,10 +1639,10 @@ img { max-width: 100%; }
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
-							<p>Implementation of <a href="../interfaces/datasourcequerier.html">DataSourceQuerier</a>.<a href="../interfaces/datasourcequerier.html#configurecollection">configureCollection</a></p>
+							<p>Implementation of <a href="../interfaces/idatasourcequerier.html">IDataSourceQuerier</a>.<a href="../interfaces/idatasourcequerier.html#configurecollection">configureCollection</a></p>
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#configurecollection">configureCollection</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L465">adapters/base/adapter.ts:465</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L462">adapters/base/adapter.ts:462</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1533,14 +1675,14 @@ img { max-width: 100%; }
 				<a name="deletemany" class="tsd-anchor"></a>
 				<h3>delete<wbr>Many</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">delete<wbr>Many<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">delete<wbr>Many<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#deletemany">deleteMany</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L409">adapters/webApi/adapter.ts:409</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L389">adapters/webApi/adapter.ts:389</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1565,13 +1707,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a></h5>
+								<h5>queryFind: <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash representing entities to find.</p>
 								</div>
 							</li>
 							<li>
-								<h5>options: <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h5>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash of options.</p>
 								</div>
@@ -1586,14 +1728,14 @@ img { max-width: 100%; }
 				<a name="deleteone" class="tsd-anchor"></a>
 				<h3>delete<wbr>One</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">delete<wbr>One<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">delete<wbr>One<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#deleteone">deleteOne</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L386">adapters/webApi/adapter.ts:386</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L358">adapters/webApi/adapter.ts:358</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1618,13 +1760,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a></h5>
+								<h5>queryFind: <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash representing the entity to find.</p>
 								</div>
 							</li>
 							<li>
-								<h5>options: <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h5>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash of options.</p>
 								</div>
@@ -1682,14 +1824,14 @@ img { max-width: 100%; }
 				<a name="findmany" class="tsd-anchor"></a>
 				<h3>find<wbr>Many</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">find<wbr>Many<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">find<wbr>Many<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#findmany">findMany</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L288">adapters/webApi/adapter.ts:288</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L245">adapters/webApi/adapter.ts:245</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1714,13 +1856,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a></h5>
+								<h5>queryFind: <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash representing entities to find.</p>
 								</div>
 							</li>
 							<li>
-								<h5>options: <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h5>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash of options.</p>
 								</div>
@@ -1735,14 +1877,14 @@ img { max-width: 100%; }
 				<a name="findone" class="tsd-anchor"></a>
 				<h3>find<wbr>One</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">find<wbr>One<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">find<wbr>One<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#findone">findOne</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L251">adapters/webApi/adapter.ts:251</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L209">adapters/webApi/adapter.ts:209</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1767,13 +1909,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a></h5>
+								<h5>queryFind: <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash representing the entity to find.</p>
 								</div>
 							</li>
 							<li>
-								<h5>options: <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h5>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash of options.</p>
 								</div>
@@ -1794,7 +1936,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L446">adapters/webApi/adapter.ts:446</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L434">adapters/webApi/adapter.ts:434</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1838,13 +1980,13 @@ img { max-width: 100%; }
 				<a name="getpluralendpoint" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Plural<wbr>Endpoint</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Plural<wbr>Endpoint<span class="tsd-signature-symbol">(</span>endpoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/pluralendpoint.html" class="tsd-signature-type">PluralEndpoint</a></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Plural<wbr>Endpoint<span class="tsd-signature-symbol">(</span>endpoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ipluralendpoint.html" class="tsd-signature-type">IPluralEndpoint</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L525">adapters/webApi/adapter.ts:525</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L513">adapters/webApi/adapter.ts:513</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1869,7 +2011,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/pluralendpoint.html" class="tsd-signature-type">PluralEndpoint</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="../interfaces/ipluralendpoint.html" class="tsd-signature-type">IPluralEndpoint</a></h4>
 					</li>
 				</ul>
 			</section>
@@ -1951,13 +2093,13 @@ img { max-width: 100%; }
 				<a name="httprequest" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagAbstract">Abstract</span> http<wbr>Request</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-					<li class="tsd-signature tsd-kind-icon">http<wbr>Request<span class="tsd-signature-symbol">(</span>method<span class="tsd-signature-symbol">: </span><a href="../enums/ehttpverb.html" class="tsd-signature-type">EHttpVerb</a>, endPoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span>, queryObject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#tentitiesjsonresponse" class="tsd-signature-type">TEntitiesJsonResponse</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">http<wbr>Request<span class="tsd-signature-symbol">(</span>method<span class="tsd-signature-symbol">: </span><a href="../enums/webapiadapter.ehttpverb.html" class="tsd-signature-type">EHttpVerb</a>, endPoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, queryObject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="webapiadapter.html#tentitiesjsonresponse" class="tsd-signature-type">TEntitiesJsonResponse</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L430">adapters/webApi/adapter.ts:430</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L418">adapters/webApi/adapter.ts:418</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1968,7 +2110,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>method: <a href="../enums/ehttpverb.html" class="tsd-signature-type">EHttpVerb</a></h5>
+								<h5>method: <a href="../enums/webapiadapter.ehttpverb.html" class="tsd-signature-type">EHttpVerb</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>HTTP verb that describes the request type</p>
 								</div>
@@ -1980,7 +2122,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Object to send</p>
 								</div>
@@ -1992,7 +2134,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#tentitiesjsonresponse" class="tsd-signature-type">TEntitiesJsonResponse</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="webapiadapter.html#tentitiesjsonresponse" class="tsd-signature-type">TEntitiesJsonResponse</a><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -2007,7 +2149,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#insertmany">insertMany</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L225">adapters/webApi/adapter.ts:225</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L183">adapters/webApi/adapter.ts:183</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2054,7 +2196,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#insertone">insertOne</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L204">adapters/webApi/adapter.ts:204</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L158">adapters/webApi/adapter.ts:158</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2094,14 +2236,14 @@ img { max-width: 100%; }
 				<a name="normalizeoptions" class="tsd-anchor"></a>
 				<h3>normalize<wbr>Options</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Options<span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></li>
+					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Options<span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#normalizeoptions">normalizeOptions</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L225">adapters/base/adapter.ts:225</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L228">adapters/base/adapter.ts:228</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2126,10 +2268,10 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> opts: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> opts: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h4>
 						<p>Transformed options (also called <code>canonical options</code>).</p>
 					</li>
 				</ul>
@@ -2138,14 +2280,14 @@ img { max-width: 100%; }
 				<a name="normalizequery" class="tsd-anchor"></a>
 				<h3>normalize<wbr>Query</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Query<span class="tsd-signature-symbol">(</span>originalQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></li>
+					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Query<span class="tsd-signature-symbol">(</span>originalQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#normalizequery">normalizeQuery</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L248">adapters/base/adapter.ts:248</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L284">adapters/base/adapter.ts:284</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2164,7 +2306,7 @@ img { max-width: 100%; }
 								<h5>originalQuery: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
 							</li>
 							<li>
-								<h5>options: <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h5>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="../modules/querylanguage.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h4>
@@ -2420,14 +2562,14 @@ img { max-width: 100%; }
 				<a name="remapinput" class="tsd-anchor"></a>
 				<h3>remap<wbr>Input</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">remap<wbr>Input&lt;T&gt;<span class="tsd-signature-symbol">(</span>tableName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					<li class="tsd-signature tsd-kind-icon">remap<wbr>Input&lt;TProps&gt;<span class="tsd-signature-symbol">(</span>tableName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TProps</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TProps</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#remapinput">remapInput</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L195">adapters/base/adapter.ts:195</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L198">adapters/base/adapter.ts:198</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2449,7 +2591,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
 						<ul class="tsd-type-parameters">
 							<li>
-								<h4>T<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
+								<h4>TProps<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
 							</li>
 						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2458,10 +2600,10 @@ img { max-width: 100%; }
 								<h5>tableName: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>query: <span class="tsd-signature-type">T</span></h5>
+								<h5>query: <span class="tsd-signature-type">TProps</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TProps</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -2469,14 +2611,14 @@ img { max-width: 100%; }
 				<a name="remapoutput" class="tsd-anchor"></a>
 				<h3>remap<wbr>Output</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">remap<wbr>Output&lt;T&gt;<span class="tsd-signature-symbol">(</span>tableName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					<li class="tsd-signature tsd-kind-icon">remap<wbr>Output&lt;TProps&gt;<span class="tsd-signature-symbol">(</span>tableName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TProps</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TProps</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#remapoutput">remapOutput</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L209">adapters/base/adapter.ts:209</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L212">adapters/base/adapter.ts:212</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2498,7 +2640,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
 						<ul class="tsd-type-parameters">
 							<li>
-								<h4>T<span class="tsd-signature-symbol">: </span><a href="../interfaces/ienumeratedhash.html" class="tsd-signature-type">IEnumeratedHash</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+								<h4>TProps<span class="tsd-signature-symbol">: </span><a href="../interfaces/ienumeratedhash.html" class="tsd-signature-type">IEnumeratedHash</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 							</li>
 						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2507,10 +2649,10 @@ img { max-width: 100%; }
 								<h5>tableName: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>query: <span class="tsd-signature-type">T</span></h5>
+								<h5>query: <span class="tsd-signature-type">TProps</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TProps</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -2518,13 +2660,13 @@ img { max-width: 100%; }
 				<a name="sendrequest" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> send<wbr>Request</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">send<wbr>Request<span class="tsd-signature-symbol">(</span>verb<span class="tsd-signature-symbol">: </span><a href="../enums/ehttpverb.html" class="tsd-signature-type">EHttpVerb</a>, endPoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, body<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, queryString<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">send<wbr>Request<span class="tsd-signature-symbol">(</span>verb<span class="tsd-signature-symbol">: </span><a href="../enums/webapiadapter.ehttpverb.html" class="tsd-signature-type">EHttpVerb</a>, endPoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, body<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, queryString<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L498">adapters/webApi/adapter.ts:498</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L491">adapters/webApi/adapter.ts:491</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2543,7 +2685,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>verb: <a href="../enums/ehttpverb.html" class="tsd-signature-type">EHttpVerb</a></h5>
+								<h5>verb: <a href="../enums/webapiadapter.ehttpverb.html" class="tsd-signature-type">EHttpVerb</a></h5>
 							</li>
 							<li>
 								<h5>endPoint: <span class="tsd-signature-type">string</span></h5>
@@ -2573,7 +2715,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#tojson">toJSON</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L310">adapters/base/adapter.ts:310</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L307">adapters/base/adapter.ts:307</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2590,14 +2732,14 @@ img { max-width: 100%; }
 				<a name="updatemany" class="tsd-anchor"></a>
 				<h3>update<wbr>Many</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">update<wbr>Many<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a>, update<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">update<wbr>Many<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>, update<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#updatemany">updateMany</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L357">adapters/webApi/adapter.ts:357</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L321">adapters/webApi/adapter.ts:321</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2622,7 +2764,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a></h5>
+								<h5>queryFind: <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash representing entities to find.</p>
 								</div>
@@ -2634,7 +2776,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>options: <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h5>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash of options.</p>
 								</div>
@@ -2649,14 +2791,14 @@ img { max-width: 100%; }
 				<a name="updateone" class="tsd-anchor"></a>
 				<h3>update<wbr>One</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">update<wbr>One<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a>, update<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">update<wbr>One<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>, update<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#updateone">updateOne</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L326">adapters/webApi/adapter.ts:326</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L281">adapters/webApi/adapter.ts:281</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2681,7 +2823,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a></h5>
+								<h5>queryFind: <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash representing the entity to find.</p>
 								</div>
@@ -2693,7 +2835,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>options: <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h5>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Hash of options.</p>
 								</div>
@@ -2713,10 +2855,10 @@ img { max-width: 100%; }
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
-							<p>Implementation of <a href="../interfaces/datasourcequerier.html">DataSourceQuerier</a>.<a href="../interfaces/datasourcequerier.html#waitready">waitReady</a></p>
+							<p>Implementation of <a href="../interfaces/idatasourcequerier.html">IDataSourceQuerier</a>.<a href="../interfaces/idatasourcequerier.html#waitready">waitReady</a></p>
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#waitready">waitReady</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/base/adapter.ts#L172">adapters/base/adapter.ts:172</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L176">adapters/base/adapter.ts:176</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2740,32 +2882,33 @@ img { max-width: 100%; }
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
 				<a name="getmessage" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Message</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Message<span class="tsd-signature-symbol">(</span>xhr<span class="tsd-signature-symbol">: </span><a href="../interfaces/ixhrresponse.html" class="tsd-signature-type">IXhrResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Message</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Message<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L151">adapters/webApi/adapter.ts:151</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L107">adapters/webApi/adapter.ts:107</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Gets the field &#39;message&#39; in an XHR
-								TODO: Check if relevant</p>
+								<p>Gets the field &#39;message&#39; in an XHR</p>
 							</div>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>xhr: <a href="../interfaces/ixhrresponse.html" class="tsd-signature-type">IXhrResponse</a></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>XHR to get field from</p>
-								</div>
+								<h5>response: <span class="tsd-signature-type">object</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5><span class="tsd-flag ts-flagOptional">Optional</span> message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+									</li>
+								</ul>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -2776,13 +2919,13 @@ img { max-width: 100%; }
 				<a name="getqueryobject" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Query<wbr>Object</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Query<wbr>Object<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Query<wbr>Object<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L163">adapters/webApi/adapter.ts:163</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L117">adapters/webApi/adapter.ts:117</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2793,13 +2936,13 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>queryFind: <a href="../interfaces/querylanguage.selectquery.html" class="tsd-signature-type">SelectQuery</a></h5>
+								<h5>queryFind: <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Selection query object</p>
 								</div>
 							</li>
 							<li>
-								<h5>options: <a href="../interfaces/querylanguage.queryoptions.html" class="tsd-signature-type">QueryOptions</a></h5>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options object</p>
 								</div>
@@ -2812,17 +2955,60 @@ img { max-width: 100%; }
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-				<a name="maybeaddidhashtoentities" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> maybe<wbr>Add<wbr>IdHash<wbr>ToEntities</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">maybe<wbr>Add<wbr>IdHash<wbr>ToEntities<span class="tsd-signature-symbol">(</span>entities<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">[]</span>, adapter<span class="tsd-signature-symbol">: </span><a href="webapiadapter.html" class="tsd-signature-type">WebApiAdapter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span></li>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="handleerror" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> handle<wbr>Error</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">handle<wbr>Error<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-signature-type">IErrorMessage</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, statusCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L185">adapters/webApi/adapter.ts:185</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L525">adapters/webApi/adapter.ts:525</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Generates the error corresponding to the status code &amp; message.</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>response: <a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-signature-type">IErrorMessage</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Object containing the raw response of the server</p>
+								</div>
+							</li>
+							<li>
+								<h5>statusCode: <span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Status code of the response</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Error</span></h4>
+						<p>the constructed error to throw</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+				<a name="maybeaddidhashtoentities" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> maybe<wbr>Add<wbr>IdHash<wbr>ToEntities</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">maybe<wbr>Add<wbr>IdHash<wbr>ToEntities<span class="tsd-signature-symbol">(</span>entities<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, adapter<span class="tsd-signature-symbol">: </span><a href="webapiadapter.html" class="tsd-signature-type">WebApiAdapter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L139">adapters/webApi/adapter.ts:139</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2833,7 +3019,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>entities: <a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">[]</span></h5>
+								<h5>entities: <a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Entities received</p>
 								</div>
@@ -2849,6 +3035,43 @@ img { max-width: 100%; }
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+				<a name="normalizefieldquery" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> normalize<wbr>Field<wbr>Query</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Field<wbr>Query<span class="tsd-signature-symbol">(</span>attrSearch<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.raw.iselectquery.html" class="tsd-signature-type">ISelectQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#normalizefieldquery">normalizeFieldQuery</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L252">adapters/base/adapter.ts:252</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Normalize a single field query and checks types</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>attrSearch: <a href="../interfaces/querylanguage.raw.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Search query to apply to the field</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h4>
+					</li>
+				</ul>
+			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
 			<h2>Object literals</h2>
@@ -2858,26 +3081,29 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">http<wbr>Error<wbr>Factories<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L83">adapters/webApi/adapter.ts:83</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L18">adapters/webApi/adapter.ts:18</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
 					<a name="httperrorfactories.400" class="tsd-anchor"></a>
 					<h3>400</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
-						<li class="tsd-signature tsd-kind-icon">400<span class="tsd-signature-symbol">(</span>xhr<span class="tsd-signature-symbol">: </span><a href="../interfaces/ixhrresponse.html" class="tsd-signature-type">IXhrResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span></li>
+						<li class="tsd-signature tsd-kind-icon">400<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-signature-type">IErrorMessage</a>, statusCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L84">adapters/webApi/adapter.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L19">adapters/webApi/adapter.ts:19</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>xhr: <a href="../interfaces/ixhrresponse.html" class="tsd-signature-type">IXhrResponse</a></h5>
+									<h5>response: <a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-signature-type">IErrorMessage</a></h5>
+								</li>
+								<li>
+									<h5>statusCode: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Error</span></h4>
@@ -2888,19 +3114,22 @@ img { max-width: 100%; }
 					<a name="httperrorfactories.404" class="tsd-anchor"></a>
 					<h3>404</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
-						<li class="tsd-signature tsd-kind-icon">404<span class="tsd-signature-symbol">(</span>xhr<span class="tsd-signature-symbol">: </span><a href="../interfaces/ixhrresponse.html" class="tsd-signature-type">IXhrResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span></li>
+						<li class="tsd-signature tsd-kind-icon">404<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-signature-type">IErrorMessage</a>, statusCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L90">adapters/webApi/adapter.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L25">adapters/webApi/adapter.ts:25</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>xhr: <a href="../interfaces/ixhrresponse.html" class="tsd-signature-type">IXhrResponse</a></h5>
+									<h5>response: <a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-signature-type">IErrorMessage</a></h5>
+								</li>
+								<li>
+									<h5>statusCode: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Error</span></h4>
@@ -2911,19 +3140,22 @@ img { max-width: 100%; }
 					<a name="httperrorfactories._" class="tsd-anchor"></a>
 					<h3>_</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
-						<li class="tsd-signature tsd-kind-icon">_<span class="tsd-signature-symbol">(</span>xhr<span class="tsd-signature-symbol">: </span><a href="../interfaces/ixhrresponse.html" class="tsd-signature-type">IXhrResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span></li>
+						<li class="tsd-signature tsd-kind-icon">_<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-signature-type">IErrorMessage</a>, statusCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/webApi/adapter.ts#L92">adapters/webApi/adapter.ts:92</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L31">adapters/webApi/adapter.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>xhr: <a href="../interfaces/ixhrresponse.html" class="tsd-signature-type">IXhrResponse</a></h5>
+									<h5>response: <a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-signature-type">IErrorMessage</a></h5>
+								</li>
+								<li>
+									<h5>statusCode: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Error</span></h4>

@@ -955,9 +955,6 @@ img { max-width: 100%; }
 					<a href="model.html#deletemany" class="tsd-kind-icon">delete<wbr>Many</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="model.html#ensurequeryobject" class="tsd-kind-icon">ensure<wbr>Query<wbr>Object</a>
-				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="model.html#find" class="tsd-kind-icon">find</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -1053,7 +1050,6 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="model.html#delete" class="tsd-kind-icon">delete</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="model.html#deletemany" class="tsd-kind-icon">delete<wbr>Many</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="model.html#ensurequeryobject" class="tsd-kind-icon">ensure<wbr>Query<wbr>Object</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="model.html#find" class="tsd-kind-icon">find</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="model.html#findmany" class="tsd-kind-icon">find<wbr>Many</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="model.html#getdatasource" class="tsd-kind-icon">get<wbr>Data<wbr>Source</a></li>
@@ -1078,13 +1074,13 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Model<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/modeldescriptionraw.html" class="tsd-signature-type">ModelDescriptionRaw</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Model<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/raw.imodeldescription.html" class="tsd-signature-type">IModelDescription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L53">model.ts:53</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L65">model.ts:65</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1108,7 +1104,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>modelDesc: <a href="../interfaces/modeldescriptionraw.html" class="tsd-signature-type">ModelDescriptionRaw</a></h5>
+								<h5>modelDesc: <a href="../interfaces/raw.imodeldescription.html" class="tsd-signature-type">IModelDescription</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Hash representing the configuration of the model.</p>
@@ -1129,17 +1125,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_data<wbr>Sources<span class="tsd-signature-symbol">:</span> <a href="../interfaces/idatasourceregistry.html" class="tsd-signature-type">IDataSourceRegistry</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L21">model.ts:21</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L27">model.ts:27</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 				<a name="_entityfactory" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> _entity<wbr>Factory</h3>
-				<div class="tsd-signature tsd-kind-icon">_entity<wbr>Factory<span class="tsd-signature-symbol">:</span> <a href="../interfaces/entity.entityspawner.html" class="tsd-signature-type">EntitySpawner</a></div>
+				<div class="tsd-signature tsd-kind-icon">_entity<wbr>Factory<span class="tsd-signature-symbol">:</span> <a href="../interfaces/entity.ientityspawner.html" class="tsd-signature-type">IEntitySpawner</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L27">model.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L33">model.ts:33</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1149,7 +1145,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_entity<wbr>Transformers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L31">model.ts:31</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L37">model.ts:37</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1173,14 +1169,14 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">attributes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L19">model.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L25">model.ts:25</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
 					<h4>Type declaration</h4>
 					<ul class="tsd-parameters">
 						<li class="tsd-parameter-index-signature">
-							<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../globals.html#fielddescriptor" class="tsd-signature-type">FieldDescriptor</a></h5>
+							<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../modules/raw.fielddescriptor.html" class="tsd-signature-type">FieldDescriptor</a></h5>
 						</li>
 					</ul>
 				</div>
@@ -1191,17 +1187,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">default<wbr>Data<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L26">model.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L32">model.ts:32</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 				<a name="modeldesc" class="tsd-anchor"></a>
 				<h3>model<wbr>Desc</h3>
-				<div class="tsd-signature tsd-kind-icon">model<wbr>Desc<span class="tsd-signature-symbol">:</span> <a href="../interfaces/modeldescription.html" class="tsd-signature-type">ModelDescription</a></div>
+				<div class="tsd-signature tsd-kind-icon">model<wbr>Desc<span class="tsd-signature-symbol">:</span> <a href="../interfaces/imodeldescription.html" class="tsd-signature-type">IModelDescription</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L22">model.ts:22</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L28">model.ts:28</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1211,7 +1207,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L63">model.ts:63</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L74">model.ts:74</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1229,7 +1225,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">ctor<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L40">model.ts:40</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L46">model.ts:46</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1239,7 +1235,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">data<wbr>Sources<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L23">model.ts:23</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L29">model.ts:29</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1249,7 +1245,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">entity<wbr>Factory<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L28">model.ts:28</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L34">model.ts:34</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1259,7 +1255,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">entity<wbr>Transformers<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L36">model.ts:36</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L42">model.ts:42</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1270,13 +1266,13 @@ img { max-width: 100%; }
 				<a name="delete" class="tsd-anchor"></a>
 				<h3>delete</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#entityuid" class="tsd-signature-type">EntityUid</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">?: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L339">model.ts:339</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L329">model.ts:329</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1292,13 +1288,13 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#entityuid" class="tsd-signature-type">EntityUid</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> queryFind: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Query to get desired entity.</p>
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options for this query.</p>
 								</div>
@@ -1319,13 +1315,13 @@ img { max-width: 100%; }
 				<a name="deletemany" class="tsd-anchor"></a>
 				<h3>delete<wbr>Many</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">delete<wbr>Many<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">delete<wbr>Many<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">?: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L357">model.ts:357</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L350">model.ts:350</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1341,13 +1337,13 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> queryFind: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Query to get desired entities.</p>
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options for this query.</p>
 								</div>
@@ -1365,53 +1361,16 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="ensurequeryobject" class="tsd-anchor"></a>
-				<h3>ensure<wbr>Query<wbr>Object</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">ensure<wbr>Query<wbr>Object<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#entityuid" class="tsd-signature-type">EntityUid</a>, sourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L167">model.ts:167</a></li>
-							</ul>
-						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Generates a query object if the only provided parameter is an <a href="../globals.html#entityuid">EntityUid</a>.</p>
-							</div>
-						</div>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>query: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#entityuid" class="tsd-signature-type">EntityUid</a></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>Entity ID or query to potentialy transform</p>
-								</div>
-							</li>
-							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> sourceName: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;this.defaultDataSource</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>Name of the source we want to query</p>
-								</div>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="find" class="tsd-anchor"></a>
 				<h3>find</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">find<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#entityuid" class="tsd-signature-type">EntityUid</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">find<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">?: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L265">model.ts:265</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L239">model.ts:239</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1427,13 +1386,13 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#entityuid" class="tsd-signature-type">EntityUid</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> queryFind: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Query to get desired entity.</p>
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options for this query.</p>
 								</div>
@@ -1454,13 +1413,13 @@ img { max-width: 100%; }
 				<a name="findmany" class="tsd-anchor"></a>
 				<h3>find<wbr>Many</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">find<wbr>Many<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">find<wbr>Many<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">?: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L283">model.ts:283</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L258">model.ts:258</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1476,13 +1435,13 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> queryFind: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Query to get desired entities.</p>
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options for this query.</p>
 								</div>
@@ -1509,7 +1468,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L185">model.ts:185</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L150">model.ts:150</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1549,7 +1508,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L234">model.ts:234</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L204">model.ts:204</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1592,7 +1551,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L249">model.ts:249</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L221">model.ts:221</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1635,7 +1594,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L388">model.ts:388</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L385">model.ts:385</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1671,7 +1630,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L370">model.ts:370</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L367">model.ts:367</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1702,7 +1661,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L210">model.ts:210</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L180">model.ts:180</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1739,7 +1698,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L222">model.ts:222</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L192">model.ts:192</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1770,13 +1729,13 @@ img { max-width: 100%; }
 				<a name="update" class="tsd-anchor"></a>
 				<h3>update</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#entityuid" class="tsd-signature-type">EntityUid</a>, update<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, update<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L301">model.ts:301</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L278">model.ts:278</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1792,7 +1751,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#entityuid" class="tsd-signature-type">EntityUid</a></h5>
+								<h5>queryFind: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Query to get desired entity.</p>
 								</div>
@@ -1804,7 +1763,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options for this query.</p>
 								</div>
@@ -1825,13 +1784,13 @@ img { max-width: 100%; }
 				<a name="updatemany" class="tsd-anchor"></a>
 				<h3>update<wbr>Many</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">update<wbr>Many<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, update<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">update<wbr>Many<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, update<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a>, dataSourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L321">model.ts:321</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L304">model.ts:304</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1847,7 +1806,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5>queryFind: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Query to get desired entities.</p>
 								</div>
@@ -1859,7 +1818,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options for this query.</p>
 								</div>
@@ -1880,13 +1839,13 @@ img { max-width: 100%; }
 				<a name="normalizeattributesdescription" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> normalize<wbr>Attributes<wbr>Description</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Attributes<wbr>Description<span class="tsd-signature-symbol">(</span>desc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Attributes<wbr>Description<span class="tsd-signature-symbol">(</span>desc<span class="tsd-signature-symbol">: </span><a href="../interfaces/raw.iattributesdescription.html" class="tsd-signature-type">IAttributesDescription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/iattributesdescription.html" class="tsd-signature-type">IAttributesDescription</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L51">model.ts:51</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L57">model.ts:57</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1902,24 +1861,14 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>desc: <span class="tsd-signature-type">object</span></h5>
+								<h5>desc: <a href="../interfaces/raw.iattributesdescription.html" class="tsd-signature-type">IAttributesDescription</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Attributes description map to transform</p>
 								</div>
-								<ul class="tsd-parameters">
-									<li class="tsd-parameter-index-signature">
-										<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../globals.html#fielddescriptor" class="tsd-signature-type">FieldDescriptor</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
-									</li>
-								</ul>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+						<h4 class="tsd-returns-title">Returns <a href="../interfaces/iattributesdescription.html" class="tsd-signature-type">IAttributesDescription</a></h4>
 						<p>Attributes description map normalized, with properties defaulted</p>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../globals.html#fielddescriptor" class="tsd-signature-type">FieldDescriptor</a></h5>
-							</li>
-						</ul>
 					</li>
 				</ul>
 			</section>
@@ -1927,13 +1876,13 @@ img { max-width: 100%; }
 				<a name="normalizeremaps" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> normalize<wbr>Remaps</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Remaps<span class="tsd-signature-symbol">(</span>modelDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/modeldescriptionraw.html" class="tsd-signature-type">ModelDescriptionRaw</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/sourceshash.html" class="tsd-signature-type">SourcesHash</a></li>
+					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Remaps<span class="tsd-signature-symbol">(</span>modelDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/raw.imodeldescription.html" class="tsd-signature-type">IModelDescription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/isourceshash.html" class="tsd-signature-type">ISourcesHash</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/model.ts#L136">model.ts:136</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/model.ts#L113">model.ts:113</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1949,13 +1898,13 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>modelDesc: <a href="../interfaces/modeldescriptionraw.html" class="tsd-signature-type">ModelDescriptionRaw</a></h5>
+								<h5>modelDesc: <a href="../interfaces/raw.imodeldescription.html" class="tsd-signature-type">IModelDescription</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Description of the model to normalize remaps for</p>
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/sourceshash.html" class="tsd-signature-type">SourcesHash</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="../interfaces/isourceshash.html" class="tsd-signature-type">ISourcesHash</a></h4>
 					</li>
 				</ul>
 			</section>

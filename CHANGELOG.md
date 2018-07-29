@@ -1,3 +1,15 @@
+<a name="0.3.0-alpha.12"></a>
+# [0.3.0-alpha.12](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.11...v0.3.0-alpha.12) (2018-07-29)
+
+
+### Bug Fixes
+
+* **Adapters.DataAccessLayer:** Cast partially query itself ([465a2d2](https://github.com/diaspora-orm/diaspora/commit/465a2d2))
+* **Adapters.WebApiAdapter.Adapter:** Better error handling ([5e64ddd](https://github.com/diaspora-orm/diaspora/commit/5e64ddd))
+* **Adapters.WebStorageAdapter.Adapter:** Better config & errors testing ([4f84599](https://github.com/diaspora-orm/diaspora/commit/4f84599))
+
+
+
 <a name="0.3.0-alpha.11"></a>
 # [0.3.0-alpha.11](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.10...v0.3.0-alpha.11) (2018-07-26)
 

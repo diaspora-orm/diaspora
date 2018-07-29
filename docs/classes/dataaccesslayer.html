@@ -934,9 +934,6 @@ img { max-width: 100%; }
 					<a href="dataaccesslayer.html#normalizeoptions" class="tsd-kind-icon">normalize<wbr>Options</a>
 				</li>
 				<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-					<a href="dataaccesslayer.html#normalizequery" class="tsd-kind-icon">normalize<wbr>Query</a>
-				</li>
-				<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 					<a href="dataaccesslayer.html#remapinput" class="tsd-kind-icon">remap<wbr>Input</a>
 				</li>
 				<li class=" tsd-kind-get-signature tsd-parent-kind-class">
@@ -955,6 +952,9 @@ img { max-width: 100%; }
 					<a href="dataaccesslayer.html#emit" class="tsd-kind-icon">emit</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="dataaccesslayer.html#ensurequeryobject" class="tsd-kind-icon">ensure<wbr>Query<wbr>Object</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="dataaccesslayer.html#findmany" class="tsd-kind-icon">find<wbr>Many</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -971,6 +971,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="dataaccesslayer.html#insertone" class="tsd-kind-icon">insert<wbr>One</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="dataaccesslayer.html#normalizequery" class="tsd-kind-icon">normalize<wbr>Query</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a href="dataaccesslayer.html#off" class="tsd-kind-icon">off</a>
@@ -1041,7 +1044,7 @@ img { max-width: 100%; }
 		<section class="tsd-panel">
 			<h3>Implements</h3>
 			<ul class="tsd-hierarchy">
-				<li><a href="../interfaces/datasourcequerier.html" class="tsd-signature-type">DataSourceQuerier</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li><a href="../interfaces/idatasourcequerier.html" class="tsd-signature-type">IDataSourceQuerier</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">, </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
@@ -1068,7 +1071,6 @@ img { max-width: 100%; }
 							<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="dataaccesslayer.html#classentity" class="tsd-kind-icon">class<wbr>Entity</a></li>
 							<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="dataaccesslayer.html#name" class="tsd-kind-icon">name</a></li>
 							<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="dataaccesslayer.html#normalizeoptions" class="tsd-kind-icon">normalize<wbr>Options</a></li>
-							<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="dataaccesslayer.html#normalizequery" class="tsd-kind-icon">normalize<wbr>Query</a></li>
 							<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="dataaccesslayer.html#remapinput" class="tsd-kind-icon">remap<wbr>Input</a></li>
 							<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="dataaccesslayer.html#remapoutput" class="tsd-kind-icon">remap<wbr>Output</a></li>
 						</ul>
@@ -1080,12 +1082,14 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dataaccesslayer.html#deletemany" class="tsd-kind-icon">delete<wbr>Many</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dataaccesslayer.html#deleteone" class="tsd-kind-icon">delete<wbr>One</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dataaccesslayer.html#emit" class="tsd-kind-icon">emit</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dataaccesslayer.html#ensurequeryobject" class="tsd-kind-icon">ensure<wbr>Query<wbr>Object</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dataaccesslayer.html#findmany" class="tsd-kind-icon">find<wbr>Many</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dataaccesslayer.html#findone" class="tsd-kind-icon">find<wbr>One</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dataaccesslayer.html#has" class="tsd-kind-icon">has</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dataaccesslayer.html#hasevent" class="tsd-kind-icon">has<wbr>Event</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dataaccesslayer.html#insertmany" class="tsd-kind-icon">insert<wbr>Many</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dataaccesslayer.html#insertone" class="tsd-kind-icon">insert<wbr>One</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dataaccesslayer.html#normalizequery" class="tsd-kind-icon">normalize<wbr>Query</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dataaccesslayer.html#off" class="tsd-kind-icon">off</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dataaccesslayer.html#on" class="tsd-kind-icon">on</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dataaccesslayer.html#once" class="tsd-kind-icon">once</a></li>
@@ -1112,7 +1116,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides SequentialEvent.__constructor</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L45">adapters/dataAccessLayer.ts:45</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L77">adapters/dataAccessLayer.ts:77</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1165,7 +1169,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">adapter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TAdapter</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L53">adapters/dataAccessLayer.ts:53</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L85">adapters/dataAccessLayer.ts:85</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1177,10 +1181,10 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-static">
 				<a name="dataaccesslayersregistry" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> data<wbr>Access<wbr>Layers<wbr>Registry</h3>
-				<div class="tsd-signature tsd-kind-icon">data<wbr>Access<wbr>Layers<wbr>Registry<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">WeakMap</span><span class="tsd-signature-symbol">&lt;</span><a href="adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="dataaccesslayer.html" class="tsd-signature-type">DataAccessLayer</a><span class="tsd-signature-symbol">&lt;</span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">, </span><a href="adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new WeakMap&lt;Adapter, DataAccessLayer&gt;()</span></div>
+				<div class="tsd-signature tsd-kind-icon">data<wbr>Access<wbr>Layers<wbr>Registry<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">WeakMap</span><span class="tsd-signature-symbol">&lt;</span><a href="adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="dataaccesslayer.html" class="tsd-signature-type">DataAccessLayer</a><span class="tsd-signature-symbol">&lt;</span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">, </span><a href="adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new WeakMap&lt;Adapter,DataAccessLayer&gt;()</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L45">adapters/dataAccessLayer.ts:45</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L74">adapters/dataAccessLayer.ts:74</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1193,7 +1197,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">class<wbr>Entity<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L21">adapters/dataAccessLayer.ts:21</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L37">adapters/dataAccessLayer.ts:37</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1203,7 +1207,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L41">adapters/dataAccessLayer.ts:41</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L70">adapters/dataAccessLayer.ts:70</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1213,17 +1217,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">normalize<wbr>Options<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L33">adapters/dataAccessLayer.ts:33</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-				<a name="normalizequery" class="tsd-anchor"></a>
-				<h3>normalize<wbr>Query</h3>
-				<div class="tsd-signature tsd-kind-icon">normalize<wbr>Query<span class="tsd-signature-symbol">:</span> </div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L37">adapters/dataAccessLayer.ts:37</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L49">adapters/dataAccessLayer.ts:49</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1233,7 +1227,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">remap<wbr>Input<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L25">adapters/dataAccessLayer.ts:25</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L41">adapters/dataAccessLayer.ts:41</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1243,7 +1237,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">remap<wbr>Output<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L29">adapters/dataAccessLayer.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L45">adapters/dataAccessLayer.ts:45</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1259,9 +1253,9 @@ img { max-width: 100%; }
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
-							<p>Implementation of <a href="../interfaces/datasourcequerier.html">DataSourceQuerier</a>.<a href="../interfaces/datasourcequerier.html#configurecollection">configureCollection</a></p>
+							<p>Implementation of <a href="../interfaces/idatasourcequerier.html">IDataSourceQuerier</a>.<a href="../interfaces/idatasourcequerier.html#configurecollection">configureCollection</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L318">adapters/dataAccessLayer.ts:318</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L401">adapters/dataAccessLayer.ts:401</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1303,13 +1297,13 @@ img { max-width: 100%; }
 				<a name="deletemany" class="tsd-anchor"></a>
 				<h3>delete<wbr>Many</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">delete<wbr>Many<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">delete<wbr>Many<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, searchQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L283">adapters/dataAccessLayer.ts:283</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L341">adapters/dataAccessLayer.ts:341</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1331,13 +1325,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5>searchQuery: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Description of the entities to delete</p>
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options to apply to the query</p>
 								</div>
@@ -1351,13 +1345,13 @@ img { max-width: 100%; }
 				<a name="deleteone" class="tsd-anchor"></a>
 				<h3>delete<wbr>One</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">delete<wbr>One<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">delete<wbr>One<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, searchQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L262">adapters/dataAccessLayer.ts:262</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L314">adapters/dataAccessLayer.ts:314</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1379,13 +1373,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5>searchQuery: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Description of the entity to delete</p>
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options to apply to the query</p>
 								</div>
@@ -1439,16 +1433,47 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="findmany" class="tsd-anchor"></a>
-				<h3>find<wbr>Many</h3>
+				<a name="ensurequeryobject" class="tsd-anchor"></a>
+				<h3>ensure<wbr>Query<wbr>Object</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">find<wbr>Many<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">ensure<wbr>Query<wbr>Object<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">?: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L164">adapters/dataAccessLayer.ts:164</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L368">adapters/dataAccessLayer.ts:368</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Generates a query object if the only provided parameter is an <a href="entityuid.html">EntityUid</a>.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> query: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Entity ID or query to potentialy transform</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="findmany" class="tsd-anchor"></a>
+				<h3>find<wbr>Many</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">find<wbr>Many<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, searchQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L198">adapters/dataAccessLayer.ts:198</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1470,13 +1495,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5>searchQuery: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Description of the entities to find</p>
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options to apply to the query</p>
 								</div>
@@ -1490,13 +1515,13 @@ img { max-width: 100%; }
 				<a name="findone" class="tsd-anchor"></a>
 				<h3>find<wbr>One</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">find<wbr>One<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">find<wbr>One<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, searchQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L134">adapters/dataAccessLayer.ts:134</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L165">adapters/dataAccessLayer.ts:165</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1518,13 +1543,13 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5>searchQuery: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Description of the entity to find</p>
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options to apply to the query</p>
 								</div>
@@ -1618,7 +1643,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L108">adapters/dataAccessLayer.ts:108</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L137">adapters/dataAccessLayer.ts:137</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1660,7 +1685,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L84">adapters/dataAccessLayer.ts:84</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L116">adapters/dataAccessLayer.ts:116</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1689,6 +1714,53 @@ img { max-width: 100%; }
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="normalizequery" class="tsd-anchor"></a>
+				<h3>normalize<wbr>Query</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">normalize<wbr>Query<span class="tsd-signature-symbol">(</span>originalQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/querylanguage.iselectquerycondition.html" class="tsd-signature-type">ISelectQueryCondition</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L62">adapters/dataAccessLayer.ts:62</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Normalize the query to cast it from its most user-friendly form to a standard one.
+								If the parameter is an ID, it will be wrapped in correct query.</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>originalQuery: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Query to cast to its canonical form</p>
+								</div>
+							</li>
+							<li>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Options to apply to the query</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>
+							<span class="tsd-signature-symbol"> | </span>
+							<a href="../interfaces/querylanguage.iselectquerycondition.html" class="tsd-signature-type">ISelectQueryCondition</a>
+						</h4>
+						<p>Returns the normalized query.</p>
 					</li>
 				</ul>
 			</section>
@@ -1947,7 +2019,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L333">adapters/dataAccessLayer.ts:333</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L416">adapters/dataAccessLayer.ts:416</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1977,13 +2049,13 @@ img { max-width: 100%; }
 				<a name="updatemany" class="tsd-anchor"></a>
 				<h3>update<wbr>Many</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">update<wbr>Many<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, update<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">update<wbr>Many<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, searchQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, update<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L229">adapters/dataAccessLayer.ts:229</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L274">adapters/dataAccessLayer.ts:274</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2005,7 +2077,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5>searchQuery: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Description of the entities to update</p>
 								</div>
@@ -2017,7 +2089,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options to apply to the query</p>
 								</div>
@@ -2031,13 +2103,13 @@ img { max-width: 100%; }
 				<a name="updateone" class="tsd-anchor"></a>
 				<h3>update<wbr>One</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">update<wbr>One<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryFind<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, update<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">update<wbr>One<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, searchQuery<span class="tsd-signature-symbol">: </span><a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, update<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L196">adapters/dataAccessLayer.ts:196</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L234">adapters/dataAccessLayer.ts:234</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2059,7 +2131,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>queryFind: <a href="../modules/querylanguage.raw.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+								<h5>searchQuery: <a href="../modules/querylanguage.raw.html#searchquery" class="tsd-signature-type">SearchQuery</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Description of the entity to update</p>
 								</div>
@@ -2071,7 +2143,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.queryoptions.html" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/querylanguage.raw.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Options to apply to the query</p>
 								</div>
@@ -2090,9 +2162,9 @@ img { max-width: 100%; }
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
-							<p>Implementation of <a href="../interfaces/datasourcequerier.html">DataSourceQuerier</a>.<a href="../interfaces/datasourcequerier.html#waitready">waitReady</a></p>
+							<p>Implementation of <a href="../interfaces/idatasourcequerier.html">IDataSourceQuerier</a>.<a href="../interfaces/idatasourcequerier.html#waitready">waitReady</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L305">adapters/dataAccessLayer.ts:305</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L388">adapters/dataAccessLayer.ts:388</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2122,7 +2194,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/adapters/dataAccessLayer.ts#L65">adapters/dataAccessLayer.ts:65</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L97">adapters/dataAccessLayer.ts:97</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

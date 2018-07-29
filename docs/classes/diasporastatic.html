@@ -912,6 +912,9 @@ img { max-width: 100%; }
 		<li class="current tsd-kind-class">
 			<a href="diasporastatic.html" class="tsd-kind-icon">Diaspora<wbr>Static</a>
 			<ul>
+				<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-private">
+					<a href="diasporastatic.html#constructor" class="tsd-kind-icon">constructor</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a href="diasporastatic.html#_datasources" class="tsd-kind-icon">_data<wbr>Sources</a>
 				</li>
@@ -945,14 +948,14 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="diasporastatic.html#declaremodel" class="tsd-kind-icon">declare<wbr>Model</a>
 				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a href="diasporastatic.html#loadadapter" class="tsd-kind-icon">load<wbr>Adapter</a>
+				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="diasporastatic.html#registeradapter" class="tsd-kind-icon">register<wbr>Adapter</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<a href="diasporastatic.html#requirename" class="tsd-kind-icon">require<wbr>Name</a>
-				</li>
-				<li class=" tsd-kind-object-literal tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<a href="diasporastatic.html#errors" class="tsd-kind-icon">ERRORS</a>
+					<a href="diasporastatic.html#getcallerfile" class="tsd-kind-icon">get<wbr>Caller<wbr>File</a>
 				</li>
 			</ul>
 		</li>
@@ -985,6 +988,12 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+						<h3>Constructors</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-private"><a href="diasporastatic.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="diasporastatic.html#_datasources" class="tsd-kind-icon">_data<wbr>Sources</a></li>
@@ -1008,17 +1017,37 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="diasporastatic.html#createdatasource" class="tsd-kind-icon">create<wbr>Data<wbr>Source</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="diasporastatic.html#createnameddatasource" class="tsd-kind-icon">create<wbr>Named<wbr>Data<wbr>Source</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="diasporastatic.html#declaremodel" class="tsd-kind-icon">declare<wbr>Model</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="diasporastatic.html#loadadapter" class="tsd-kind-icon">load<wbr>Adapter</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="diasporastatic.html#registeradapter" class="tsd-kind-icon">register<wbr>Adapter</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="diasporastatic.html#requirename" class="tsd-kind-icon">require<wbr>Name</a></li>
-						</ul>
-					</section>
-					<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
-						<h3>Object literals</h3>
-						<ul class="tsd-index-list">
-							<li class="tsd-kind-object-literal tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="diasporastatic.html#errors" class="tsd-kind-icon">ERRORS</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="diasporastatic.html#getcallerfile" class="tsd-kind-icon">get<wbr>Caller<wbr>File</a></li>
 						</ul>
 					</section>
 				</div>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+			<h2>Constructors</h2>
+			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-private">
+				<a name="constructor" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> constructor</h3>
+				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-private">
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Diaspora<wbr>Static<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="diasporastatic.html" class="tsd-signature-type">DiasporaStatic</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L32">diaspora.ts:32</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>This class is a singleton: the constructor may return the already created instance</p>
+							</div>
+						</div>
+						<h4 class="tsd-returns-title">Returns <a href="diasporastatic.html" class="tsd-signature-type">DiasporaStatic</a></h4>
+					</li>
+				</ul>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
@@ -1029,7 +1058,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_data<wbr>Sources<span class="tsd-signature-symbol">:</span> <a href="../interfaces/idatasourceregistry.html" class="tsd-signature-type">IDataSourceRegistry</a><span class="tsd-signature-symbol"> =&nbsp;dataSourceRegistry</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L76">diaspora.ts:76</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L82">diaspora.ts:82</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1052,7 +1081,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_models<span class="tsd-signature-symbol">:</span> <a href="../interfaces/imodelregistry.html" class="tsd-signature-type">IModelRegistry</a><span class="tsd-signature-symbol"> =&nbsp;modelRegistry</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L84">diaspora.ts:84</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L90">diaspora.ts:90</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1075,7 +1104,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">adapters<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iadapterregistry.html" class="tsd-signature-type">IAdapterRegistry</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L68">diaspora.ts:68</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L74">diaspora.ts:74</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1098,7 +1127,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_instance<span class="tsd-signature-symbol">:</span> <a href="diasporastatic.html" class="tsd-signature-type">DiasporaStatic</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L32">diaspora.ts:32</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L44">diaspora.ts:44</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1111,7 +1140,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">data<wbr>Sources<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L54">diaspora.ts:54</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L60">diaspora.ts:60</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1131,7 +1160,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L45">diaspora.ts:45</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L51">diaspora.ts:51</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1151,7 +1180,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">models<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L58">diaspora.ts:58</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L64">diaspora.ts:64</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1161,7 +1190,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">instance<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L24">diaspora.ts:24</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L30">diaspora.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1178,7 +1207,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L113">diaspora.ts:113</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L173">diaspora.ts:173</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1227,7 +1256,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L158">diaspora.ts:158</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L197">diaspora.ts:197</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1270,13 +1299,13 @@ img { max-width: 100%; }
 				<a name="declaremodel" class="tsd-anchor"></a>
 				<h3>declare<wbr>Model</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">declare<wbr>Model<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/modeldescriptionraw.html" class="tsd-signature-type">ModelDescriptionRaw</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a></li>
+					<li class="tsd-signature tsd-kind-icon">declare<wbr>Model<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/raw.imodeldescription.html" class="tsd-signature-type">IModelDescription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L185">diaspora.ts:185</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L222">diaspora.ts:222</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1286,9 +1315,6 @@ img { max-width: 100%; }
 							<dl class="tsd-comment-tags">
 								<dt>author</dt>
 								<dd><p>gerkin</p>
-								</dd>
-								<dt>throws</dt>
-								<dd><p>{Error} Thrown if parameters are incorrect.</p>
 								</dd>
 							</dl>
 						</div>
@@ -1301,7 +1327,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5>modelDesc: <a href="../interfaces/modeldescriptionraw.html" class="tsd-signature-type">ModelDescriptionRaw</a></h5>
+								<h5>modelDesc: <a href="../interfaces/raw.imodeldescription.html" class="tsd-signature-type">IModelDescription</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Description of the model to define.</p>
 								</div>
@@ -1309,6 +1335,42 @@ img { max-width: 100%; }
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="model.html" class="tsd-signature-type">Model</a></h4>
 						<p>Model created.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+				<a name="loadadapter" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> load<wbr>Adapter</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<li class="tsd-signature tsd-kind-icon">load<wbr>Adapter<span class="tsd-signature-symbol">(</span>adapterLabel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L133">diaspora.ts:133</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Import the desired adapter after having auto-resolved it, then register it</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>throws</dt>
+								<dd><p>{Error} if the module does not exists or does not inherit the base Adapter class.</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>adapterLabel: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Name of the adapter to import</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1322,7 +1384,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L207">diaspora.ts:207</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L238">diaspora.ts:238</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1362,64 +1424,34 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-				<a name="requirename" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> require<wbr>Name</h3>
+				<a name="getcallerfile" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Caller<wbr>File</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">require<wbr>Name<span class="tsd-signature-symbol">(</span>classname<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Caller<wbr>File<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L92">diaspora.ts:92</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L99">diaspora.ts:99</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Old useless error handling code. TODO: remove</p>
+								<p>Get the name of the closest function caller in another file</p>
 							</div>
+							<dl class="tsd-comment-tags">
+								<dt>see</dt>
+								<dd><p><a href="https://stackoverflow.com/a/29581862/4839162">https://stackoverflow.com/a/29581862/4839162</a></p>
+								</dd>
+							</dl>
 						</div>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>classname: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>garbage</p>
-								</div>
-							</li>
-							<li>
-								<h5>value: <span class="tsd-signature-type">any</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>junk</p>
-								</div>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span>
+							<span class="tsd-signature-symbol"> | </span>
+							<span class="tsd-signature-type">string</span>
+						</h4>
 					</li>
 				</ul>
-			</section>
-		</section>
-		<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
-			<h2>Object literals</h2>
-			<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-class tsd-is-private tsd-is-static">
-				<a name="errors" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> ERRORS</h3>
-				<div class="tsd-signature tsd-kind-icon">ERRORS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L34">diaspora.ts:34</a></li>
-					</ul>
-				</aside>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-					<a name="errors.non_empty_str" class="tsd-anchor"></a>
-					<h3>NON_<wbr>EMPTY_<wbr>STR</h3>
-					<div class="tsd-signature tsd-kind-icon">NON_<wbr>EMPTY_<wbr>STR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TemplateExecutor</span><span class="tsd-signature-symbol"> =&nbsp;_.template(&#x27;&lt;%&#x3D; c %&gt; &lt;%&#x3D; p %&gt; must be a non empty string, had &quot;&lt;%&#x3D; v %&gt;&quot;&#x27;)</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/8b3d3e6/src/diaspora.ts#L35">diaspora.ts:35</a></li>
-						</ul>
-					</aside>
-				</section>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
