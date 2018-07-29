@@ -3,7 +3,6 @@ export * from './diaspora';
 export * from './entities';
 export * from './errors';
 export * from './types/queryLanguage';
-export { EFieldType } from './types/modelDescription';
 
 export * from './entityTransformers';
 export * from './model';
@@ -17,3 +16,6 @@ export namespace Utils {
 	
 	export const getDefaultFunction = _getDefaultFunction;
 }
+
+export { EFieldType } from './types/modelDescription';
+export { ELoggingLevel } from './logger';

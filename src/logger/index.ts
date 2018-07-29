@@ -1,3 +1,5 @@
+export { ELoggingLevel } from './logger';
+
 /**
  * Reference to the static logger instance for Diaspora.
  */
@@ -9,3 +11,4 @@ import { NodeLogger } from './nodeLogger';
 export const logger = new NodeLogger();
 // tslint:disable-next-line:comment-format
 //#endif
+
