@@ -388,8 +388,8 @@ export const checkEachStandardMethods = adapterLabel => {
 		}
 	} );
 	describe( getStyle( 'taskCategory', `Test ${adapterLabel} adapter methods` ), () => {
-		let findManyOk = false;
-		let findAllOk = false;
+		const OFFSET_OBJECT = {};
+		const TEST_SET = [OFFSET_OBJECT, {a: 1, b: 3}, {a: 4, c: 5}, {b: 3}, {a: 4, d: 'foo'}, {a: 1, d: 'baz'}];
 		describe( '✨ Insert methods', () => {
 			beforeEach( async () => {
 				await adapter.deleteMany( TABLE, {} );
@@ -427,7 +427,7 @@ export const checkEachStandardMethods = adapterLabel => {
 		describe( 'Specification level 1', () => {
 			beforeEach( async () => {
 				await adapter.deleteMany( TABLE, {} );
-				await adapter.insertMany( TABLE, [{a: 1, b: 3}, {a: 4, c: 5}, {b: 3}] );
+				await adapter.insertMany( TABLE,  TEST_SET );
 			} );
 			describe( '🔎 Find methods', () => {
 				it( getTestLabel( 'findOne' ), async () => {
@@ -454,9 +454,6 @@ export const checkEachStandardMethods = adapterLabel => {
 					expect( reFound ).toStrictEqual( entity );
 				} );
 				it( getTestLabel( 'findOne by id not found' ), async () => {
-					const object = {
-						a: 4,
-					};
 					const found = await adapter.findOne( TABLE, 'this_should_really_not_exists' );
 					expect( found ).toBeUndefined();
 				} );
@@ -478,7 +475,7 @@ export const checkEachStandardMethods = adapterLabel => {
 				} );
 				it( 'Find all', async () => {
 					const entities = await adapter.findMany( TABLE, {} );
-					expect( entities ).toHaveLength( 3 );
+					expect( entities ).toHaveLength( TEST_SET.length );
 					expect( entities ).toBeAnAdapterEntitySet( adapter );
 				} );
 			} );
@@ -555,7 +552,18 @@ export const checkEachStandardMethods = adapterLabel => {
 					const deleteReturn = await adapter.deleteOne( TABLE, obj );
 					expect( deleteReturn ).toEqual( undefined );
 					const entities = await adapter.findMany( TABLE, {} );
-					expect( entities ).toHaveLength( 2 );
+					expect( entities ).toHaveLength( TEST_SET.length - 1 );
+				} );
+				it( getTestLabel( 'deleteOne with skip' ), async () => {
+					const obj = {
+						a: 1,
+					};
+					const beforeDelete = await adapter.findOne( TABLE, obj );
+					const deleteReturn = await adapter.deleteOne( TABLE, obj, {skip: 1} );
+					expect( deleteReturn ).toEqual( undefined );
+					const entities = await adapter.findMany( TABLE, {} );
+					expect( entities ).toHaveLength( TEST_SET.length - 1 );
+					expect( ( await adapter.findOne( TABLE, obj ) ).properties.id ).toEqual( beforeDelete.properties.id );
 				} );
 				it( getTestLabel( 'deleteOne not found' ), async () => {
 					const obj = {
@@ -564,7 +572,18 @@ export const checkEachStandardMethods = adapterLabel => {
 					const deleteReturn = await adapter.deleteOne( TABLE, obj );
 					expect( deleteReturn ).toEqual( undefined );
 					const entities = await adapter.findMany( TABLE, {} );
-					expect( entities ).toHaveLength( 3 );
+					expect( entities ).toHaveLength( TEST_SET.length );
+				} );
+				it( getTestLabel( 'deleteOne not found because of skip' ), async () => {
+					const obj = {
+						c: 5,
+					};
+					const beforeDelete = await adapter.findOne( TABLE, obj );
+					const deleteReturn = await adapter.deleteOne( TABLE, obj, {skip: 1} );
+					expect( deleteReturn ).toEqual( undefined );
+					const entities = await adapter.findMany( TABLE, {} );
+					expect( entities ).toHaveLength( TEST_SET.length );
+					expect( ( await adapter.findOne( TABLE, obj ) ).properties.id ).toEqual( beforeDelete.properties.id );
 				} );
 				it( getTestLabel( 'deleteMany' ), async () => {
 					const obj = {
@@ -573,7 +592,7 @@ export const checkEachStandardMethods = adapterLabel => {
 					const deleteResults = await adapter.deleteMany( TABLE, obj );
 					expect( deleteResults ).toBeUndefined();
 					const entities = await adapter.findMany( TABLE, {} );
-					expect( entities ).toHaveLength( 1 );
+					expect( entities ).toHaveLength( TEST_SET.length - 2 );
 				} );
 				it( getTestLabel( 'deleteAll' ), async () => {
 					const deleteResults = await adapter.deleteMany( TABLE, {} );
