@@ -24,7 +24,14 @@ const filterEntity = ( entity: AdapterEntity ) => {
 	return sentProperties;
 };
 export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: number, endpoint: string, tableName: string ) => {
-	const parseQs = _.partialRight( _.mapValues, JSON.parse ) as ( str: string ) => { where?: any } & QueryLanguage.IQueryOptions;
+	const parseQs = ( queryString: any ) => {
+		const parsed = _.mapValues( queryString, str => JSON.parse( str ) );
+		if ( 'options' in parsed || 'where' in parsed ){
+			return {where: parsed.where, options: parsed.options};
+		} else {
+			return {where: parsed};
+		}
+	};
 	
 	const app = express();
 	app.use( urlencoded( {
@@ -55,7 +62,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 	app.get( endpoint, ( req, res ) => {
 		const query = parseQs( req.query );
 		adapter
-		.findOne( tableName, query.where, _.omit( query, ['where'] ) )
+		.findOne( tableName, query.where, query.options )
 		.then( entity => {
 			if ( !_.isNil( entity ) ) {
 				return res.json( filterEntity( entity ) );
@@ -66,7 +73,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 	app.get( `${endpoint}s`, ( req, res ) => {
 		const query = parseQs( req.query );
 		adapter
-		.findMany( tableName, query.where, _.omit( query, ['where'] ) )
+		.findMany( tableName, query.where, query.options )
 		.then( entities => {
 			if ( !_.isEmpty( entities ) ) {
 				return res.json(
@@ -81,7 +88,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		const body = req.body;
 		const query = parseQs( req.query );
 		adapter
-		.updateOne( tableName, query.where, body, _.omit( query, ['where'] ) )
+		.updateOne( tableName, query.where, body, query.options )
 		.then( entity => {
 			if ( !_.isNil( entity ) ) {
 				return res.json( filterEntity( entity ) );
@@ -93,7 +100,7 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		const body = req.body;
 		const query = parseQs( req.query );
 		adapter
-		.updateMany( tableName, query.where, body, _.omit( query, ['where'] ) )
+		.updateMany( tableName, query.where, body, query.options )
 		.then( entities => {
 			if ( !_.isEmpty( entities ) ) {
 				return res.json(
@@ -107,14 +114,14 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 	app.delete( endpoint, ( req, res ) => {
 		const query = parseQs( req.query );
 		adapter
-		.deleteOne( tableName, query.where, _.omit( query, ['where'] ) )
+		.deleteOne( tableName, query.where, query.options )
 		.then( () =>
 			res.json() );
 	} );
 	app.delete( `${endpoint}s`, ( req, res ) => {
 		const query = parseQs( req.query );
 		adapter
-		.deleteMany( tableName, query.where, _.omit( query, ['where'] ) )
+		.deleteMany( tableName, query.where, query.options )
 		.then( () =>
 			res.json() );
 	} );
@@ -172,7 +179,8 @@ export const checkEachStandardMethods = adapterLabel => {
 	} );
 	
 	describe( `${getStyle( 'taskCategory', `Check ${adapterLabel} query inputs filtering` )}`, () => {
-		describe( 'Check options normalization', () => {
+		describe( 'Normalization', () => {
+			describe( 'Options', () => {
 			const no = adapter.normalizeOptions;
 			it( 'Default options', () => {
 				expect( no( {} ) ).toEqual( {

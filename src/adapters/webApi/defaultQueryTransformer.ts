@@ -1,6 +1,28 @@
 import * as _ from 'lodash';
 import { WebApiAdapter } from '.';
+import { QueryLanguage } from '../../types/queryLanguage';
 
+type QueryStringObject = QueryLanguage.SelectQueryOrCondition | {
+	where?:QueryLanguage.SelectQueryOrCondition;
+	options?:WebApiAdapter.QueryOptions;
+};
+export const makeQueryString = (
+	query?: QueryLanguage.SelectQueryOrCondition,
+	options?: WebApiAdapter.QueryOptions
+): QueryStringObject | undefined => {
+	// Transforms {where:{foo:1}} to {foo:1}
+	if ( _.isEmpty( options ) ){
+		// Force wrap in `where` if search on field `options` or `where` like in {where{options:true}}
+		if ( _.isNil( query ) || ( !( 'options' in query ) && !( 'where' in query ) ) ){
+			// If empty query, return undefined
+			return _.isEmpty( query ) ? undefined : query;
+		} else {
+			return {where:query};
+		}
+	} else {
+		return {where: query, options};
+	}
+};
 export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory = (
 	config: any
 ) => {
@@ -10,10 +32,8 @@ export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory
 	 * @param   endPoint - Name of the endpoint.
 	 * @returns Plural version of the endpoint name.
 	 */
-	function getPluralEndpoint( endPoint: string ) {
-		return _.get( config, ['pluralApis', endPoint], `${endPoint}s` );
-	}
-	
+	const getPluralEndpoint = ( endPoint: string ) =>
+	_.get( config, ['pluralApis', endPoint], `${endPoint}s` );
 	return {
 		beforeQuery(
 			queryDesc: WebApiAdapter.IQueryDescriptor
@@ -34,15 +54,14 @@ export const DefaultQueryTransformerFactory: WebApiAdapter.IEventProviderFactory
 				insert: 'POST',
 			} as any )[queryType] as WebApiAdapter.EHttpVerb;
 			
-			return _.defaultsDeep( { apiDesc: {
-				method,
-				endPoint: ( queryNum === 'many' ? getPluralEndpoint( modelName ) : modelName ).toLowerCase(),
-				queryString: {
-					where: select,
-					options,
+			return _.defaultsDeep( {
+				apiDesc: {
+					method,
+					endPoint: ( queryNum === 'many' ? getPluralEndpoint( modelName ) : modelName ).toLowerCase(),
+					queryString: makeQueryString( select, options ),
+					body: update,
 				},
-				body: update,
-			} },                   queryDesc );
+			},                     queryDesc );
 		},
 	};
 };
