@@ -13,6 +13,8 @@ import { InMemoryEntity } from '../../src/adapters/inMemory';
 import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
 import { IEntityProperties } from '../../src/types/entity';
 import { Entity } from '../../src/entities';
+import { product } from './dataMatrix';
+import { inspect } from 'util';
 
 const getDataSourceLabel = name => `${name}Adapter`;
 
@@ -116,24 +118,24 @@ export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: n
 		adapter
 		.deleteOne( tableName, query.where, query.options )
 		.then( () =>
-			res.json() );
+		res.json() );
 	} );
 	app.delete( `${endpoint}s`, ( req, res ) => {
 		const query = parseQs( req.query );
 		adapter
 		.deleteMany( tableName, query.where, query.options )
 		.then( () =>
-			res.json() );
+		res.json() );
 	} );
 	app.get( '/api/:code', ( req, res ) =>
-		res.status( req.params.code ).send( {message: 'This is an error message'} ) );
+	res.status( req.params.code ).send( {message: 'This is an error message'} ) );
 	app.get( '/api/nomsg/:code', ( req, res ) =>
-		res.status( req.params.code ).send() );
+	res.status( req.params.code ).send() );
 	
 	return new Promise( ( resolve, reject ) => {
 		
 		const server = app.listen( apiPort, () =>
-			resolve( server ) );
+		resolve( server ) );
 	} );
 };
 export const createDataSource = ( adapterLabel: string, ...config: any[] ) => {
@@ -181,161 +183,162 @@ export const checkEachStandardMethods = adapterLabel => {
 	describe( `${getStyle( 'taskCategory', `Check ${adapterLabel} query inputs filtering` )}`, () => {
 		describe( 'Normalization', () => {
 			describe( 'Options', () => {
-			const no = adapter.normalizeOptions;
-			it( 'Default options', () => {
-				expect( no( {} ) ).toEqual( {
-					skip: 0,
-					remapInput: true,
-					remapOutput: true,
-					limit: Infinity,
+				const no = adapter.normalizeOptions;
+				it( 'Default options', () => {
+					expect( no( {} ) ).toEqual( {
+						skip: 0,
+						remapInput: true,
+						remapOutput: true,
+						limit: Infinity,
+					} );
 				} );
-			} );
-			it( '"limit" option', () => {
-				expect( no( { limit: 10 } ) ).toEqual( {
-					limit: 10,
-					skip: 0,
-					remapInput: true,
-					remapOutput: true,
-				} );
-				expect( no( { limit: '10' } as any ) ).toEqual( {
-					limit: 10,
-					skip: 0,
-					remapInput: true,
-					remapOutput: true,
-				} );
-				expect( no( { limit: Infinity } ) ).toEqual( {
-					limit: Infinity,
-					skip: 0,
-					remapInput: true,
-					remapOutput: true,
-				} );
-				expect( () => no( { limit: 0.5 } ) ).toThrowError( TypeError );
-				expect( () => no( { limit: -1 } ) ).toThrowError( RangeError );
-				expect( () => no( { limit: -Infinity } ) ).toThrowError( RangeError );
-			} );
-			it( '"skip" option', () => {
-				expect( no( { skip: 10 } ) ).toEqual( {
-					skip: 10,
-					remapInput: true,
-					remapOutput: true,
-					limit: Infinity,
-				} );
-				expect( no( { skip: '10' } as any ) ).toEqual( {
-					skip: 10,
-					remapInput: true,
-					remapOutput: true,
-					limit: Infinity,
-				} );
-				expect( () => no( { skip: 0.5 } ) ).toThrowError( TypeError );
-				expect( () => no( { skip: -1 } ) ).toThrowError( RangeError );
-				expect( () => no( { skip: Infinity } ) ).toThrowError( RangeError );
-			} );
-			it( '"page" option', () => {
-				expect(
-					no( {
-						page: 5,
+				it( '"limit" option', () => {
+					expect( no( { limit: 10 } ) ).toEqual( {
 						limit: 10,
-					} )
-				).toEqual( {
-					skip: 50,
-					limit: 10,
-					remapInput: true,
-					remapOutput: true,
+						skip: 0,
+						remapInput: true,
+						remapOutput: true,
+					} );
+					expect( no( { limit: '10' } as any ) ).toEqual( {
+						limit: 10,
+						skip: 0,
+						remapInput: true,
+						remapOutput: true,
+					} );
+					expect( no( { limit: Infinity } ) ).toEqual( {
+						limit: Infinity,
+						skip: 0,
+						remapInput: true,
+						remapOutput: true,
+					} );
+					expect( () => no( { limit: 0.5 } ) ).toThrowError( TypeError );
+					expect( () => no( { limit: -1 } ) ).toThrowError( RangeError );
+					expect( () => no( { limit: -Infinity } ) ).toThrowError( RangeError );
 				} );
-				expect(
-					no( {
-						page: '5',
-						limit: '10',
-					} as any )
-				).toEqual( {
-					skip: 50,
-					limit: 10,
-					remapInput: true,
-					remapOutput: true,
+				it( '"skip" option', () => {
+					expect( no( { skip: 10 } ) ).toEqual( {
+						skip: 10,
+						remapInput: true,
+						remapOutput: true,
+						limit: Infinity,
+					} );
+					expect( no( { skip: '10' } as any ) ).toEqual( {
+						skip: 10,
+						remapInput: true,
+						remapOutput: true,
+						limit: Infinity,
+					} );
+					expect( () => no( { skip: 0.5 } ) ).toThrowError( TypeError );
+					expect( () => no( { skip: -1 } ) ).toThrowError( RangeError );
+					expect( () => no( { skip: Infinity } ) ).toThrowError( RangeError );
 				} );
-				expect( () => no( { page: 1 } ) ).toThrowError( ReferenceError );
-				expect( () => no( {
-					page: 1,
-					skip: 1,
-					limit: 5,
-				} ) ).toThrowError( ReferenceError );
-				expect( () => no( {
-					page: 0.5,
-					limit: 5,
-				} ) ).toThrowError( TypeError );
-				expect( () => no( {
-					page: 1,
-					limit: Infinity,
-				} ) ).toThrowError( RangeError );
-				expect( () => no( {
-					page: Infinity,
-					limit: 5,
-				} ) ).toThrowError( RangeError );
-				expect( () => no( {
-					page: -1,
-					limit: 5,
-				} ) ).toThrowError( RangeError );
+				it( '"page" option', () => {
+					expect(
+						no( {
+							page: 5,
+							limit: 10,
+						} )
+					).toEqual( {
+						skip: 50,
+						limit: 10,
+						remapInput: true,
+						remapOutput: true,
+					} );
+					expect(
+						no( {
+							page: '5',
+							limit: '10',
+						} as any )
+					).toEqual( {
+						skip: 50,
+						limit: 10,
+						remapInput: true,
+						remapOutput: true,
+					} );
+					expect( () => no( { page: 1 } ) ).toThrowError( ReferenceError );
+					expect( () => no( {
+						page: 1,
+						skip: 1,
+						limit: 5,
+					} ) ).toThrowError( ReferenceError );
+					expect( () => no( {
+						page: 0.5,
+						limit: 5,
+					} ) ).toThrowError( TypeError );
+					expect( () => no( {
+						page: 1,
+						limit: Infinity,
+					} ) ).toThrowError( RangeError );
+					expect( () => no( {
+						page: Infinity,
+						limit: 5,
+					} ) ).toThrowError( RangeError );
+					expect( () => no( {
+						page: -1,
+						limit: 5,
+					} ) ).toThrowError( RangeError );
+				} );
 			} );
-		} );
-		describe( 'Check "normalizeQuery"', () => {
-			const nq = ( query: any ) => adapter.normalizeQuery(
-				{ b: query },
-				{ remapInput: true, remapOutput: false, skip: 0, limit: 0 }
-			);
-			it( 'Empty query', () => {
-				expect(
-					adapter.normalizeQuery(
-						{},
-						{ remapInput: true, remapOutput: false, skip: 0, limit: 0 }
-					)
-				).toEqual( {} );
-			} );
-			it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
-				expect( nq( undefined ) ).toEqual( { b: { $exists: false } } );
-				expect( nq( { '~': true } ) ).toEqual( { b: { $exists: true } } );
-				expect( nq( { $exists: true } ) ).toEqual( { b: { $exists: true } } );
-				expect( nq( { '~': false } ) ).toEqual( { b: { $exists: false } } );
-				expect( nq( { $exists: false } ) ).toEqual( { b: { $exists: false } } );
-				expect( () => nq( { '~': 3, $exists: 3 } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
-				expect( nq( 3 ) ).toEqual( { b: { $equal: 3 } } );
-				expect( nq( { $equal: 3 } ) ).toEqual( { b: { $equal: 3 } } );
-				expect( nq( { '==': 3 } ) ).toEqual( { b: { $equal: 3 } } );
-				expect( () => nq( { '==': 3, $equal: 3 } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
-				expect( nq( { $diff: 3 } ) ).toEqual( { b: { $diff: 3 } } );
-				expect( nq( { '!=': 3 } ) ).toEqual( { b: { $diff: 3 } } );
-				expect( () => nq( { '!=': 3, $diff: 3 } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '<' )} ($less)`, () => {
-				expect( nq( { $less: 1 } ) ).toEqual( { b: { $less: 1 } } );
-				expect( nq( { '<': 1 } ) ).toEqual( { b: { $less: 1 } } );
-				expect( () => nq( { '<': 1, $less: 1 } ) ).toThrowError();
-				expect( () => nq( { '<': 'aze' } ) ).toThrowError();
-				expect( () => nq( { $less: 'aze' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
-				expect( nq( { $lessEqual: 1 } ) ).toEqual( { b: { $lessEqual: 1 } } );
-				expect( nq( { '<=': 1 } ) ).toEqual( { b: { $lessEqual: 1 } } );
-				expect( () => nq( { '<=': 1, $lessEqual: 1 } ) ).toThrowError();
-				expect( () => nq( { '<=': 'aze' } ) ).toThrowError();
-				expect( () => nq( { $lessEqual: 'aze' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
-				expect( nq( { $greater: 1 } ) ).toEqual( { b: { $greater: 1 } } );
-				expect( nq( { '>': 1 } ) ).toEqual( { b: { $greater: 1 } } );
-				expect( () => nq( { '>': 1, $greater: 1 } ) ).toThrowError();
-				expect( () => nq( { '>': 'aze' } ) ).toThrowError();
-				expect( () => nq( { $greater: 'aze' } ) ).toThrowError();
-			} );
-			it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
-				expect( nq( { $greaterEqual: 1 } ) ).toEqual( { b: { $greaterEqual: 1 } } );
-				expect( nq( { '>=': 1 } ) ).toEqual( { b: { $greaterEqual: 1 } } );
-				expect( () => nq( { '>=': 1, $greaterEqual: 1 } ) ).toThrowError();
-				expect( () => nq( { '>=': 'aze' } ) ).toThrowError();
-				expect( () => nq( { $greaterEqual: 'aze' } ) ).toThrowError();
+			describe( 'Query', () => {
+				const nq = ( query: any ) => adapter.normalizeQuery(
+					{ b: query },
+					{ remapInput: true, remapOutput: false, skip: 0, limit: 0 }
+				);
+				it( 'Empty query', () => {
+					expect(
+						adapter.normalizeQuery(
+							{},
+							{ remapInput: true, remapOutput: false, skip: 0, limit: 0 }
+						)
+					).toEqual( {} );
+				} );
+				it( `${getStyle( 'bold', '~' )} ($exists)`, () => {
+					expect( nq( undefined ) ).toEqual( { b: { $exists: false } } );
+					expect( nq( { '~': true } ) ).toEqual( { b: { $exists: true } } );
+					expect( nq( { $exists: true } ) ).toEqual( { b: { $exists: true } } );
+					expect( nq( { '~': false } ) ).toEqual( { b: { $exists: false } } );
+					expect( nq( { $exists: false } ) ).toEqual( { b: { $exists: false } } );
+					expect( () => nq( { '~': 3, $exists: 3 } ) ).toThrowError();
+				} );
+				it( `${getStyle( 'bold', '==' )} ($equal)`, () => {
+					expect( nq( 3 ) ).toEqual( { b: { $equal: 3 } } );
+					expect( nq( { $equal: 3 } ) ).toEqual( { b: { $equal: 3 } } );
+					expect( nq( { '==': 3 } ) ).toEqual( { b: { $equal: 3 } } );
+					expect( () => nq( { '==': 3, $equal: 3 } ) ).toThrowError();
+				} );
+				it( `${getStyle( 'bold', '!=' )} ($diff)`, () => {
+					expect( nq( { $diff: 3 } ) ).toEqual( { b: { $diff: 3 } } );
+					expect( nq( { '!=': 3 } ) ).toEqual( { b: { $diff: 3 } } );
+					expect( () => nq( { '!=': 3, $diff: 3 } ) ).toThrowError();
+				} );
+				it( `${getStyle( 'bold', '<' )} ($less)`, () => {
+					expect( nq( { $less: 1 } ) ).toEqual( { b: { $less: 1 } } );
+					expect( nq( { '<': 1 } ) ).toEqual( { b: { $less: 1 } } );
+					expect( () => nq( { '<': 1, $less: 1 } ) ).toThrowError();
+					expect( () => nq( { '<': 'aze' } ) ).toThrowError();
+					expect( () => nq( { $less: 'aze' } ) ).toThrowError();
+				} );
+				it( `${getStyle( 'bold', '<=' )} ($lessEqual)`, () => {
+					expect( nq( { $lessEqual: 1 } ) ).toEqual( { b: { $lessEqual: 1 } } );
+					expect( nq( { '<=': 1 } ) ).toEqual( { b: { $lessEqual: 1 } } );
+					expect( () => nq( { '<=': 1, $lessEqual: 1 } ) ).toThrowError();
+					expect( () => nq( { '<=': 'aze' } ) ).toThrowError();
+					expect( () => nq( { $lessEqual: 'aze' } ) ).toThrowError();
+				} );
+				it( `${getStyle( 'bold', '>' )} ($greater)`, () => {
+					expect( nq( { $greater: 1 } ) ).toEqual( { b: { $greater: 1 } } );
+					expect( nq( { '>': 1 } ) ).toEqual( { b: { $greater: 1 } } );
+					expect( () => nq( { '>': 1, $greater: 1 } ) ).toThrowError();
+					expect( () => nq( { '>': 'aze' } ) ).toThrowError();
+					expect( () => nq( { $greater: 'aze' } ) ).toThrowError();
+				} );
+				it( `${getStyle( 'bold', '>=' )} ($greaterEqual)`, () => {
+					expect( nq( { $greaterEqual: 1 } ) ).toEqual( { b: { $greaterEqual: 1 } } );
+					expect( nq( { '>=': 1 } ) ).toEqual( { b: { $greaterEqual: 1 } } );
+					expect( () => nq( { '>=': 1, $greaterEqual: 1 } ) ).toThrowError();
+					expect( () => nq( { '>=': 'aze' } ) ).toThrowError();
+					expect( () => nq( { $greaterEqual: 'aze' } ) ).toThrowError();
+				} );
 			} );
 		} );
 		if ( adapter.classEntity.matches !== AdapterEntity.matches ){
@@ -396,6 +399,94 @@ export const checkEachStandardMethods = adapterLabel => {
 		}
 	} );
 	describe( getStyle( 'taskCategory', `Test ${adapterLabel} adapter methods` ), () => {
+		describe( getStyle( 'taskCategory', `Test ${adapterLabel} adapter options` ), () => {
+			/*
+			Generates every possible combinations of demo options, like:
+			
+			```
+			{skip: undefined, limit: undefined, page: undefined} 
+			{skip: undefined, limit: undefined, page: 0}
+			...
+			{skip: undefined, limit: 0, page: 2}
+			...
+			{skip: 0, limit: undefined, page: 0}
+			```
+			*/
+			const allOptionsCombinations = product( {
+				skip: [undefined, 0,2],
+				limit: [undefined, 0,2],
+				page: [undefined, 0,2],
+			} ) as QueryLanguage.Raw.IQueryOptions[];
+			const removedImpossibleCombinations = _.reject( allOptionsCombinations, combination => 
+				// Conflicting options (page & skip)
+				( !_.isNil( combination.page ) && !_.isNil( combination.skip ) ) || 
+				// Dependent options (page requires limit)
+				( !_.isNil( combination.page ) && _.isNil( combination.limit ) )
+			);
+			const groups = {
+				'Limit only': ( options: QueryLanguage.Raw.IQueryOptions ) => !_.isNil( options.limit ) && _.isNil( options.page ) && _.isNil( options.skip ), 
+				'Skip only': ( options: QueryLanguage.Raw.IQueryOptions ) => _.isNil( options.limit ) && _.isNil( options.page ) && !_.isNil( options.skip ), 
+				'Other combinations': ( options: QueryLanguage.Raw.IQueryOptions ) => true,
+			};
+			const testsCombinations = _.mapValues( groups, () => [] ) as {[key: string]: QueryLanguage.Raw.IQueryOptions[]};
+			_.forEach( removedImpossibleCombinations, ( combination, name ) => {
+				_.forEach( groups, ( tester, name ) => {
+					if ( tester( combination ) ){
+						testsCombinations[name].push( combination );
+						return true;
+					}
+				} );
+			} );
+			
+			const tableContent = [
+				{a: false},
+				{a: true},
+				{a: false},
+				{a: true},
+				{a: false},
+				{a: true},
+				{a: false},
+				{a: true},
+			];
+			const matchSearch = {a: true};
+			
+			const getExpectedCount = ( totalItems: number, combination: QueryLanguage.Raw.IQueryOptions ) => {
+				const expected = ( totalItems - ( combination.skip || 0 ) ) - ( ( combination.limit || 0 ) * ( combination.page || 0 ) );
+				if ( _.isNil( combination.limit ) ){
+					return expected;
+				} else {
+					return Math.min( expected, combination.limit );
+				}
+			};
+			const getExpectedOffset = ( combination: QueryLanguage.Raw.IQueryOptions ) =>
+				( ( ( combination.page || 0 ) * ( combination.limit || 0 ) ) + ( combination.skip || 0 ) ) || 0;
+
+			
+			beforeEach( async () => {
+				await adapter.deleteMany( TABLE, {} );
+				await adapter.insertMany( TABLE, tableContent );
+			} );
+			_.forEach( testsCombinations, ( combinations, testLabel ) => {
+				it( testLabel, async () => {
+					const allMatchingItems = await adapter.findMany( TABLE, matchSearch );
+					expect( allMatchingItems ).toHaveLength( _.filter( tableContent, 'a' ).length );
+					for ( let combination of combinations ){
+						const optionsResultSet = await adapter.findMany( TABLE, matchSearch, combination );
+						
+						// Check if the query returned the right number of matches
+						const expectedCount = getExpectedCount( allMatchingItems.length, combination );
+						expect( optionsResultSet ).toHaveLength( expectedCount );
+						
+						// Check if the query returned the right matches
+						const expectedOffset = getExpectedOffset( combination );
+						const expectedSet = allMatchingItems.slice( expectedOffset, expectedOffset + expectedCount );
+						_.forEach( optionsResultSet, ( result, index ) => {
+							expect( result.properties.id ).toBe( expectedSet[index].properties.id );
+						} );
+					}
+				} );
+			} );
+		} );
 		const OFFSET_OBJECT = {};
 		const TEST_SET = [OFFSET_OBJECT, {a: 1, b: 3}, {a: 4, c: 5}, {b: 3}, {a: 4, d: 'foo'}, {a: 1, d: 'baz'}];
 		describe( '✨ Insert methods', () => {
@@ -629,76 +720,76 @@ export const checkEachStandardMethods = adapterLabel => {
 				);
 			} );
 			it( `${getStyle( 'bold', '~' )} ($exists) operator`, () =>
-				Promise.all( [
-					adapter
-					.findOne( TABLE, {
-						b: {
-							'~': true,
-						},
-					} )
-					.then( output => {
-						expect( output ).toBeAnAdapterEntity( adapter, {
-							b: 1,
-						} );
-					} ),
-					adapter
-					.findOne( TABLE, {
-						b: {
-							'~': false,
-						},
-					} )
-					.then( output => {
-						expect( output ).toBeAnAdapterEntity( adapter, {
-							b: undefined,
-						} );
-					} ),
-				] ) );
-			it( `${getStyle( 'bold', '==' )} ($equal) operator`, () =>
+			Promise.all( [
 				adapter
 				.findOne( TABLE, {
 					b: {
-						'==': 1,
+						'~': true,
 					},
 				} )
 				.then( output => {
 					expect( output ).toBeAnAdapterEntity( adapter, {
 						b: 1,
 					} );
-				} ) );
+				} ),
+				adapter
+				.findOne( TABLE, {
+					b: {
+						'~': false,
+					},
+				} )
+				.then( output => {
+					expect( output ).toBeAnAdapterEntity( adapter, {
+						b: undefined,
+					} );
+				} ),
+			] ) );
+			it( `${getStyle( 'bold', '==' )} ($equal) operator`, () =>
+			adapter
+			.findOne( TABLE, {
+				b: {
+					'==': 1,
+				},
+			} )
+			.then( output => {
+				expect( output ).toBeAnAdapterEntity( adapter, {
+					b: 1,
+				} );
+			} ) );
 			it( `${getStyle( 'bold', '!=' )} ($diff) operator`, () =>
-				Promise.all( [
-					adapter
-					.findOne( TABLE, {
-						bar: {
-							'!=': 1,
-						},
-					} )
-					.then( output => {
-						expect( output ).toBeAnAdapterEntity( adapter, {
-							bar: 2,
-						} );
-					} ),
-					adapter
-					.findOne( TABLE, {
-						b: {
-							'!=': 1,
-						},
-					} )
-					.then( output => {
-						expect( output ).toBeUndefined();
-					} ),
-					adapter
-					.findOne( TABLE, {
-						b: {
-							'!=': 2,
-						},
-					} )
-					.then( output => {
-						expect( output ).toBeAnAdapterEntity( adapter, {
-							b: 1,
-						} );
-					} ),
-				] ) );
+			Promise.all( [
+				adapter
+				.findOne( TABLE, {
+					bar: {
+						'!=': 1,
+					},
+				} )
+				.then( output => {
+					expect( output ).toBeAnAdapterEntity( adapter, {
+						bar: 2,
+					} );
+				} ),
+				adapter
+				.findOne( TABLE, {
+					b: {
+						'!=': 1,
+					},
+				} )
+				.then( output => {
+					expect( output ).toBeUndefined();
+				} ),
+				adapter
+				.findOne( TABLE, {
+					b: {
+						'!=': 2,
+					},
+				} )
+				.then( output => {
+					expect( output ).toBeAnAdapterEntity( adapter, {
+						b: 1,
+					} );
+				} ),
+			] ) );
 			it( `${getStyle( 'bold', '<' )} ($less) operator`, async () => {
 				const outputs = await adapter.findMany( TABLE, { bar: { '<': 2 } } );
 				expect( outputs ).toHaveLength( 1 );

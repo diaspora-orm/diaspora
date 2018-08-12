@@ -94,9 +94,13 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * @param apiDesc - Raw description sent by the adapter
 	 */
 	private beforeQuery(
-		apiDesc: WebApiAdapter.IQueryDescriptor
+		apiDesc: WebApiAdapter.IQueryDescriptorRaw
 	): Promise<WebApiAdapter.IQueryDescriptor> {
-		return this.emit( 'beforeQuery', apiDesc );
+		const filteredApiDescOptions = WebApiAdapter.transformQueryOptions( apiDesc.options );
+		return this.emit( 'beforeQuery', _.assign(
+			_.omit( apiDesc, ['options'] ),
+			{ options: filteredApiDescOptions }
+		) );
 	}
 	
 	/**
@@ -114,10 +118,9 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 	 * @param queryFind - Selection query object
 	 * @param options   - Options object
 	 */
-	private static getQueryObject(
-		queryFind: QueryLanguage.ISelectQuery,
+	private static transformQueryOptions(
 		options: QueryLanguage.IQueryOptions
-	) {
+	): WebApiAdapter.QueryOptions {
 		if ( 0 === options.skip ) {
 			delete options.skip;
 		}
@@ -125,9 +128,7 @@ export abstract class WebApiAdapter extends Adapter<WebApiEntity> {
 			delete options.limit;
 		}
 		
-		return _.assign( {}, _.omit( options, ['remapInput', 'remapOutput'] ), {
-			where: queryFind,
-		} );
+		return _.omit( options, ['remapInput', 'remapOutput'] );
 	}
 	
 	/**
@@ -610,7 +611,24 @@ export namespace WebApiAdapter {
 		modelName: string;
 		select: QueryLanguage.SelectQueryOrCondition;
 		update?: IEntityAttributes;
+		options: QueryOptions;
+		apiDesc: IApiDescription;
+	}
+	export interface IQueryDescriptorRaw {
+		queryType: 'find' | 'update' | 'delete' | 'insert';
+		queryNum: 'one' | 'many';
+		modelName: string;
+		select: QueryLanguage.SelectQueryOrCondition;
+		update?: IEntityAttributes;
 		options: QueryLanguage.IQueryOptions;
 		apiDesc: IApiDescription;
 	}
+
+	export type QueryOptions = {
+		skip?: number;
+		limit?: number;
+	} | {
+		limit: number;
+		page: number;
+	};
 }
