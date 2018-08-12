@@ -155,6 +155,7 @@
 		"typescript": "3.0.1",
 		"uglify-es": "^3.3.9",
 		"validate-commit-msg": "^2.14.0",
+		"validate-npm-package-name": "^3.0.0",
 		"xmlhttprequest": "^1.8.0"
 	},
 	"dependencies": {
