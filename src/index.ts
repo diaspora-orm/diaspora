@@ -17,5 +17,6 @@ export namespace Utils {
 	export const getDefaultFunction = _getDefaultFunction;
 }
 
+export { EntityUid } from './types/entity';
 export { EFieldType } from './types/modelDescription';
 export { ELoggingLevel } from './logger';
