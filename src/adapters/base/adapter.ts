@@ -130,7 +130,7 @@ implements IDataSourceQuerier<IEntityAttributes, IEntityProperties> {
 	) {
 		const foundEntities: IEntityProperties[] = [];
 		const localOptions = _.assign( {}, options );
-		let origSkip = options.skip;
+		let origSkip = localOptions.skip;
 		
 		// We are going to loop until we find enough items
 		while ( foundEntities.length < localOptions.limit ) {
@@ -140,6 +140,7 @@ implements IDataSourceQuerier<IEntityAttributes, IEntityProperties> {
 			} else {
 				foundEntities.push( found );
 			}
+			// Set the next query's offset as the original offset to which we add the current number of found elements
 			localOptions.skip = origSkip + foundEntities.length;
 		}
 		return foundEntities;
@@ -229,9 +230,9 @@ implements IDataSourceQuerier<IEntityAttributes, IEntityProperties> {
 		opts: QueryLanguage.Raw.IQueryOptions = {}
 	): QueryLanguage.IQueryOptions {
 		opts = _.cloneDeep( opts );
-		_.forEach( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
-			if ( opts.hasOwnProperty( optionName ) ) {
-				QUERY_OPTIONS_TRANSFORMS[optionName]( opts );
+		_.forOwn( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
+			if ( optionName in opts && !_.isNil( ( opts as any )[optionName] ) ) {
+				transform( opts );
 			}
 		} );
 		const optsDefaulted = _.defaults( opts, {

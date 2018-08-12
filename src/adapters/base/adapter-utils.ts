@@ -144,7 +144,7 @@ export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
 		} );
 	},
 	page( opts: QueryLanguage.Raw.IQueryOptions ) {
-		if ( !opts.hasOwnProperty( 'limit' ) ) {
+		if ( !_.isNumber( opts.limit ) ) {
 			throw new ReferenceError(
 				'Usage of "options.page" requires "options.limit" to be defined.'
 			);
@@ -154,7 +154,7 @@ export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
 				'Usage of "options.page" requires "options.limit" to not be infinite'
 			);
 		}
-		if ( opts.hasOwnProperty( 'skip' ) ) {
+		if ( !_.isNil( opts.skip ) ) {
 			throw new ReferenceError( 'Use either "options.page" or "options.skip"' );
 		}
 		opts.skip =
