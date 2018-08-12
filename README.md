@@ -12,7 +12,7 @@ Fancy badges:
 [![npm](https://img.shields.io/npm/dm/diaspora.svg)](https://npmjs.org/package/diaspora)
 [![npm version](https://badge.fury.io/js/diaspora.svg)](https://badge.fury.io/js/diaspora)
 [![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora)
-[![license](https://img.shields.io/github/license/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora)
+[![license](https://img.shields.io/github/license/GerkinDev/diaspora.svg)](https://github.com/GerkinDev/diaspora) [![Greenkeeper badge](https://badges.greenkeeper.io/diaspora-orm/diaspora.svg)](https://greenkeeper.io/)
 
 ## Documentation & important notes
 
