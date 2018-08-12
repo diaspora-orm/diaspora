@@ -1,9 +1,3 @@
-import * as _ from 'lodash';
-// tslint:disable-next-line:no-implicit-dependencies
-import express from 'express';
-// tslint:disable-next-line:no-implicit-dependencies
-import {json, urlencoded} from 'body-parser';
-
 import { Diaspora } from '../../src/diaspora';
 import { WebApiAdapter } from '../../src/adapters/webApi/adapter';
 import { getConfig } from '../utils';
