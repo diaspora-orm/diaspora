@@ -8,10 +8,18 @@ import { IEntityAttributes } from '../types/entity';
 
 export { IEnumeratedHash, IAdapterEntityCtr };
 
-// TODO: Replace with a decorator to register type validation.
-// For instance, mongo may use the new decorator to declare a checking class that may recognize a class instance as an entity uid.
-// It would allow the mongo adapter to use normal mongo uuid as EntityUid type member
+/**
+ * TODO: Replace with a decorator to register type validation.
+ * For instance, mongo may use the new decorator to declare a checking class that may recognize a class instance as an entity uid.
+ * It would allow the mongo adapter to use normal mongo uuid as EntityUid type member
+ */
 export class EntityUid {
+	/**
+	 * Test for an entity to be if it can be an EntityUid
+	 * 
+	 * @param tested - Value to test
+	 * @returns True if it is a valid entity Uid, false otherwise.
+	 */
 	public static [Symbol.hasInstance]( tested: any ) {
 		return _.isString( tested ) || _.isNumber( tested );
 	}
@@ -24,15 +32,15 @@ const isEntityUid = ( query: any ): query is EntityUid => query instanceof Entit
  * @author Gerkin
  */
 export class DataAccessLayer<
-TEntity extends AdapterEntity = AdapterEntity,
-TAdapter extends Adapter<TEntity> = Adapter<TEntity>
+	TEntity extends AdapterEntity = AdapterEntity,
+	TAdapter extends Adapter<TEntity> = Adapter<TEntity>
 > extends SequentialEvent
 implements
 IDataSourceQuerier<
-TEntity,
-TEntity,
-QueryLanguage.Raw.SearchQuery | undefined,
-QueryLanguage.Raw.IQueryOptions | undefined
+	TEntity,
+	TEntity,
+	QueryLanguage.Raw.SearchQuery | undefined,
+	QueryLanguage.Raw.IQueryOptions | undefined
 > {
 	public get classEntity() {
 		return this.adapter.classEntity;
@@ -227,7 +235,7 @@ QueryLanguage.Raw.IQueryOptions | undefined
 	 *
 	 * @author Gerkin
 	 * @param collectionName - Name of the collection to update
-	 * @param searchQuery     - Description of the entity to update
+	 * @param searchQuery    - Description of the entity to update
 	 * @param update         - Properties to modify on the matched entity
 	 * @param options        - Options to apply to the query
 	 */

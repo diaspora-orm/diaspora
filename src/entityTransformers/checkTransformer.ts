@@ -71,7 +71,6 @@ export interface ITypeErrorObject extends IErrorObject {
 /**
  * A checker is a function that can return an error component with provided standard args.
  *
- * @callback Checker
  * @param   keys      - Pathstack so far.
  * @param   fieldDesc - Description of the field.
  * @param   value     - Value to check.
@@ -399,10 +398,9 @@ export class CheckTransformer extends EntityTransformer {
 	 * Check if the value matches the field description provided, thus verify if it is valid.
 	 *
 	 * @author gerkin
-	 * @param   value                  - Value to check.
-	 * @param   keys                   - Pathstack representing path to this validation.
-	 * @param   options                - Hash of options.
-	 * @param   options.getProps=false - If `false`, it will use the value directly. If `true`, will try to get the property from value, as if it was an entity.
+	 * @param   value   - Value to check.
+	 * @param   keys    - Pathstack representing path to this validation.
+	 * @param   options - Hash of options.
 	 * @returns Hash describing errors.
 	 */
 	public applyField(
