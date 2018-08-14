@@ -4,6 +4,8 @@ branches:
     - master
     - staging
     - /^greenkeeper/.*$/
+notifications:
+  email: false
 node_js:
   - "10"
   - "9"
@@ -18,23 +20,18 @@ matrix:
     env: CC_SAMPLE=true
   - node_js: "lts/*"
     os: osx
-notifications:
-  slack:
-    rooms:
-      - altenter-project:Pc8sMyCuHNPBCg1TOw0weD9S#tech
 before_install:
   - rm -f npm-shrinkwrap.json
 before_script:
-#TODO send test reporter for a single config
   - |
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     chmod +x ./cc-test-reporter
-    if [ "$CC_SAMPLE" = "true" ]; then ./cc-test-reporter before-build; fi
+    if [ "$CC_SAMPLE" = "true" ]; then echo "This run will be used for codeclimate";./cc-test-reporter before-build; fi
 script:
   - npm run test:prod
 after_script:
   - |
-    if [ "$CC_SAMPLE" = "true" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+    if [ "$CC_SAMPLE" = "true" ]; then echo "This run is used for codeclimate"; ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 cache:
   directories:
     - "node_modules"
