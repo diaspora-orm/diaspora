@@ -98,7 +98,9 @@ export class NodeLogger extends Logger {
 		const MESSAGE = Symbol.for( 'message' );
 		const LEVEL = Symbol.for( 'level' );
 
-		const level = infos[LEVEL];
+		// Ugly patch related to [a known typescript missing feature](https://github.com/Microsoft/TypeScript/issues/24587)
+		// TODO: Clean this up!
+		const level = infos[LEVEL as any];
 		// Add 'Diaspora: ' before the log level name
 		infos.level = infos.level.replace( level, 'Diaspora: ' + level );
 		
@@ -109,7 +111,10 @@ export class NodeLogger extends Logger {
 		if ( !_.isEmpty( _.difference( _.keys( infos ), omittedKeys ) ) ) {
 			message += ' ' + JSON.stringify( _.omit( infos, omittedKeys ) );
 		}
-		infos[MESSAGE] = message;
+
+		// Ugly patch related to [a known typescript missing feature](https://github.com/Microsoft/TypeScript/issues/24587)
+		// TODO: Clean this up!
+		infos[MESSAGE as any] = message;
 		return infos;
 	}
 }
