@@ -39,24 +39,28 @@ checkApplications( ADAPTER_LABEL );
 describe( `${ADAPTER_LABEL} > Configuration`, () => {
 	beforeEach( () => {
 		delete ( Diaspora as any )._dataSources[ADAPTER_LABEL];
+		Object.defineProperty( global, 'localStorage', {
+			value: new LocalStorageMock(),
+		} );
+		Object.defineProperty( global, 'sessionStorage', {
+			value: new LocalStorageMock(),
+		} );
 	} );
 	it( 'Use local storage', async () => {
-		const mockFn = jest.fn( localStorage.setItem );
-		( global as any ).localStorage.setItem = mockFn;
+		localStorage.setItem = jest.fn( localStorage.setItem );
 		const adapter = await Diaspora.createNamedDataSource( ADAPTER_LABEL, ADAPTER_LABEL, {
 			session: false,
 		} ).waitReady();
 		await adapter.insertOne( 'TEST', {} );
-		expect( mockFn ).toHaveBeenCalled();
+		expect( localStorage.setItem ).toHaveBeenCalled();
 	} );
 	it( 'Use session storage', async () => {
-		const mockFn = jest.fn( sessionStorage.setItem );
-		( global as any ).sessionStorage.setItem = mockFn;
+		sessionStorage.setItem = jest.fn( sessionStorage.setItem );
 		const adapter = await Diaspora.createNamedDataSource( ADAPTER_LABEL, ADAPTER_LABEL, {
 			session: true,
 		} ).waitReady();
 		await adapter.insertOne( 'TEST', {} );
-		expect( mockFn ).toHaveBeenCalled();
+		expect( sessionStorage.setItem ).toHaveBeenCalled();
 	} );
 } );
 describe( `${ADAPTER_LABEL} > Error recovery`, () => {
