@@ -57,11 +57,31 @@ export class Model {
 	private static normalizeAttributesDescription( desc: Raw.IAttributesDescription ): IAttributesDescription {
 		return _.mapValues(
 			desc,
-			val => {
-				const fieldDescriptorToDefault = Raw.FieldDescriptor.FieldDescriptorTypeChecks.isFieldDescriptor( val ) ? val : { type: val } ;
-				return _.defaults( fieldDescriptorToDefault , {required: false } ) as any;
-			}
+			val => Model.normalizeAttributeDescription( val )
 		);
+	}
+
+	/**
+	 * Normalize fields to convert a {@link Raw.FieldDescriptor} to a {@link FieldDescriptor}
+	 *
+	 * @param attributeDesc - Attributes description to transform
+	 * @returns Attribute description normalized, with properties defaulted
+	 * @author Gerkin
+	 */
+	private static normalizeAttributeDescription( attributeDesc: Raw.FieldDescriptor ): FieldDescriptor{
+		const fieldDescriptorToDefault = Raw.FieldDescriptor.FieldDescriptorTypeChecks.isObjectFieldDescriptor( attributeDesc ) ? attributeDesc : { type: attributeDesc } as Raw.ObjectFieldDescriptor;
+		const fieldDescriptorWithRequired = _.defaults( fieldDescriptorToDefault , {required: false } );
+
+		// Perform deep defaulting
+		if ( fieldDescriptorWithRequired.type === EFieldType.OBJECT ){
+			const attributesDefaulted = fieldDescriptorWithRequired.attributes ? Model.normalizeAttributesDescription( fieldDescriptorWithRequired.attributes ) : undefined;
+			return _.assign( _.omit( fieldDescriptorWithRequired, 'attributes' ), {attributes: attributesDefaulted} );
+		} else if ( fieldDescriptorWithRequired.type === EFieldType.ARRAY ){
+			const ofDefaulted = Model.normalizeAttributeDescription( fieldDescriptorWithRequired.of ? fieldDescriptorWithRequired.of : EFieldType.ANY );
+			return _.assign( _.omit( fieldDescriptorWithRequired, 'of' ), {of: ofDefaulted} );
+		} else {
+			return fieldDescriptorWithRequired;
+		}
 	}
 	
 	/**
