@@ -1,26 +1,3 @@
-class LocalStorageMock{
-	private store = {};
-	public setItem( key, val ){
-		this.store[key] = val;
-	}
-	public getItem( key ){
-		return this.store[key];
-	}
-	public removeItem( key ){ 
-		delete this.store[key];
-	}
-	public clear(){
-		this.store = {};
-	}
-  }
-
-Object.defineProperty( global, 'localStorage', {
-	value: new LocalStorageMock(),
-} );
-Object.defineProperty( global, 'sessionStorage', {
-	value: new LocalStorageMock(),
-} );
-
 const ADAPTER_LABEL = 'webStorage';
 
 import {
@@ -36,31 +13,32 @@ createDataSource( ADAPTER_LABEL, {} );
 checkSpawnedAdapter( ADAPTER_LABEL );
 checkEachStandardMethods( ADAPTER_LABEL );
 checkApplications( ADAPTER_LABEL );
+
 describe( `${ADAPTER_LABEL} > Configuration`, () => {
 	beforeEach( () => {
 		delete ( Diaspora as any )._dataSources[ADAPTER_LABEL];
-		Object.defineProperty( global, 'localStorage', {
-			value: new LocalStorageMock(),
-		} );
-		Object.defineProperty( global, 'sessionStorage', {
-			value: new LocalStorageMock(),
-		} );
 	} );
 	it( 'Use local storage', async () => {
-		localStorage.setItem = jest.fn( localStorage.setItem );
+		const spy = jest.spyOn( Storage.prototype, 'setItem' );
 		const adapter = await Diaspora.createNamedDataSource( ADAPTER_LABEL, ADAPTER_LABEL, {
 			session: false,
 		} ).waitReady();
 		await adapter.insertOne( 'TEST', {} );
-		expect( localStorage.setItem ).toHaveBeenCalled();
+		expect( spy ).toHaveBeenCalled();
+
+		spy.mockReset();
+		spy.mockRestore();
 	} );
 	it( 'Use session storage', async () => {
-		sessionStorage.setItem = jest.fn( sessionStorage.setItem );
+		const spy = jest.spyOn( Storage.prototype, 'setItem' );
 		const adapter = await Diaspora.createNamedDataSource( ADAPTER_LABEL, ADAPTER_LABEL, {
 			session: true,
 		} ).waitReady();
 		await adapter.insertOne( 'TEST', {} );
-		expect( sessionStorage.setItem ).toHaveBeenCalled();
+		expect( spy ).toHaveBeenCalled();
+
+		spy.mockReset();
+		spy.mockRestore();
 	} );
 } );
 describe( `${ADAPTER_LABEL} > Error recovery`, () => {
