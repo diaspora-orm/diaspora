@@ -20,8 +20,11 @@ matrix:
     env: CC_SAMPLE=true
   - node_js: "lts/*"
     os: osx
-before_install:
-  - rm -f npm-shrinkwrap.json
+cache:
+  directories:
+    - "node_modules"
+
+install: npm install
 before_script:
   - |
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -32,6 +35,3 @@ script:
 after_script:
   - |
     if [ "$CC_SAMPLE" = "true" ]; then echo "This run is used for codeclimate"; ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
-cache:
-  directories:
-    - "node_modules"
