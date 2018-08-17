@@ -120,8 +120,13 @@ expect.extend( {
 		expect( received.attributes ).toEqual( received.getAttributes() );
 		if ( orphanState ) {
 			expect( received.lastDataSource ).toEqual( null );
-			expect( received.attributes ).not.toHaveProperty( 'id' );
-			expect( received.attributes ).not.toHaveProperty( 'idHash' );
+			if ( _.isUndefined( expectedAttributes ) ){
+				expect( received.attributes ).toBe( null );
+			} else {
+				expect( received.attributes ).toBeInstanceOf( Object );
+				expect( received.attributes ).not.toHaveProperty( 'id' );
+				expect( received.attributes ).not.toHaveProperty( 'idHash' );
+			}
 			expect( received.attributes ).toEqual( received.getAttributes() );
 		} else if ( null !== orphanState ) {
 			const lds = received.lastDataSource;

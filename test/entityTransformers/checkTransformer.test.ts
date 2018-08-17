@@ -106,6 +106,7 @@ describe( 'Default values', () => {
 			foo:{
 				type: EFieldType.STRING,
 				default: 'bar',
+				required: false,
 			},
 		} );
 		expect( validator.applyField( {foo:1}, ['foo'] ) ).toBeInstanceOf( Object );
@@ -118,6 +119,7 @@ describe( 'Default values', () => {
 						const validator = new CheckTransformer( {
 							test: {
 								type,
+								required: false,
 							},
 						} );
 						const partition = canBeNil( getValues( type ) );
@@ -151,8 +153,10 @@ describe( 'Default values', () => {
 							attributes: {
 								string: {
 									type: EFieldType.STRING,
+									required: false,
 								},
 							},
+							required: false,
 						},
 					} );
 					const testObjects = wrapTest( [
@@ -169,6 +173,7 @@ describe( 'Default values', () => {
 							attributes: {
 								string: {
 									type: EFieldType.STRING,
+									required: false,
 								},
 							},
 						},
@@ -189,6 +194,7 @@ describe( 'Default values', () => {
 									required: true,
 								},
 							},
+							required: false,
 						},
 					} );
 					const testObjects = wrapTest( [
@@ -256,7 +262,9 @@ describe( 'Default values', () => {
 								type: EFieldType.ARRAY,
 								of: {
 									type: EFieldType.INTEGER,
+									required: false,
 								},
+								required: false,
 							},
 						} );
 						const testObjects = wrapTest( [
@@ -272,6 +280,7 @@ describe( 'Default values', () => {
 								required: true,
 								of: {
 									type: EFieldType.INTEGER,
+									required: false,
 								},
 							},
 						} );
@@ -289,6 +298,7 @@ describe( 'Default values', () => {
 									type: EFieldType.INTEGER,
 									required: true,
 								},
+								required: false,
 							},
 						} );
 						const testObjects = wrapTest( [
@@ -340,195 +350,6 @@ describe( 'Default values', () => {
 						return runTests( validator, testObjects );
 					} );
 				} );
-				describe( 'Multiple definition', () => {
-					it( 'Optional multiple definitions in optional array', () => {
-						const validator = new CheckTransformer( {
-							test: {
-								type: EFieldType.ARRAY,
-								of: [{ type: EFieldType.INTEGER }, { type: EFieldType.DATETIME }],
-							},
-						} );
-						const testObjects = wrapTest( [
-							[
-								undefined,
-								null,
-								[],
-								[1],
-								[1, 2, 3],
-								[1, 2, null, undefined],
-								[date1],
-								[date1, undefined, date2],
-								[date1, date2],
-								[date1, 1, undefined, null],
-								[date1, 1],
-							],
-							[['foo'], [{}]],
-						] );
-						return runTests( validator, testObjects );
-					} );
-					it( 'Optional multiple definitions in required array', () => {
-						const validator = new CheckTransformer( {
-							test: {
-								type: EFieldType.ARRAY,
-								required: true,
-								of: [{ type: EFieldType.INTEGER }, { type: EFieldType.DATETIME }],
-							},
-						} );
-						const testObjects = wrapTest( [
-							[
-								[],
-								[1],
-								[1, 2, 3],
-								[1, 2, null, undefined],
-								[date1],
-								[date1, undefined, date2],
-								[date1, date2],
-								[date1, 1, undefined, null],
-								[date1, 1],
-							],
-							[undefined, null, ['foo'], [{}]],
-						] );
-						return runTests( validator, testObjects );
-					} );
-					it( 'Required multiple definitions in optional array', () => {
-						const validator = new CheckTransformer( {
-							test: {
-								type: EFieldType.ARRAY,
-								of: [
-									{
-										type: EFieldType.INTEGER,
-										required: true,
-									},
-									{
-										type: EFieldType.DATETIME,
-										required: true,
-									},
-								],
-							},
-						} );
-						const testObjects = wrapTest( [
-							[
-								undefined,
-								null,
-								[],
-								[1],
-								[1, 2, 3],
-								[date1],
-								[date1, date2],
-								[date1, 1],
-							],
-							[
-								['foo'],
-								[{}],
-								[1, 2, null, undefined],
-								[date1, undefined, date2],
-								[date1, 1, undefined, null],
-							],
-						] );
-						return runTests( validator, testObjects );
-					} );
-					it( 'Required multiple definitions in required array', () => {
-						const validator = new CheckTransformer( {
-							test: {
-								type: EFieldType.ARRAY,
-								required: true,
-								of: [
-									{
-										type: EFieldType.INTEGER,
-										required: true,
-									},
-									{
-										type: EFieldType.DATETIME,
-										required: true,
-									},
-								],
-							},
-						} );
-						const testObjects = wrapTest( [
-							[[], [1], [1, 2, 3], [date1], [date1, date2], [date1, 1]],
-							[
-								undefined,
-								null,
-								['foo'],
-								[{}],
-								[1, 2, null, undefined],
-								[date1, undefined, date2],
-								[date1, 1, undefined, null],
-							],
-						] );
-						return runTests( validator, testObjects );
-					} );
-					it( 'Required & optional definitions in array', () => {
-						const validator = new CheckTransformer( {
-							test: {
-								type: EFieldType.ARRAY,
-								of: [
-									{
-										type: EFieldType.INTEGER,
-										required: true,
-									},
-									{ type: EFieldType.DATETIME },
-								],
-							},
-						} );
-						const testObjects = wrapTest( [
-							[
-								undefined,
-								null,
-								[],
-								[1],
-								[1, 2, 3],
-								[1, 2, null, undefined],
-								[date1],
-								[date1, undefined, date2],
-								[date1, date2],
-								[date1, 1, undefined, null],
-								[date1, 1],
-							],
-							[['foo'], [{}]],
-						] );
-						return runTests( validator, testObjects );
-					} );
-					it( 'In-depth required element in required arrays', () => {
-						const validator = new CheckTransformer( {
-							test: {
-								type: EFieldType.ARRAY,
-								required: true,
-								of: [
-									{
-										type: EFieldType.ARRAY,
-										required: true,
-										of: [
-											{
-												type: EFieldType.ARRAY,
-												required: true,
-												of: [
-													{
-														type: EFieldType.INTEGER,
-														required: true,
-													},
-												],
-											},
-											{
-												type: EFieldType.INTEGER,
-												required: true,
-											},
-										],
-									},
-									{
-										type: EFieldType.INTEGER,
-										required: true,
-									},
-								],
-							},
-						} );
-						const testObjects = wrapTest( [
-							[[[[1]]], [[[1]]], [[]], [], [1]],
-							[undefined, null, [[[['foo', 1]]]]],
-						] );
-						return runTests( validator, testObjects );
-					} );
-				} );
 			} );
 		} );
 		describe( '"enum" property', () => {
@@ -538,6 +359,7 @@ describe( 'Default values', () => {
 						test: {
 							type: EFieldType.ANY,
 							enum: [1, 2, 'aze'],
+							required: false,
 						},
 					} );
 					const testObjects = wrapTest( [
@@ -551,6 +373,7 @@ describe( 'Default values', () => {
 						test: {
 							type: EFieldType.INTEGER,
 							enum: [1, 2, 'aze'],
+							required: false,
 						},
 					} );
 					const testObjects = wrapTest( [
@@ -564,6 +387,7 @@ describe( 'Default values', () => {
 						test: {
 							type: EFieldType.STRING,
 							enum: [/^foo/, /bar$/],
+							required: false,
 						},
 					} );
 					const testObjects = wrapTest( [
