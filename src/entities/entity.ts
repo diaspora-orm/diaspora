@@ -82,12 +82,19 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 			// ### Load datas from source
 			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 		if ( source instanceof AdapterEntity ) {
+			// ### Load datas from source
+			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 			this.setLastDataSourceEntity(
 				DataAccessLayer.retrieveAccessLayer( source.dataSource ),
 				source
 			);
+		} else {
+			// ### Generate attributes
+			// Now we know that the source is valid. Deep clone to detach object values from entity
+			this._attributes = _.isNil( source ) ? null : this.applyDefaults( _.cloneDeep( source ) );
 		}
 		
+
 		// ### Final validation
 		// Check keys provided in source
 		const sourceDModel = _.difference( _.keys( this._attributes ), modelAttrsKeys );
@@ -99,12 +106,6 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 				)} in ${JSON.stringify( source )}`
 			);
 		}
-
-		// ### Generate attributes
-		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
-		const definitiveSource = this.attributes || source;
-		this._attributes = _.cloneDeep( definitiveSource );
-		this._attributes = this.applyDefaults();
 		
 		// ### Load events
 		_.forEach(
@@ -123,12 +124,28 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 *
 	 * @author Gerkin
 	 */
-	public applyDefaults() {
-		if ( this._attributes ) {
-			return this.model.entityTransformers.default.apply( this._attributes ) as TEntity;
-		} else {
-			return this;
-		}
+	public applyDefaults(): this;
+	public applyDefaults( attributes: TEntity | null ): TEntity | null;
+	public applyDefaults( attributes?: TEntity | null ) {
+		const attrs = _.isUndefined( attributes ) ? this._attributes : attributes;
+		const defaultApplied = _.isNull( attrs ) ? null : this.ctor.model.entityTransformers.default.apply( attrs ) as TEntity;
+		return _.isUndefined( attributes ) ? this : defaultApplied;
+	}
+	
+	/**
+	 * Check if the entity matches model description.
+	 *
+	 * @author gerkin
+	 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
+	 * @returns This function does not return anything.
+	 * @see Validator.Validator#validate
+	 */
+	public validate(): this;
+	public validate( attributes: TEntity | null ): TEntity | null;
+	public validate( attributes?: TEntity | null ) {
+		const attrs = _.isUndefined( attributes ) ? this._attributes : attributes;
+		const validateApplied = _.isNull( attrs ) ? null : this.ctor.model.entityTransformers.check.apply( attrs ) as TEntity;
+		return _.isUndefined( attributes ) ? this : validateApplied;
 	}
 	
 	/**
@@ -183,21 +200,6 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	public collectionName( dataSource?: TDataSource ) {
 		// Will be used later
 		return this.model.name;
-	}
-	
-	/**
-	 * Check if the entity matches model description.
-	 *
-	 * @author gerkin
-	 * @throws EntityValidationError Thrown if validation failed. This breaks event chain and prevent persistance.
-	 * @returns This function does not return anything.
-	 * @see Validator.Validator#validate
-	 */
-	public validate() {
-		if ( this.attributes ) {
-			this.ctor.model.entityTransformers.check.apply( this.attributes );
-		}
-		return this;
 	}
 	
 	/**
@@ -263,8 +265,8 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		
 		// Trigger events & validation
 		await _maybeEmit( ['beforePersist', 'beforeValidate'] );
-		this.validate();
-		this.applyDefaults();
+		this.attributes = this.validate( this.attributes );
+		this.attributes = this.applyDefaults( this.attributes );
 		await _maybeEmit( ['afterValidate', `beforePersist${suffix}`] );
 		
 		// Depending on state, we are going to perform a different operation
@@ -433,27 +435,28 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 */
 	private castTypes( source: {[key in keyof TEntity]: any} ): TEntity {
 		const attrs = this.model.modelDesc.attributes;
-		_.forEach( source, ( currentVal: any, attrName: string ) => {
-			const attrDesc = attrs[attrName];
+		const foo: Partial<TEntity> | undefined = undefined;
+		return _.mapValues( source, <TKey extends keyof TEntity>( currentVal: any, attrName: keyof TEntity ) => {
+			const attrDesc = attrs[attrName as string];
 			if ( _.isObject( attrDesc ) ) {
 				switch ( attrDesc.type ) {
 					case 'datetime':
 					{
 						if ( _.isString( currentVal ) || _.isInteger( currentVal ) ) {
-							source[attrName] = new Date( currentVal );
+							return new Date( currentVal );
 						} else if ( !( currentVal instanceof Date ) ) {
 							logger.error(
 								'Incoherent data type received, expected DateTime castable data, but received: ' +
 								currentVal
 							);
-							source[attrName] = undefined;
+							return undefined;
 						}
 					}
 					break;
 				}
 			}
-		} );
-		return source;
+			return currentVal as TEntity[TKey];
+		} ) as TEntity;
 	}
 	
 	/**
@@ -534,9 +537,9 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		if ( dataSourceEntity ) {
 			// Set the state
 			this._state = EEntityState.SYNC;
-			const attrs = this.castTypes( dataSourceEntity.properties as any );
-			this.idHash = attrs.idHash;
-			this._attributes = _.omit( attrs, ['id', 'idHash'] );
+			const attrs = this.castTypes( dataSourceEntity.attributes as any );
+			this.idHash = _.cloneDeep( dataSourceEntity.properties.idHash );
+			this._attributes = _.cloneDeep( attrs );
 		} else {
 			this._attributes = null;
 			// If this was our only data source, then go back to orphan state
