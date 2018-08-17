@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { IEventHandler } from 'sequential-event';
 
 import { Entity, Set } from '../../../src/entities';
+import { IEntityAttributes } from '../../../src/types/entity';
 
 export const lifecycleEvents = {
 	create: [
@@ -31,7 +32,7 @@ export interface IEventMock {
 	name: string;
 }
 
-export const bindEvents = ( category: string, entity: Entity | Set ) => {
+export const bindEvents = <TEntity extends IEntityAttributes>( category: string, entity: Entity<TEntity> | Set<TEntity> ) => {
 	const eventCatList: string[] = lifecycleEvents[category];
 	const eventsFlags: IEventMock[] = _.map(
 		eventCatList,
@@ -45,7 +46,7 @@ export const bindEvents = ( category: string, entity: Entity | Set ) => {
 	_.forEach( eventsFlags, eventDescriptor => {
 		const parts = _.partition( eventsFlags, eventFlags =>
 			eventDescriptor.index <= eventFlags.index );
-		const bindEntity = ( entity: Entity ) => {
+		const bindEntity = ( entity: Entity<TEntity> ) => {
 			entity.once( eventDescriptor.name, () => {
 				_.forEach( parts[0], subEventDescriptor => {
 					_.chain( subEventDescriptor.mock )

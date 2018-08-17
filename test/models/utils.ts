@@ -2,8 +2,9 @@ import { Diaspora } from '../../src/diaspora';
 
 import '../utils';
 import { Raw, EFieldType } from '../../src/types/modelDescription';
+import { IEntityAttributes } from '../../src/types/entity';
 
-export const createMockModel = ( scope: string, attributesDescription: Raw.IAttributesDescription = {
+export const createMockModel = <TEntity extends IEntityAttributes = {foo?:string;baz?:string}>( scope: string, attributesDescription: Raw.IAttributesDescription = {
 	foo: {
 		type: EFieldType.STRING,
 	},
@@ -18,7 +19,7 @@ export const createMockModel = ( scope: string, attributesDescription: Raw.IAttr
 	return {
 		dal,
 		adapter: dal.adapter,
-		model: Diaspora.declareModel( MODEL_NAME, {
+		model: Diaspora.declareModel<TEntity>( MODEL_NAME, {
 			sources: [SOURCE],
 			attributes: attributesDescription,
 		} ),

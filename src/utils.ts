@@ -77,8 +77,8 @@ export const applyOptionsToSet = (
  * @param object - Object to freeze
  * @returns The frozen object
  */
-export const deepFreeze = <T>( object: T ) => {
-	const deepMap = ( obj: T, mapper: Function ): T =>
+export const deepFreeze = <TObject>( object: TObject ) => {
+	const deepMap = ( obj: TObject, mapper: Function ): TObject =>
 	mapper(
 		_.isObject( obj )
 		? _.mapValues( ( obj as any ) as object, function( v ) {

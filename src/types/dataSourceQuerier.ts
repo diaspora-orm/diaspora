@@ -1,7 +1,7 @@
 import { QueryLanguage } from './queryLanguage';
 
-export interface IEnumeratedHash<T> {
-  [key: string]: T;
+export interface IEnumeratedHash<THash> {
+  [key: string]: THash;
 }
 
 export interface IRemapsHash extends IEnumeratedHash<any> {}

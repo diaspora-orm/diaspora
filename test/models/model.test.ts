@@ -10,7 +10,7 @@ import '../utils';
 import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
 import { EFieldType } from '../../src';
 
-let testModel: Model;
+let testModel: Model<{foo: string; baz: string}>;
 const MODEL_NAME = 'model-test';
 const SOURCE = 'inMemory-model-test';
 let dataAccessLayer: DataAccessLayer;

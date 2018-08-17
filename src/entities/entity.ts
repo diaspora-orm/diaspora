@@ -18,12 +18,12 @@ const DEFAULT_OPTIONS = { skipEvents: false };
  *
  * @extends SequentialEvent
  */
-export abstract class Entity extends SequentialEvent {
+export abstract class Entity<TEntity extends IEntityAttributes> extends SequentialEvent {
 	public get attributes() {
 		return this.getAttributes();
 	}
 	
-	public set attributes( newAttributes: IEntityAttributes | null ) {
+	public set attributes( newAttributes: TEntity | null ) {
 		this._attributes = newAttributes;
 	}
 	
@@ -40,10 +40,10 @@ export abstract class Entity extends SequentialEvent {
 	}
 	
 	public get ctor() {
-		return this.constructor as typeof Entity & Entity.IEntitySpawner;
+		return this.constructor as typeof Entity & Entity.IEntitySpawner<TEntity>;
 	}
 	
-	private _attributes: IEntityAttributes | null = null;
+	private _attributes: TEntity | null = null;
 	
 	private _state: EEntityState = EEntityState.ORPHAN;
 	
@@ -62,8 +62,8 @@ export abstract class Entity extends SequentialEvent {
 	 *        If provided object inherits AdapterEntity, the constructed entity is built in `sync` state.
 	 */
 	public constructor(
-		public readonly model: Model,
-		source: AdapterEntity | IEntityAttributes = {}
+		public readonly model: Model<TEntity>,
+		source?: AdapterEntity | TEntity | null
 	) {
 		super();
 		const modelAttrsKeys = _.keys( this.model.modelDesc.attributes );
@@ -79,8 +79,8 @@ export abstract class Entity extends SequentialEvent {
 		this._lastDataSource = null;
 		this.idHash = {};
 		
-		// ### Load datas from source
-		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
+			// ### Load datas from source
+			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 		if ( source instanceof AdapterEntity ) {
 			this.setLastDataSourceEntity(
 				DataAccessLayer.retrieveAccessLayer( source.dataSource ),
@@ -99,7 +99,7 @@ export abstract class Entity extends SequentialEvent {
 				)} in ${JSON.stringify( source )}`
 			);
 		}
-		
+
 		// ### Generate attributes
 		// Now we know that the source is valid. Deep clone to detach object values from entity then Default model attributes with our model desc
 		const definitiveSource = this.attributes || source;
@@ -125,7 +125,7 @@ export abstract class Entity extends SequentialEvent {
 	 */
 	public applyDefaults() {
 		if ( this._attributes ) {
-			return this.model.entityTransformers.default.apply( this._attributes );
+			return this.model.entityTransformers.default.apply( this._attributes ) as TEntity;
 		} else {
 			return this;
 		}
@@ -206,16 +206,16 @@ export abstract class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @returns Attributes of this entity.
 	 */
-	public getAttributes( dataSource?: undefined ): IEntityAttributes | null;
-	public getAttributes( dataSource: TDataSource ): IEntityAttributes;
+	public getAttributes( dataSource?: undefined ): TEntity | null;
+	public getAttributes( dataSource: TDataSource ): TEntity;
 	public getAttributes(
 		dataSource?: TDataSource | undefined
-	): IEntityAttributes | null {
+	): TEntity | null {
 		if ( dataSource ) {
 			// Get the target data source
 			const dataSourceFixed = this.getDataSource( dataSource );
 			const adapterEntity = this._dataSources.get( dataSourceFixed );
-			return adapterEntity ? adapterEntity.attributes : null;
+			return adapterEntity ? adapterEntity.attributes as any : null;
 		}
 		return this._attributes;
 	}
@@ -226,11 +226,11 @@ export abstract class Entity extends SequentialEvent {
 	 * @author gerkin
 	 * @returns Attributes of this entity.
 	 */
-	public getProperties( dataSource: TDataSource ): IEntityProperties | null {
+	public getProperties( dataSource: TDataSource ): ( TEntity & IEntityProperties ) | null {
 		// Get the target data source
 		const dataSourceFixed = this.getDataSource( dataSource );
 		const adapterEntity = this._dataSources.get( dataSourceFixed );
-		return adapterEntity ? adapterEntity.properties : null;
+		return adapterEntity ? adapterEntity.properties as any : null;
 	}
 	
 	/**
@@ -431,7 +431,7 @@ export abstract class Entity extends SequentialEvent {
 	 * @param source - Raw entity properties to cast
 	 * @returns the casted properties
 	 */
-	private castTypes( source: IEntityProperties ) {
+	private castTypes( source: {[key in keyof TEntity]: any} ): TEntity {
 		const attrs = this.model.modelDesc.attributes;
 		_.forEach( source, ( currentVal: any, attrName: string ) => {
 			const attrDesc = attrs[attrName];
@@ -534,7 +534,7 @@ export abstract class Entity extends SequentialEvent {
 		if ( dataSourceEntity ) {
 			// Set the state
 			this._state = EEntityState.SYNC;
-			const attrs = this.castTypes( dataSourceEntity.properties );
+			const attrs = this.castTypes( dataSourceEntity.properties as any );
 			this.idHash = attrs.idHash;
 			this._attributes = _.omit( attrs, ['id', 'idHash'] );
 		} else {
@@ -601,10 +601,10 @@ export namespace Entity {
 		skipEvents?: boolean;
 	}
 	
-	export interface IEntitySpawner {
-		model: Model;
+	export interface IEntitySpawner<TEntity> {
+		model: Model<TEntity>;
 		name: string;
-		new ( source?: IEntityAttributes ): Entity;
+		new ( source?: IEntityAttributes ): Entity<TEntity>;
 	}
 	export interface IDataSourceMap<T extends AdapterEntity>
 	extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
@@ -618,9 +618,9 @@ export namespace Entity {
 	 * @param   model     - Model that will spawn entities.
 	 * @returns Entity constructor to use with this model.
 	 */
-	export interface IEntityFactory {
-		( name: string, modelDesc: IModelDescription, model: Model ): IEntitySpawner;
-		Entity: Entity;
+	export interface IEntityFactory{
+		<TEntity>( name: string, modelDesc: IModelDescription, model: Model<TEntity> ): IEntitySpawner<TEntity>;
+		Entity: typeof Entity;
 	}
 }
 

@@ -94,10 +94,10 @@ expect.extend( {
 			pass: true,
 		};
 	},
-	toBeAnEntity(
+	toBeAnEntity<TEntity extends IEntityAttributes>(
 		received: any,
-		expectedModel: Model,
-		expectedAttributes: IEntityAttributes,
+		expectedModel: Model<TEntity>,
+		expectedAttributes?: Partial<TEntity>,
 		expectedOrphan?: boolean | string
 	) {
 		expect( received ).toBeInstanceOf( Entity );
@@ -155,10 +155,10 @@ expect.extend( {
 			pass: true,
 		};
 	},
-	toBeAnEntitySet(
+	toBeAnEntitySet<TEntity extends IEntityAttributes>(
 		receivedSet: any,
-		expectedModel: Model,
-		expectedAttributesArray: IEntityAttributes | IEntityAttributes[],
+		expectedModel: Model<TEntity>,
+		expectedAttributesArray?: Partial<TEntity> | Array<Partial<TEntity>>,
 		expectedOrphan?: boolean | string
 	) {
 		expect( receivedSet ).toBeInstanceOf( Set );
@@ -254,14 +254,14 @@ declare global {
 				expectedAttributesArray?: any[] | any
 			): void;
 			// Entity
-			toBeAnEntity(
-				expectedModel: Model,
-				expectedAttributes: IEntityAttributes,
+			toBeAnEntity<TEntity extends IEntityAttributes>(
+				expectedModel: Model<TEntity>,
+				expectedAttributes?: Partial<TEntity>,
 				expectedOrphan?: boolean | string
 			): void;
-			toBeAnEntitySet(
-				expectedModel: Model,
-				expectedAttributesArray: IEntityAttributes | IEntityAttributes[],
+			toBeAnEntitySet<TEntity extends IEntityAttributes>(
+				expectedModel: Model<TEntity>,
+				expectedAttributesArray?: Partial<TEntity> | Array<Partial<TEntity>>,
 				expectedOrphan?: boolean | string
 			): void;
 		}

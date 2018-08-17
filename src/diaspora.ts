@@ -219,8 +219,8 @@ export class DiasporaStatic {
 	 * @param   modelDesc - Description of the model to define.
 	 * @returns Model created.
 	 */
-	public declareModel( name: string, modelDesc: Raw.IModelDescription ) {
-		const model = new Model( name, modelDesc );
+	public declareModel<TEntity>( name: string, modelDesc: Raw.IModelDescription ) {
+		const model = new Model<TEntity>( name, modelDesc );
 		this._models[name] = model;
 		return model;
 	}

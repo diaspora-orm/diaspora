@@ -21,7 +21,7 @@ import { IEntityAttributes } from './types/entity';
 /**
  * The model class is used to interact with the population of all data of the same type.
  */
-export class Model {
+export class Model<TEntity extends IEntityAttributes> {
 	public attributes: { [key: string]: FieldDescriptor };
 	
 	private readonly _dataSources: IDataSourceRegistry;
@@ -30,7 +30,7 @@ export class Model {
 		return this._dataSources;
 	}
 	private readonly defaultDataSource: string;
-	private readonly _entityFactory: Entity.IEntitySpawner;
+	private readonly _entityFactory: Entity.IEntitySpawner<TEntity>;
 	public get entityFactory() {
 		return this._entityFactory;
 	}
@@ -197,7 +197,7 @@ export class Model {
 	 * @param   source - Object to copy attributes from.
 	 * @returns New *orphan* entity.
 	 */
-	public spawn( source: object ): Entity {
+	public spawn( source: Partial<TEntity> ): Entity<TEntity> {
 		const newEntity = new this.entityFactory( source );
 		return newEntity;
 	}
@@ -209,7 +209,7 @@ export class Model {
 	 * @param   sources - Array of objects to copy attributes from.
 	 * @returns Set with new *orphan* entities.
 	 */
-	public spawnMany( sources: object[] ): Set {
+	public spawnMany( sources: Array<Partial<TEntity>> ): Set<TEntity> {
 		return new Set( this, _.map( sources, source => this.spawn( source ) ) );
 	}
 	
@@ -224,7 +224,7 @@ export class Model {
 	public async insert(
 		source: IEntityAttributes,
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity | null> {
+	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
 			this.getDataSource( dataSourceName ).insertOne( this.name, source )
 		);
@@ -241,7 +241,7 @@ export class Model {
 	public async insertMany(
 		sources: IEntityAttributes[],
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Promise<Set<TEntity>> {
 		return this.makeSet(
 			this.getDataSource( dataSourceName ).insertMany( this.name, sources )
 		);
@@ -260,7 +260,7 @@ export class Model {
 		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity | null> {
+	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
 			this.getDataSource( dataSourceName ).findOne( this.name, queryFind, options )
 		);
@@ -279,7 +279,7 @@ export class Model {
 		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Promise<Set<TEntity>> {
 		return this.makeSet(
 			this.getDataSource( dataSourceName ).findMany( this.name, queryFind, options )
 		);
@@ -300,7 +300,7 @@ export class Model {
 		update: object,
 		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity | null> {
+	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
 			this.getDataSource( dataSourceName ).updateOne(
 				this.name,
@@ -326,7 +326,7 @@ export class Model {
 		update: object,
 		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Promise<Set<TEntity>> {
 		return this.makeSet(
 			this.getDataSource( dataSourceName ).updateMany(
 				this.name,
@@ -392,7 +392,7 @@ export class Model {
 		.map( dataSourceEntity => new this.entityFactory( dataSourceEntity ) )
 		.compact()
 		.value();
-		const set = new Set( this, newEntities );
+		const set = new Set<TEntity>( this, newEntities );
 		return set;
 	}
 	
