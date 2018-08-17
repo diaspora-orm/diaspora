@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 
 export type RootType = string | Array<string & number & boolean & undefined> | undefined;
-interface IDictionary<T> {
-	[Key: string]: T;
+interface IDictionary<TValue> {
+	[Key: string]: TValue;
 }
-type AnyDictionary<T> = IDictionary<T> | T[];
+type AnyDictionary<TValue> = IDictionary<TValue> | TValue[];
 export type Concatenable = string | any[];
 /**
  * Generate all combination of arguments when given arrays or strings

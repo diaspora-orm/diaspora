@@ -490,12 +490,12 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 * @param dataSource  -
 	 * @param method      -
 	 */
-	private execIfOkState<T extends AdapterEntity>(
+	private execIfOkState<TAdapterEntity extends AdapterEntity>(
 		beforeState: EEntityState,
 		dataSource: DataAccessLayer,
 		// TODO: precise it
 		method: string
-	): Promise<T> {
+	): Promise<TAdapterEntity> {
 		// Depending on state, we are going to perform a different operation
 		if ( EEntityState.ORPHAN === beforeState ) {
 			return Promise.reject(
@@ -506,7 +506,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 			const execMethod: (
 				collectionName: string,
 				query: object
-			) => Promise<T> = ( dataSource as any )[method];
+			) => Promise<TAdapterEntity> = ( dataSource as any )[method];
 			return execMethod.call(
 				dataSource,
 				this.collectionName( dataSource.name ),
@@ -606,8 +606,8 @@ export namespace Entity {
 		name: string;
 		new ( source?: IEntityAttributes ): Entity<TEntity>;
 	}
-	export interface IDataSourceMap<T extends AdapterEntity>
-	extends WeakMap<DataAccessLayer<T, Adapter<T>>, T | null> {}
+	export interface IDataSourceMap<TAdapterEntity extends AdapterEntity>
+	extends WeakMap<DataAccessLayer<TAdapterEntity, Adapter<TAdapterEntity>>, TAdapterEntity | null> {}
 	
 	/**
 	 * This factory function generate a new class constructor, prepared for a specific model.

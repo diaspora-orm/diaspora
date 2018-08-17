@@ -9,8 +9,8 @@ import {
 	IEntityProperties
 } from '../../types/entity';
 
-export interface IAdapterEntityCtr<T extends AdapterEntity> {
-	new ( data: IEntityAttributes, adapter: Adapter<T> ): T;
+export interface IAdapterEntityCtr<TAdapterEntity extends AdapterEntity> {
+	new ( data: IEntityAttributes, adapter: Adapter<TAdapterEntity> ): TAdapterEntity;
 	
 	matches(
 		attributes: IEntityProperties,
@@ -19,7 +19,7 @@ export interface IAdapterEntityCtr<T extends AdapterEntity> {
 	
 	setId(
 		attributes: IEntityAttributes,
-		adapter: Adapter<T>,
+		adapter: Adapter<TAdapterEntity>,
 		id?: EntityUid,
 		propName?: string
 	): IEntityProperties;

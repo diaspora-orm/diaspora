@@ -34,9 +34,7 @@ const isEntityUid = ( query: any ): query is EntityUid => query instanceof Entit
 export class DataAccessLayer<
 	TEntity extends AdapterEntity = AdapterEntity,
 	TAdapter extends Adapter<TEntity> = Adapter<TEntity>
-> extends SequentialEvent
-implements
-IDataSourceQuerier<
+> extends SequentialEvent implements IDataSourceQuerier<
 	TEntity,
 	TEntity,
 	QueryLanguage.Raw.SearchQuery | undefined,
@@ -79,10 +77,7 @@ IDataSourceQuerier<
 		return this.adapter.name;
 	}
 	
-	protected static dataAccessLayersRegistry = new WeakMap<
-	Adapter,
-	DataAccessLayer
-	>();
+	protected static dataAccessLayersRegistry = new WeakMap<Adapter, DataAccessLayer>();
 	
 	/**
 	 * Constructs a new instance of DataAccessLayer. This new instance is automatically registered in the registry of DataAccessLayer

@@ -9,9 +9,9 @@ import {
 	IEntityProperties
 } from '../../types/entity';
 
-export const AutoIdAdapterEntity = <T extends IConstructable<AdapterEntity>>(
-	adapterEntity: T
-): T =>
+export const AutoIdAdapterEntity = <TAdapterEntityCtor extends IConstructable<AdapterEntity>>(
+	adapterEntity: TAdapterEntityCtor
+): TAdapterEntityCtor =>
 class AutoIdAdapterEntity extends adapterEntity {
 	/**
 	 * This decorator allows to add the ability to the entity to generates its own ID. It should be used when the underlying store objects does not generates IDs itself, like the {@link InMemoryAdapter}.

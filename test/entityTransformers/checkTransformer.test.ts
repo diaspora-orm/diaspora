@@ -5,9 +5,9 @@ import { Errors } from '../../src/errors';
 import { EFieldType } from '../../src';
 
 
-interface IPartition<T> extends Array<T[]> {
-	0: T[];
-	1: T[];
+interface IPartition<TData> extends Array<TData[]> {
+	0: TData[];
+	1: TData[];
 }
 
 export const explain = ( expectation: () => void, ...explanation: any[] ) => {

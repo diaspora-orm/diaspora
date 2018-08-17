@@ -6,10 +6,10 @@ import { QueryLanguage } from '../../types/queryLanguage';
 import { IEntityProperties } from '../../types/entity';
 
 export const SelfMatchingAdapterEntity = <
-T extends IConstructable<AdapterEntity>
+TAdapterEntityCtor extends IConstructable<AdapterEntity>
 >(
-	adapterEntity: T
-): T =>
+	adapterEntity: TAdapterEntityCtor
+): TAdapterEntityCtor =>
 class SelfMatchingAdapterEntity extends adapterEntity {
 	/**
 	 * Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function.

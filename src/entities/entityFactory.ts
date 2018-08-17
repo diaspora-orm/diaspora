@@ -12,11 +12,11 @@ import { QueryLanguage } from '../types/queryLanguage';
 import { logger } from '../logger/index';
 
 // We init the function as any to define the Entity property later.
-const ef: Entity.IEntityFactory = ( <T extends IEntityAttributes>( name: string, modelDesc: IModelDescription, model: Model<T> ) => {
+const ef: Entity.IEntityFactory = ( <TEntity extends IEntityAttributes>( name: string, modelDesc: IModelDescription, model: Model<TEntity> ) => {
 	/**
 	 * @ignore
 	 */
-	class SubEntity extends Entity<T> {
+	class SubEntity extends Entity<TEntity> {
 		/**
 		 * Name of the class.
 		 *
@@ -47,7 +47,7 @@ const ef: Entity.IEntityFactory = ( <T extends IEntityAttributes>( name: string,
 			( SubEntity as any )[staticMethodName] = staticMethod;
 		}
 	);
-	return SubEntity.bind( SubEntity, model ) as Entity.IEntitySpawner<T>;
+	return SubEntity.bind( SubEntity, model ) as Entity.IEntitySpawner<TEntity>;
 } ) as any;
 ef.Entity = Entity;
 export const EntityFactory = ef;

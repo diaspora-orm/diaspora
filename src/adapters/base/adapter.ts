@@ -29,9 +29,9 @@ export enum EAdapterState {
 	PREPARING = 'preparing',
 }
 
-export interface IAdapterCtr<T extends AdapterEntity = AdapterEntity>
-extends IConstructable<Adapter<T>> {
-	new ( dataSourceName: string, ...args: any[] ): Adapter<T>;
+export interface IAdapterCtr<TAdapterEntity extends AdapterEntity = AdapterEntity>
+extends IConstructable<Adapter<TAdapterEntity>> {
+	new ( dataSourceName: string, ...args: any[] ): Adapter<TAdapterEntity>;
 }
 
 /**
@@ -40,7 +40,7 @@ extends IConstructable<Adapter<T>> {
  * @author gerkin
  * @see {@link https://gerkindev.github.io/SequentialEvent.js/SequentialEvent.html Sequential Event documentation}.
  */
-export abstract class Adapter<T extends AdapterEntity = AdapterEntity>
+export abstract class Adapter<TAdapterEntity extends AdapterEntity = AdapterEntity>
 extends SequentialEvent
 implements IDataSourceQuerier<IEntityAttributes, IEntityProperties> {
 	public get classEntity() {
@@ -92,7 +92,7 @@ implements IDataSourceQuerier<IEntityAttributes, IEntityProperties> {
 	 * @param classEntity - Entity to spawn with this adapter.
 	 */
 	public constructor(
-		protected _classEntity: IAdapterEntityCtr<T>,
+		protected _classEntity: IAdapterEntityCtr<TAdapterEntity>,
 		public readonly name: string
 	) {
 		super();
