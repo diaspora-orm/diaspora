@@ -928,6 +928,9 @@ img { max-width: 100%; }
 					<a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-kind-icon">IQuery<wbr>Descriptor</a>
 				</li>
 				<li class=" tsd-kind-interface tsd-parent-kind-class">
+					<a href="../interfaces/webapiadapter.iquerydescriptorraw.html" class="tsd-kind-icon">IQuery<wbr>Descriptor<wbr>Raw</a>
+				</li>
+				<li class=" tsd-kind-interface tsd-parent-kind-class">
 					<a href="../interfaces/webapiadapter.iwebapiadapterconfig.html" class="tsd-kind-icon">IWeb<wbr>Api<wbr>Adapter<wbr>Config</a>
 				</li>
 				<li class=" tsd-kind-interface tsd-parent-kind-class">
@@ -938,6 +941,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
 					<a href="webapiadapter.html#ieventproviderfactory" class="tsd-kind-icon">IEvent<wbr>Provider<wbr>Factory</a>
+				</li>
+				<li class=" tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+					<a href="webapiadapter.html#queryoptions" class="tsd-kind-icon">Query<wbr>Options</a>
 				</li>
 				<li class=" tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
 					<a href="webapiadapter.html#tentitiesjsonresponse" class="tsd-kind-icon">TEntities<wbr>Json<wbr>Response</a>
@@ -1062,9 +1068,6 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
 					<a href="webapiadapter.html#getmessage" class="tsd-kind-icon">get<wbr>Message</a>
 				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<a href="webapiadapter.html#getqueryobject" class="tsd-kind-icon">get<wbr>Query<wbr>Object</a>
-				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
 					<a href="webapiadapter.html#handleerror" class="tsd-kind-icon">handle<wbr>Error</a>
 				</li>
@@ -1073,6 +1076,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
 					<a href="webapiadapter.html#normalizefieldquery" class="tsd-kind-icon">normalize<wbr>Field<wbr>Query</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a href="webapiadapter.html#transformqueryoptions" class="tsd-kind-icon">transform<wbr>Query<wbr>Options</a>
 				</li>
 				<li class=" tsd-kind-object-literal tsd-parent-kind-class tsd-is-protected tsd-is-static">
 					<a href="webapiadapter.html#httperrorfactories" class="tsd-kind-icon">http<wbr>Error<wbr>Factories</a>
@@ -1139,6 +1145,7 @@ img { max-width: 100%; }
 							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.ierrormessage.html" class="tsd-kind-icon">IError<wbr>Message</a></li>
 							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.ieventprovider.html" class="tsd-kind-icon">IEvent<wbr>Provider</a></li>
 							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-kind-icon">IQuery<wbr>Descriptor</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.iquerydescriptorraw.html" class="tsd-kind-icon">IQuery<wbr>Descriptor<wbr>Raw</a></li>
 							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.iwebapiadapterconfig.html" class="tsd-kind-icon">IWeb<wbr>Api<wbr>Adapter<wbr>Config</a></li>
 							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.iwebapiadapterinternalconfig.html" class="tsd-kind-icon">IWeb<wbr>Api<wbr>Adapter<wbr>Internal<wbr>Config</a></li>
 							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/webapiadapter.ixhrresponse.html" class="tsd-kind-icon">IXhr<wbr>Response</a></li>
@@ -1148,6 +1155,7 @@ img { max-width: 100%; }
 						<h3>Type aliases</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-type-alias tsd-parent-kind-class tsd-is-static"><a href="webapiadapter.html#ieventproviderfactory" class="tsd-kind-icon">IEvent<wbr>Provider<wbr>Factory</a></li>
+							<li class="tsd-kind-type-alias tsd-parent-kind-class tsd-is-static"><a href="webapiadapter.html#queryoptions" class="tsd-kind-icon">Query<wbr>Options</a></li>
 							<li class="tsd-kind-type-alias tsd-parent-kind-class tsd-is-static"><a href="webapiadapter.html#tentitiesjsonresponse" class="tsd-kind-icon">TEntities<wbr>Json<wbr>Response</a></li>
 						</ul>
 					</section>
@@ -1209,10 +1217,10 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="webapiadapter.html#updateone" class="tsd-kind-icon">update<wbr>One</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="webapiadapter.html#waitready" class="tsd-kind-icon">wait<wbr>Ready</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="webapiadapter.html#getmessage" class="tsd-kind-icon">get<wbr>Message</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="webapiadapter.html#getqueryobject" class="tsd-kind-icon">get<wbr>Query<wbr>Object</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="webapiadapter.html#handleerror" class="tsd-kind-icon">handle<wbr>Error</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="webapiadapter.html#maybeaddidhashtoentities" class="tsd-kind-icon">maybe<wbr>Add<wbr>IdHash<wbr>ToEntities</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static"><a href="webapiadapter.html#normalizefieldquery" class="tsd-kind-icon">normalize<wbr>Field<wbr>Query</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="webapiadapter.html#transformqueryoptions" class="tsd-kind-icon">transform<wbr>Query<wbr>Options</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section tsd-is-private-protected">
@@ -1232,7 +1240,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">IEvent<wbr>Provider<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L578">adapters/webApi/adapter.ts:578</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L579">adapters/webApi/adapter.ts:579</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1258,12 +1266,22 @@ img { max-width: 100%; }
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+				<a name="queryoptions" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> Query<wbr>Options</h3>
+				<div class="tsd-signature tsd-kind-icon">Query<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L627">adapters/webApi/adapter.ts:627</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
 				<a name="tentitiesjsonresponse" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> TEntities<wbr>Json<wbr>Response</h3>
 				<div class="tsd-signature tsd-kind-icon">TEntities<wbr>Json<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L602">adapters/webApi/adapter.ts:602</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L603">adapters/webApi/adapter.ts:603</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1281,7 +1299,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#constructor">constructor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L46">adapters/webApi/adapter.ts:46</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L46">adapters/webApi/adapter.ts:46</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1346,7 +1364,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#_classentity">_classEntity</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L95">adapters/base/adapter.ts:95</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L95">adapters/base/adapter.ts:95</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1356,7 +1374,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">base<wbr>End<wbr>Point<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L39">adapters/webApi/adapter.ts:39</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L39">adapters/webApi/adapter.ts:39</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1367,7 +1385,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#error">error</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L76">adapters/base/adapter.ts:76</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L76">adapters/base/adapter.ts:76</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1388,7 +1406,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#filters">filters</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L55">adapters/base/adapter.ts:55</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L55">adapters/base/adapter.ts:55</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1409,7 +1427,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#name">name</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L96">adapters/base/adapter.ts:96</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L96">adapters/base/adapter.ts:96</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1419,7 +1437,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">plural<wbr>Apis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L46">adapters/webApi/adapter.ts:46</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L46">adapters/webApi/adapter.ts:46</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1448,7 +1466,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#remaps">remaps</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L62">adapters/base/adapter.ts:62</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L62">adapters/base/adapter.ts:62</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1469,7 +1487,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#remapsinverted">remapsInverted</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L69">adapters/base/adapter.ts:69</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L69">adapters/base/adapter.ts:69</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1490,7 +1508,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#state">state</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L83">adapters/base/adapter.ts:83</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L83">adapters/base/adapter.ts:83</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1514,7 +1532,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#classentity">classEntity</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L46">adapters/base/adapter.ts:46</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L46">adapters/base/adapter.ts:46</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1532,7 +1550,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L455">adapters/webApi/adapter.ts:455</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L456">adapters/webApi/adapter.ts:456</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1577,7 +1595,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L461">adapters/webApi/adapter.ts:461</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L462">adapters/webApi/adapter.ts:462</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1603,13 +1621,13 @@ img { max-width: 100%; }
 				<a name="beforequery" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> before<wbr>Query</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">before<wbr>Query<span class="tsd-signature-symbol">(</span>apiDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-signature-type">IQueryDescriptor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-signature-type">IQueryDescriptor</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">before<wbr>Query<span class="tsd-signature-symbol">(</span>apiDesc<span class="tsd-signature-symbol">: </span><a href="../interfaces/webapiadapter.iquerydescriptorraw.html" class="tsd-signature-type">IQueryDescriptorRaw</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-signature-type">IQueryDescriptor</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L96">adapters/webApi/adapter.ts:96</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L96">adapters/webApi/adapter.ts:96</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1620,7 +1638,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>apiDesc: <a href="../interfaces/webapiadapter.iquerydescriptor.html" class="tsd-signature-type">IQueryDescriptor</a></h5>
+								<h5>apiDesc: <a href="../interfaces/webapiadapter.iquerydescriptorraw.html" class="tsd-signature-type">IQueryDescriptorRaw</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Raw description sent by the adapter</p>
 								</div>
@@ -1642,7 +1660,7 @@ img { max-width: 100%; }
 							<p>Implementation of <a href="../interfaces/idatasourcequerier.html">IDataSourceQuerier</a>.<a href="../interfaces/idatasourcequerier.html#configurecollection">configureCollection</a></p>
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#configurecollection">configureCollection</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L462">adapters/base/adapter.ts:462</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L463">adapters/base/adapter.ts:463</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1682,7 +1700,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#deletemany">deleteMany</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L389">adapters/webApi/adapter.ts:389</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L390">adapters/webApi/adapter.ts:390</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1735,7 +1753,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#deleteone">deleteOne</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L358">adapters/webApi/adapter.ts:358</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L359">adapters/webApi/adapter.ts:359</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1831,7 +1849,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#findmany">findMany</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L245">adapters/webApi/adapter.ts:245</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L246">adapters/webApi/adapter.ts:246</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1884,7 +1902,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#findone">findOne</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L209">adapters/webApi/adapter.ts:209</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L210">adapters/webApi/adapter.ts:210</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1936,7 +1954,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L434">adapters/webApi/adapter.ts:434</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L435">adapters/webApi/adapter.ts:435</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1986,7 +2004,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L513">adapters/webApi/adapter.ts:513</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L514">adapters/webApi/adapter.ts:514</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2099,7 +2117,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L418">adapters/webApi/adapter.ts:418</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L419">adapters/webApi/adapter.ts:419</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2149,7 +2167,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#insertmany">insertMany</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L183">adapters/webApi/adapter.ts:183</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L184">adapters/webApi/adapter.ts:184</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2196,7 +2214,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#insertone">insertOne</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L158">adapters/webApi/adapter.ts:158</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L159">adapters/webApi/adapter.ts:159</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2243,7 +2261,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#normalizeoptions">normalizeOptions</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L228">adapters/base/adapter.ts:228</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L229">adapters/base/adapter.ts:229</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2287,7 +2305,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#normalizequery">normalizeQuery</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L284">adapters/base/adapter.ts:284</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L285">adapters/base/adapter.ts:285</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2569,7 +2587,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#remapinput">remapInput</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L198">adapters/base/adapter.ts:198</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L199">adapters/base/adapter.ts:199</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2618,7 +2636,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#remapoutput">remapOutput</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L212">adapters/base/adapter.ts:212</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L213">adapters/base/adapter.ts:213</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2666,7 +2684,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L491">adapters/webApi/adapter.ts:491</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L492">adapters/webApi/adapter.ts:492</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2715,7 +2733,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#tojson">toJSON</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L307">adapters/base/adapter.ts:307</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L308">adapters/base/adapter.ts:308</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2739,7 +2757,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#updatemany">updateMany</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L321">adapters/webApi/adapter.ts:321</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L322">adapters/webApi/adapter.ts:322</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2798,7 +2816,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides <a href="adapter.html">Adapter</a>.<a href="adapter.html#updateone">updateOne</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L281">adapters/webApi/adapter.ts:281</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L282">adapters/webApi/adapter.ts:282</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2858,7 +2876,7 @@ img { max-width: 100%; }
 							<p>Implementation of <a href="../interfaces/idatasourcequerier.html">IDataSourceQuerier</a>.<a href="../interfaces/idatasourcequerier.html#waitready">waitReady</a></p>
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#waitready">waitReady</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L176">adapters/base/adapter.ts:176</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L177">adapters/base/adapter.ts:177</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2892,7 +2910,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L107">adapters/webApi/adapter.ts:107</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L111">adapters/webApi/adapter.ts:111</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2915,46 +2933,6 @@ img { max-width: 100%; }
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-				<a name="getqueryobject" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Query<wbr>Object</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Query<wbr>Object<span class="tsd-signature-symbol">(</span>queryFind<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L117">adapters/webApi/adapter.ts:117</a></li>
-							</ul>
-						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Filters the query object for non-http query relevant informations</p>
-							</div>
-						</div>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>queryFind: <a href="../interfaces/querylanguage.iselectquery.html" class="tsd-signature-type">ISelectQuery</a></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>Selection query object</p>
-								</div>
-							</li>
-							<li>
-								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>Options object</p>
-								</div>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span>
-							<span class="tsd-signature-symbol"> &amp; </span>
-							<span class="tsd-signature-type">object</span>
-						</h4>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
 				<a name="handleerror" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> handle<wbr>Error</h3>
@@ -2965,7 +2943,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L525">adapters/webApi/adapter.ts:525</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L526">adapters/webApi/adapter.ts:526</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3008,7 +2986,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L139">adapters/webApi/adapter.ts:139</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L140">adapters/webApi/adapter.ts:140</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3046,7 +3024,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="adapter.html">Adapter</a>.<a href="adapter.html#normalizefieldquery">normalizeFieldQuery</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter.ts#L252">adapters/base/adapter.ts:252</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter.ts#L253">adapters/base/adapter.ts:253</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3072,6 +3050,37 @@ img { max-width: 100%; }
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+				<a name="transformqueryoptions" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> transform<wbr>Query<wbr>Options</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">transform<wbr>Query<wbr>Options<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="webapiadapter.html#queryoptions" class="tsd-signature-type">QueryOptions</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L121">adapters/webApi/adapter.ts:121</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Filters the query object for non-http query relevant informations</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>options: <a href="../interfaces/querylanguage.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Options object</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="webapiadapter.html#queryoptions" class="tsd-signature-type">QueryOptions</a></h4>
+					</li>
+				</ul>
+			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
 			<h2>Object literals</h2>
@@ -3081,7 +3090,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">http<wbr>Error<wbr>Factories<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L18">adapters/webApi/adapter.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L18">adapters/webApi/adapter.ts:18</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
@@ -3094,7 +3103,7 @@ img { max-width: 100%; }
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L19">adapters/webApi/adapter.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L19">adapters/webApi/adapter.ts:19</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3120,7 +3129,7 @@ img { max-width: 100%; }
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L25">adapters/webApi/adapter.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L25">adapters/webApi/adapter.ts:25</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3146,7 +3155,7 @@ img { max-width: 100%; }
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/adapter.ts#L31">adapters/webApi/adapter.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/adapter.ts#L31">adapters/webApi/adapter.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>

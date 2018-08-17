@@ -921,6 +921,15 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>TODO: Replace with a decorator to register type validation.
+						For instance, mongo may use the new decorator to declare a checking class that may recognize a class instance as an entity uid.
+					It would allow the mongo adapter to use normal mongo uuid as EntityUid type member</p>
+				</div>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -954,16 +963,25 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L15">adapters/dataAccessLayer.ts:15</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/dataAccessLayer.ts#L23">adapters/dataAccessLayer.ts:23</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Test for an entity to be if it can be an EntityUid</p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
 								<h5>tested: <span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Value to test</p>
+								</div>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						<p>True if it is a valid entity Uid, false otherwise.</p>
 					</li>
 				</ul>
 			</section>

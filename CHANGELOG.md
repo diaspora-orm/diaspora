@@ -1,3 +1,20 @@
+# [0.3.0-alpha.13](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.12...v0.3.0-alpha.13) (2018-08-17)
+
+
+### Bug Fixes
+
+* **Adapters.Base.Adapter:** Options fields authorize `undefined` values. ([1fc50f6](https://github.com/diaspora-orm/diaspora/commit/1fc50f6))
+* **EntityTransformer.Default:** Fixed deep defaulting on objects & arrays ([fe71e30](https://github.com/diaspora-orm/diaspora/commit/fe71e30))
+* **Logger.NodeLogger:** Use any to discard wrong TS acceptance for symbols as keys ([a84519b](https://github.com/diaspora-orm/diaspora/commit/a84519b))
+* **Model:** Normalize `attributes` & `of` fields for object & array descriptions ([fe2fe1e](https://github.com/diaspora-orm/diaspora/commit/fe2fe1e))
+
+
+### Performance Improvements
+
+* **Adapters.InMemory.Adapter:** Added insertMany, added several find iterators ([3c23e09](https://github.com/diaspora-orm/diaspora/commit/3c23e09))
+
+
+
 <a name="0.3.0-alpha.12"></a>
 # [0.3.0-alpha.12](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.11...v0.3.0-alpha.12) (2018-07-29)
 

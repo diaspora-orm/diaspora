@@ -931,7 +931,7 @@ img { max-width: 100%; }
 			<h3>Type parameters</h3>
 			<ul class="tsd-type-parameters">
 				<li>
-					<h4>T<span class="tsd-signature-symbol">: </span><a href="../classes/adapterentity.html" class="tsd-signature-type">AdapterEntity</a></h4>
+					<h4>TAdapterEntity<span class="tsd-signature-symbol">: </span><a href="../classes/adapterentity.html" class="tsd-signature-type">AdapterEntity</a></h4>
 				</li>
 			</ul>
 		</section>
@@ -969,13 +969,13 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-interface">
-					<li class="tsd-signature tsd-kind-icon">new IAdapter<wbr>Entity<wbr>Ctr<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, adapter<span class="tsd-signature-symbol">: </span><a href="../classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					<li class="tsd-signature tsd-kind-icon">new IAdapter<wbr>Entity<wbr>Ctr<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, adapter<span class="tsd-signature-symbol">: </span><a href="../classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TAdapterEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TAdapterEntity</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/entity.ts#L12">adapters/base/entity.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/entity.ts#L12">adapters/base/entity.ts:12</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -984,10 +984,10 @@ img { max-width: 100%; }
 								<h5>data: <a href="ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h5>
 							</li>
 							<li>
-								<h5>adapter: <a href="../classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5>adapter: <a href="../classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TAdapterEntity</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TAdapterEntity</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1004,7 +1004,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/entity.ts#L15">adapters/base/entity.ts:15</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/entity.ts#L15">adapters/base/entity.ts:15</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1024,13 +1024,13 @@ img { max-width: 100%; }
 				<a name="setid" class="tsd-anchor"></a>
 				<h3>set<wbr>Id</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-					<li class="tsd-signature tsd-kind-icon">set<wbr>Id<span class="tsd-signature-symbol">(</span>attributes<span class="tsd-signature-symbol">: </span><a href="ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, adapter<span class="tsd-signature-symbol">: </span><a href="../classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, id<span class="tsd-signature-symbol">?: </span><a href="../classes/entityuid.html" class="tsd-signature-type">EntityUid</a>, propName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ientityproperties.html" class="tsd-signature-type">IEntityProperties</a></li>
+					<li class="tsd-signature tsd-kind-icon">set<wbr>Id<span class="tsd-signature-symbol">(</span>attributes<span class="tsd-signature-symbol">: </span><a href="ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>, adapter<span class="tsd-signature-symbol">: </span><a href="../classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TAdapterEntity</span><span class="tsd-signature-symbol">&gt;</span>, id<span class="tsd-signature-symbol">?: </span><a href="../classes/entityuid.html" class="tsd-signature-type">EntityUid</a>, propName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ientityproperties.html" class="tsd-signature-type">IEntityProperties</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/entity.ts#L20">adapters/base/entity.ts:20</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/entity.ts#L20">adapters/base/entity.ts:20</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1039,7 +1039,7 @@ img { max-width: 100%; }
 								<h5>attributes: <a href="ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h5>
 							</li>
 							<li>
-								<h5>adapter: <a href="../classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5>adapter: <a href="../classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TAdapterEntity</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							</li>
 							<li>
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> id: <a href="../classes/entityuid.html" class="tsd-signature-type">EntityUid</a></h5>

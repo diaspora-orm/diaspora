@@ -945,7 +945,7 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-class">
 			<a href="classes/diasporastatic.html" class="tsd-kind-icon">Diaspora<wbr>Static</a>
 		</li>
-		<li class=" tsd-kind-class">
+		<li class=" tsd-kind-class tsd-has-type-parameter">
 			<a href="classes/entity.html" class="tsd-kind-icon">Entity</a>
 		</li>
 		<li class=" tsd-kind-class">
@@ -972,7 +972,7 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-class">
 			<a href="classes/logger.html" class="tsd-kind-icon">Logger</a>
 		</li>
-		<li class=" tsd-kind-class">
+		<li class=" tsd-kind-class tsd-has-type-parameter">
 			<a href="classes/model.html" class="tsd-kind-icon">Model</a>
 		</li>
 		<li class=" tsd-kind-class">
@@ -984,7 +984,7 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-class">
 			<a href="classes/pathstack.html" class="tsd-kind-icon">Path<wbr>Stack</a>
 		</li>
-		<li class=" tsd-kind-class">
+		<li class=" tsd-kind-class tsd-has-type-parameter">
 			<a href="classes/set.html" class="tsd-kind-icon">Set</a>
 		</li>
 		<li class=" tsd-kind-class">
@@ -1099,6 +1099,9 @@ img { max-width: 100%; }
 			<a href="globals.html#loggingfunction" class="tsd-kind-icon">Logging<wbr>Function</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-is-not-exported">
+			<a href="globals.html#querystringobject" class="tsd-kind-icon">Query<wbr>String<wbr>Object</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-is-not-exported">
 			<a href="globals.html#resolveresponse" class="tsd-kind-icon">Resolve<wbr>Response</a>
 		</li>
 		<li class=" tsd-kind-type-alias">
@@ -1118,6 +1121,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-variable">
 			<a href="globals.html#datasourceregistry" class="tsd-kind-icon">data<wbr>Source<wbr>Registry</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#ef" class="tsd-kind-icon">ef</a>
 		</li>
 		<li class=" tsd-kind-variable">
 			<a href="globals.html#logger" class="tsd-kind-icon">logger</a>
@@ -1146,9 +1152,6 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-function tsd-has-type-parameter">
 			<a href="globals.html#deepfreeze" class="tsd-kind-icon">deep<wbr>Freeze</a>
 		</li>
-		<li class=" tsd-kind-function tsd-is-not-exported">
-			<a href="globals.html#ef" class="tsd-kind-icon">ef</a>
-		</li>
 		<li class=" tsd-kind-function">
 			<a href="globals.html#generateuuid" class="tsd-kind-icon">generateUUID</a>
 		</li>
@@ -1163,6 +1166,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="globals.html#isentityuid" class="tsd-kind-icon">is<wbr>Entity<wbr>Uid</a>
+		</li>
+		<li class=" tsd-kind-function">
+			<a href="globals.html#makequerystring" class="tsd-kind-icon">make<wbr>Query<wbr>String</a>
 		</li>
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="globals.html#messagerequired" class="tsd-kind-icon">message<wbr>Required</a>
@@ -1179,7 +1185,7 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="globals.html#validatewrongtype" class="tsd-kind-icon">validate<wbr>Wrong<wbr>Type</a>
 		</li>
-		<li class=" tsd-kind-function tsd-is-not-exported">
+		<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
 			<a href="globals.html#wrapeventsaction" class="tsd-kind-icon">wrap<wbr>Events<wbr>Action</a>
 		</li>
 		<li class=" tsd-kind-object-literal">
@@ -1222,7 +1228,8 @@ img { max-width: 100%; }
 				<a href="https://www.npmjs.com/package/@diaspora/diaspora"><img src="https://img.shields.io/npm/dm/@diaspora/diaspora.svg" alt="npm"></a>
 				<a href="https://www.npmjs.com/package/@diaspora/diaspora"><img src="https://badge.fury.io/js/%40diaspora%2Fdiaspora.svg" alt="npm version"></a>
 				<a href="https://github.com/diaspora-orm/diaspora"><img src="https://img.shields.io/github/commit-activity/y/diaspora-orm/diaspora.svg" alt="GitHub commit activity the past year"></a>
-			<a href="https://github.com/diaspora-orm/diaspora/blob/master/LICENSE"><img src="https://img.shields.io/github/license/diaspora-orm/diaspora.svg" alt="license"></a></p>
+				<a href="https://github.com/diaspora-orm/diaspora/blob/master/LICENSE"><img src="https://img.shields.io/github/license/diaspora-orm/diaspora.svg" alt="license"></a>
+			<a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/diaspora-orm/diaspora.svg" alt="Greenkeeper badge"></a></p>
 			<h2 id="installation">Installation</h2>
 			<p>To install Diaspora, simply run one of the following commands:</p>
 			<pre><code class="lang-bash"><span class="hljs-comment"># With NPM</span>
@@ -1440,7 +1447,7 @@ yarn add @diaspora/diaspora
 							<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/dataaccesslayer.html" class="tsd-kind-icon">Data<wbr>Access<wbr>Layer</a></li>
 							<li class="tsd-kind-class"><a href="classes/defaulttransformer.html" class="tsd-kind-icon">Default<wbr>Transformer</a></li>
 							<li class="tsd-kind-class"><a href="classes/diasporastatic.html" class="tsd-kind-icon">Diaspora<wbr>Static</a></li>
-							<li class="tsd-kind-class"><a href="classes/entity.html" class="tsd-kind-icon">Entity</a></li>
+							<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/entity.html" class="tsd-kind-icon">Entity</a></li>
 							<li class="tsd-kind-class"><a href="classes/entitystateerror.html" class="tsd-kind-icon">Entity<wbr>State<wbr>Error</a></li>
 							<li class="tsd-kind-class"><a href="classes/entitytransformer.html" class="tsd-kind-icon">Entity<wbr>Transformer</a></li>
 							<li class="tsd-kind-class"><a href="classes/entityuid.html" class="tsd-kind-icon">Entity<wbr>Uid</a></li>
@@ -1449,11 +1456,11 @@ yarn add @diaspora/diaspora
 							<li class="tsd-kind-class"><a href="classes/inmemoryadapter.html" class="tsd-kind-icon">In<wbr>Memory<wbr>Adapter</a></li>
 							<li class="tsd-kind-class"><a href="classes/inmemoryentity.html" class="tsd-kind-icon">In<wbr>Memory<wbr>Entity</a></li>
 							<li class="tsd-kind-class"><a href="classes/logger.html" class="tsd-kind-icon">Logger</a></li>
-							<li class="tsd-kind-class"><a href="classes/model.html" class="tsd-kind-icon">Model</a></li>
+							<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/model.html" class="tsd-kind-icon">Model</a></li>
 							<li class="tsd-kind-class"><a href="classes/nodelogger.html" class="tsd-kind-icon">Node<wbr>Logger</a></li>
 							<li class="tsd-kind-class"><a href="classes/nodewebapiadapter.html" class="tsd-kind-icon">Node<wbr>Web<wbr>Api<wbr>Adapter</a></li>
 							<li class="tsd-kind-class"><a href="classes/pathstack.html" class="tsd-kind-icon">Path<wbr>Stack</a></li>
-							<li class="tsd-kind-class"><a href="classes/set.html" class="tsd-kind-icon">Set</a></li>
+							<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/set.html" class="tsd-kind-icon">Set</a></li>
 							<li class="tsd-kind-class"><a href="classes/setvalidationerror.html" class="tsd-kind-icon">Set<wbr>Validation<wbr>Error</a></li>
 							<li class="tsd-kind-class"><a href="classes/validationerror.html" class="tsd-kind-icon">Validation<wbr>Error</a></li>
 							<li class="tsd-kind-class"><a href="classes/webapiadapter.html" class="tsd-kind-icon">Web<wbr>Api<wbr>Adapter</a></li>
@@ -1501,6 +1508,7 @@ yarn add @diaspora/diaspora
 							<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#checkfunction" class="tsd-kind-icon">Check<wbr>Function</a></li>
 							<li class="tsd-kind-type-alias"><a href="globals.html#iquerycheckfunction" class="tsd-kind-icon">IQuery<wbr>Check<wbr>Function</a></li>
 							<li class="tsd-kind-type-alias"><a href="globals.html#loggingfunction" class="tsd-kind-icon">Logging<wbr>Function</a></li>
+							<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#querystringobject" class="tsd-kind-icon">Query<wbr>String<wbr>Object</a></li>
 							<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#resolveresponse" class="tsd-kind-icon">Resolve<wbr>Response</a></li>
 							<li class="tsd-kind-type-alias"><a href="globals.html#tdatasource" class="tsd-kind-icon">TData<wbr>Source</a></li>
 							<li class="tsd-kind-type-alias"><a href="globals.html#typechecker" class="tsd-kind-icon">Type<wbr>Checker</a></li>
@@ -1513,6 +1521,7 @@ yarn add @diaspora/diaspora
 							<li class="tsd-kind-variable"><a href="globals.html#entityfactory" class="tsd-kind-icon">Entity<wbr>Factory</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#validation_steps" class="tsd-kind-icon">VALIDATION_<wbr>STEPS</a></li>
 							<li class="tsd-kind-variable"><a href="globals.html#datasourceregistry" class="tsd-kind-icon">data<wbr>Source<wbr>Registry</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#ef" class="tsd-kind-icon">ef</a></li>
 							<li class="tsd-kind-variable"><a href="globals.html#logger" class="tsd-kind-icon">logger</a></li>
 							<li class="tsd-kind-variable"><a href="globals.html#modelregistry" class="tsd-kind-icon">model<wbr>Registry</a></li>
 						</ul>
@@ -1527,18 +1536,18 @@ yarn add @diaspora/diaspora
 							<li class="tsd-kind-function"><a href="globals.html#applyoptionstoset" class="tsd-kind-icon">apply<wbr>Options<wbr>ToSet</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#applyupdateentity" class="tsd-kind-icon">apply<wbr>Update<wbr>Entity</a></li>
 							<li class="tsd-kind-function tsd-has-type-parameter"><a href="globals.html#deepfreeze" class="tsd-kind-icon">deep<wbr>Freeze</a></li>
-							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#ef" class="tsd-kind-icon">ef</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#generateuuid" class="tsd-kind-icon">generateUUID</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#getdefaultfunction" class="tsd-kind-icon">get<wbr>Default<wbr>Function</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#getdefaultvalue" class="tsd-kind-icon">get<wbr>Default<wbr>Value</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#getnum" class="tsd-kind-icon">get<wbr>Num</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#isentityuid" class="tsd-kind-icon">is<wbr>Entity<wbr>Uid</a></li>
+							<li class="tsd-kind-function"><a href="globals.html#makequerystring" class="tsd-kind-icon">make<wbr>Query<wbr>String</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#messagerequired" class="tsd-kind-icon">message<wbr>Required</a></li>
 							<li class="tsd-kind-function tsd-has-type-parameter"><a href="globals.html#remapio" class="tsd-kind-icon">remapIO</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#validatearrayitems" class="tsd-kind-icon">validate<wbr>Array<wbr>Items</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#validateoption" class="tsd-kind-icon">validate<wbr>Option</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#validatewrongtype" class="tsd-kind-icon">validate<wbr>Wrong<wbr>Type</a></li>
-							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#wrapeventsaction" class="tsd-kind-icon">wrap<wbr>Events<wbr>Action</a></li>
+							<li class="tsd-kind-function tsd-has-type-parameter tsd-is-not-exported"><a href="globals.html#wrapeventsaction" class="tsd-kind-icon">wrap<wbr>Events<wbr>Action</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
@@ -1565,7 +1574,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Abs<wbr>Int<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/types/constrainedTypes.ts#L9">types/constrainedTypes.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/types/constrainedTypes.ts#L9">types/constrainedTypes.ts:9</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1582,7 +1591,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Abs<wbr>Int0<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/types/constrainedTypes.ts#L4">types/constrainedTypes.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/types/constrainedTypes.ts#L4">types/constrainedTypes.ts:4</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1599,7 +1608,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Abs<wbr>Int<wbr>Inf<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/types/constrainedTypes.ts#L14">types/constrainedTypes.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/types/constrainedTypes.ts#L14">types/constrainedTypes.ts:14</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1616,7 +1625,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Abs<wbr>Int<wbr>Inf0<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/types/constrainedTypes.ts#L19">types/constrainedTypes.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/types/constrainedTypes.ts#L19">types/constrainedTypes.ts:19</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1633,7 +1642,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Check<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L80">entityTransformers/checkTransformer.ts:80</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L79">entityTransformers/checkTransformer.ts:79</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1641,9 +1650,6 @@ yarn add @diaspora/diaspora
 						<p>A checker is a function that can return an error component with provided standard args.</p>
 					</div>
 					<dl class="tsd-comment-tags">
-						<dt>callback</dt>
-						<dd><p>Checker</p>
-						</dd>
 						<dt>param</dt>
 						<dd><p>Pathstack so far.</p>
 						</dd>
@@ -1698,7 +1704,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">IQuery<wbr>Check<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L100">adapters/base/adapter-utils.ts:100</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L100">adapters/base/adapter-utils.ts:100</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1732,7 +1738,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Logging<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/logger.ts#L7">logger/logger.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/logger.ts#L7">logger/logger.ts:7</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1771,12 +1777,22 @@ yarn add @diaspora/diaspora
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-not-exported">
+				<a name="querystringobject" class="tsd-anchor"></a>
+				<h3>Query<wbr>String<wbr>Object</h3>
+				<div class="tsd-signature tsd-kind-icon">Query<wbr>String<wbr>Object<span class="tsd-signature-symbol">:</span> <a href="modules/querylanguage.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/defaultQueryTransformer.ts#L5">adapters/webApi/defaultQueryTransformer.ts:5</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-not-exported">
 				<a name="resolveresponse" class="tsd-anchor"></a>
 				<h3>Resolve<wbr>Response</h3>
 				<div class="tsd-signature tsd-kind-icon">Resolve<wbr>Response<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/subAdapters/browserAdapter.ts#L11">adapters/webApi/subAdapters/browserAdapter.ts:11</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/subAdapters/browserAdapter.ts#L11">adapters/webApi/subAdapters/browserAdapter.ts:11</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1807,7 +1823,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">TData<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol"> | </span><a href="classes/dataaccesslayer.html" class="tsd-signature-type">DataAccessLayer</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L427">adapters/dataAccessLayer.ts:427</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/dataAccessLayer.ts#L430">adapters/dataAccessLayer.ts:430</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1817,7 +1833,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Type<wbr>Checker<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L65">entityTransformers/checkTransformer.ts:65</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L65">entityTransformers/checkTransformer.ts:65</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1851,7 +1867,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Diaspora<span class="tsd-signature-symbol">:</span> <a href="classes/diasporastatic.html" class="tsd-signature-type">DiasporaStatic</a><span class="tsd-signature-symbol"> =&nbsp;DiasporaStatic.instance</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/diaspora.ts#L251">diaspora.ts:251</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/diaspora.ts#L251">diaspora.ts:251</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1861,7 +1877,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Entity<wbr>Factory<span class="tsd-signature-symbol">:</span> <a href="interfaces/entity.ientityfactory.html" class="tsd-signature-type">IEntityFactory</a><span class="tsd-signature-symbol"> =&nbsp;ef</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entityFactory.ts#L53">entities/entityFactory.ts:53</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entityFactory.ts#L53">entities/entityFactory.ts:53</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1871,7 +1887,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">VALIDATION_<wbr>STEPS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">checkCustoms</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[/*** Apply the custom &#x60;validate&#x60; function or function array, if it exists.** @param   validationArgs - Validation step argument.* @returns This function returns nothing.*/function checkCustoms(this: CheckTransformer,validationArgs: IValidationStepArgs) {const { error, fieldDesc, keys, value } &#x3D; validationArgs;// It the field has a &#x60;validate&#x60; property, try to use itconst validateFcts &#x3D; _.chain( fieldDesc.validate as Function[] ).castArray().compact().value();validateFcts.forEach( validateFct &#x3D;&gt; {if ( !validateFct.call( this, value, fieldDesc ) ) {error.validate &#x3D; &#x60;${keys.toValidatePath()} custom validation failed&#x60;;}} );},/*** Check if the type &amp; the existence matches the &#x60;type&#x60; &amp; &#x60;required&#x60; specifications.** @param   validationArgs - Validation step argument.* @returns This function returns nothing.*/function checkTypeRequired(this: CheckTransformer,validationArgs: IValidationStepArgs) {const { error, fieldDesc, keys, value } &#x3D; validationArgs;// Check the type and the required status// Apply the &#x60;required&#x60; modifierif ( fieldDesc.required &amp;&amp; _.isNil( value ) ) {error.required &#x3D; messageRequired( keys, fieldDesc );} else if ( !_.isNil( value ) ) {_.assign(error,// Get the validator. Default to unhandled type_.get( VALIDATIONS, [&#x27;TYPE&#x27;, fieldDesc.type], VALIDATIONS.TYPE._ ).call( this, keys, fieldDesc, value ));}},/*** Verify if the value correspond to a value in the &#x60;enum&#x60; property.** @param   validationArgs - Validation step argument.* @returns This function returns nothing.*/function checkEnum(this: CheckTransformer,validationArgs: IValidationStepArgs) {const { error, keys, value } &#x3D; validationArgs;const fieldDesc &#x3D; validationArgs.fieldDesc;// Check enum valuesif (!_.isNil( value ) &amp;&amp;_.isArray( fieldDesc.enum )) {const result &#x3D; _.some( fieldDesc.enum, enumVal &#x3D;&gt; {if ( enumVal instanceof RegExp ) {return null !&#x3D;&#x3D; value.match( enumVal );} else {return value &#x3D;&#x3D;&#x3D; enumVal;}} );if ( !result ) {error.enum &#x3D; &#x60;${keys.toValidatePath()} expected to have one of enumerated values &quot;${JSON.stringify(fieldDesc.enum)}&quot;&#x60;;}}},]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L293">entityTransformers/checkTransformer.ts:293</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L292">entityTransformers/checkTransformer.ts:292</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1891,7 +1907,17 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">data<wbr>Source<wbr>Registry<span class="tsd-signature-symbol">:</span> <a href="interfaces/idatasourceregistry.html" class="tsd-signature-type">IDataSourceRegistry</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/staticStores.ts#L10">staticStores.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/staticStores.ts#L11">staticStores.ts:11</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="ef" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> ef</h3>
+				<div class="tsd-signature tsd-kind-icon">ef<span class="tsd-signature-symbol">:</span> <a href="interfaces/entity.ientityfactory.html" class="tsd-signature-type">IEntityFactory</a><span class="tsd-signature-symbol"> =&nbsp;( &lt;TEntity extends IEntityAttributes&gt;( name: string, modelDesc: IModelDescription, model: Model&lt;TEntity&gt; ) &#x3D;&gt; {/*** @ignore*/class SubEntity extends Entity&lt;TEntity&gt; {/*** Name of the class.** @author gerkin*/public static get modelName() {return &#x60;${name}Entity&#x60;;}/*** Reference to this entity&#x27;s model.** @author gerkin*/public static get model() {return model;}}// We use keys &#x60;methods&#x60; and not &#x60;functions&#x60; as explained in this [StackOverflow thread](https://stackoverflow.com/a/155655/4839162).// Extend prototype with methods in our model description_.forEach( modelDesc.methods, ( method: Function, methodName: string ) &#x3D;&gt; {( SubEntity.prototype as any )[methodName] &#x3D; method;} );// Add static methods_.forEach(modelDesc.staticMethods,( staticMethod: Function, staticMethodName: string ) &#x3D;&gt; {( SubEntity as any )[staticMethodName] &#x3D; staticMethod;});return SubEntity.bind( SubEntity, model ) as Entity.IEntitySpawner&lt;TEntity&gt;;} ) as any</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entityFactory.ts#L15">entities/entityFactory.ts:15</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1901,7 +1927,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="classes/nodelogger.html" class="tsd-signature-type">NodeLogger</a><span class="tsd-signature-symbol"> =&nbsp;new NodeLogger()</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/index.ts#L11">logger/index.ts:11</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/index.ts#L11">logger/index.ts:11</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1911,7 +1937,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">model<wbr>Registry<span class="tsd-signature-symbol">:</span> <a href="interfaces/imodelregistry.html" class="tsd-signature-type">IModelRegistry</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/staticStores.ts#L15">staticStores.ts:15</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/staticStores.ts#L16">staticStores.ts:16</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1922,28 +1948,28 @@ yarn add @diaspora/diaspora
 				<a name="autoidadapterentity" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> Auto<wbr>IdAdapter<wbr>Entity</h3>
 				<ul class="tsd-signatures tsd-kind-function tsd-has-type-parameter">
-					<li class="tsd-signature tsd-kind-icon">Auto<wbr>IdAdapter<wbr>Entity&lt;T&gt;<span class="tsd-signature-symbol">(</span>adapterEntity<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					<li class="tsd-signature tsd-kind-icon">Auto<wbr>IdAdapter<wbr>Entity&lt;TAdapterEntityCtor&gt;<span class="tsd-signature-symbol">(</span>adapterEntity<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TAdapterEntityCtor</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TAdapterEntityCtor</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/autoIdEntity.ts#L12">adapters/base/autoIdEntity.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/autoIdEntity.ts#L12">adapters/base/autoIdEntity.ts:12</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
 						<ul class="tsd-type-parameters">
 							<li>
-								<h4>T<span class="tsd-signature-symbol">: </span><a href="interfaces/iconstructable.html" class="tsd-signature-type">IConstructable</a><span class="tsd-signature-symbol">&lt;</span><a href="classes/adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span></h4>
+								<h4>TAdapterEntityCtor<span class="tsd-signature-symbol">: </span><a href="interfaces/iconstructable.html" class="tsd-signature-type">IConstructable</a><span class="tsd-signature-symbol">&lt;</span><a href="classes/adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span></h4>
 							</li>
 						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>adapterEntity: <span class="tsd-signature-type">T</span></h5>
+								<h5>adapterEntity: <span class="tsd-signature-type">TAdapterEntityCtor</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TAdapterEntityCtor</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1957,7 +1983,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/defaultQueryTransformer.ts#L4">adapters/webApi/defaultQueryTransformer.ts:4</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/defaultQueryTransformer.ts#L26">adapters/webApi/defaultQueryTransformer.ts:26</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1977,7 +2003,7 @@ yarn add @diaspora/diaspora
 									<li class="tsd-description">
 										<aside class="tsd-sources">
 											<ul>
-												<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/webApi/defaultQueryTransformer.ts#L18">adapters/webApi/defaultQueryTransformer.ts:18</a></li>
+												<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/defaultQueryTransformer.ts#L38">adapters/webApi/defaultQueryTransformer.ts:38</a></li>
 											</ul>
 										</aside>
 										<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1997,28 +2023,28 @@ yarn add @diaspora/diaspora
 				<a name="selfmatchingadapterentity" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> Self<wbr>Matching<wbr>Adapter<wbr>Entity</h3>
 				<ul class="tsd-signatures tsd-kind-function tsd-has-type-parameter">
-					<li class="tsd-signature tsd-kind-icon">Self<wbr>Matching<wbr>Adapter<wbr>Entity&lt;T&gt;<span class="tsd-signature-symbol">(</span>adapterEntity<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					<li class="tsd-signature tsd-kind-icon">Self<wbr>Matching<wbr>Adapter<wbr>Entity&lt;TAdapterEntityCtor&gt;<span class="tsd-signature-symbol">(</span>adapterEntity<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TAdapterEntityCtor</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TAdapterEntityCtor</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/selfMatchingEntity.ts#L8">adapters/base/selfMatchingEntity.ts:8</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/selfMatchingEntity.ts#L8">adapters/base/selfMatchingEntity.ts:8</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
 						<ul class="tsd-type-parameters">
 							<li>
-								<h4>T<span class="tsd-signature-symbol">: </span><a href="interfaces/iconstructable.html" class="tsd-signature-type">IConstructable</a><span class="tsd-signature-symbol">&lt;</span><a href="classes/adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span></h4>
+								<h4>TAdapterEntityCtor<span class="tsd-signature-symbol">: </span><a href="interfaces/iconstructable.html" class="tsd-signature-type">IConstructable</a><span class="tsd-signature-symbol">&lt;</span><a href="classes/adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span></h4>
 							</li>
 						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>adapterEntity: <span class="tsd-signature-type">T</span></h5>
+								<h5>adapterEntity: <span class="tsd-signature-type">TAdapterEntityCtor</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TAdapterEntityCtor</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -2032,7 +2058,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L22">entities/set.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L22">entities/set.ts:22</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2082,7 +2108,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/utils.ts#L58">utils.ts:58</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/utils.ts#L58">utils.ts:58</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2124,7 +2150,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/utils.ts#L15">utils.ts:15</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/utils.ts#L15">utils.ts:15</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2160,13 +2186,13 @@ yarn add @diaspora/diaspora
 				<a name="deepfreeze" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> deep<wbr>Freeze</h3>
 				<ul class="tsd-signatures tsd-kind-function tsd-has-type-parameter">
-					<li class="tsd-signature tsd-kind-icon">deep<wbr>Freeze&lt;T&gt;<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					<li class="tsd-signature tsd-kind-icon">deep<wbr>Freeze&lt;TObject&gt;<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TObject</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TObject</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/utils.ts#L80">utils.ts:80</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/utils.ts#L80">utils.ts:80</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2177,13 +2203,13 @@ yarn add @diaspora/diaspora
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
 						<ul class="tsd-type-parameters">
 							<li>
-								<h4>T</h4>
+								<h4>TObject</h4>
 							</li>
 						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>object: <span class="tsd-signature-type">T</span></h5>
+								<h5>object: <span class="tsd-signature-type">TObject</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Object to freeze</p>
@@ -2191,37 +2217,8 @@ yarn add @diaspora/diaspora
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TObject</span></h4>
 						<p>The frozen object</p>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-function tsd-is-not-exported">
-				<a name="ef" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagConst">Const</span> ef</h3>
-				<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-					<li class="tsd-signature tsd-kind-icon">ef<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelDesc<span class="tsd-signature-symbol">: </span><a href="interfaces/imodeldescription.html" class="tsd-signature-type">IModelDescription</a>, model<span class="tsd-signature-symbol">: </span><a href="classes/model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/entity.ientityspawner.html" class="tsd-signature-type">IEntitySpawner</a></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entityFactory.ts#L15">entities/entityFactory.ts:15</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>name: <span class="tsd-signature-type">string</span></h5>
-							</li>
-							<li>
-								<h5>modelDesc: <a href="interfaces/imodeldescription.html" class="tsd-signature-type">IModelDescription</a></h5>
-							</li>
-							<li>
-								<h5>model: <a href="classes/model.html" class="tsd-signature-type">Model</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="interfaces/entity.ientityspawner.html" class="tsd-signature-type">IEntitySpawner</a></h4>
 					</li>
 				</ul>
 			</section>
@@ -2235,7 +2232,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/utils.ts#L35">utils.ts:35</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/utils.ts#L35">utils.ts:35</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2258,7 +2255,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/utils.ts#L92">utils.ts:92</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/utils.ts#L92">utils.ts:92</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2299,7 +2296,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/utils.ts#L106">utils.ts:106</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/utils.ts#L106">utils.ts:106</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2322,7 +2319,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L12">adapters/base/adapter-utils.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L12">adapters/base/adapter-utils.ts:12</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2345,7 +2342,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/dataAccessLayer.ts#L19">adapters/dataAccessLayer.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/dataAccessLayer.ts#L27">adapters/dataAccessLayer.ts:27</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2355,6 +2352,35 @@ yarn add @diaspora/diaspora
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function">
+				<a name="makequerystring" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> make<wbr>Query<wbr>String</h3>
+				<ul class="tsd-signatures tsd-kind-function">
+					<li class="tsd-signature tsd-kind-icon">make<wbr>Query<wbr>String<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">?: </span><a href="modules/querylanguage.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a>, options<span class="tsd-signature-symbol">?: </span><a href="classes/webapiadapter.html#queryoptions" class="tsd-signature-type">QueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="globals.html#querystringobject" class="tsd-signature-type">QueryStringObject</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/webApi/defaultQueryTransformer.ts#L9">adapters/webApi/defaultQueryTransformer.ts:9</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> query: <a href="modules/querylanguage.html#selectqueryorcondition" class="tsd-signature-type">SelectQueryOrCondition</a></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="classes/webapiadapter.html#queryoptions" class="tsd-signature-type">QueryOptions</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="globals.html#querystringobject" class="tsd-signature-type">QueryStringObject</a>
+							<span class="tsd-signature-symbol"> | </span>
+							<span class="tsd-signature-type">undefined</span>
+						</h4>
 					</li>
 				</ul>
 			</section>
@@ -2368,7 +2394,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L49">entityTransformers/checkTransformer.ts:49</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L49">entityTransformers/checkTransformer.ts:49</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2388,13 +2414,13 @@ yarn add @diaspora/diaspora
 				<a name="remapio" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> remapIO</h3>
 				<ul class="tsd-signatures tsd-kind-function tsd-has-type-parameter">
-					<li class="tsd-signature tsd-kind-icon">remapIO&lt;T&gt;<span class="tsd-signature-symbol">(</span>adapter<span class="tsd-signature-symbol">: </span><a href="classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, tableName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					<li class="tsd-signature tsd-kind-icon">remapIO&lt;TEntity&gt;<span class="tsd-signature-symbol">(</span>adapter<span class="tsd-signature-symbol">: </span><a href="classes/adapter.html" class="tsd-signature-type">Adapter</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, tableName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span>, input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L77">adapters/base/adapter-utils.ts:77</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L77">adapters/base/adapter-utils.ts:77</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2405,7 +2431,7 @@ yarn add @diaspora/diaspora
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
 						<ul class="tsd-type-parameters">
 							<li>
-								<h4>T<span class="tsd-signature-symbol">: </span><a href="interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
+								<h4>TEntity<span class="tsd-signature-symbol">: </span><a href="interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
 							</li>
 						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2417,13 +2443,13 @@ yarn add @diaspora/diaspora
 								<h5>tableName: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>query: <span class="tsd-signature-type">T</span></h5>
+								<h5>query: <span class="tsd-signature-type">TEntity</span></h5>
 							</li>
 							<li>
 								<h5>input: <span class="tsd-signature-type">boolean</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TEntity</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -2437,7 +2463,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L17">entityTransformers/checkTransformer.ts:17</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L17">entityTransformers/checkTransformer.ts:17</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2487,7 +2513,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L56">adapters/base/adapter-utils.ts:56</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L56">adapters/base/adapter-utils.ts:56</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2524,7 +2550,7 @@ yarn add @diaspora/diaspora
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L93">entityTransformers/checkTransformer.ts:93</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L92">entityTransformers/checkTransformer.ts:92</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2548,17 +2574,17 @@ yarn add @diaspora/diaspora
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-function tsd-is-not-exported">
+			<section class="tsd-panel tsd-member tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
 				<a name="wrapeventsaction" class="tsd-anchor"></a>
 				<h3>wrap<wbr>Events<wbr>Action</h3>
-				<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-					<li class="tsd-signature tsd-kind-icon">wrap<wbr>Events<wbr>Action<span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="classes/set.html" class="tsd-signature-type">Set</a>, sourceName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, verb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<ul class="tsd-signatures tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+					<li class="tsd-signature tsd-kind-icon">wrap<wbr>Events<wbr>Action&lt;TEntity&gt;<span class="tsd-signature-symbol">(</span>this<span class="tsd-signature-symbol">: </span><a href="classes/set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span>, sourceName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, verb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L42">entities/set.ts:42</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L42">entities/set.ts:42</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2571,10 +2597,16 @@ yarn add @diaspora/diaspora
 								</dd>
 							</dl>
 						</div>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>TEntity<span class="tsd-signature-symbol">: </span><a href="interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
+							</li>
+						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>this: <a href="classes/set.html" class="tsd-signature-type">Set</a></h5>
+								<h5>this: <a href="classes/set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							</li>
 							<li>
 								<h5>sourceName: <span class="tsd-signature-type">string</span></h5>
@@ -2609,7 +2641,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">CANONICAL_<wbr>OPERATORS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L122">adapters/base/adapter-utils.ts:122</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L122">adapters/base/adapter-utils.ts:122</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -2618,7 +2650,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">!=<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;$diff&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L125">adapters/base/adapter-utils.ts:125</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L125">adapters/base/adapter-utils.ts:125</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2628,7 +2660,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon"><<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;$less&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L126">adapters/base/adapter-utils.ts:126</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L126">adapters/base/adapter-utils.ts:126</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2638,7 +2670,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon"><=<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;$lessEqual&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L127">adapters/base/adapter-utils.ts:127</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L127">adapters/base/adapter-utils.ts:127</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2648,7 +2680,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">==<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;$equal&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L124">adapters/base/adapter-utils.ts:124</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L124">adapters/base/adapter-utils.ts:124</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2658,7 +2690,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;$greater&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L128">adapters/base/adapter-utils.ts:128</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L128">adapters/base/adapter-utils.ts:128</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2668,7 +2700,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">>=<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;$greaterEqual&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L129">adapters/base/adapter-utils.ts:129</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L129">adapters/base/adapter-utils.ts:129</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2678,7 +2710,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">~<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;$exists&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L123">adapters/base/adapter-utils.ts:123</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L123">adapters/base/adapter-utils.ts:123</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2689,7 +2721,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>OPTIONS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L13">entities/entity.ts:13</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L13">entities/entity.ts:13</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -2698,7 +2730,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">skip<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L13">entities/entity.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L13">entities/entity.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2709,7 +2741,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">Logger<wbr>Hash<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/nodeLogger.ts#L7">logger/nodeLogger.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/nodeLogger.ts#L7">logger/nodeLogger.ts:7</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -2718,13 +2750,13 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">__computed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;silent&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/nodeLogger.ts#L8">logger/nodeLogger.ts:8</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/nodeLogger.ts#L9">logger/nodeLogger.ts:9</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/nodeLogger.ts#L10">logger/nodeLogger.ts:10</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/nodeLogger.ts#L11">logger/nodeLogger.ts:11</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/nodeLogger.ts#L12">logger/nodeLogger.ts:12</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/nodeLogger.ts#L13">logger/nodeLogger.ts:13</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/logger/nodeLogger.ts#L14">logger/nodeLogger.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/nodeLogger.ts#L8">logger/nodeLogger.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/nodeLogger.ts#L9">logger/nodeLogger.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/nodeLogger.ts#L10">logger/nodeLogger.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/nodeLogger.ts#L11">logger/nodeLogger.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/nodeLogger.ts#L12">logger/nodeLogger.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/nodeLogger.ts#L13">logger/nodeLogger.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/logger/nodeLogger.ts#L14">logger/nodeLogger.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2735,7 +2767,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">OPERATORS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L102">adapters/base/adapter-utils.ts:102</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L102">adapters/base/adapter-utils.ts:102</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
@@ -2748,7 +2780,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L117">adapters/base/adapter-utils.ts:117</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L117">adapters/base/adapter-utils.ts:117</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2774,7 +2806,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L107">adapters/base/adapter-utils.ts:107</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L107">adapters/base/adapter-utils.ts:107</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2800,7 +2832,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L105">adapters/base/adapter-utils.ts:105</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L105">adapters/base/adapter-utils.ts:105</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2826,7 +2858,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L103">adapters/base/adapter-utils.ts:103</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L103">adapters/base/adapter-utils.ts:103</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2852,7 +2884,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L113">adapters/base/adapter-utils.ts:113</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L113">adapters/base/adapter-utils.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2878,7 +2910,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L115">adapters/base/adapter-utils.ts:115</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L115">adapters/base/adapter-utils.ts:115</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2904,7 +2936,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L109">adapters/base/adapter-utils.ts:109</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L109">adapters/base/adapter-utils.ts:109</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2930,7 +2962,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L111">adapters/base/adapter-utils.ts:111</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L111">adapters/base/adapter-utils.ts:111</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2953,7 +2985,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">QUERY_<wbr>OPTIONS_<wbr>TRANSFORMS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L131">adapters/base/adapter-utils.ts:131</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L131">adapters/base/adapter-utils.ts:131</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
@@ -2966,7 +2998,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L134">adapters/base/adapter-utils.ts:134</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L134">adapters/base/adapter-utils.ts:134</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2989,7 +3021,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L146">adapters/base/adapter-utils.ts:146</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L146">adapters/base/adapter-utils.ts:146</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3012,7 +3044,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L140">adapters/base/adapter-utils.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L140">adapters/base/adapter-utils.ts:140</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3032,7 +3064,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">VALIDATIONS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L112">entityTransformers/checkTransformer.ts:112</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L111">entityTransformers/checkTransformer.ts:111</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3051,7 +3083,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">TYPE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L113">entityTransformers/checkTransformer.ts:113</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L112">entityTransformers/checkTransformer.ts:112</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -3064,7 +3096,7 @@ yarn add @diaspora/diaspora
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L153">entityTransformers/checkTransformer.ts:153</a></li>
+										<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L152">entityTransformers/checkTransformer.ts:152</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -3121,7 +3153,7 @@ yarn add @diaspora/diaspora
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entityTransformers/checkTransformer.ts#L240">entityTransformers/checkTransformer.ts:240</a></li>
+										<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entityTransformers/checkTransformer.ts#L239">entityTransformers/checkTransformer.ts:239</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3154,7 +3186,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">named<wbr>Functions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/staticStores.ts#L17">staticStores.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/staticStores.ts#L18">staticStores.ts:18</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
@@ -3163,7 +3195,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">Diaspora<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/staticStores.ts#L18">staticStores.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/staticStores.ts#L19">staticStores.ts:19</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
@@ -3176,7 +3208,7 @@ yarn add @diaspora/diaspora
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/staticStores.ts#L19">staticStores.ts:19</a></li>
+										<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/staticStores.ts#L20">staticStores.ts:20</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Date</span></h4>
@@ -3191,7 +3223,7 @@ yarn add @diaspora/diaspora
 				<div class="tsd-signature tsd-kind-icon">validations<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L26">adapters/base/adapter-utils.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L26">adapters/base/adapter-utils.ts:26</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -3204,7 +3236,7 @@ yarn add @diaspora/diaspora
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L38">adapters/base/adapter-utils.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L38">adapters/base/adapter-utils.ts:38</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3232,7 +3264,7 @@ yarn add @diaspora/diaspora
 					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L27">adapters/base/adapter-utils.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L27">adapters/base/adapter-utils.ts:27</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -3245,7 +3277,7 @@ yarn add @diaspora/diaspora
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/adapters/base/adapter-utils.ts#L28">adapters/base/adapter-utils.ts:28</a></li>
+										<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/adapters/base/adapter-utils.ts#L28">adapters/base/adapter-utils.ts:28</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>

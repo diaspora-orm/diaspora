@@ -909,16 +909,16 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class="current tsd-kind-class">
+		<li class="current tsd-kind-class tsd-has-type-parameter">
 			<a href="entity.html" class="tsd-kind-icon">Entity</a>
 			<ul>
 				<li class=" tsd-kind-interface tsd-parent-kind-class tsd-has-type-parameter">
 					<a href="../interfaces/entity.idatasourcemap.html" class="tsd-kind-icon">IData<wbr>Source<wbr>Map</a>
 				</li>
-				<li class=" tsd-kind-interface tsd-parent-kind-class">
+				<li class=" tsd-kind-interface tsd-parent-kind-class tsd-has-type-parameter">
 					<a href="../interfaces/entity.ientityfactory.html" class="tsd-kind-icon">IEntity<wbr>Factory</a>
 				</li>
-				<li class=" tsd-kind-interface tsd-parent-kind-class">
+				<li class=" tsd-kind-interface tsd-parent-kind-class tsd-has-type-parameter">
 					<a href="../interfaces/entity.ientityspawner.html" class="tsd-kind-icon">IEntity<wbr>Spawner</a>
 				</li>
 				<li class=" tsd-kind-interface tsd-parent-kind-class">
@@ -1068,6 +1068,14 @@ img { max-width: 100%; }
 				</dl>
 			</div>
 		</section>
+		<section class="tsd-panel tsd-type-parameters">
+			<h3>Type parameters</h3>
+			<ul class="tsd-type-parameters">
+				<li>
+					<h4>TEntity<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
+				</li>
+			</ul>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -1089,8 +1097,8 @@ img { max-width: 100%; }
 						<h3>Interfaces</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-interface tsd-parent-kind-class tsd-has-type-parameter"><a href="../interfaces/entity.idatasourcemap.html" class="tsd-kind-icon">IData<wbr>Source<wbr>Map</a></li>
-							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/entity.ientityfactory.html" class="tsd-kind-icon">IEntity<wbr>Factory</a></li>
-							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/entity.ientityspawner.html" class="tsd-kind-icon">IEntity<wbr>Spawner</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class tsd-has-type-parameter"><a href="../interfaces/entity.ientityfactory.html" class="tsd-kind-icon">IEntity<wbr>Factory</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-class tsd-has-type-parameter"><a href="../interfaces/entity.ientityspawner.html" class="tsd-kind-icon">IEntity<wbr>Spawner</a></li>
 							<li class="tsd-kind-interface tsd-parent-kind-class"><a href="../interfaces/entity.ioptions.html" class="tsd-kind-icon">IOptions</a></li>
 						</ul>
 					</section>
@@ -1164,14 +1172,14 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Entity<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a>, source<span class="tsd-signature-symbol">?: </span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type">Entity</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Entity<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span>, source<span class="tsd-signature-symbol">?: </span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type">Entity</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides SequentialEvent.__constructor</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L54">entities/entity.ts:54</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L54">entities/entity.ts:54</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1187,10 +1195,10 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>model: <a href="model.html" class="tsd-signature-type">Model</a></h5>
+								<h5>model: <a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> source: <a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> source: <a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Hash with properties to copy on the new object.
@@ -1225,10 +1233,10 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 				<a name="_attributes" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> _attributes</h3>
-				<div class="tsd-signature tsd-kind-icon">_attributes<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+				<div class="tsd-signature tsd-kind-icon">_attributes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L46">entities/entity.ts:46</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L46">entities/entity.ts:46</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1238,7 +1246,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_data<wbr>Sources<span class="tsd-signature-symbol">:</span> <a href="../interfaces/entity.idatasourcemap.html" class="tsd-signature-type">IDataSourceMap</a><span class="tsd-signature-symbol">&lt;</span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L52">entities/entity.ts:52</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L52">entities/entity.ts:52</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1248,7 +1256,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_last<wbr>Data<wbr>Source<span class="tsd-signature-symbol">:</span> <a href="dataaccesslayer.html" class="tsd-signature-type">DataAccessLayer</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L50">entities/entity.ts:50</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L50">entities/entity.ts:50</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1258,7 +1266,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_state<span class="tsd-signature-symbol">:</span> <a href="../enums/eentitystate.html" class="tsd-signature-type">EEntityState</a><span class="tsd-signature-symbol"> =&nbsp;EEntityState.ORPHAN</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L48">entities/entity.ts:48</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L48">entities/entity.ts:48</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1268,17 +1276,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">id<wbr>Hash<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iidhash.html" class="tsd-signature-type">IIdHash</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L54">entities/entity.ts:54</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L54">entities/entity.ts:54</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 				<a name="model" class="tsd-anchor"></a>
 				<h3>model</h3>
-				<div class="tsd-signature tsd-kind-icon">model<span class="tsd-signature-symbol">:</span> <a href="model.html" class="tsd-signature-type">Model</a></div>
+				<div class="tsd-signature tsd-kind-icon">model<span class="tsd-signature-symbol">:</span> <a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L65">entities/entity.ts:65</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L65">entities/entity.ts:65</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1291,8 +1299,8 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">attributes<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L22">entities/entity.ts:22</a></li>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L26">entities/entity.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L22">entities/entity.ts:22</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L26">entities/entity.ts:26</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1302,7 +1310,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">ctor<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L42">entities/entity.ts:42</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L42">entities/entity.ts:42</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1312,7 +1320,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">data<wbr>Sources<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L38">entities/entity.ts:38</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L38">entities/entity.ts:38</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1322,7 +1330,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">last<wbr>Data<wbr>Source<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L34">entities/entity.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L34">entities/entity.ts:34</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1332,7 +1340,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L30">entities/entity.ts:30</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L30">entities/entity.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1343,13 +1351,14 @@ img { max-width: 100%; }
 				<a name="applydefaults" class="tsd-anchor"></a>
 				<h3>apply<wbr>Defaults</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">apply<wbr>Defaults<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Dictionary</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></li>
+					<li class="tsd-signature tsd-kind-icon">apply<wbr>Defaults<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">apply<wbr>Defaults<span class="tsd-signature-symbol">(</span>attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L126">entities/entity.ts:126</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L127">entities/entity.ts:127</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1362,9 +1371,23 @@ img { max-width: 100%; }
 								</dd>
 							</dl>
 						</div>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Dictionary</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>
-							<span class="tsd-signature-symbol"> &amp; </span>
-							<a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L128">entities/entity.ts:128</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>attributes: <span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TEntity</span>
+							<span class="tsd-signature-symbol"> | </span>
+							<span class="tsd-signature-type">null</span>
 						</h4>
 					</li>
 				</ul>
@@ -1373,13 +1396,13 @@ img { max-width: 100%; }
 				<a name="casttypes" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> cast<wbr>Types</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">cast<wbr>Types<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a></li>
+					<li class="tsd-signature tsd-kind-icon">cast<wbr>Types<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L434">entities/entity.ts:434</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L436">entities/entity.ts:436</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1395,13 +1418,15 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>source: <a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a></h5>
+								<h5>source: <span class="tsd-signature-type">object</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Raw entity properties to cast</p>
 								</div>
+								<ul class="tsd-parameters">
+								</ul>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TEntity</span></h4>
 						<p>the casted properties</p>
 					</li>
 				</ul>
@@ -1416,7 +1441,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L183">entities/entity.ts:183</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L200">entities/entity.ts:200</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1450,7 +1475,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L423">entities/entity.ts:423</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L425">entities/entity.ts:425</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1476,7 +1501,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L326">entities/entity.ts:326</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L328">entities/entity.ts:328</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1559,13 +1584,13 @@ img { max-width: 100%; }
 				<a name="execifokstate" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> exec<wbr>IfOk<wbr>State</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">exec<wbr>IfOk<wbr>State&lt;T&gt;<span class="tsd-signature-symbol">(</span>beforeState<span class="tsd-signature-symbol">: </span><a href="../enums/eentitystate.html" class="tsd-signature-type">EEntityState</a>, dataSource<span class="tsd-signature-symbol">: </span><a href="dataaccesslayer.html" class="tsd-signature-type">DataAccessLayer</a>, method<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">exec<wbr>IfOk<wbr>State&lt;TAdapterEntity&gt;<span class="tsd-signature-symbol">(</span>beforeState<span class="tsd-signature-symbol">: </span><a href="../enums/eentitystate.html" class="tsd-signature-type">EEntityState</a>, dataSource<span class="tsd-signature-symbol">: </span><a href="dataaccesslayer.html" class="tsd-signature-type">DataAccessLayer</a>, method<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TAdapterEntity</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L493">entities/entity.ts:493</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L496">entities/entity.ts:496</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1581,7 +1606,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
 						<ul class="tsd-type-parameters">
 							<li>
-								<h4>T<span class="tsd-signature-symbol">: </span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a></h4>
+								<h4>TAdapterEntity<span class="tsd-signature-symbol">: </span><a href="adapterentity.html" class="tsd-signature-type">AdapterEntity</a></h4>
 							</li>
 						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1605,7 +1630,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TAdapterEntity</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1619,7 +1644,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L293">entities/entity.ts:293</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L295">entities/entity.ts:295</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1659,14 +1684,14 @@ img { max-width: 100%; }
 				<a name="getattributes" class="tsd-anchor"></a>
 				<h3>get<wbr>Attributes</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Attributes<span class="tsd-signature-symbol">(</span>dataSource<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Attributes<span class="tsd-signature-symbol">(</span>dataSource<span class="tsd-signature-symbol">: </span><a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Attributes<span class="tsd-signature-symbol">(</span>dataSource<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Attributes<span class="tsd-signature-symbol">(</span>dataSource<span class="tsd-signature-symbol">: </span><a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L209">entities/entity.ts:209</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L211">entities/entity.ts:211</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1685,7 +1710,7 @@ img { max-width: 100%; }
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> dataSource: <span class="tsd-signature-type">undefined</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TEntity</span>
 							<span class="tsd-signature-symbol"> | </span>
 							<span class="tsd-signature-type">null</span>
 						</h4>
@@ -1694,7 +1719,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L210">entities/entity.ts:210</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L212">entities/entity.ts:212</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1703,7 +1728,7 @@ img { max-width: 100%; }
 								<h5>dataSource: <a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TEntity</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1717,7 +1742,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L405">entities/entity.ts:405</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L407">entities/entity.ts:407</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1753,7 +1778,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L372">entities/entity.ts:372</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L374">entities/entity.ts:374</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1793,7 +1818,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L355">entities/entity.ts:355</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L357">entities/entity.ts:357</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1819,13 +1844,13 @@ img { max-width: 100%; }
 				<a name="getproperties" class="tsd-anchor"></a>
 				<h3>get<wbr>Properties</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Properties<span class="tsd-signature-symbol">(</span>dataSource<span class="tsd-signature-symbol">: </span><a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Properties<span class="tsd-signature-symbol">(</span>dataSource<span class="tsd-signature-symbol">: </span><a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L229">entities/entity.ts:229</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L231">entities/entity.ts:231</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1844,7 +1869,9 @@ img { max-width: 100%; }
 								<h5>dataSource: <a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TEntity</span>
+							<span class="tsd-signature-symbol"> &amp; </span>
+							<a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a>
 							<span class="tsd-signature-symbol"> | </span>
 							<span class="tsd-signature-type">null</span>
 						</h4>
@@ -1936,7 +1963,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L467">entities/entity.ts:467</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L470">entities/entity.ts:470</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2229,7 +2256,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L246">entities/entity.ts:246</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L248">entities/entity.ts:248</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2275,7 +2302,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L565">entities/entity.ts:565</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L568">entities/entity.ts:568</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2311,7 +2338,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L583">entities/entity.ts:583</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L586">entities/entity.ts:586</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2353,7 +2380,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L414">entities/entity.ts:414</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L416">entities/entity.ts:416</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2379,7 +2406,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L525">entities/entity.ts:525</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L528">entities/entity.ts:528</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2421,7 +2448,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L167">entities/entity.ts:167</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L184">entities/entity.ts:184</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2453,12 +2480,13 @@ img { max-width: 100%; }
 				<h3>validate</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 					<li class="tsd-signature tsd-kind-icon">validate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">validate<span class="tsd-signature-symbol">(</span>attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L196">entities/entity.ts:196</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L143">entities/entity.ts:143</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2480,6 +2508,23 @@ img { max-width: 100%; }
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
 						<p>This function does not return anything.</p>
 					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L144">entities/entity.ts:144</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>attributes: <span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TEntity</span>
+							<span class="tsd-signature-symbol"> | </span>
+							<span class="tsd-signature-type">null</span>
+						</h4>
+					</li>
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -2492,7 +2537,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L154">entities/entity.ts:154</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L171">entities/entity.ts:171</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2532,7 +2577,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/entity.ts#L141">entities/entity.ts:141</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/entity.ts#L158">entities/entity.ts:158</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

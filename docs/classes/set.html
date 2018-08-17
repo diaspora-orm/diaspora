@@ -909,7 +909,7 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class="current tsd-kind-class">
+		<li class="current tsd-kind-class tsd-has-type-parameter">
 			<a href="set.html" class="tsd-kind-icon">Set</a>
 			<ul>
 				<li class=" tsd-kind-enum tsd-parent-kind-class tsd-is-static">
@@ -948,7 +948,7 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="set.html#update" class="tsd-kind-icon">update</a>
 				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
 					<a href="set.html#checkentitiesfrommodel" class="tsd-kind-icon">check<wbr>Entities<wbr>From<wbr>Model</a>
 				</li>
 			</ul>
@@ -963,6 +963,14 @@ img { max-width: 100%; }
 					<p>Collections are used to manage multiple entities at the same time. You may try to use this class as an array.</p>
 				</div>
 			</div>
+		</section>
+		<section class="tsd-panel tsd-type-parameters">
+			<h3>Type parameters</h3>
+			<ul class="tsd-type-parameters">
+				<li>
+					<h4>TEntity<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
+				</li>
+			</ul>
 		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
@@ -1011,7 +1019,7 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="set.html#persist" class="tsd-kind-icon">persist</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="set.html#tochainable" class="tsd-kind-icon">to<wbr>Chainable</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="set.html#update" class="tsd-kind-icon">update</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="set.html#checkentitiesfrommodel" class="tsd-kind-icon">check<wbr>Entities<wbr>From<wbr>Model</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="set.html#checkentitiesfrommodel" class="tsd-kind-icon">check<wbr>Entities<wbr>From<wbr>Model</a></li>
 						</ul>
 					</section>
 				</div>
@@ -1023,13 +1031,13 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Set<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a>, <span class="tsd-signature-symbol">...</span>entities<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol"> | </span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="set.html" class="tsd-signature-type">Set</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Set<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span>, <span class="tsd-signature-symbol">...</span>entities<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="set.html" class="tsd-signature-type">Set</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L148">entities/set.ts:148</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L148">entities/set.ts:148</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1040,7 +1048,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>model: <a href="model.html" class="tsd-signature-type">Model</a></h5>
+								<h5>model: <a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Model describing entities managed by this set.</p>
@@ -1048,7 +1056,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 							<li>
-								<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>entities: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol"> | </span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>entities: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.</p>
@@ -1066,10 +1074,10 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 				<a name="_entities" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> _entities</h3>
-				<div class="tsd-signature tsd-kind-icon">_entities<span class="tsd-signature-symbol">:</span> <a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">[]</span></div>
+				<div class="tsd-signature tsd-kind-icon">_entities<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L141">entities/set.ts:141</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L141">entities/set.ts:141</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1086,10 +1094,10 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 				<a name="_model" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> _model</h3>
-				<div class="tsd-signature tsd-kind-icon">_model<span class="tsd-signature-symbol">:</span> <a href="model.html" class="tsd-signature-type">Model</a></div>
+				<div class="tsd-signature tsd-kind-icon">_model<span class="tsd-signature-symbol">:</span> <a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L148">entities/set.ts:148</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L148">entities/set.ts:148</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1112,8 +1120,8 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">entities<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L70">entities/set.ts:70</a></li>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L73">entities/set.ts:73</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L70">entities/set.ts:70</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L73">entities/set.ts:73</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1123,7 +1131,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">length<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L132">entities/set.ts:132</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L132">entities/set.ts:132</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1143,7 +1151,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">model<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L123">entities/set.ts:123</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L123">entities/set.ts:123</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1154,13 +1162,13 @@ img { max-width: 100%; }
 				<a name="destroy" class="tsd-anchor"></a>
 				<h3>destroy</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">destroy<span class="tsd-signature-symbol">(</span>sourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">destroy<span class="tsd-signature-symbol">(</span>sourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L259">entities/set.ts:259</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L259">entities/set.ts:259</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1191,7 +1199,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						<p>Promise resolved once all items are destroyed.</p>
 					</li>
 				</ul>
@@ -1200,13 +1208,13 @@ img { max-width: 100%; }
 				<a name="fetch" class="tsd-anchor"></a>
 				<h3>fetch</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">fetch<span class="tsd-signature-symbol">(</span>sourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">fetch<span class="tsd-signature-symbol">(</span>sourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L244">entities/set.ts:244</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L244">entities/set.ts:244</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1237,7 +1245,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						<p>Promise resolved once all items are reloaded.</p>
 					</li>
 				</ul>
@@ -1246,13 +1254,13 @@ img { max-width: 100%; }
 				<a name="persist" class="tsd-anchor"></a>
 				<h3>persist</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">persist<span class="tsd-signature-symbol">(</span>sourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">persist<span class="tsd-signature-symbol">(</span>sourceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L197">entities/set.ts:197</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L197">entities/set.ts:197</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1283,7 +1291,7 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						<p>Promise resolved once all items are persisted.</p>
 					</li>
 				</ul>
@@ -1292,15 +1300,15 @@ img { max-width: 100%; }
 				<a name="tochainable" class="tsd-anchor"></a>
 				<h3>to<wbr>Chainable</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">to<wbr>Chainable<span class="tsd-signature-symbol">(</span>chainMode<span class="tsd-signature-symbol">: </span><a href="../enums/set.etransformationmode.html#attributes" class="tsd-signature-type">ATTRIBUTES</a>, source<span class="tsd-signature-symbol">?: </span><a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">&gt;</span></li>
-					<li class="tsd-signature tsd-kind-icon">to<wbr>Chainable<span class="tsd-signature-symbol">(</span>chainMode<span class="tsd-signature-symbol">: </span><a href="../enums/set.etransformationmode.html#properties" class="tsd-signature-type">PROPERTIES</a>, source<span class="tsd-signature-symbol">: </span><a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">&gt;</span></li>
-					<li class="tsd-signature tsd-kind-icon">to<wbr>Chainable<span class="tsd-signature-symbol">(</span>chainMode<span class="tsd-signature-symbol">?: </span><a href="../enums/set.etransformationmode.html#entity" class="tsd-signature-type">ENTITY</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">to<wbr>Chainable<span class="tsd-signature-symbol">(</span>chainMode<span class="tsd-signature-symbol">: </span><a href="../enums/set.etransformationmode.html#attributes" class="tsd-signature-type">ATTRIBUTES</a>, source<span class="tsd-signature-symbol">?: </span><a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">to<wbr>Chainable<span class="tsd-signature-symbol">(</span>chainMode<span class="tsd-signature-symbol">: </span><a href="../enums/set.etransformationmode.html#properties" class="tsd-signature-type">PROPERTIES</a>, source<span class="tsd-signature-symbol">: </span><a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">to<wbr>Chainable<span class="tsd-signature-symbol">(</span>chainMode<span class="tsd-signature-symbol">?: </span><a href="../enums/set.etransformationmode.html#entity" class="tsd-signature-type">ENTITY</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L89">entities/set.ts:89</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L89">entities/set.ts:89</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1328,12 +1336,12 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L93">entities/set.ts:93</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L93">entities/set.ts:93</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1345,12 +1353,12 @@ img { max-width: 100%; }
 								<h5>source: <a href="../globals.html#tdatasource" class="tsd-signature-type">TDataSource</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/ientityproperties.html" class="tsd-signature-type">IEntityProperties</a><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L97">entities/set.ts:97</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L97">entities/set.ts:97</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1359,7 +1367,7 @@ img { max-width: 100%; }
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> chainMode: <a href="../enums/set.etransformationmode.html#entity" class="tsd-signature-type">ENTITY</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">_.LoDashExplicitArrayWrapper</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1367,13 +1375,13 @@ img { max-width: 100%; }
 				<a name="update" class="tsd-anchor"></a>
 				<h3>update</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>newData<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="set.html" class="tsd-signature-type">Set</a></li>
+					<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>newData<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L271">entities/set.ts:271</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L271">entities/set.ts:271</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1395,22 +1403,22 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="set.html" class="tsd-signature-type">Set</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="set.html" class="tsd-signature-type">Set</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TEntity</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						<p><code>this</code>.</p>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
 				<a name="checkentitiesfrommodel" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> check<wbr>Entities<wbr>From<wbr>Model</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">check<wbr>Entities<wbr>From<wbr>Model<span class="tsd-signature-symbol">(</span>entities<span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">[]</span>, model<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">check<wbr>Entities<wbr>From<wbr>Model&lt;TStatic&gt;<span class="tsd-signature-symbol">(</span>entities<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TStatic</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, model<span class="tsd-signature-symbol">: </span><a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TStatic</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/d2339c5/src/entities/set.ts#L175">entities/set.ts:175</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/diaspora/blob/5c963cc/src/entities/set.ts#L175">entities/set.ts:175</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1426,16 +1434,22 @@ img { max-width: 100%; }
 								</dd>
 							</dl>
 						</div>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>TStatic<span class="tsd-signature-symbol">: </span><a href="../interfaces/ientityattributes.html" class="tsd-signature-type">IEntityAttributes</a></h4>
+							</li>
+						</ul>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>entities: <a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">[]</span></h5>
+								<h5>entities: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type">Entity</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TStatic</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Array of entities to check.</p>
 								</div>
 							</li>
 							<li>
-								<h5>model: <a href="model.html" class="tsd-signature-type">Model</a></h5>
+								<h5>model: <a href="model.html" class="tsd-signature-type">Model</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TStatic</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<p>Model expected to be the source of all entities.</p>
 								</div>
