@@ -2,9 +2,8 @@ import resolve  from 'rollup-plugin-node-resolve';
 import commonjs  from 'rollup-plugin-commonjs';
 import sourceMaps  from 'rollup-plugin-sourcemaps';
 import camelCase  from 'lodash.camelcase';
-import { uglify }  from 'rollup-plugin-uglify';
+import { terser } from "rollup-plugin-terser";
 import json  from 'rollup-plugin-json';
-import { minify as minifyEs }  from 'uglify-es';
 import jscc from 'rollup-plugin-jscc';
 import typescript from 'rollup-plugin-typescript2';
 import { compact, defaults } from 'lodash';
@@ -93,12 +92,19 @@ export default options => {
 			commonjs( browser ? commonjsConfig : undefined ),
 		].concat( minify ? [
 			// Minify
-			uglify( {}, minifyEs ),
+			terser(),
 		] : [] ).concat( [
 			
 			// Resolve source maps to the original source
 			sourceMaps(),
 		] )),
 	};
-	return config;
+
+	// Due to issue https://github.com/TrySound/rollup-plugin-terser/issues/5, we have to remap..
+	return remapConfig(config);
 };
+
+const remapConfig = (config) => {
+	const {output, ...commonConfig} = config;
+	return output.map(outputItem => Object.assign({output: outputItem}, commonConfig))
+}
