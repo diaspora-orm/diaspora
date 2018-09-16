@@ -262,7 +262,7 @@ export class Set<TEntity extends IEntityAttributes> {
 	}
 	
 	/**
-	 * Update all entities in the set with given object.
+	 * Update all entities in the set with given object. This does **not** persist entities in the data source: you may then call {@link persist} afterwards.
 	 *
 	 * @author gerkin
 	 * @param   newData - Attributes to change in each entity of the collection.
