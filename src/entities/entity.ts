@@ -358,7 +358,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		const dataSourceFixed = this.getDataSource( dataSource );
 		const entity = this.dataSources.get( dataSourceFixed );
 		if ( entity ) {
-			return entity.attributes.id;
+			return entity.id;
 		} else {
 			return null;
 		}

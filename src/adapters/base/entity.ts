@@ -42,8 +42,26 @@ export abstract class AdapterEntity {
 		// TODO WARNING! Cast not OK
 		return _.omit( this.properties, ['idHash', 'id'] );
 	}
+
+	/**
+	 * Returns a copy of the object's properties.
+	 * 
+	 * @description The adapter entity is strictly private and represent the state of the entity in the data source. Thus, it can't be modified directly.
+	 * When an {@link Entity} is updated, it will retrieve new instances of this entity.
+	 * 
+	 * @author Gerkin
+	 */
 	public get properties() {
 		return _.cloneDeep( this._properties );
+	}
+
+	/**
+	 * Returns the ID of the entity in a specific adapter. Shorthand getter for `this._properties.id`.
+	 * 
+	 * @author Gerkin
+	 */
+	public get id() {
+		return this._properties.id;
 	}
 	
 	/**

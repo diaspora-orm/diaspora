@@ -179,12 +179,10 @@ export class InMemoryAdapter extends Adapter<InMemoryEntity> {
 	): Promise<IEntityProperties | undefined> {
 		const found = await this.findOne( table, queryFind, _.assign( {}, options, {clone: false} ) );
 		
-		if ( !_.isNil( found ) ) {
-			if ( found ) {
-				// Because our `match` is a reference to the in-memory stored object, we can just modify it.
-				Utils.applyUpdateEntity( update, found );
-				return _.assign( {}, found );
-			}
+		if ( found ) {
+			// Because our `match` is a reference to the in-memory stored object, we can just modify it.
+			Utils.applyUpdateEntity( update, found );
+			return _.assign( {}, found );
 		}
 		return undefined;
 	}
