@@ -211,6 +211,7 @@ expect.extend( {
 		expect( receivedEntity.properties.idHash ).toHaveProperty( adapter.name, receivedEntity.properties.id );
 		expect( receivedEntity.properties.id ).not.toBeUndefined();
 		expect( receivedEntity.properties.id ).not.toBeNull();
+		expect( receivedEntity.id ).toEqual( receivedEntity.properties.id );
 		expect( receivedEntity.properties ).toMatchObject( receivedEntity.attributes );
 		if ( 'undefined' === typeof window ) {
 			const baseName = (
