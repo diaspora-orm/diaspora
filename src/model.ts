@@ -222,7 +222,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @returns Promise resolved with new *sync* {@link Entity entity}.
 	 */
 	public async insert(
-		source: IEntityAttributes,
+		source: TEntity,
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
@@ -239,7 +239,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @returns Promise resolved with a {@link Set set} containing new *sync* entities.
 	 */
 	public async insertMany(
-		sources: IEntityAttributes[],
+		sources: TEntity[],
 		dataSourceName: string = this.defaultDataSource
 	): Promise<Set<TEntity>> {
 		return this.makeSet(
