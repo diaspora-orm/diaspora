@@ -259,11 +259,11 @@ Diaspora.registerAdapter( 'inMemory', InMemoryAdapter );
 import { WebStorageAdapter } from './adapters/webStorage/index';
 Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );
 import { BrowserWebApiAdapter } from './adapters/webApi/subAdapters/browserAdapter';
-Diaspora.registerAdapter( 'wepApi', BrowserWebApiAdapter );
+Diaspora.registerAdapter( 'webApi', BrowserWebApiAdapter );
 // tslint:disable-next-line:comment-format
 //#else
 import { NodeWebApiAdapter } from './adapters/webApi/subAdapters/nodeAdapter';
-Diaspora.registerAdapter( 'wepApi', NodeWebApiAdapter );
+Diaspora.registerAdapter( 'webApi', NodeWebApiAdapter );
 // tslint:disable-next-line:comment-format
 //#endif
 
