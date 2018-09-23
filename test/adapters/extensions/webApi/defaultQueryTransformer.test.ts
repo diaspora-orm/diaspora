@@ -1,4 +1,5 @@
-import { makeQueryString } from '../../../../src/adapters/webApi/defaultQueryTransformer';
+import { Adapter as _makeQueryString } from '../../../../src/adapters/webApi/defaultQueryTransformer';
+import makeQueryString = _makeQueryString.WebApi.makeQueryString;
 
 it( 'Empty query', () => {
 	expect( makeQueryString() ).toEqual( undefined );

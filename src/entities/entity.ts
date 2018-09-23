@@ -1,12 +1,16 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
+import { Adapter } from '../adapters';
+import AAdapterEntity = Adapter.Base.AAdapterEntity;
+import AAdapter = Adapter.Base.AAdapter;
+import DataAccessLayer = Adapter.DataAccessLayer;
+import TDataSource = Adapter.TDataSource;
+
 import { Errors } from '../errors';
-import { AdapterEntity, Adapter } from '../adapters/base';
 import { Model } from '../model';
 import { QueryLanguage } from '../types/queryLanguage';
 import { IModelDescription } from '../types/modelDescription';
-import { DataAccessLayer, TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
 import { logger } from '../logger';
 
@@ -49,7 +53,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	
 	private _lastDataSource: DataAccessLayer | null;
 	
-	private readonly _dataSources: Entity.IDataSourceMap<AdapterEntity>;
+	private readonly _dataSources: Entity.IDataSourceMap<AAdapterEntity>;
 	
 	private idHash: IIdHash;
 	
@@ -63,7 +67,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 */
 	public constructor(
 		public readonly model: Model<TEntity>,
-		source?: AdapterEntity | TEntity | null
+		source?: AAdapterEntity | TEntity | null
 	) {
 		super();
 		const modelAttrsKeys = _.keys( this.model.modelDesc.attributes );
@@ -71,7 +75,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		// ### Init defaults
 		const sources = _.reduce(
 			model.dataSources,
-			( acc: Entity.IDataSourceMap<AdapterEntity>, adapter ) =>
+			( acc: Entity.IDataSourceMap<AAdapterEntity>, adapter ) =>
 			acc.set( adapter, null ),
 			new WeakMap()
 		);
@@ -81,7 +85,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		
 			// ### Load datas from source
 			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
-		if ( source instanceof AdapterEntity ) {
+		if ( source instanceof AAdapterEntity ) {
 			// ### Load datas from source
 			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 			this.setLastDataSourceEntity(
@@ -270,7 +274,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		await _maybeEmit( ['afterValidate', `beforePersist${suffix}`] );
 		
 		// Depending on state, we are going to perform a different operation
-		const dataStoreEntity: AdapterEntity | undefined = await ( beforeState === 'orphan'
+		const dataStoreEntity: AAdapterEntity | undefined = await ( beforeState === 'orphan'
 		? this.persistCreate( dataSourceFixed )
 		: this.persistUpdate( dataSourceFixed, options ) );
 		if ( !dataStoreEntity ) {
@@ -493,7 +497,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 * @param dataSource  -
 	 * @param method      -
 	 */
-	private execIfOkState<TAdapterEntity extends AdapterEntity>(
+	private execIfOkState<TAdapterEntity extends AAdapterEntity>(
 		beforeState: EEntityState,
 		dataSource: DataAccessLayer,
 		// TODO: precise it
@@ -527,7 +531,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 */
 	private setLastDataSourceEntity(
 		dataSource: DataAccessLayer,
-		dataSourceEntity: AdapterEntity | null
+		dataSourceEntity: AAdapterEntity | null
 	) {
 		// We have used data source, store it
 		this._lastDataSource = dataSource;
@@ -609,8 +613,8 @@ export namespace Entity {
 		name: string;
 		new ( source?: IEntityAttributes ): Entity<TEntity>;
 	}
-	export interface IDataSourceMap<TAdapterEntity extends AdapterEntity>
-	extends WeakMap<DataAccessLayer<TAdapterEntity, Adapter<TAdapterEntity>>, TAdapterEntity | null> {}
+	export interface IDataSourceMap<TAdapterEntity extends AAdapterEntity>
+	extends WeakMap<DataAccessLayer<TAdapterEntity, AAdapter<TAdapterEntity>>, TAdapterEntity | null> {}
 	
 	/**
 	 * This factory function generate a new class constructor, prepared for a specific model.

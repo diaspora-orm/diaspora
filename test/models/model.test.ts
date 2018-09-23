@@ -1,19 +1,16 @@
 import * as _ from 'lodash';
 
+import { Adapter } from '../../src/adapters';
 import { Diaspora } from '../../src/diaspora';
 import { Model } from '../../src/model';
-import { Entity } from '../../src/entities';
-import { InMemoryAdapter, InMemoryEntity } from '../../src/adapters/inMemory';
-import { Adapter } from '../../src/adapters/base';
-
-import '../utils';
-import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
 import { EFieldType } from '../../src';
 
-let testModel: Model<{foo: string; baz: string}>;
+import '../utils';
+
+let testModel: Model<{foo?: string; baz?: string}>;
 const MODEL_NAME = 'model-test';
 const SOURCE = 'inMemory-model-test';
-let dataAccessLayer: DataAccessLayer;
+let dataAccessLayer: Adapter.DataAccessLayer;
 let store: { items: any[] };
 
 beforeAll( () => {
@@ -34,7 +31,7 @@ beforeAll( () => {
 beforeEach( () => {
 	store.items = [];
 	_.forEach( [{ foo: 'bar' }, { foo: 'bar' }, { foo: 'baz' }, {}], entity => {
-		store.items.push( InMemoryEntity.setId( entity, dataAccessLayer.adapter ) );
+		store.items.push( Adapter.InMemory.InMemoryEntity.setId( entity, dataAccessLayer.adapter ) );
 	} );
 } );
 describe( 'Model', () => {

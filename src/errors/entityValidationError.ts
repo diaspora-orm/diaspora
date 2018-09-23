@@ -1,7 +1,9 @@
 import * as _ from 'lodash';
 
 import { ValidationError } from './validationError';
-import { IErrorObjectFinal } from '../entityTransformers/checkTransformer';
+import { EntityTransformers } from '../entityTransformers/checkTransformer';
+
+import IErrorObjectFinal = EntityTransformers.CheckTransformer.IErrorObjectFinal;
 
 /**
  * This class represents an error related to validation on an entity.

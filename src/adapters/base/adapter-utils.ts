@@ -1,6 +1,8 @@
 import * as _ from 'lodash';
 
-import { Adapter } from './adapter';
+import { Adapter as _Adapter } from '../base';
+import AAdapterEntity = _Adapter.Base.AAdapterEntity;
+import AAdapter = _Adapter.Base.AAdapter;
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEnumeratedHash } from '../../types/dataSourceQuerier';
 import { IEntityAttributes } from '../../types/entity';
@@ -75,7 +77,7 @@ const validateOption = (
  * @see TODO remapping.
  */
 export const remapIO = <TEntity extends IEntityAttributes>(
-	adapter: Adapter<any>,
+	adapter: AAdapter<any>,
 	tableName: string,
 	query: TEntity,
 	input: boolean

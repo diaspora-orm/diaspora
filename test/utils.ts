@@ -1,12 +1,15 @@
 import * as _ from 'lodash';
 import { resolve } from 'path';
 import * as chalk from 'chalk';
-import { Adapter, AdapterEntity } from '../src/adapters/base';
+
+import { Adapter } from '../src/adapters';
+import AAdapter = Adapter.Base.AAdapter;
+import AAdapterEntity = Adapter.Base.AAdapterEntity;
+import DataAccessLayer = Adapter.DataAccessLayer;
+
 import { Model } from '../src/model';
 import { Entity, Set } from '../src/entities';
 import { Diaspora } from '../src/diaspora';
-import { InMemoryAdapter } from '../src/adapters/inMemory';
-import { DataAccessLayer } from '../src/adapters/dataAccessLayer';
 import { IEntityAttributes } from '../src/types/entity';
 
 process.on( 'unhandledRejection', r => console.log( r ) );
@@ -27,7 +30,7 @@ try {
 
 export const conf = config;
 
-export const dataSources: { [key: string]: DataAccessLayer<AdapterEntity, Adapter> } = {};
+export const dataSources: { [key: string]: DataAccessLayer<AAdapterEntity, AAdapter> } = {};
 
 const styles =
 'undefined' === typeof window
@@ -194,12 +197,12 @@ expect.extend( {
 		expectedDataAccessLayer: DataAccessLayer,
 		expectedAttributes?: any
 	) {
-		expect( received ).toBeInstanceOf( AdapterEntity );
-		const receivedEntity = received as AdapterEntity;
+		expect( received ).toBeInstanceOf( AAdapterEntity );
+		const receivedEntity = received as AAdapterEntity;
 		const adapter = receivedEntity.dataSource;
 		expect( receivedEntity.dataAccessLayer ).toBeInstanceOf( DataAccessLayer );
 		expect( receivedEntity.dataAccessLayer ).toEqual( expectedDataAccessLayer );
-		expect( receivedEntity.dataSource ).toBeInstanceOf( Adapter );
+		expect( receivedEntity.dataSource ).toBeInstanceOf( AAdapter );
 		expect( receivedEntity.dataSource ).toEqual( expectedDataAccessLayer.adapter );
 		expect( receivedEntity.attributes ).toBeInstanceOf( Object );
 		expect( receivedEntity.attributes ).not.toHaveProperty( 'idHash' );

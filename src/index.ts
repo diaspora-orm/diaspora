@@ -3,6 +3,7 @@ export * from './diaspora';
 export * from './entities';
 export * from './errors';
 export * from './types/queryLanguage';
+export { Adapter } from './adapters';
 
 export * from './entityTransformers';
 export * from './model';

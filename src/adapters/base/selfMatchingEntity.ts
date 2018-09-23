@@ -1,12 +1,13 @@
 import * as _ from 'lodash';
 
+import { Adapter as _Adapter } from '../base';
+import AAdapterEntity = _Adapter.Base.AAdapterEntity;
 import { IConstructable, OPERATORS } from './adapter-utils';
-import { AdapterEntity } from './entity';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEntityProperties } from '../../types/entity';
 
 export const SelfMatchingAdapterEntity = <
-TAdapterEntityCtor extends IConstructable<AdapterEntity>
+TAdapterEntityCtor extends IConstructable<AAdapterEntity>
 >(
 	adapterEntity: TAdapterEntityCtor
 ): TAdapterEntityCtor =>

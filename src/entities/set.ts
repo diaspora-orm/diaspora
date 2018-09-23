@@ -1,12 +1,14 @@
 import { SequentialEvent } from 'sequential-event';
 import * as _ from 'lodash';
 
+import { Adapter } from '../adapters';
+import TDataSource = Adapter.TDataSource;
+
 import { Model } from '../model';
 import { Entity } from './entity';
 import { Errors } from '../errors';
 import * as Utils from '../utils';
 import { logger } from '../logger';
-import { TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes, IEntityProperties } from '../types/entity';
 
 /**

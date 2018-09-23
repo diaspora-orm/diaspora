@@ -1,4 +1,6 @@
-import { Diaspora, Adapter, AdapterEntity, DiasporaStatic } from '../src';
+import { Diaspora, Adapter, DiasporaStatic } from '../src';
+import AAdapter = Adapter.Base.AAdapter;
+import AAdapterEntity = Adapter.Base.AAdapterEntity;
 
 describe( 'registerAdapter', () => {
 	const ADAPTER_LABEL = 'testRegisterAdapter';
@@ -6,17 +8,17 @@ describe( 'registerAdapter', () => {
 		delete ( Diaspora as any ).adapters[ADAPTER_LABEL];
 	} );
 	it( 'Register OK adapter', () => {
-		class Foo extends Adapter<AdapterEntity>{}
+		class Foo extends AAdapter<AAdapterEntity>{}
 		expect( () => Diaspora.registerAdapter( ADAPTER_LABEL, Foo as any ) ).not.toThrow();
 	} );
-	it( 'Register NOK adapter not extending Adapter', () => {
-		class Foo extends Adapter<AdapterEntity>{}
+	it( 'Register NOK adapter not extending AAdapter', () => {
+		class Foo extends AAdapter<AAdapterEntity>{}
 		expect( () => Diaspora.registerAdapter( ADAPTER_LABEL, class{} as any ) ).toThrowError( Error );
 	} );
 	it( 'Register NOK adapter with duplicate label', () => {
-		class Foo extends Adapter<AdapterEntity>{}
+		class Foo extends AAdapter<AAdapterEntity>{}
 		expect( () => Diaspora.registerAdapter( ADAPTER_LABEL, Foo as any ) ).not.toThrow();
-		expect( () => Diaspora.registerAdapter( ADAPTER_LABEL, class extends Adapter{} as any ) ).toThrowError( Error );
+		expect( () => Diaspora.registerAdapter( ADAPTER_LABEL, class extends AAdapter{} as any ) ).toThrowError( Error );
 	} );
 } );
 describe( 'createDataSource', () => {

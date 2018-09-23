@@ -3,7 +3,7 @@ import { SetValidationError } from '../../../../src/errors/setValidationError';
 import { EntityValidationError } from '../../../../src/errors/entityValidationError';
 import { EFieldType } from '../../../../src';
 
-const { model, adapter, MODEL_NAME, SOURCE } = createMockModel( 'entity-validation', {
+const { model, adapter, MODEL_NAME, SOURCE } = createMockModel<any>( 'entity-validation', {
 	prop1: {
 		type: EFieldType.STRING,
 	},

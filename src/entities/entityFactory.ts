@@ -1,11 +1,15 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
+import { Adapter } from '../adapters';
+import AAdapterEntity = Adapter.Base.AAdapterEntity;
+import AAdapter = Adapter.Base.AAdapter;
+import DataAccessLayer = Adapter.DataAccessLayer;
+import TDataSource = Adapter.TDataSource;
+
 import { Errors } from '../errors';
-import { AdapterEntity, Adapter } from '../adapters/base';
 import { Model } from '../model';
 import { IModelDescription } from '../types/modelDescription';
-import { DataAccessLayer, TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
 import { Entity } from './entity';
 import { QueryLanguage } from '../types/queryLanguage';

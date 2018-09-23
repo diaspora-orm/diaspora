@@ -4,13 +4,18 @@ import * as express from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import {json, urlencoded} from 'body-parser';
 
-import { AdapterEntity, Adapter } from '../../src/adapters/base';
+import { Adapter as _AdapterEntity } from '../../src/adapters/base';
+import AAdapterEntity = _AdapterEntity.Base.AAdapterEntity;
+import AAdapter = _AdapterEntity.Base.AAdapter;
+import { Adapter as _InMemoryEntity } from '../../src/adapters/inMemory';
+import InMemoryEntity = _InMemoryEntity.InMemory.InMemoryEntity;
+import { Adapter as _DataAccessLayer } from '../../src/adapters/dataAccessLayer';
+import DataAccessLayer = _DataAccessLayer.DataAccessLayer;
+
 import { Diaspora } from '../../src/diaspora';
 import { QueryLanguage } from '../../src/types/queryLanguage';
 
 import { dataSources, getStyle } from '../utils';
-import { InMemoryEntity } from '../../src/adapters/inMemory';
-import { DataAccessLayer } from '../../src/adapters/dataAccessLayer';
 import { IEntityProperties } from '../../src/types/entity';
 import { Entity } from '../../src/entities';
 import { product } from './dataMatrix';
@@ -20,12 +25,12 @@ const getDataSourceLabel = name => `${name}Adapter`;
 
 const TABLE = 'test';
 
-const filterEntity = ( entity: AdapterEntity ) => {
+const filterEntity = ( entity: AAdapterEntity ) => {
 	const sentProperties = _.assign( {}, entity.properties );
 	delete sentProperties.idHash;
 	return sentProperties;
 };
-export const initMockApi = ( adapter: DataAccessLayer<AdapterEntity>, apiPort: number, endpoint: string, tableName: string ) => {
+export const initMockApi = ( adapter: DataAccessLayer<AAdapterEntity>, apiPort: number, endpoint: string, tableName: string ) => {
 	const parseQs = ( queryString: any ) => {
 		const parsed = _.mapValues( queryString, str => JSON.parse( str ) );
 		if ( 'options' in parsed || 'where' in parsed ){
@@ -155,7 +160,7 @@ export const checkSpawnedAdapter = ( adapterLabel: string ) => {
 		const dataAccessLayer = dataSources[dataSourceLabel];
 		await dataAccessLayer.waitReady();
 		expect( dataAccessLayer ).toBeInstanceOf( DataAccessLayer );
-		expect( dataAccessLayer.adapter ).toBeInstanceOf( Adapter );
+		expect( dataAccessLayer.adapter ).toBeInstanceOf( AAdapter );
 		if ( 'undefined' === typeof window ) {
 			expect( dataAccessLayer.adapter.constructor.name ).toEqual( `${baseName}Adapter` );
 			expect( dataAccessLayer.classEntity.name ).toEqual( `${baseName}Entity` );
@@ -341,7 +346,7 @@ export const checkEachStandardMethods = adapterLabel => {
 				} );
 			} );
 		} );
-		if ( adapter.classEntity.matches !== AdapterEntity.matches ){
+		if ( adapter.classEntity.matches !== AAdapterEntity.matches ){
 			describe( `Check ${adapter.adapter.name} "matchEntity"`, () => {
 				const me = ( query, obj ) => adapter.classEntity.matches( obj, query );
 				it( 'Empty query', () => {

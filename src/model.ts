@@ -1,10 +1,14 @@
 import * as _ from 'lodash';
 
+import { Adapter } from './adapters';
+import AAdapterEntity = Adapter.Base.AAdapterEntity;
+import AAdapter = Adapter.Base.AAdapter;
+import DataAccessLayer = Adapter.DataAccessLayer;
+import TDataSource = Adapter.TDataSource;
+
 import { Entity, Set, EntityFactory } from './entities';
 import { deepFreeze } from './utils';
-import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
-import { Adapter } from './adapters/base/adapter';
-import { AdapterEntity } from './adapters/base/entity';
+import { EntityTransformers } from './entityTransformers';
 import {
 	Raw,
 	FieldDescriptor,
@@ -14,12 +18,14 @@ import {
 	IAttributesDescription,
 } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
-import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
 import { IEntityAttributes } from './types/entity';
 
 /**
  * The model class is used to interact with the population of all data of the same type.
+ * 
+ * @typeParam TEntity - Test
+ * @param TEntity - Test
  */
 export class Model<TEntity extends IEntityAttributes> {
 	public attributes: { [key: string]: FieldDescriptor };
@@ -35,9 +41,9 @@ export class Model<TEntity extends IEntityAttributes> {
 		return this._entityFactory;
 	}
 	private readonly _entityTransformers: {
-		default: DefaultTransformer;
-		check: CheckTransformer;
-		[key: string]: EntityTransformer | undefined;
+		default: EntityTransformers.DefaultTransformer;
+		check: EntityTransformers.CheckTransformer;
+		[key: string]: EntityTransformers.AEntityTransformer | undefined;
 	};
 	public get entityTransformers() {
 		return this._entityTransformers;
@@ -106,8 +112,8 @@ export class Model<TEntity extends IEntityAttributes> {
 		// Configure attributes-related elements
 		const attributes = Model.normalizeAttributesDescription( modelDesc.attributes );
 		this._entityTransformers = {
-			default: new DefaultTransformer( attributes ),
-			check: new CheckTransformer( attributes ),
+			default: new EntityTransformers.DefaultTransformer( attributes ),
+			check: new EntityTransformers.CheckTransformer( attributes ),
 		};
 		this.attributes = deepFreeze( attributes );
 		
@@ -180,7 +186,7 @@ export class Model<TEntity extends IEntityAttributes> {
 			return dataSource;
 		} else {
 			const dataSourceName =
-			dataSource instanceof Adapter ? dataSource.name : dataSource;
+			dataSource instanceof AAdapter ? dataSource.name : dataSource;
 			if ( !this._dataSources.hasOwnProperty( dataSourceName ) ) {
 				throw new ReferenceError(
 					`Model does not contain data source "${dataSourceName}"`
@@ -385,7 +391,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @param dataSourceEntitiesPromise - Promise that may return adapter entities to wrap in a newly created `Set`
 	 */
 	protected async makeSet(
-		dataSourceEntitiesPromise: Promise<Array<AdapterEntity | undefined>>
+		dataSourceEntitiesPromise: Promise<Array<AAdapterEntity | undefined>>
 	) {
 		const dataSourceEntities = await dataSourceEntitiesPromise;
 		const newEntities = _.chain( dataSourceEntities )
@@ -403,7 +409,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @param dataSourceEntityPromise - Promise that may return an adapter entity to wrap in a newly created `Entity`
 	 */
 	protected async makeEntity(
-		dataSourceEntityPromise: Promise<AdapterEntity | undefined>
+		dataSourceEntityPromise: Promise<AAdapterEntity | undefined>
 	) {
 		const dataSourceEntity = await dataSourceEntityPromise;
 		if ( _.isNil( dataSourceEntity ) ) {
