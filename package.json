@@ -86,7 +86,7 @@
 			"node_modules"
 		],
 		"roots": [
-			"test"
+			"test/unit-test"
 		],
 		"coverageThreshold": {
 			"global": {
@@ -102,7 +102,7 @@
 		],
 		"globals": {
 			"ts-jest": {
-				"tsConfigFile": "tsconfig.jest.json"
+				"tsConfigFile": "test/tsconfig.test.json"
 			}
 		},
 		"setupTestFrameworkScriptFile": "./test/setup.ts",
