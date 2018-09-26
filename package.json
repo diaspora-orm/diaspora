@@ -123,7 +123,7 @@
 		"cross-env": "^5.2.0",
 		"cz-conventional-changelog": "^2.1.0",
 		"express": "^4.16.3",
-		"husky": "^0.14.3",
+		"husky": "^1.0.0",
 		"intercept-stdout": "^0.1.2",
 		"jest": "^23.4.1",
 		"jest-extended": "^0.8.1",
