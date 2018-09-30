@@ -7,8 +7,9 @@
 		"dist",
 		"src"
 	],
-	"main": "./dist/node/umd/index.js",
-	"browser": "./dist/browser/umd/index.js",
+	"main": "./dist/node/diaspora.esm.js",
+	"browser": "./dist/browser/diaspora.iife.js",
+	"module": "./dist/browser/diaspora.esm.js",
 	"typings": "./dist/types",
 	"directories": {
 		"doc": "doc",
@@ -21,15 +22,11 @@
 	"scripts": {
 		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json",
 		"lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json || true",
-		"doc": "typedoc --out docs --target es6 --theme minimal --mode file --json doc.json src",
+		"doc": "typedoc --target es6 --mode file --json doc.json src",
 		"prebuild": "rimraf docs dist",
-		"build": "npm install --only=dev && npm run build:browser && npm run build:node && npm run doc",
-		"build:node": "npx rollup -c ./rollup/rollup.node.config.ts",
-		"build:browser": "npm run build:browser:standalone && npm run build:browser:standalone:min && npm run build:browser:module && npm run build:browser:module:min",
-		"build:browser:module": "npx rollup -c ./rollup/rollup.browser.module.config.ts",
-		"build:browser:module:min": "npx rollup -c ./rollup/rollup.browser.module.min.config.ts",
-		"build:browser:standalone": "npx rollup -c ./rollup/rollup.browser.standalone.config.ts",
-		"build:browser:standalone:min": "npx rollup -c ./rollup/rollup.browser.standalone.min.config.ts",
+		"build": "npm install --only=dev && rollup -c ./rollup.config.js --environment ENVIRONMENT:production && npm run doc",
+		"build:dev": "npm install --only=dev && rollup -c ./rollup.config.js",
+		"start": "rollup -c ./rollup.config.js -w",
 		"start": "npx rollup -c ./rollup/rollup.module.config.ts -w",
 		"test": "jest",
 		"test:watch": "jest --watch",
@@ -109,6 +106,8 @@
 		"testURL": "http://localhost/"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.1.2",
+		"@babel/preset-env": "^7.1.0",
 		"@types/chalk": "^2.2.0",
 		"@types/express": "^4.16.0",
 		"@types/jest": "^23.3.1",
@@ -133,6 +132,7 @@
 		"replace-in-file": "^3.4.2",
 		"rimraf": "^2.6.2",
 		"rollup": "^0.66.0",
+		"rollup-plugin-babel": "^4.0.3",
 		"rollup-plugin-commonjs": "^9.1.5",
 		"rollup-plugin-hypothetical": "^2.1.0",
 		"rollup-plugin-ignore": "^1.0.3",
