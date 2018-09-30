@@ -252,19 +252,19 @@ export const Diaspora = DiasporaStatic.instance;
 Diaspora.registerAdapter( 'inMemory', Adapter.InMemory.InMemoryAdapter );
 
 /*#ifset _BROWSER
+// If browser, will be BrowserWebApiAdapter. If node, will be NodeWebApiAdapter
+Diaspora.registerAdapter( 'webApi', Adapter.WebApi.WebApiAdapter );
+
 // tslint:disable-next-line:comment-format
 //#if _BROWSER
 Diaspora.registerAdapter( 'webStorage', Adapter.WebStorage.WebStorageAdapter );
-Diaspora.registerAdapter( 'webApi', Adapter.WebApi.BrowserWebApiAdapter );
-// tslint:disable-next-line:comment-format
-//#else
-Diaspora.registerAdapter( 'webApi', Adapter.WebApi.NodeWebApiAdapter );
 // tslint:disable-next-line:comment-format
 //#endif
 
 // If we are in unbuilt state (like for unit tests), include all adapters aliased if required
 //#else //*/
 Diaspora.registerAdapter( 'webStorage', Adapter.WebStorage.WebStorageAdapter );
+
 Diaspora.registerAdapter( 'webApiBrowser', Adapter.WebApi.BrowserWebApiAdapter );
 Diaspora.registerAdapter( 'webApiNode', Adapter.WebApi.NodeWebApiAdapter );
 // tslint:disable-next-line:comment-format

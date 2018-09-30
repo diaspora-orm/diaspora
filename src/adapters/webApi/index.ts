@@ -10,8 +10,8 @@ import { Adapter as _BrowserWebApiAdapter } from './subAdapters/browserAdapter';
 import { Adapter as _NodeWebApiAdapter } from './subAdapters/nodeAdapter';
 // tslint:disable-next-line:comment-format
 //#endif
-// If we are in unbuilt state (like for unit tests), include all adapters aliased if required
 //#else //*/
+// If we are in unbuilt state (like for unit tests), include all adapters aliased if required
 import { Adapter as _BrowserWebApiAdapter } from './subAdapters/browserAdapter';
 import { Adapter as _NodeWebApiAdapter } from './subAdapters/nodeAdapter';
 import BrowserWebApiAdapter = _BrowserWebApiAdapter.WebApi.BrowserWebApiAdapter;
@@ -32,10 +32,9 @@ export namespace Adapter.WebApi {
 	export import WebApiAdapter = _NodeWebApiAdapter.WebApi.NodeWebApiAdapter;
 	// tslint:disable-next-line:comment-format
 	//#endif
-
-	// If we are in unbuilt state (like for unit tests), include all adapters aliased if required
 	//#else //*/
-	export type WebApiAdapter = NodeWebApiAdapter | BrowserWebApiAdapter;
+	// If we are in unbuilt state (like for unit tests), include all adapters aliased if required
+	export const WebApiAdapter = NodeWebApiAdapter || BrowserWebApiAdapter;
 	export import BrowserWebApiAdapter = _BrowserWebApiAdapter.WebApi.BrowserWebApiAdapter;
 	export import NodeWebApiAdapter = _NodeWebApiAdapter.WebApi.NodeWebApiAdapter;
 	// tslint:disable-next-line:comment-format
