@@ -1,8 +1,8 @@
 
-import { EntityTransformers as DefaultTransformer_CheckTransformer } from '../../src/entityTransformers';
+import { EntityTransformers as DefaultTransformer_CheckTransformer } from '../../../src/entityTransformers';
 import DefaultTransformer = DefaultTransformer_CheckTransformer.DefaultTransformer;
-import { EFieldType } from '../../src';
-import { Raw, IAttributesDescription } from '../../src/types/modelDescription';
+import { EFieldType } from '../../../src';
+import { Raw, IAttributesDescription } from '../../../src/types/modelDescription';
 
 describe( 'Default values', () => {
 	it( 'Default field', async () => {

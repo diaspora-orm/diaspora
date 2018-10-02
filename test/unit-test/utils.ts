@@ -2,15 +2,15 @@ import * as _ from 'lodash';
 import { resolve } from 'path';
 import * as chalk from 'chalk';
 
-import { Adapter } from '../src/adapters';
+import { Adapter } from '../../src/adapters';
 import AAdapter = Adapter.Base.AAdapter;
 import AAdapterEntity = Adapter.Base.AAdapterEntity;
 import DataAccessLayer = Adapter.DataAccessLayer;
 
-import { Model } from '../src/model';
-import { Entity, Set } from '../src/entities';
-import { Diaspora } from '../src/diaspora';
-import { IEntityAttributes } from '../src/types/entity';
+import { Model } from '../../src/model';
+import { Entity, Set } from '../../src/entities';
+import { Diaspora } from '../../src/diaspora';
+import { IEntityAttributes } from '../../src/types/entity';
 
 process.on( 'unhandledRejection', r => console.log( r ) );
 const projectPath = resolve( '../' );

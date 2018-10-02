@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
-import { Adapter } from '../../src/adapters';
-import { Diaspora } from '../../src/diaspora';
-import { Model } from '../../src/model';
-import { EFieldType } from '../../src';
+import { Adapter } from '../../../src/adapters';
+import { Diaspora } from '../../../src/diaspora';
+import { Model } from '../../../src/model';
+import { EFieldType } from '../../../src';
 
 import '../utils';
 

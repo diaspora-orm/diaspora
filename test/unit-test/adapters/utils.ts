@@ -4,20 +4,20 @@ import * as express from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import {json, urlencoded} from 'body-parser';
 
-import { Adapter as _AdapterEntity } from '../../src/adapters/base';
+import { Adapter as _AdapterEntity } from '../../../src/adapters/base';
 import AAdapterEntity = _AdapterEntity.Base.AAdapterEntity;
 import AAdapter = _AdapterEntity.Base.AAdapter;
-import { Adapter as _InMemoryEntity } from '../../src/adapters/inMemory';
+import { Adapter as _InMemoryEntity } from '../../../src/adapters/inMemory';
 import InMemoryEntity = _InMemoryEntity.InMemory.InMemoryEntity;
-import { Adapter as _DataAccessLayer } from '../../src/adapters/dataAccessLayer';
+import { Adapter as _DataAccessLayer } from '../../../src/adapters/dataAccessLayer';
 import DataAccessLayer = _DataAccessLayer.DataAccessLayer;
 
-import { Diaspora } from '../../src/diaspora';
-import { QueryLanguage } from '../../src/types/queryLanguage';
+import { Diaspora } from '../../../src/diaspora';
+import { QueryLanguage } from '../../../src/types/queryLanguage';
 
 import { dataSources, getStyle } from '../utils';
-import { IEntityProperties } from '../../src/types/entity';
-import { Entity } from '../../src/entities';
+import { IEntityProperties } from '../../../src/types/entity';
+import { Entity } from '../../../src/entities';
 import { product } from './dataMatrix';
 import { inspect } from 'util';
 

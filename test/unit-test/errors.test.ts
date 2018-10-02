@@ -1,4 +1,4 @@
-import { ExtendableError } from '../src/errors/extendableError';
+import { ExtendableError } from '../../src/errors/extendableError';
 
 describe( 'Test errors', () => {
 	it( 'Extendable error', () => {

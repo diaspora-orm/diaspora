@@ -102,7 +102,7 @@
 				"tsConfigFile": "test/tsconfig.test.json"
 			}
 		},
-		"setupTestFrameworkScriptFile": "./test/setup.ts",
+		"setupTestFrameworkScriptFile": "./test/unit-test/setup.ts",
 		"testURL": "http://localhost/"
 	},
 	"devDependencies": {

@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
-import { EntityTransformers as EntityTransformers_CheckTransformer } from '../../src/entityTransformers';
+import { EntityTransformers as EntityTransformers_CheckTransformer } from '../../../src/entityTransformers';
 import CheckTransformer = EntityTransformers_CheckTransformer.CheckTransformer;
-import { Errors } from '../../src/errors';
-import { EFieldType } from '../../src';
+import { Errors } from '../../../src/errors';
+import { EFieldType } from '../../../src';
 
 
 interface IPartition<TData> extends Array<TData[]> {

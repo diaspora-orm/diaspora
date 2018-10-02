@@ -1,9 +1,9 @@
 // tslint:disable-next-line:no-implicit-dependencies
 const intercept = require( 'intercept-stdout' );
 
-import { BrowserLogger } from '../src/logger/browserLogger';
-import { ELoggingLevel } from '../src/logger/logger';
-import { NodeLogger } from '../src/logger/nodeLogger';
+import { BrowserLogger } from '../../src/logger/browserLogger';
+import { ELoggingLevel } from '../../src/logger/logger';
+import { NodeLogger } from '../../src/logger/nodeLogger';
 
 
 const catchStdout = () => {

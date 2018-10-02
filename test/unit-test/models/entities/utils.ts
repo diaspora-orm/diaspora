@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 import { IEventHandler } from 'sequential-event';
 
-import { Entity, Set } from '../../../src/entities';
-import { IEntityAttributes } from '../../../src/types/entity';
+import { Entity, Set } from '../../../../src/entities';
+import { IEntityAttributes } from '../../../../src/types/entity';
 
 export const lifecycleEvents = {
 	create: [

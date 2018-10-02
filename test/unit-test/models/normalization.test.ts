@@ -1,6 +1,6 @@
-import { Diaspora } from '../../src/diaspora';
-import { dataSourceRegistry } from '../../src/staticStores';
-import { EFieldType } from '../../src';
+import { Diaspora } from '../../../src/diaspora';
+import { dataSourceRegistry } from '../../../src/staticStores';
+import { EFieldType } from '../../../src';
 
 const ADAPTER_LABEL = 'temp';
 const MODEL_NAME = 'testModel';

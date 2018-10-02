@@ -1,12 +1,12 @@
-import { Adapter as _WebApiAdapter } from '../../src/adapters/webApi/adapter';
+import { Adapter as _WebApiAdapter } from '../../../src/adapters/webApi/adapter';
 import WebApiAdapter = _WebApiAdapter.WebApi.AWebApiAdapter
-import { Adapter as _NodeWebApiAdapter } from '../../src/adapters/webApi/subAdapters/nodeAdapter';
+import { Adapter as _NodeWebApiAdapter } from '../../../src/adapters/webApi/subAdapters/nodeAdapter';
 import NodeWebApiAdapter = _NodeWebApiAdapter.WebApi.NodeWebApiAdapter;
 
-import { Diaspora } from '../../src/diaspora';
+import { Diaspora } from '../../../src/diaspora';
 import { getConfig } from '../utils';
 import { createDataSource, checkSpawnedAdapter, checkEachStandardMethods, initMockApi } from './utils';
-import { ELoggingLevel } from '../../src/logger/logger';
+import { ELoggingLevel } from '../../../src/logger/logger';
 
 const ADAPTER_LABEL = 'webApiNode';
 const adapterConfig = getConfig( ADAPTER_LABEL ) as WebApiAdapter.IWebApiAdapterConfig ;

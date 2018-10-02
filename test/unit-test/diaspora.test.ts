@@ -1,4 +1,4 @@
-import { Diaspora, Adapter, DiasporaStatic } from '../src';
+import { Diaspora, Adapter, DiasporaStatic } from '../../src';
 import AAdapter = Adapter.Base.AAdapter;
 import AAdapterEntity = Adapter.Base.AAdapterEntity;
 

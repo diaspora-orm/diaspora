@@ -1,6 +1,6 @@
 import { createMockModel } from '../../utils';
-import { InMemoryAdapter } from '../../../../src/adapters/inMemory';
-import { EFieldType } from '../../../../src';
+import { InMemoryAdapter } from '../../../../../src/adapters/inMemory';
+import { EFieldType } from '../../../../../src';
 
 const ADAPTER_TABLE = 'entity-types-casting';
 const { model, MODEL_NAME, SOURCE, adapter, dal } = createMockModel( ADAPTER_TABLE, {

@@ -1,5 +1,5 @@
-import { applyUpdateEntity, getDefaultFunction, getDefaultValue} from '../src/utils';
-import { namedFunctions } from '../src/staticStores';
+import { applyUpdateEntity, getDefaultFunction, getDefaultValue} from '../../src/utils';
+import { namedFunctions } from '../../src/staticStores';
 import * as _ from 'lodash';
 
 describe( 'Testing "applyUpdateEntity', () => {

@@ -1,6 +1,6 @@
 const ADAPTER_LABEL = 'webStorage';
 
-import { Adapter as _WebStorageAdapter } from '../../src/adapters/webStorage';
+import { Adapter as _WebStorageAdapter } from '../../../src/adapters/webStorage';
 import WebStorageAdapter = _WebStorageAdapter.WebStorage.WebStorageAdapter;
 
 import {
@@ -9,7 +9,7 @@ import {
 	checkEachStandardMethods,
 	checkApplications,
 } from './utils';
-import { Diaspora } from '../../src';
+import { Diaspora } from '../../../src';
 
 createDataSource( ADAPTER_LABEL, {} );
 checkSpawnedAdapter( ADAPTER_LABEL );

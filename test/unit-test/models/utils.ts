@@ -1,8 +1,8 @@
-import { Diaspora } from '../../src/diaspora';
+import { Diaspora } from '../../../src/diaspora';
 
 import '../utils';
-import { Raw, EFieldType } from '../../src/types/modelDescription';
-import { IEntityAttributes } from '../../src/types/entity';
+import { Raw, EFieldType } from '../../../src/types/modelDescription';
+import { IEntityAttributes } from '../../../src/types/entity';
 
 export const createMockModel = <TEntity extends IEntityAttributes = {foo?:string;baz?:string}>( scope: string, attributesDescription: Raw.IAttributesDescription = {
 	foo: {

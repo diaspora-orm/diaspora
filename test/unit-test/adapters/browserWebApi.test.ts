@@ -2,15 +2,15 @@ import * as _ from 'lodash';
 // tslint:disable-next-line:no-implicit-dependencies
 import { XMLHttpRequest } from 'xmlhttprequest';
 
-import { Adapter as _WebApiAdapter } from '../../src/adapters/webApi/adapter';
+import { Adapter as _WebApiAdapter } from '../../../src/adapters/webApi/adapter';
 import WebApiAdapter = _WebApiAdapter.WebApi.AWebApiAdapter
-import { Adapter as _BrowserWebApiAdapter } from '../../src/adapters/webApi/subAdapters/browserAdapter';
+import { Adapter as _BrowserWebApiAdapter } from '../../../src/adapters/webApi/subAdapters/browserAdapter';
 import BrowserWebApiAdapter = _BrowserWebApiAdapter.WebApi.BrowserWebApiAdapter;
 
-import { Diaspora } from '../../src/diaspora';
+import { Diaspora } from '../../../src/diaspora';
 import { getConfig } from '../utils';
 import { createDataSource, checkSpawnedAdapter, checkEachStandardMethods, initMockApi } from './utils';
-import { ELoggingLevel } from '../../src/logger/logger';
+import { ELoggingLevel } from '../../../src/logger/logger';
 
 const ADAPTER_LABEL = 'webApiBrowser';
 const adapterConfig = getConfig( ADAPTER_LABEL ) as WebApiAdapter.IWebApiAdapterConfig ;

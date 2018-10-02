@@ -1,6 +1,6 @@
-import { Diaspora } from '../../../../src';
-import { EFieldType } from '../../../../src/types/modelDescription';
-import { EntityValidationError } from '../../../../src/errors/entityValidationError';
+import { Diaspora } from '../../../../../src';
+import { EFieldType } from '../../../../../src/types/modelDescription';
+import { EntityValidationError } from '../../../../../src/errors/entityValidationError';
 import { createMockModel } from '../../utils';
 
 const { model, adapter, MODEL_NAME, SOURCE } = createMockModel( 'entity-validation', {

@@ -1,7 +1,7 @@
-import { Model } from '../../../../src/model';
-import { InMemoryAdapter } from '../../../../src/adapters/inMemory';
-import { Entity } from '../../../../src/entities/entityFactory';
-import { Set } from '../../../../src/entities/set';
+import { Model } from '../../../../../src/model';
+import { InMemoryAdapter } from '../../../../../src/adapters/inMemory';
+import { Entity } from '../../../../../src/entities/entityFactory';
+import { Set } from '../../../../../src/entities/set';
 import { lifecycleEvents, bindEvents, checkFlags } from '../utils';
 import { createMockModel } from '../../utils';
 

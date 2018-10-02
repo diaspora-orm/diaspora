@@ -1,7 +1,7 @@
-import { Diaspora } from '../../../../src/diaspora';
+import { Diaspora } from '../../../../../src/diaspora';
 import { createMockModel } from '../../utils';
-import { EntityStateError } from '../../../../src/errors/entityStateError';
-import { EEntityState } from '../../../../src/types/entity';
+import { EntityStateError } from '../../../../../src/errors/entityStateError';
+import { EEntityState } from '../../../../../src/types/entity';
 
 const { model, MODEL_NAME, SOURCE } = createMockModel(
 	'entity-actions'
