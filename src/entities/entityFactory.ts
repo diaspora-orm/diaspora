@@ -1,22 +1,26 @@
 import * as _ from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
+import { Adapter } from '../adapters';
+import AAdapterEntity = Adapter.Base.AAdapterEntity;
+import AAdapter = Adapter.Base.AAdapter;
+import DataAccessLayer = Adapter.DataAccessLayer;
+import TDataSource = Adapter.TDataSource;
+
 import { Errors } from '../errors';
-import { AdapterEntity, Adapter } from '../adapters/base';
 import { Model } from '../model';
 import { IModelDescription } from '../types/modelDescription';
-import { DataAccessLayer, TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
 import { Entity } from './entity';
 import { QueryLanguage } from '../types/queryLanguage';
 import { logger } from '../logger/index';
 
 // We init the function as any to define the Entity property later.
-const ef: any = ( name: string, modelDesc: IModelDescription, model: Model ) => {
+const ef: Entity.IEntityFactory = ( <TEntity extends IEntityAttributes>( name: string, modelDesc: IModelDescription, model: Model<TEntity> ) => {
 	/**
 	 * @ignore
 	 */
-	class SubEntity extends Entity {
+	class SubEntity extends Entity<TEntity> {
 		/**
 		 * Name of the class.
 		 *
@@ -47,7 +51,7 @@ const ef: any = ( name: string, modelDesc: IModelDescription, model: Model ) => 
 			( SubEntity as any )[staticMethodName] = staticMethod;
 		}
 	);
-	return SubEntity.bind( SubEntity, model ) as Entity.IEntitySpawner;
-};
+	return SubEntity.bind( SubEntity, model ) as Entity.IEntitySpawner<TEntity>;
+} ) as any;
 ef.Entity = Entity;
-export const EntityFactory: Entity.IEntityFactory = ef;
+export const EntityFactory = ef;

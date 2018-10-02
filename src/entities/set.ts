@@ -1,12 +1,14 @@
 import { SequentialEvent } from 'sequential-event';
 import * as _ from 'lodash';
 
+import { Adapter } from '../adapters';
+import TDataSource = Adapter.TDataSource;
+
 import { Model } from '../model';
 import { Entity } from './entity';
 import { Errors } from '../errors';
 import * as Utils from '../utils';
 import { logger } from '../logger';
-import { TDataSource } from '../adapters/dataAccessLayer';
 import { IEntityAttributes, IEntityProperties } from '../types/entity';
 
 /**
@@ -39,8 +41,8 @@ Promise.all(
  * @param   verb - String or array of strings to map for events suffix.
  * @returns Promise resolved once events are finished.
  */
-async function wrapEventsAction(
-	this: Set,
+async function wrapEventsAction<TEntity extends IEntityAttributes>(
+	this: Set<TEntity>,
 	sourceName: string,
 	action: string,
 	verb: string | string[]
@@ -66,11 +68,11 @@ async function wrapEventsAction(
 /**
  * Collections are used to manage multiple entities at the same time. You may try to use this class as an array.
  */
-export class Set {
+export class Set<TEntity extends IEntityAttributes> {
 	public get entities() {
 		return this._entities;
 	}
-	public set entities( newEntities: Entity[] ) {
+	public set entities( newEntities: Array<Entity<TEntity>> ) {
 		try {
 			Set.checkEntitiesFromModel( newEntities, this._model );
 			this._entities = newEntities;
@@ -89,14 +91,14 @@ export class Set {
 	public toChainable(
 		chainMode: Set.ETransformationMode.ATTRIBUTES,
 		source?: TDataSource
-	): _.LoDashExplicitArrayWrapper<IEntityAttributes>;
+	): _.LoDashExplicitArrayWrapper<TEntity>;
 	public toChainable(
 		chainMode: Set.ETransformationMode.PROPERTIES,
 		source: TDataSource
-	): _.LoDashExplicitArrayWrapper<IEntityProperties>;
+	): _.LoDashExplicitArrayWrapper<TEntity & IEntityProperties>;
 	public toChainable(
 		chainMode?: Set.ETransformationMode.ENTITY
-	): _.LoDashExplicitArrayWrapper<Entity>;
+	): _.LoDashExplicitArrayWrapper<Entity<TEntity>>;
 	public toChainable(
 		chainMode: Set.ETransformationMode = Set.ETransformationMode.ENTITY,
 		source?: TDataSource
@@ -138,14 +140,14 @@ export class Set {
 	 *
 	 * @author Gerkin
 	 */
-	private _entities: Entity[];
+	private _entities: Array<Entity<TEntity>>;
 	
 	/**
 	 * Model that generated this set.
 	 *
 	 * @author Gerkin
 	 */
-	private readonly _model: Model;
+	private readonly _model: Model<TEntity>;
 	
 	/**
 	 * Create a new set, managing provided `entities` that must be generated from provided `model`.
@@ -153,7 +155,7 @@ export class Set {
 	 * @param model    - Model describing entities managed by this set.
 	 * @param entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
 	 */
-	public constructor( model: Model, ...entities: Array<Entity | Entity[]> ) {
+	public constructor( model: Model<TEntity>, ...entities: Array<Entity<TEntity> | Array<Entity<TEntity>>> ) {
 		// Flatten arguments
 		const wrappedEntities = _.flatten( entities );
 		// Check if each entity is from the expected model
@@ -172,9 +174,9 @@ export class Set {
 	 * @param model    - Model expected to be the source of all entities.
 	 * @returns This function does not return anything.
 	 */
-	public static checkEntitiesFromModel( entities: Entity[], model: Model ): void {
+	public static checkEntitiesFromModel<TStatic extends IEntityAttributes>( entities: Array<Entity<TStatic>>, model: Model<TStatic> ): void {
 		entities.forEach( ( entity, index ) => {
-			if ( ( entity.constructor as Entity.IEntitySpawner ).model !== model ) {
+			if ( ( entity.constructor as Entity.IEntitySpawner<TStatic> ).model !== model ) {
 				throw new TypeError(
 					`Provided entity n°${index} ${entity} is not from model ${model} (${
 						model.name
@@ -194,7 +196,7 @@ export class Set {
 	 * @returns Promise resolved once all items are persisted.
 	 * @see {@link EntityFactory.Entity#persist}
 	 */
-	public async persist( sourceName?: string ): Promise<Set> {
+	public async persist( sourceName?: string ): Promise<Set<TEntity>> {
 		const suffixes = this.toChainable()
 		.map( entity => ( 'orphan' === entity.state ? 'Create' : 'Update' ) )
 		.value();
@@ -241,7 +243,7 @@ export class Set {
 	 * @returns Promise resolved once all items are reloaded.
 	 * @see {@link EntityFactory.Entity#fetch}
 	 */
-	public async fetch( sourceName?: string ): Promise<Set> {
+	public async fetch( sourceName?: string ): Promise<Set<TEntity>> {
 		await wrapEventsAction.call( this, sourceName, 'fetch', 'Fetch' );
 		return this;
 	}
@@ -256,19 +258,19 @@ export class Set {
 	 * @returns Promise resolved once all items are destroyed.
 	 * @see {@link EntityFactory.Entity#destroy}
 	 */
-	public async destroy( sourceName?: string ): Promise<Set> {
+	public async destroy( sourceName?: string ): Promise<Set<TEntity>> {
 		await wrapEventsAction.call( this, sourceName, 'destroy', 'Destroy' );
 		return this;
 	}
 	
 	/**
-	 * Update all entities in the set with given object.
+	 * Update all entities in the set with given object. This does **not** persist entities in the data source: you may then call {@link persist} afterwards.
 	 *
 	 * @author gerkin
 	 * @param   newData - Attributes to change in each entity of the collection.
 	 * @returns `this`.
 	 */
-	public update( newData: IEntityAttributes ): Set {
+	public update( newData: IEntityAttributes ): Set<TEntity> {
 		this.entities.forEach( entity => {
 			Utils.applyUpdateEntity( newData, entity );
 		} );

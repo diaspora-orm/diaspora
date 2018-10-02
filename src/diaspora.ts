@@ -1,9 +1,8 @@
 import * as _ from 'lodash';
 import { resolve, basename } from 'path';
 
-import { IAdapterCtr, Adapter, AdapterEntity } from './adapters/base';
+import { Adapter } from './adapters';
 import { Model } from './model';
-import { DataAccessLayer } from './adapters/dataAccessLayer';
 import {
 	IDataSourceRegistry,
 	dataSourceRegistry,
@@ -15,10 +14,8 @@ import { BrowserLogger } from './logger/browserLogger';
 import { NodeLogger } from './logger/nodeLogger';
 import { Raw } from './types/modelDescription';
 
-export { Adapter, AdapterEntity };
-
 interface IAdapterRegistry {
-	[key: string]: IAdapterCtr;
+	[key: string]: Adapter.IAdapterCtr;
 }
 
 /**
@@ -180,7 +177,7 @@ export class DiasporaStatic {
 		}
 		const adapterCtr = this.adapters[adapterLabel];
 		const baseAdapter = new adapterCtr( sourceName || adapterLabel, ...config );
-		const newDataSource = new DataAccessLayer( baseAdapter );
+		const newDataSource = new Adapter.DataAccessLayer( baseAdapter );
 		return newDataSource;
 	}
 	
@@ -219,8 +216,8 @@ export class DiasporaStatic {
 	 * @param   modelDesc - Description of the model to define.
 	 * @returns Model created.
 	 */
-	public declareModel( name: string, modelDesc: Raw.IModelDescription ) {
-		const model = new Model( name, modelDesc );
+	public declareModel<TEntity>( name: string, modelDesc: Raw.IModelDescription ) {
+		const model = new Model<TEntity>( name, modelDesc );
 		this._models[name] = model;
 		return model;
 	}
@@ -235,8 +232,8 @@ export class DiasporaStatic {
 	 * @param   adapter - The adapter to register.
 	 * @returns This function does not return anything.
 	 */
-	public registerAdapter( label: string, adapter: IAdapterCtr ) {
-		if ( !( adapter.prototype instanceof Adapter ) ) {
+	public registerAdapter( label: string, adapter: Adapter.IAdapterCtr ) {
+		if ( !( adapter.prototype instanceof Adapter.Base.AAdapter ) ) {
 			throw new TypeError(
 				'Required adapter does not extends the base Adapter type'
 			);
@@ -250,30 +247,25 @@ export class DiasporaStatic {
 
 export const Diaspora = DiasporaStatic.instance;
 
-import { InMemoryAdapter } from './adapters/inMemory/index';
-Diaspora.registerAdapter( 'inMemory', InMemoryAdapter );
+
+// ## Register adapters
+Diaspora.registerAdapter( 'inMemory', Adapter.InMemory.InMemoryAdapter );
 
 /*#ifset _BROWSER
+// If browser, will be BrowserWebApiAdapter. If node, will be NodeWebApiAdapter
+Diaspora.registerAdapter( 'webApi', Adapter.WebApi.WebApiAdapter );
+
 // tslint:disable-next-line:comment-format
 //#if _BROWSER
-import { WebStorageAdapter } from './adapters/webStorage/index';
-Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );
-import { BrowserWebApiAdapter } from './adapters/webApi/subAdapters/browserAdapter';
-Diaspora.registerAdapter( 'wepApi', BrowserWebApiAdapter );
-// tslint:disable-next-line:comment-format
-//#else
-import { NodeWebApiAdapter } from './adapters/webApi/subAdapters/nodeAdapter';
-Diaspora.registerAdapter( 'wepApi', NodeWebApiAdapter );
+Diaspora.registerAdapter( 'webStorage', Adapter.WebStorage.WebStorageAdapter );
 // tslint:disable-next-line:comment-format
 //#endif
 
 // If we are in unbuilt state (like for unit tests), include all adapters aliased if required
 //#else //*/
-import { WebStorageAdapter } from './adapters/webStorage/index';
-Diaspora.registerAdapter( 'webStorage', WebStorageAdapter );
-import { BrowserWebApiAdapter } from './adapters/webApi/subAdapters/browserAdapter';
-Diaspora.registerAdapter( 'webApiBrowser', BrowserWebApiAdapter );
-import { NodeWebApiAdapter } from './adapters/webApi/subAdapters/nodeAdapter';
-Diaspora.registerAdapter( 'webApiNode', NodeWebApiAdapter );
+Diaspora.registerAdapter( 'webStorage', Adapter.WebStorage.WebStorageAdapter );
+
+Diaspora.registerAdapter( 'webApiBrowser', Adapter.WebApi.BrowserWebApiAdapter );
+Diaspora.registerAdapter( 'webApiNode', Adapter.WebApi.NodeWebApiAdapter );
 // tslint:disable-next-line:comment-format
 //#endif

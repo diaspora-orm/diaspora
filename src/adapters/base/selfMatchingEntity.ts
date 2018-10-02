@@ -1,15 +1,16 @@
 import * as _ from 'lodash';
 
+import { Adapter as _Adapter } from '../base';
+import AAdapterEntity = _Adapter.Base.AAdapterEntity;
 import { IConstructable, OPERATORS } from './adapter-utils';
-import { AdapterEntity } from './entity';
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEntityProperties } from '../../types/entity';
 
 export const SelfMatchingAdapterEntity = <
-T extends IConstructable<AdapterEntity>
+TAdapterEntityCtor extends IConstructable<AAdapterEntity>
 >(
-	adapterEntity: T
-): T =>
+	adapterEntity: TAdapterEntityCtor
+): TAdapterEntityCtor =>
 class SelfMatchingAdapterEntity extends adapterEntity {
 	/**
 	 * Check if provided `entity` is matched by the query. Query must be in its canonical form before using this function.
