@@ -1,13 +1,15 @@
-import * as _ from 'lodash';
+import { Adapter as _AAdapterEntity } from '../base';
+import AAdapterEntity = _AAdapterEntity.Base.AAdapterEntity;
 
-import { AdapterEntity } from '../base';
 import { SelfMatchingAdapterEntity } from '../base/selfMatchingEntity';
 import { AutoIdAdapterEntity } from '../base/autoIdEntity';
 
-/**
- * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
- */
+export namespace Adapter.InMemory {
+	/**
+	 * Entity stored in {@link Adapters.InMemoryDiasporaAdapter the in-memory adapter}.
+	 */
 
-@SelfMatchingAdapterEntity
-@AutoIdAdapterEntity
-export class InMemoryEntity extends AdapterEntity {}
+	@SelfMatchingAdapterEntity
+	@AutoIdAdapterEntity
+	export class InMemoryEntity extends AAdapterEntity {}
+}

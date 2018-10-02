@@ -12,7 +12,16 @@ Fancy badges:
 [![npm](https://img.shields.io/npm/dm/@diaspora/diaspora.svg)](https://www.npmjs.com/package/@diaspora/diaspora)
 [![npm version](https://badge.fury.io/js/%40diaspora%2Fdiaspora.svg)](https://www.npmjs.com/package/@diaspora/diaspora)
 [![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/diaspora-orm/diaspora.svg)](https://github.com/diaspora-orm/diaspora)
-[![license](https://img.shields.io/github/license/diaspora-orm/diaspora.svg)](https://github.com/diaspora-orm/diaspora/blob/master/LICENSE) [![Greenkeeper badge](https://badges.greenkeeper.io/diaspora-orm/diaspora.svg)](https://greenkeeper.io/)
+[![license](https://img.shields.io/github/license/diaspora-orm/diaspora.svg)](https://github.com/diaspora-orm/diaspora/blob/master/LICENSE)
+[![Greenkeeper badge](https://badges.greenkeeper.io/diaspora-orm/diaspora.svg)](https://greenkeeper.io/)
+
+## Thanks to
+
+### Browserstack
+
+<img src="https://cdn.rawgit.com/diaspora-orm/diaspora/master/media/Browserstack.svg" height="105.6" width="490.1"/>
+
+for cross-browser testing.
 
 ## Installation
 

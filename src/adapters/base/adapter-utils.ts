@@ -1,12 +1,14 @@
 import * as _ from 'lodash';
 
-import { Adapter } from './adapter';
+import { Adapter as _Adapter } from '../base';
+import AAdapterEntity = _Adapter.Base.AAdapterEntity;
+import AAdapter = _Adapter.Base.AAdapter;
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEnumeratedHash } from '../../types/dataSourceQuerier';
 import { IEntityAttributes } from '../../types/entity';
 
-export interface IConstructable<T> {
-	new ( ...args: any[] ): T;
+export interface IConstructable<TClass> {
+	new ( ...args: any[] ): TClass;
 }
 
 const getNum = ( ...params: Array<string | string[]> ) => {
@@ -74,10 +76,10 @@ const validateOption = (
  * @author gerkin
  * @see TODO remapping.
  */
-export const remapIO = <T extends IEntityAttributes>(
-	adapter: Adapter<any>,
+export const remapIO = <TEntity extends IEntityAttributes>(
+	adapter: AAdapter<any>,
 	tableName: string,
-	query: T,
+	query: TEntity,
 	input: boolean
 ) => {
 	const direction = input ? 'input' : 'output';
@@ -94,7 +96,7 @@ export const remapIO = <T extends IEntityAttributes>(
 	} );
 	const remapType = input ? 'normal' : 'inverted';
 	const remaped = _.mapKeys( filtered, ( value, key ) => _.get( adapter, ['remaps', tableName, remapType, key], key ) );
-	return remaped as T;
+	return remaped as TEntity;
 };
 
 export type IQueryCheckFunction = ( entityVal: any, targetVal: any ) => boolean;

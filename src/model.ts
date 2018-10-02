@@ -1,10 +1,14 @@
 import * as _ from 'lodash';
 
+import { Adapter } from './adapters';
+import AAdapterEntity = Adapter.Base.AAdapterEntity;
+import AAdapter = Adapter.Base.AAdapter;
+import DataAccessLayer = Adapter.DataAccessLayer;
+import TDataSource = Adapter.TDataSource;
+
 import { Entity, Set, EntityFactory } from './entities';
 import { deepFreeze } from './utils';
-import { EntityTransformer, CheckTransformer, DefaultTransformer } from './entityTransformers';
-import { Adapter } from './adapters/base/adapter';
-import { AdapterEntity } from './adapters/base/entity';
+import { EntityTransformers } from './entityTransformers';
 import {
 	Raw,
 	FieldDescriptor,
@@ -14,14 +18,16 @@ import {
 	IAttributesDescription,
 } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
-import { DataAccessLayer, TDataSource } from './adapters/dataAccessLayer';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
 import { IEntityAttributes } from './types/entity';
 
 /**
  * The model class is used to interact with the population of all data of the same type.
+ * 
+ * @typeParam TEntity - Test
+ * @param TEntity - Test
  */
-export class Model {
+export class Model<TEntity extends IEntityAttributes> {
 	public attributes: { [key: string]: FieldDescriptor };
 	
 	private readonly _dataSources: IDataSourceRegistry;
@@ -30,14 +36,14 @@ export class Model {
 		return this._dataSources;
 	}
 	private readonly defaultDataSource: string;
-	private readonly _entityFactory: Entity.IEntitySpawner;
+	private readonly _entityFactory: Entity.IEntitySpawner<TEntity>;
 	public get entityFactory() {
 		return this._entityFactory;
 	}
 	private readonly _entityTransformers: {
-		default: DefaultTransformer;
-		check: CheckTransformer;
-		[key: string]: EntityTransformer | undefined;
+		default: EntityTransformers.DefaultTransformer;
+		check: EntityTransformers.CheckTransformer;
+		[key: string]: EntityTransformers.AEntityTransformer | undefined;
 	};
 	public get entityTransformers() {
 		return this._entityTransformers;
@@ -57,11 +63,31 @@ export class Model {
 	private static normalizeAttributesDescription( desc: Raw.IAttributesDescription ): IAttributesDescription {
 		return _.mapValues(
 			desc,
-			val => {
-				const fieldDescriptorToDefault = Raw.FieldDescriptor.FieldDescriptorTypeChecks.isFieldDescriptor( val ) ? val : { type: val } ;
-				return _.defaults( fieldDescriptorToDefault , {required: false } ) as any;
-			}
+			val => Model.normalizeAttributeDescription( val )
 		);
+	}
+
+	/**
+	 * Normalize fields to convert a {@link Raw.FieldDescriptor} to a {@link FieldDescriptor}
+	 *
+	 * @param attributeDesc - Attributes description to transform
+	 * @returns Attribute description normalized, with properties defaulted
+	 * @author Gerkin
+	 */
+	private static normalizeAttributeDescription( attributeDesc: Raw.FieldDescriptor ): FieldDescriptor{
+		const fieldDescriptorToDefault = Raw.FieldDescriptor.FieldDescriptorTypeChecks.isObjectFieldDescriptor( attributeDesc ) ? attributeDesc : { type: attributeDesc } as Raw.ObjectFieldDescriptor;
+		const fieldDescriptorWithRequired = _.defaults( fieldDescriptorToDefault , {required: false } );
+
+		// Perform deep defaulting
+		if ( fieldDescriptorWithRequired.type === EFieldType.OBJECT ){
+			const attributesDefaulted = fieldDescriptorWithRequired.attributes ? Model.normalizeAttributesDescription( fieldDescriptorWithRequired.attributes ) : undefined;
+			return _.assign( _.omit( fieldDescriptorWithRequired, 'attributes' ), {attributes: attributesDefaulted} );
+		} else if ( fieldDescriptorWithRequired.type === EFieldType.ARRAY ){
+			const ofDefaulted = Model.normalizeAttributeDescription( fieldDescriptorWithRequired.of ? fieldDescriptorWithRequired.of : EFieldType.ANY );
+			return _.assign( _.omit( fieldDescriptorWithRequired, 'of' ), {of: ofDefaulted} );
+		} else {
+			return fieldDescriptorWithRequired;
+		}
 	}
 	
 	/**
@@ -86,8 +112,8 @@ export class Model {
 		// Configure attributes-related elements
 		const attributes = Model.normalizeAttributesDescription( modelDesc.attributes );
 		this._entityTransformers = {
-			default: new DefaultTransformer( attributes ),
-			check: new CheckTransformer( attributes ),
+			default: new EntityTransformers.DefaultTransformer( attributes ),
+			check: new EntityTransformers.CheckTransformer( attributes ),
 		};
 		this.attributes = deepFreeze( attributes );
 		
@@ -160,7 +186,7 @@ export class Model {
 			return dataSource;
 		} else {
 			const dataSourceName =
-			dataSource instanceof Adapter ? dataSource.name : dataSource;
+			dataSource instanceof AAdapter ? dataSource.name : dataSource;
 			if ( !this._dataSources.hasOwnProperty( dataSourceName ) ) {
 				throw new ReferenceError(
 					`Model does not contain data source "${dataSourceName}"`
@@ -177,7 +203,7 @@ export class Model {
 	 * @param   source - Object to copy attributes from.
 	 * @returns New *orphan* entity.
 	 */
-	public spawn( source: object ): Entity {
+	public spawn( source: Partial<TEntity> ): Entity<TEntity> {
 		const newEntity = new this.entityFactory( source );
 		return newEntity;
 	}
@@ -189,7 +215,7 @@ export class Model {
 	 * @param   sources - Array of objects to copy attributes from.
 	 * @returns Set with new *orphan* entities.
 	 */
-	public spawnMany( sources: object[] ): Set {
+	public spawnMany( sources: Array<Partial<TEntity>> ): Set<TEntity> {
 		return new Set( this, _.map( sources, source => this.spawn( source ) ) );
 	}
 	
@@ -202,9 +228,9 @@ export class Model {
 	 * @returns Promise resolved with new *sync* {@link Entity entity}.
 	 */
 	public async insert(
-		source: IEntityAttributes,
+		source: TEntity,
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity | null> {
+	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
 			this.getDataSource( dataSourceName ).insertOne( this.name, source )
 		);
@@ -219,9 +245,9 @@ export class Model {
 	 * @returns Promise resolved with a {@link Set set} containing new *sync* entities.
 	 */
 	public async insertMany(
-		sources: IEntityAttributes[],
+		sources: TEntity[],
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Promise<Set<TEntity>> {
 		return this.makeSet(
 			this.getDataSource( dataSourceName ).insertMany( this.name, sources )
 		);
@@ -240,7 +266,7 @@ export class Model {
 		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity | null> {
+	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
 			this.getDataSource( dataSourceName ).findOne( this.name, queryFind, options )
 		);
@@ -259,7 +285,7 @@ export class Model {
 		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Promise<Set<TEntity>> {
 		return this.makeSet(
 			this.getDataSource( dataSourceName ).findMany( this.name, queryFind, options )
 		);
@@ -280,7 +306,7 @@ export class Model {
 		update: object,
 		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Entity | null> {
+	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
 			this.getDataSource( dataSourceName ).updateOne(
 				this.name,
@@ -306,7 +332,7 @@ export class Model {
 		update: object,
 		options: QueryLanguage.Raw.IQueryOptions = {},
 		dataSourceName: string = this.defaultDataSource
-	): Promise<Set> {
+	): Promise<Set<TEntity>> {
 		return this.makeSet(
 			this.getDataSource( dataSourceName ).updateMany(
 				this.name,
@@ -365,14 +391,14 @@ export class Model {
 	 * @param dataSourceEntitiesPromise - Promise that may return adapter entities to wrap in a newly created `Set`
 	 */
 	protected async makeSet(
-		dataSourceEntitiesPromise: Promise<Array<AdapterEntity | undefined>>
+		dataSourceEntitiesPromise: Promise<Array<AAdapterEntity | undefined>>
 	) {
 		const dataSourceEntities = await dataSourceEntitiesPromise;
 		const newEntities = _.chain( dataSourceEntities )
 		.map( dataSourceEntity => new this.entityFactory( dataSourceEntity ) )
 		.compact()
 		.value();
-		const set = new Set( this, newEntities );
+		const set = new Set<TEntity>( this, newEntities );
 		return set;
 	}
 	
@@ -383,7 +409,7 @@ export class Model {
 	 * @param dataSourceEntityPromise - Promise that may return an adapter entity to wrap in a newly created `Entity`
 	 */
 	protected async makeEntity(
-		dataSourceEntityPromise: Promise<AdapterEntity | undefined>
+		dataSourceEntityPromise: Promise<AAdapterEntity | undefined>
 	) {
 		const dataSourceEntity = await dataSourceEntityPromise;
 		if ( _.isNil( dataSourceEntity ) ) {

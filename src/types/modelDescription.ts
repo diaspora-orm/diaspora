@@ -60,12 +60,13 @@ export namespace Raw {
 	}
 
 	export interface IAttributesDescription {
-		[key: string]: FieldDescriptor | EFieldType;
+		[key: string]: FieldDescriptor;
 	}
 
-	export type FieldDescriptor = FieldDescriptor.IPrimitiveFieldDescriptor
+	export type ObjectFieldDescriptor = FieldDescriptor.IPrimitiveFieldDescriptor
 	| FieldDescriptor.IArrayFieldDescriptor
 	| FieldDescriptor.IObjectFieldDescriptor;
+	export type FieldDescriptor = ObjectFieldDescriptor | EFieldType;
 
 	export namespace FieldDescriptor{
 		export interface IBaseFieldDescriptor {
@@ -101,20 +102,20 @@ export namespace Raw {
 		export interface IArrayFieldDescriptor extends IBaseFieldDescriptor {
 			type: EFieldType.ARRAY;
 			/**
-			 * Description (or array of descriptions) of possible values for this field
+			 * Description of possible values for this field
 			 *
 			 * @author gerkin
 			 */
-			of?: Array<FieldDescriptor | EFieldType> | FieldDescriptor | EFieldType;
+			of?: FieldDescriptor;
 		}
 		export interface IObjectFieldDescriptor extends IBaseFieldDescriptor {
 			type: EFieldType.OBJECT;
-			attributes?: { [key: string]: FieldDescriptor | EFieldType };
+			attributes?: IAttributesDescription;
 		}
 		export const FieldDescriptorTypeChecks = {
-			isFieldDescriptor(
-				fieldDescriptor: FieldDescriptor | EFieldType
-			): fieldDescriptor is FieldDescriptor {
+			isObjectFieldDescriptor(
+				fieldDescriptor: FieldDescriptor
+			): fieldDescriptor is ObjectFieldDescriptor {
 				return typeof fieldDescriptor === 'object' && fieldDescriptor.hasOwnProperty( 'type' );
 			},
 		};
@@ -181,7 +182,7 @@ export namespace FieldDescriptor{
 		 * @author gerkin
 		 */
 		required: boolean;
-		default: Function | any;
+		default?: Function | any;
 		enum?: any[];
 	}
 	export interface IPrimitiveFieldDescriptor extends IBaseFieldDescriptor {
@@ -195,15 +196,15 @@ export namespace FieldDescriptor{
 	export interface IArrayFieldDescriptor extends IBaseFieldDescriptor {
 		type: EFieldType.ARRAY;
 		/**
-		 * Description (or array of descriptions) of possible values for this field
+		 * Description of possible values for this field
 		 *
 		 * @author gerkin
 		 */
-		of?: FieldDescriptor[] | FieldDescriptor;
+		of: FieldDescriptor;
 	}
 	export interface IObjectFieldDescriptor extends IBaseFieldDescriptor {
 		type: EFieldType.OBJECT;
-		attributes?: { [key: string]: FieldDescriptor };
+		attributes?: IAttributesDescription;
 	}
 	export const FieldDescriptorTypeChecks = {
 	};

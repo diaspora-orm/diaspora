@@ -1,16 +1,20 @@
 import * as _ from 'lodash';
 
-import { DataAccessLayer } from './adapters/dataAccessLayer';
-import { AdapterEntity, Adapter } from './adapters/base';
+import { Adapter } from './adapters';
+import AAdapterEntity = Adapter.Base.AAdapterEntity;
+import AAdapter = Adapter.Base.AAdapter;
+import DataAccessLayer = Adapter.DataAccessLayer;
+
 import { Model } from './model';
+import { IEntityAttributes } from './types/entity';
 
 export interface IDataSourceRegistry {
-	[key: string]: DataAccessLayer<AdapterEntity, Adapter>;
+	[key: string]: DataAccessLayer<AAdapterEntity, AAdapter>;
 }
 export const dataSourceRegistry: IDataSourceRegistry = {};
 
 export interface IModelRegistry {
-	[key: string]: Model;
+	[key: string]: Model<IEntityAttributes>;
 }
 export const modelRegistry: IModelRegistry = {};
 
