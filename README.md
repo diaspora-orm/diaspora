@@ -15,6 +15,14 @@ Fancy badges:
 [![license](https://img.shields.io/github/license/diaspora-orm/diaspora.svg)](https://github.com/diaspora-orm/diaspora/blob/master/LICENSE)
 [![Greenkeeper badge](https://badges.greenkeeper.io/diaspora-orm/diaspora.svg)](https://greenkeeper.io/)
 
+## Thanks to
+
+### Browserstack
+
+<img src="https://cdn.rawgit.com/diaspora-orm/diaspora/master/media/Browserstack.svg" height="105.6" width="490.1"/>
+
+for cross-browser testing.
+
 ## Installation
 
 To install Diaspora, simply run one of the following commands:
