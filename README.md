@@ -19,9 +19,9 @@ Fancy badges:
 
 ### Browserstack
 
-<img src="https://cdn.rawgit.com/diaspora-orm/diaspora/master/media/Browserstack.svg" height="105.6" width="490.1"/>
+[<img src="https://cdn.rawgit.com/diaspora-orm/diaspora/master/media/Browserstack.svg" height="105.6" width="490.1"/>](https://www.browserstack.com/)
 
-for cross-browser testing.
+for integration tests.
 
 ## Installation
 
