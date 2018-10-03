@@ -113,7 +113,7 @@
 		"@types/logform": "^1.2.0",
 		"@types/node": "^10.7.0",
 		"@types/request-promise": "^4.1.42",
-		"commitizen": "^2.10.1",
+		"commitizen": "^3.0.2",
 		"conventional-changelog-cli": "^2.0.1",
 		"coveralls": "^3.0.2",
 		"cz-conventional-changelog": "^2.1.0",
