@@ -67,16 +67,13 @@
 		}
 	},
 	"jest": {
-		"transform": {
-			"^.+\\.tsx?$": "ts-jest"
-		},
 		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
 		"moduleFileExtensions": [
-			"ts",
-			"tsx",
 			"js",
+			"json",
 			"jsx",
-			"json"
+			"ts",
+			"tsx"
 		],
 		"moduleDirectories": [
 			"node_modules"
@@ -98,12 +95,14 @@
 		],
 		"globals": {
 			"ts-jest": {
-				"tsConfigFile": "test/tsconfig.test.json",
+				"tsConfig": "test/tsconfig.test.json",
 				"diagnostics": false
 			}
 		},
 		"setupTestFrameworkScriptFile": "./test/unit-test/setup.ts",
-		"testURL": "http://localhost/"
+		"testURL": "http://localhost/",
+		"preset": "ts-jest",
+		"testMatch": null
 	},
 	"devDependencies": {
 		"@babel/core": "^7.1.2",
