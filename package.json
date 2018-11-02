@@ -111,7 +111,7 @@
 		"@types/jest": "^23.3.2",
 		"@types/lodash": "^4.14.116",
 		"@types/logform": "^1.2.0",
-		"@types/node": "^10.11.3",
+		"@types/node": "^10.11.6",
 		"@types/request-promise": "^4.1.42",
 		"commitizen": "^3.0.2",
 		"conventional-changelog-cli": "^2.0.11",
