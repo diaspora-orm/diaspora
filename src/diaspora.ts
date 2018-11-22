@@ -167,7 +167,7 @@ export class DiasporaStatic {
 	 * @param   config       - Adapter specific configuration. Check your adapter's doc
 	 * @returns New adapter spawned.
 	 */
-	public createDataSource(
+	private createDataSource(
 		adapterLabel: string,
 		sourceName?: string,
 		...config: any[]

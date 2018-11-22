@@ -7,6 +7,7 @@ import { Adapter as _DataAccessLayer } from './dataAccessLayer';
 
 export namespace Adapter {
 	export import IAdapterCtr = _Base.IAdapterCtr;
+	export import EAdapterState = _Base.EAdapterState;
 	
 	export import Base = _Base.Base;
 	export import WebApi = _WebApi.WebApi;
