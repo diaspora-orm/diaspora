@@ -221,16 +221,17 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * Insert a raw source object in the data store.
 	 *
 	 * @author gerkin
-	 * @param   source         - Object to copy attributes from.
-	 * @param   dataSourceName - Name of the data source to insert in.
+	 * @param   source     - Object to copy attributes from.
+	 * @param   dataSource - Name of the data source, [DataAccessLayer] or [Adapter] to insert the entity in.
 	 * @returns Promise resolved with new *sync* {@link Entity entity}.
+	 * @tag CRUD
 	 */
 	public async insert(
 		source: TEntity,
-		dataSourceName: string = this.defaultDataSource
+		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
-			this.getDataSource( dataSourceName ).insertOne( this.name, source )
+			this.getDataSource( dataSource ).insertOne( this.name, source )
 		);
 	}
 	
@@ -238,16 +239,17 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * Insert multiple raw source objects in the data store.
 	 *
 	 * @author gerkin
-	 * @param   sources        - Array of object to copy attributes from.
-	 * @param   dataSourceName - Name of the data source to insert in.
+	 * @param   sources    - Array of object to copy attributes from.
+	 * @param   dataSource - Name of the data source, [DataAccessLayer] or [Adapter] to insert the entities in.
 	 * @returns Promise resolved with a {@link Set set} containing new *sync* entities.
+	 * @tag CRUD
 	 */
 	public async insertMany(
 		sources: TEntity[],
-		dataSourceName: string = this.defaultDataSource
+		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Set<TEntity>> {
 		return this.makeSet(
-			this.getDataSource( dataSourceName ).insertMany( this.name, sources )
+			this.getDataSource( dataSource ).insertMany( this.name, sources )
 		);
 	}
 	
@@ -255,18 +257,19 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * Retrieve a single entity from specified data source that matches provided `queryFind` and `options`.
 	 *
 	 * @author gerkin
-	 * @param   queryFind      - Query to get desired entity.
-	 * @param   options        - Options for this query.
-	 * @param   dataSourceName - Name of the data source to get entity from.
+	 * @param   queryFind  - Query to get desired entity.
+	 * @param   options    - Options for this query.
+	 * @param   dataSource - Name of the data source, [DataAccessLayer] or [Adapter] to get the entity from.
 	 * @returns Promise resolved with the found {@link Entity entity} in *sync* state.
+	 * @tag CRUD
 	 */
 	public async find(
 		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.IQueryOptions = {},
-		dataSourceName: string = this.defaultDataSource
+		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
-			this.getDataSource( dataSourceName ).findOne( this.name, queryFind, options )
+			this.getDataSource( dataSource ).findOne( this.name, queryFind, options )
 		);
 	}
 	
@@ -274,18 +277,19 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * Retrieve multiple entities from specified data source that matches provided `queryFind` and `options`.
 	 *
 	 * @author gerkin
-	 * @param   queryFind      - Query to get desired entities.
-	 * @param   options        - Options for this query.
-	 * @param   dataSourceName - Name of the data source to get entities from.
+	 * @param   queryFind  - Query to get desired entities.
+	 * @param   options    - Options for this query.
+	 * @param   dataSource - Name of the data source, [DataAccessLayer] or [Adapter] to get the entities from.
 	 * @returns Promise resolved with a {@link Set set} of found entities in *sync* state.
+	 * @tag CRUD
 	 */
 	public async findMany(
 		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.IQueryOptions = {},
-		dataSourceName: string = this.defaultDataSource
+		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Set<TEntity>> {
 		return this.makeSet(
-			this.getDataSource( dataSourceName ).findMany( this.name, queryFind, options )
+			this.getDataSource( dataSource ).findMany( this.name, queryFind, options )
 		);
 	}
 	
@@ -293,20 +297,21 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * Update a single entity from specified data source that matches provided `queryFind` and `options`.
 	 *
 	 * @author gerkin
-	 * @param   queryFind      - Query to get desired entity.
-	 * @param   update         - Attributes to update on matched set.
-	 * @param   options        - Options for this query.
-	 * @param   dataSourceName - Name of the data source to get entity from.
+	 * @param   queryFind  - Query to get desired entity.
+	 * @param   update     - Attributes to update on matched set.
+	 * @param   options    - Options for this query.
+	 * @param   dataSource - Name of the data source, [DataAccessLayer] or [Adapter] to update the entity to.
 	 * @returns Promise resolved with the updated {@link Entity entity} in *sync* state.
+	 * @tag CRUD
 	 */
 	public async update(
 		queryFind: QueryLanguage.Raw.SearchQuery | undefined,
 		update: object,
 		options: QueryLanguage.Raw.IQueryOptions = {},
-		dataSourceName: string = this.defaultDataSource
+		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
-			this.getDataSource( dataSourceName ).updateOne(
+			this.getDataSource( dataSource ).updateOne(
 				this.name,
 				queryFind,
 				update,
@@ -319,20 +324,21 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * Update multiple entities from specified data source that matches provided `queryFind` and `options`.
 	 *
 	 * @author gerkin
-	 * @param   queryFind      - Query to get desired entities.
-	 * @param   update         - Attributes to update on matched set.
-	 * @param   options        - Options for this query.
-	 * @param   dataSourceName - Name of the data source to get entities from.
+	 * @param   queryFind  - Query to get desired entities.
+	 * @param   update     - Attributes to update on matched set.
+	 * @param   options    - Options for this query.
+	 * @param   dataSource - Name of the data source, [DataAccessLayer] or [Adapter] to update the entities to.
 	 * @returns Promise resolved with the {@link Set set} of found entities in *sync* state.
+	 * @tag CRUD
 	 */
 	public async updateMany(
 		queryFind: QueryLanguage.Raw.SearchQuery | undefined,
 		update: object,
 		options: QueryLanguage.Raw.IQueryOptions = {},
-		dataSourceName: string = this.defaultDataSource
+		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Set<TEntity>> {
 		return this.makeSet(
-			this.getDataSource( dataSourceName ).updateMany(
+			this.getDataSource( dataSource ).updateMany(
 				this.name,
 				queryFind,
 				update,
@@ -345,17 +351,18 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * Delete a single entity from specified data source that matches provided `queryFind` and `options`.
 	 *
 	 * @author gerkin
-	 * @param   queryFind      - Query to get desired entity.
-	 * @param   options        - Options for this query.
-	 * @param   dataSourceName - Name of the data source to get entity from.
+	 * @param   queryFind  - Query to get desired entity.
+	 * @param   options    - Options for this query.
+	 * @param   dataSource - Name of the data source, [DataAccessLayer] or [Adapter] to delete the entity from.
 	 * @returns Promise resolved with `undefined`.
+	 * @tag CRUD
 	 */
 	public async delete(
 		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.IQueryOptions = {},
-		dataSourceName: string = this.defaultDataSource
+		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<void> {
-		return this.getDataSource( dataSourceName ).deleteOne(
+		return this.getDataSource( dataSource ).deleteOne(
 			this.name,
 			queryFind,
 			options
@@ -366,17 +373,18 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * Delete multiple entities from specified data source that matches provided `queryFind` and `options`.
 	 *
 	 * @author gerkin
-	 * @param   queryFind      - Query to get desired entities.
-	 * @param   options        - Options for this query.
-	 * @param   dataSourceName - Name of the data source to get entities from.
+	 * @param   queryFind  - Query to get desired entities.
+	 * @param   options    - Options for this query.
+	 * @param   dataSource - Name of the data source, [DataAccessLayer] or [Adapter] to delete the entities from.
 	 * @returns Promise resolved with `undefined`.
+	 * @tag CRUD
 	 */
 	public async deleteMany(
 		queryFind?: QueryLanguage.Raw.SearchQuery,
 		options: QueryLanguage.Raw.IQueryOptions = {},
-		dataSourceName: string = this.defaultDataSource
+		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<void> {
-		return this.getDataSource( dataSourceName ).deleteMany(
+		return this.getDataSource( dataSource ).deleteMany(
 			this.name,
 			queryFind,
 			options
