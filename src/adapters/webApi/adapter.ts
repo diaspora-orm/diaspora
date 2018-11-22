@@ -65,7 +65,7 @@ export namespace Adapter.WebApi {
 				DefaultQueryTransformerFactory(),
 			]
 		) {
-			super( WebApiEntity as any, dataSourceName );
+			super( WebApiEntity, dataSourceName );
 			
 			if ( typeof config.baseEndPoint === 'undefined' ) {
 				this.baseEndPoint = this.generateBaseEndPoint(

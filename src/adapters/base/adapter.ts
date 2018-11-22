@@ -7,7 +7,7 @@ import IAdapterEntityCtr = _AAdapterEntity.IAdapterEntityCtr;
 
 import { remapIO, CANONICAL_OPERATORS, QUERY_OPTIONS_TRANSFORMS, IConstructable } from './adapter-utils';
 import { QueryLanguage } from '../../types/queryLanguage';
-import { IRemapsHash, IFiltersHash, IDataSourceQuerier, IEnumeratedHash } from '../../types/dataSourceQuerier';
+import { IDataSourceQuerier } from '../../types/dataSourceQuerier';
 import { logger } from '../../logger';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
@@ -205,7 +205,7 @@ export namespace Adapter.Base {
 		 * @see TODO remapping.
 		 * @see {@link Adapters.Adapter#remapIO remapIO}
 		 */
-		public remapOutput<TProps extends IEnumeratedHash<any>>(
+		public remapOutput<TProps extends IEntityAttributes>(
 			tableName: string,
 			query: TProps
 		): TProps {
@@ -426,7 +426,7 @@ export namespace Adapter.Base {
 			table: string,
 			queryFind: QueryLanguage.SelectQueryOrCondition,
 			options: QueryLanguage.IQueryOptions
-		) {
+		): Promise<void> {
 			options.limit = 1;
 			await this.deleteMany( table, queryFind, options );
 		}
@@ -445,7 +445,7 @@ export namespace Adapter.Base {
 			table: string,
 			queryFind: QueryLanguage.SelectQueryOrCondition,
 			options: QueryLanguage.IQueryOptions
-		) {
+		): Promise<void> {
 			const boundQuery = this.deleteOne.bind( this, table, queryFind );
 			await AAdapter.iterateLimit( options, boundQuery );
 		}
@@ -457,8 +457,8 @@ export namespace Adapter.Base {
 		 */
 		public configureCollection(
 			tableName: string,
-			remaps: IRemapsHash,
-			filters: IFiltersHash = {}
+			remaps: _.Dictionary<string> = {},
+			filters: _.Dictionary<any> = {}
 		): this {
 			( this.remaps as any )[tableName] = {
 				normal: remaps,

@@ -8,7 +8,6 @@ import InMemoryEntity = _InMemoryEntity.InMemory.InMemoryEntity;
 
 import * as Utils from '../../utils';
 import { QueryLanguage } from '../../types/queryLanguage';
-import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
 export namespace Adapter.InMemory {
@@ -32,7 +31,7 @@ export namespace Adapter.InMemory {
 		 * @author gerkin
 		 */
 		public constructor( dataSourceName: string ) {
-			super( InMemoryEntity as any, dataSourceName );
+			super( InMemoryEntity, dataSourceName );
 			this.state = EAdapterState.READY;
 		}
 		
@@ -283,8 +282,8 @@ export namespace Adapter.InMemory {
 		 */
 		public configureCollection(
 			tableName: string,
-			remaps: IRemapsHash,
-			filters: IFiltersHash
+			remaps: _.Dictionary<string>,
+			filters: _.Dictionary<any>
 		) {
 			super.configureCollection( tableName, remaps, filters );
 			this.ensureCollectionExists( tableName );

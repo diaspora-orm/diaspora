@@ -1,12 +1,6 @@
+import * as _ from 'lodash';
+
 import { QueryLanguage } from './queryLanguage';
-
-export interface IEnumeratedHash<THash> {
-  [key: string]: THash;
-}
-
-export interface IRemapsHash extends IEnumeratedHash<any> {}
-
-export interface IFiltersHash extends IEnumeratedHash<any> {}
 
 export interface IDataSourceQuerier<
 	TIn,
@@ -128,7 +122,7 @@ export interface IDataSourceQuerier<
 	 */
 	configureCollection(
 	tableName: string,
-	remaps: IRemapsHash,
-	filters: IFiltersHash
+	remaps: _.Dictionary<string>,
+	filters: _.Dictionary<any>
 	): this;
 }

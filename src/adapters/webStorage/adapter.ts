@@ -7,7 +7,6 @@ import { Adapter as _WebStorageEntity } from './entity';
 import WebStorageEntity = _WebStorageEntity.WebStorage.WebStorageEntity;
 import * as Utils from '../../utils';
 import { QueryLanguage } from '../../types/queryLanguage';
-import { IRemapsHash, IFiltersHash } from '../../types/dataSourceQuerier';
 import { EntityUid, IEntityAttributes, IEntityProperties } from '../../types/entity';
 
 export namespace Adapter.WebStorage {
@@ -36,7 +35,7 @@ export namespace Adapter.WebStorage {
 			dataSourceName: string,
 			config?: WebStorageAdapter.IOptionsRaw
 		) {
-			super( WebStorageEntity as any, dataSourceName );
+			super( WebStorageEntity, dataSourceName );
 			this.config = _.defaults( config, {
 				session: false,
 			} );
@@ -68,8 +67,8 @@ export namespace Adapter.WebStorage {
 		 */
 		public configureCollection(
 			tableName: string,
-			remaps: IRemapsHash,
-			filters: IFiltersHash
+			remaps: _.Dictionary<string>,
+			filters: _.Dictionary<any>
 		) {
 			super.configureCollection( tableName, remaps );
 			this.ensureCollectionExists( tableName );

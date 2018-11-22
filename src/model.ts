@@ -12,7 +12,6 @@ import { EntityTransformers } from './entityTransformers';
 import {
 	Raw,
 	FieldDescriptor,
-	ISourcesHash,
 	IModelDescription,
 	EFieldType,
 	IAttributesDescription,
@@ -138,21 +137,21 @@ export class Model<TEntity extends IEntityAttributes> {
 	 */
 	protected static normalizeRemaps( modelDesc: Raw.IModelDescription ) {
 		const sourcesRaw = modelDesc.sources;
-		let sources: ISourcesHash;
 		if ( _.isString( sourcesRaw ) ) {
-			sources = { [sourcesRaw]: {} };
+			// Single source: create an empty remap hash
+			return { [sourcesRaw]: {} } as _.Dictionary<_.Dictionary<string>>;
 		} else if ( _.isArrayLike( sourcesRaw ) ) {
-			sources = _.zipObject(
+			return _.zipObject(
 				sourcesRaw,
 				// TODO: What does it do?
-				_.times( sourcesRaw.length, _.constant( {} as any ) )
+				_.times( sourcesRaw.length, _.constant( {} as _.Dictionary<string> ) )
 			);
 		} else {
-			sources = _.mapValues( sourcesRaw, ( remap, dataSourceName ) => {
+			return _.mapValues( sourcesRaw, ( remap, dataSourceName ) => {
 				if ( true === remap ) {
-					return {};
+					return {} as _.Dictionary<string>;
 				} else if ( _.isObject( remap ) ) {
-					return remap as object;
+					return remap as _.Dictionary<string>;
 				} else {
 					throw new TypeError(
 						`Datasource "${dataSourceName}" value is invalid: expect \`true\` or a remap hash, but have ${JSON.stringify(
@@ -162,7 +161,6 @@ export class Model<TEntity extends IEntityAttributes> {
 				}
 			} );
 		}
-		return sources;
 	}
 	
 	/**

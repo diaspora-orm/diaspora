@@ -10,7 +10,7 @@ import { IEntityAttributes, EntityUid, IEntityProperties } from '../../types/ent
 
 export namespace Adapter {
 	export interface IAdapterEntityCtr<TAdapterEntity extends Base.AAdapterEntity> {
-		new ( data: IEntityAttributes, adapter: AAdapter<TAdapterEntity> ): TAdapterEntity;
+		new ( data: IEntityProperties, adapter: AAdapter<TAdapterEntity> ): TAdapterEntity;
 		
 		matches(
 			attributes: IEntityProperties,

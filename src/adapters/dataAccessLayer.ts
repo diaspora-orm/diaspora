@@ -4,7 +4,7 @@ import { Adapter as _Base } from './base';
 import AAdapterEntity = _Base.Base.AAdapterEntity;
 import AAdapter = _Base.Base.AAdapter;
 import IAdapterEntityCtr = _Base.IAdapterEntityCtr;
-import { IDataSourceQuerier, IFiltersHash, IEnumeratedHash, IRemapsHash } from '../types/dataSourceQuerier';
+import { IDataSourceQuerier } from '../types/dataSourceQuerier';
 import { SequentialEvent } from 'sequential-event';
 import { QueryLanguage } from '../types/queryLanguage';
 import { IEntityAttributes } from '../types/entity';
@@ -406,8 +406,8 @@ export namespace Adapter {
 		 */
 		public configureCollection(
 			collectionName: string,
-			remaps: IRemapsHash,
-			filters: IFiltersHash = {}
+			remaps: _.Dictionary<string> = {},
+			filters: _.Dictionary<any> = {}
 		) {
 			this.adapter.configureCollection( collectionName, remaps, filters );
 			return this;

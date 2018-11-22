@@ -4,7 +4,6 @@ import { Adapter as _Adapter } from '../base';
 import AAdapterEntity = _Adapter.Base.AAdapterEntity;
 import AAdapter = _Adapter.Base.AAdapter;
 import { QueryLanguage } from '../../types/queryLanguage';
-import { IEnumeratedHash } from '../../types/dataSourceQuerier';
 import { IEntityAttributes } from '../../types/entity';
 
 export interface IConstructable<TClass> {
@@ -101,7 +100,7 @@ export const remapIO = <TEntity extends IEntityAttributes>(
 
 export type IQueryCheckFunction = ( entityVal: any, targetVal: any ) => boolean;
 
-export const OPERATORS: IEnumeratedHash<IQueryCheckFunction | undefined> = {
+export const OPERATORS: _.Dictionary<IQueryCheckFunction | undefined> = {
 	$exists: ( entityVal: any, targetVal: any ) =>
 	targetVal === !_.isUndefined( entityVal ),
 	$equal: ( entityVal: any, targetVal: any ) =>
@@ -121,7 +120,7 @@ export const OPERATORS: IEnumeratedHash<IQueryCheckFunction | undefined> = {
 	_.isArray( entityVal ) &&
 	_.some( entityVal, val => _.isEqual( val, targetVal ) ),
 };
-export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
+export const CANONICAL_OPERATORS: _.Dictionary<string> = {
 	'~': '$exists',
 	'==': '$equal',
 	'!=': '$diff',
@@ -130,9 +129,10 @@ export const CANONICAL_OPERATORS: IEnumeratedHash<string> = {
 	'>': '$greater',
 	'>=': '$greaterEqual',
 };
-export const QUERY_OPTIONS_TRANSFORMS: IEnumeratedHash<
-( ( ops: QueryLanguage.Raw.IQueryOptions ) => void )
-> = {
+
+
+export type TQueryOptionsValidator = ( ops: QueryLanguage.Raw.IQueryOptions ) => void;
+export const QUERY_OPTIONS_TRANSFORMS: _.Dictionary<TQueryOptionsValidator> = {
 	limit( opts: QueryLanguage.Raw.IQueryOptions ) {
 		opts.limit = validateOption( 'limit', opts.limit as number, {
 			type: 'int',

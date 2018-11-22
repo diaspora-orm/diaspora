@@ -16,10 +16,6 @@ export enum EFieldType {
 	STRING = 'string',
 }
 
-export interface ISourcesHash {
-	[key: string]: object;
-}
-
 export namespace Raw {	
 	/**
 	 * Object describing a model.
@@ -134,7 +130,7 @@ export interface IModelDescription {
 	 *
 	 * @author gerkin
 	 */
-	sources: ISourcesHash;
+	sources: _.Dictionary<_.Dictionary<string>>;
 	/**
 	 * Methods to add to entities prototype.
 	 *
