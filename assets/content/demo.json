@@ -1,0 +1,42 @@
+[
+    {
+        "text": "import { Diaspora } from '@diaspora/diaspora';",
+        "code": "Diaspora",
+        "type": "setup"
+    },
+    {
+        "text": "Diaspora.createNamedDataSource( 'mySource', 'inMemory' );",
+        "type": "setup"
+    },
+    {
+        "text": "const ToDo = Diaspora.declareModel( 'ToDo', {\n\tsources: 'mySource', \n\tattributes: {\n\t\ttitle: 'string', \n\t\tstatus: 'boolean'\n\t}\n});",
+        "type":"setup"
+    },
+    {
+        "text":"const todos = await ToDo.insertMany([\n\t{ title: 'Do Diaspora', status: true },\n\t{ title: 'Do the docs', status: false },\n\t{ title: 'Rule the world', status: false }\n]);",
+        "type": "insert"
+    },
+    {
+        "text": "const docsTodo = todos.entities[1];",
+        "type": "entity"
+    },
+    {
+        "text": "docsTodo.attributes.status = true;",
+        "type": "entity"
+    },
+    {
+        "text":"await docsTodo.persist();",
+        "type":"update"
+    },
+    {
+        "text":"await ToDo.deleteMany({status: false});",
+        "type":"delete"
+    },
+    {
+        "text":"const doneTodos = await ToDo.findMany({status: true});",
+        "type":"find"
+    },
+    {
+        "code": "delete Diaspora.models.ToDo, delete Diaspora._dataSources.mySource;"
+    }
+]
