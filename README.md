@@ -6,7 +6,7 @@
 
 Fancy badges:
 [![Build Status](https://travis-ci.org/diaspora-orm/diaspora.svg?branch=master)](https://travis-ci.org/diaspora-orm/diaspora)
-[![Dependency Status](https://gemnasium.com/badges/github.com/diaspora-orm/diaspora.svg)](https://gemnasium.com/github.com/diaspora-orm/diaspora)
+[![Dependency Status](https://david-dm.org/diaspora-orm/diaspora.svg)](https://david-dm.org/diaspora-orm/diaspora)
 [![Maintainability](https://api.codeclimate.com/v1/badges/f549405fb8016f6fdb1b/maintainability)](https://codeclimate.com/github/diaspora-orm/diaspora/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f549405fb8016f6fdb1b/test_coverage)](https://codeclimate.com/github/diaspora-orm/diaspora/test_coverage)
 [![npm](https://img.shields.io/npm/dm/@diaspora/diaspora.svg)](https://www.npmjs.com/package/@diaspora/diaspora)
@@ -36,16 +36,13 @@ yarn add @diaspora/diaspora
 
 ## Documentation & important notes
 
-Welcome on the GitHub repository of Diaspora. Please visit the
-[Manual website](https://diaspora.ithoughts.io/), the
-[Quick Code Review](https://diaspora.ithoughts.io/docco/index.html) or the
-[API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
+Welcome on the GitHub repository of Diaspora. Please visit the [manual website](https://diaspora.ithoughts.io/), where you can find [guides](https://diaspora.ithoughts.io/guides/), [tutorials](https://diaspora.ithoughts.io/tutorials/), or the [API tocumentation](https://diaspora.ithoughts.io/api)
 
 > ***Important note***: Diaspora is very young and under heavy development. You
 are totally free to use it or contribute, but be aware that some important
 features are incomplete or absent:
  * *Relations*: Not implemented
- * *[Query language](https://diaspora.ithoughts.io/query-language)*: Supported up to Specification level 2.
+ * *[Query language](https://diaspora.ithoughts.io/guides/query-language)*: Supported up to Specification level 2.
  * *Multi sources*: not tested
 
 ## Diaspora extensions
@@ -160,10 +157,9 @@ Notable incompatible browsers are
 
 ## API Overview
 
-Need help getting started? We have a page on how to [get started in 5 minutes](https://diaspora.ithoughts.io/getting-started.html).
+Need help getting started? We have a page on how to [get started in 5 minutes](https://diaspora.ithoughts.io/guides/getting-started).
 
-Here is a short API overview. For a detailed API documentation, check the
-[Diaspora API Documentation](https://diaspora.ithoughts.io/jsdoc/index.html)
+Here is a short API overview. For a detailed API documentation, check the [Diaspora API Documentation](https://diaspora.ithoughts.io/api)
 
 ### Model methods
 
@@ -244,4 +240,4 @@ modification, etc etc.
 *Unsure* > IndexedDB technology may be too immature. See [MDN about IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 *Note: Plan to show fallback implementations*
 
-[QL]: https://diaspora.ithoughts.io/query-language.html#match-queries
+[QL]: https://diaspora.ithoughts.io/guides/query-language#match-queries
