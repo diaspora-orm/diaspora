@@ -1,6 +1,6 @@
 {
 	"name": "@diaspora/diaspora",
-	"version": "0.3.0-alpha.14",
+	"version": "0.3.0",
 	"description": "Multi-Layer ORM for Javascript Client+Server",
 	"files": [
 		"docs",
@@ -25,8 +25,8 @@
 		"lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json || true",
 		"doc": "typedoc --target es6 --mode file --json doc.json src",
 		"prebuild": "rimraf docs dist",
-		"build": "npm install --only=dev && rollup -c ./rollup.config.js --environment ENVIRONMENT:production && npm run doc",
-		"build:dev": "npm install --only=dev && rollup -c ./rollup.config.js",
+		"build": "npm install && rollup -c ./rollup.config.js --environment ENVIRONMENT:production && npm run doc",
+		"build:dev": "npm install && rollup -c ./rollup.config.js",
 		"start": "rollup -c ./rollup.config.js -w",
 		"test": "jest",
 		"test:watch": "jest --watch",

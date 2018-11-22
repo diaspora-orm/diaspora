@@ -1,3 +1,13 @@
+# [0.3.0](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.14...v0.3.0) (2018-11-22)
+
+
+### Bug Fixes
+
+* **Adapter:** Multiple types fixes & simplifications ([0db26c8](https://github.com/diaspora-orm/diaspora/commit/0db26c8))
+* Visibility & export fixes ([9aaaaa1](https://github.com/diaspora-orm/diaspora/commit/9aaaaa1))
+
+
+
 ## 0.3.0-alpha.14 (2018-11-05)
 
 * chore: Docs, lint, package stuff ([d529890](https://github.com/diaspora-orm/diaspora/commit/d529890))
