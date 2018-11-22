@@ -47,10 +47,10 @@ The template application uses 2 *Vue.js* components:
 
 ### Create the *data source* ([commit](!https://github.com/diaspora-orm/simple-todo-app/commit/e473ba795d00f88c3c05c1e4817f7c7454aa3e4f))
 
-To create a data source, use the [`createNamedDataSource`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#createNamedDataSource) method of the `Diaspora` class. This method takes the following arguments:
+To create a data source, use the [`createNamedDataSource`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#createNamedDataSource) method of the `Diaspora` class. This method takes the following arguments:
 
 * __The name of the data source__: an arbitrary string used across Diaspora to identify a *data source* in various methods. We will call this *data source* `main`.
-* __The type of the adapter__: one of the keys of the [`Diaspora.adapters`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#adapters) object, that identify the kind of the *adapter*. We'll begin with the *in-memory adapter* identified by `inMemory`
+* __The type of the adapter__: one of the keys of the [`Diaspora.adapters`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#adapters) object, that identify the kind of the *adapter*. We'll begin with the *in-memory adapter* identified by `inMemory`
 * __Some optional configuration parameters__: see the *adapter*'s documentation to check the options you can set. The *in-memory adapter* does not have additionnal configurations, so we won't provide those parameters.
 
 <div class="d2h-file-wrapper" aria-hidden="true" data-lang="ts">
@@ -110,7 +110,7 @@ To create a data source, use the [`createNamedDataSource`](/api?pkg=@diaspora%2F
     </div>
 </div>
 
-> Depending on the kind of *adapter* you are creating, it may require some time to be fully initialized and ready to use. In this case, use the [`AAdapter.waitReady`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FAdapter%2FBase%2FAAdapter#waitReady) method that returns a *Promise*. But in our case, the *in-memory adapter* is instantly ready, so we don't need to wait.
+> Depending on the kind of *adapter* you are creating, it may require some time to be fully initialized and ready to use. In this case, use the [`AAdapter.waitReady`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FAdapter%2FBase%2FAAdapter#waitReady) method that returns a *Promise*. But in our case, the *in-memory adapter* is instantly ready, so we don't need to wait.
 
 ### Defining *models* and ToDo attributes
 
@@ -232,10 +232,10 @@ In this case, if our store was a *MongoDB* database, the ID would be generated b
 
 #### Declare the *model* ([commit](!https://github.com/diaspora-orm/simple-todo-app/commit/b07e7703d06a91239bb2afb9e3dc28003ddf5282))
 
-Each data type is manipulated through a *model*, that is generated using the [`Diaspora.declareModel`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#declareModel) method, which takes the following arguments:
+Each data type is manipulated through a *model*, that is generated using the [`Diaspora.declareModel`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#declareModel) method, which takes the following arguments:
 
 * __The name of the model__: an arbitrary string that name the kind of data the model manipulates. It is used to determine the name of the *collection* (or *table*) that will contain our data. Here, we are manipulating `ToDos`.
-* __A configuration object__ [`IModelDescription`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FRaw%2FIModelDescription), that contains at least the following properties:
+* __A configuration object__ [`IModelDescription`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FRaw%2FIModelDescription), that contains at least the following properties:
     * __The sources__ in which we are storing the data (the `main` data source in our example)
     * __The attributes__ of the data, with their type, default value or a flag to indicates if the property is required for the entity to be valid.
 
@@ -683,11 +683,11 @@ After reading the [application specification](!https://github.com/tastejs/todomv
 
 For now, we'll display **all** *ToDos*, and we'll add the different kinds of searches later.
 
-Searches methods ([`Model.find`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel#find) & [`Model.findMany`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel#findMany)) takes following parameters:
+Searches methods ([`Model.find`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel#find) & [`Model.findMany`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel#findMany)) takes following parameters:
 
-* __The search query__ <a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FQueryLanguage%2FRaw%2FSearchQuery" target="_blank" id="search-query" class="anchor">`SearchQuery`</a>: an object or array describing the entities to match. Since we are doing simple equality comparisons, we can use the simplest form of the query language (eg, `{ finished: true }` to find entities with `finished` equals to true).
-* __An optional options object__ <a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FQueryLanguage%2FRaw%2FIQueryOptions" target="_blank" id="options-object" class="anchor">`IQueryOptions`</a>: used to customize query, skip items or limit the size of the set.
-* __An optional data-source resolvable value to fetch data from__ <a href="/api?see=TDataSource&symbolPath=@diaspora%2Fdiaspora%2FAdapter#TDataSource" target="_blank" id="datasource-resolvable" class="anchor">TDataSource</a>: it can be either the name of the data source (like `main` as defined above), a [data access layer](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FAdapter%2FDataAccessLayer) or an [adapter](@/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FAdapter%2FBase%2FAAdapter). This parameter is useful for models that exists in several data sources, but we'll see that in another tutorial.
+* __The search query__ <a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FQueryLanguage%2FRaw%2FSearchQuery" target="_blank" id="search-query" class="anchor">`SearchQuery`</a>: an object or array describing the entities to match. Since we are doing simple equality comparisons, we can use the simplest form of the query language (eg, `{ finished: true }` to find entities with `finished` equals to true).
+* __An optional options object__ <a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FQueryLanguage%2FRaw%2FIQueryOptions" target="_blank" id="options-object" class="anchor">`IQueryOptions`</a>: used to customize query, skip items or limit the size of the set.
+* __An optional data-source resolvable value to fetch data from__ <a href="/api?see=TDataSource&symbolPath=@diaspora%2Fdiaspora%2FAdapter#TDataSource" target="_blank" id="datasource-resolvable" class="anchor">TDataSource</a>: it can be either the name of the data source (like `main` as defined above), a [data access layer](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FAdapter%2FDataAccessLayer) or an [adapter](@/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FAdapter%2FBase%2FAAdapter). This parameter is useful for models that exists in several data sources, but we'll see that in another tutorial.
 
 <div class="d2h-file-wrapper" aria-hidden="true" data-lang="vue">
     <div class="d2h-file-header">
@@ -2066,7 +2066,7 @@ Now, look closer the iteration over each *ToDos* displayed:
     v-bind:key="todo.getId('main')"></todo-item-component>
 ```
 
-Vue.js requires a **key** when doing iterations, and this key should be unique. The entity's ID is ideal for this usage, **but** we have seen earlier that the ID is managed by Diaspora and should not be included as a property on your `ITodo` interface, because it depends on the *data source* we are using. To get it, we have to use the [`Entity.getId`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#getId) method, that takes a single parameter: a **data-source resolvable value** ([see above](#datasource-resolvable)).
+Vue.js requires a **key** when doing iterations, and this key should be unique. The entity's ID is ideal for this usage, **but** we have seen earlier that the ID is managed by Diaspora and should not be included as a property on your `ITodo` interface, because it depends on the *data source* we are using. To get it, we have to use the [`Entity.getId`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#getId) method, that takes a single parameter: a **data-source resolvable value** ([see above](#datasource-resolvable)).
 
 That's it ! Our data is now correctly displayed in the list.
 
@@ -2074,7 +2074,7 @@ That's it ! Our data is now correctly displayed in the list.
 
 As said in [the specs](!https://github.com/tastejs/todomvc/blob/master/app-spec.md#user-content-new-todo), the input at the top of the app is used to enter the label of a new *ToDo*, that is then created with the `finished` status defined to false.
 
-To insert data in the store, we'll use the [`Model.insert`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel#insert) method, that takes the following arguments:
+To insert data in the store, we'll use the [`Model.insert`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel#insert) method, that takes the following arguments:
 
 * __The source object__<a id="source-object" class="anchor"></a>: an object corresponding to the model's type parameter, that will be persisted in the data source.
 * __An optional data-source resolvable value to insert data into__: [See above](#datasource-resolvable).
@@ -2438,14 +2438,14 @@ Now, you can enter text in our label input, and press enter: the new *ToDo* is c
 
 The update of *ToDos* can be done in two ways:
 
-* By using the [`Model.update`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel#update) or [`Model.updateMany`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel#updateMany) methods, taking following parameters:
+* By using the [`Model.update`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel#update) or [`Model.updateMany`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel#updateMany) methods, taking following parameters:
     * __The search query__: [See above](#search-query).
     * __The actual object update__<a id="object-update" class="anchor"></a>: an object that contains the properties to update, with the new values.
     * __An optional options object__: [See above](#options-object).
     * __An optional data-source resolvable value to update data from__: [See above](#datasource-resolvable).
-* Or by using the [`Entity.persist`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#persist) and [`Set.persist`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FSet#persist) methods, taking a single optional parameter: a **data-source resolvable value** ([see above](#datasource-resolvable)).
+* Or by using the [`Entity.persist`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#persist) and [`Set.persist`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FSet#persist) methods, taking a single optional parameter: a **data-source resolvable value** ([see above](#datasource-resolvable)).
 
-In our case, we'll use both methods: the **AppComponent** updates all entities with [`Model.updateMany`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel#updateMany), and **TodoItemComponent** instances will each update their own *ToDo* with [`Entity.persist`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#persist).
+In our case, we'll use both methods: the **AppComponent** updates all entities with [`Model.updateMany`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel#updateMany), and **TodoItemComponent** instances will each update their own *ToDo* with [`Entity.persist`](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#persist).
 
 #### Finish all *ToDos* ([commit](!https://github.com/diaspora-orm/simple-todo-app/commit/cd99f5d4142eded144bdac546b5f6edb0d0c3a84))
 
@@ -2566,11 +2566,11 @@ The checkbox at the left of our input is used to mark all items as finished or u
 
 #### Finish a single *ToDo* ([commit](!https://github.com/diaspora-orm/simple-todo-app/commit/ee84bb6e9e75b24a3b55aca21e40d7b4942b7749))
 
-From the **TodoItemComponent**, we have access to the [`Entity`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity) it represents. Entities reflects an instance of data wherever it comes from or go to, and thus are a convinient way to manipulate the entity across several *data sources*. To update an entity, simply assign new values to its [`attributes`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#attributes), and eventually [`persist`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#persist) it.
+From the **TodoItemComponent**, we have access to the [`Entity`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity) it represents. Entities reflects an instance of data wherever it comes from or go to, and thus are a convinient way to manipulate the entity across several *data sources*. To update an entity, simply assign new values to its [`attributes`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#attributes), and eventually [`persist`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#persist) it.
 
-> An [`Entity`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity) is the aggregation of snapshots of the data in all data sources. It is aware of how to refresh, modify or delete the original data, across all sources.
-> Its [`attributes`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#attributes) are a representation of the data in the most up-to-date source. But because they are defined across several sources, we can't determine which data source to use.
-> So, we'll need to get the snapshot of the entity from a specific data source, called *properties*. We can get all *properties*, through the [`getProperties`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#getProperties) method, or simply the `id`, through [`getId`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#getId). Both of those methods take a single argument: a [data-source resolvable value](#datasource-resolvable).
+> An [`Entity`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity) is the aggregation of snapshots of the data in all data sources. It is aware of how to refresh, modify or delete the original data, across all sources.
+> Its [`attributes`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#attributes) are a representation of the data in the most up-to-date source. But because they are defined across several sources, we can't determine which data source to use.
+> So, we'll need to get the snapshot of the entity from a specific data source, called *properties*. We can get all *properties*, through the [`getProperties`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#getProperties) method, or simply the `id`, through [`getId`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#getId). Both of those methods take a single argument: a [data-source resolvable value](#datasource-resolvable).
 
 > Later on, we'll use multi-sourcing.
 
@@ -3510,11 +3510,11 @@ Now that you understand better how to update entities, we'll do the label update
 
 Just like for the update, we have 2 options to delete *ToDos*:
 
-* Either by using the [`Model.delete`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel#delete) or [`Model.deleteMany`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel#deleteMany) methods, taking following parameters:
+* Either by using the [`Model.delete`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel#delete) or [`Model.deleteMany`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel#deleteMany) methods, taking following parameters:
     * __The search query__: [See above](#search-query).
     * __An optional options object__: [See above](#options-object).
     * __An optional data-source resolvable value to update data from__: [See above](#datasource-resolvable).
-* Or by using the [`Entity.destroy`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#destroy) and [`Set.destroy`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FSet#destroy) methods, taking a single optional parameter: a **data-source resolvable value** ([see above](#datasource-resolvable)).
+* Or by using the [`Entity.destroy`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#destroy) and [`Set.destroy`](/api??pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FSet#destroy) methods, taking a single optional parameter: a **data-source resolvable value** ([see above](#datasource-resolvable)).
 
 Again, we'll use both of them, using the *model* method at the **AppComponent** level, and the *entity* method in the **TodoItemComponent**.
 

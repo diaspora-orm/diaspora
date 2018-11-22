@@ -98,11 +98,11 @@ Diaspora.createNamedDataSource( 'myDataSource', 'inMemory', {} );
 ```
 
 <div class="note">
-Diaspora.<b><a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#createNamedDataSource" target="_blank">createNamedDataSource</a></b>(<em>string</em> <code>sourceName</code>, <em>string</em> <code>adapterLabel</code>, <em>any[]</em> <code>otherConfig...</code>) ► <b><a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FAdapters%2FDataAccessLayer" target="_blank">DataAccessLayer</a></b>
+Diaspora.<b><a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#createNamedDataSource" target="_blank">createNamedDataSource</a></b>(<em>string</em> <code>sourceName</code>, <em>string</em> <code>adapterLabel</code>, <em>any[]</em> <code>otherConfig...</code>) ► <b><a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FAdapters%2FDataAccessLayer" target="_blank">DataAccessLayer</a></b>
 </div>
 
 * Data source names have to be unique. They are identifiers for this adapter that you will use later in your models.
-* Adapter labels are the name that identifies each database type or data sources. You can get a list of adapters by checking the Diaspora's [adapters](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#adapters) property.
+* Adapter labels are the name that identifies each database type or data sources. You can get a list of adapters by checking the Diaspora's [adapters](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#adapters) property.
 * The next parameters depends on your adapter. Check the adapter documentation for infos about what you can set in this object.
 
 ### Working with models
@@ -114,7 +114,7 @@ Interactions with your data sources is done through **Models**. Models will allo
 To create a model, use the `declareModel`'s *Diaspora* method.
 
 <div class="note" markdown="1">
-Diaspora.<b><a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#declareModel" target="_blank">declareModel</a></b>&lt;<code>TEntity</code>&gt;(<em>string</em> <code>name</code>, <em>IModelDescription</em> <code>modelDesc</code>, <em>any[]</em> <code>otherConfig...</code>) ► <b><a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FAdapters%2FModel" target="_blank">Model</a></b>
+Diaspora.<b><a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FDiasporaStatic#declareModel" target="_blank">declareModel</a></b>&lt;<code>TEntity</code>&gt;(<em>string</em> <code>name</code>, <em>IModelDescription</em> <code>modelDesc</code>, <em>any[]</em> <code>otherConfig...</code>) ► <b><a href="/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FAdapters%2FModel" target="_blank">Model</a></b>
 </div>
 
 Let's create a **model** describing a phone book, with a name, a phone, an email and a numeric index.
@@ -137,7 +137,7 @@ const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
 });
 ```
 
-`PhoneBook` is now an instance of **[Model](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FModel)**.
+`PhoneBook` is now an instance of **[Model](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FModel)**.
 
 <!-- You can see more infos about how to configure a model [here](#) -->
 
@@ -184,15 +184,15 @@ Entities are objects with a status, some data sources related information, and t
 
 ##### Entities
 
-You can get Entities from model methods. Query methods `insert`, `find` and `update` will return an [entity](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity) in a *sync* status. You can also create *orphan* entities with `spawn`.
+You can get Entities from model methods. Query methods `insert`, `find` and `update` will return an [entity](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity) in a *sync* status. You can also create *orphan* entities with `spawn`.
 
-Entities can be saved to a specific data source with **[persist](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#persist)**([*string* `sourceName`]) ► *Promise*
-You can reload your entity from a specific data source by using **[fetch](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#fetch)**([*string* `sourceName`]) ► *Promise*
-Lastly, you can decide to remove your entity from your data source with **[destroy](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FEntity#destroy)**([*string* `sourceName`]) ► *Promise*
+Entities can be saved to a specific data source with **[persist](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#persist)**([*string* `sourceName`]) ► *Promise*
+You can reload your entity from a specific data source by using **[fetch](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#fetch)**([*string* `sourceName`]) ► *Promise*
+Lastly, you can decide to remove your entity from your data source with **[destroy](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FEntity#destroy)**([*string* `sourceName`]) ► *Promise*
 
 ##### Sets
 
-Query methods `insertMany`, `findMany` and `updateMany` return [sets](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0-alpha-14&symbolPath=@diaspora%2Fdiaspora%2FSet). Sets are a convinient way to manage several entities at the same time. You can also spawn a set using `spawnMulti`.
+Query methods `insertMany`, `findMany` and `updateMany` return [sets](/api?pkg=@diaspora%2Fdiaspora&v=0.3.0&symbolPath=@diaspora%2Fdiaspora%2FSet). Sets are a convinient way to manage several entities at the same time. You can also spawn a set using `spawnMulti`.
 
 Sets have the same methods than Entities, plus `update`. This method allow you to set provided attributes of all entities from this set.
 
