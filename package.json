@@ -8,7 +8,7 @@
 		"src"
 	],
 	"//": "For IIFE, you can use `./dist/browser/diaspora.iife.js`",
-	"main": "./dist/node/diaspora.esm.js",
+	"main": "./dist/node/diaspora.cjs.js",
 	"module": "./dist/node/diaspora.esm.js",
 	"browser": "./dist/browser/diaspora.esm.js",
 	"typings": "./dist/types",

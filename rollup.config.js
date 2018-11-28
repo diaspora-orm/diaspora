@@ -68,10 +68,13 @@ const outDir = 'dist';
 // Should we generate source maps?
 const sourcemap = true;
 
+const externals = Object.keys(pkg.dependencies).concat(['path']);
+const input = './src/index.ts';
+
 export default [
 	// Browser
 	{
-		input: './src/index.ts',
+		input,
 		output: {
 			file: `${outDir}/browser/${fileName}.iife.js`,
 			format: 'iife',
@@ -82,7 +85,7 @@ export default [
 		plugins: getPlugins(true),
 	},
 	{
-		input: './src/index.ts',
+		input,
 		output: {
 			file: `${outDir}/browser/${fileName}.esm.js`,
 			format: 'esm',
@@ -90,11 +93,11 @@ export default [
 			sourcemap
 		},
 		plugins: getPlugins(true),
-		external: Object.keys(pkg.dependencies),
+		external: externals,
 	},
 	// Node
 	{
-		input: './src/index.ts',
+		input,
 		output: {
 			file: `${outDir}/node/${fileName}.esm.js`,
 			format: 'esm',
@@ -102,6 +105,17 @@ export default [
 			sourcemap
 		},
 		plugins: getPlugins(false),
-		external: Object.keys(pkg.dependencies),
+		external: externals,
+	},
+	{
+		input,
+		output: {
+			file: `${outDir}/node/${fileName}.cjs.js`,
+			format: 'cjs',
+			name: moduleName,
+			sourcemap
+		},
+		plugins: getPlugins(false),
+		external: externals,
 	},
 ]
