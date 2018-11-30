@@ -4,6 +4,13 @@ import { IEntityAttributes, IEntityProperties } from './types/entity';
 import { QueryLanguage } from './types/queryLanguage';
 import { namedFunctions } from './staticStores';
 
+/*#if _BROWSER
+export const glob = window as Window | any;
+//#else // */
+export const glob = global as Window | any;
+// tslint:disable-next-line:comment-format
+//#endif
+
 /**
  * Merge update query with the entity. This operation allows to delete fields.
  *
@@ -35,7 +42,7 @@ export const applyUpdateEntity = (
 export const generateUUID = (): string => {
 	let d = new Date().getTime();
 	// Use high-precision timer if available
-	const perf = ( ( window || global ) as any ).performance;
+	const perf = glob.performance;
 	if ( perf && 'function' === typeof perf.now ) {
 		d += perf.now();
 	}

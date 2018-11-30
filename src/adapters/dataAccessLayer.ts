@@ -16,17 +16,16 @@ export namespace Adapter {
 	 * For instance, mongo may use the new decorator to declare a checking class that may recognize a class instance as an entity uid.
 	 * It would allow the mongo adapter to use normal mongo uuid as EntityUid type member
 	 */
-	export class EntityUid {
-		/**
-		 * Test for an entity to be if it can be an EntityUid
-		 * 
-		 * @param tested - Value to test
-		 * @returns True if it is a valid entity Uid, false otherwise.
-		 */
-		public static [Symbol.hasInstance]( tested: any ) {
-			return _.isString( tested ) || _.isNumber( tested );
-		}
-	}
+	export class EntityUid {}
+	/**
+	 * Test for an entity to be if it can be an EntityUid
+	 * 
+	 * @param tested - Value to test
+	 * @returns True if it is a valid entity Uid, false otherwise.
+	 */
+	Object.defineProperty( EntityUid, Symbol.hasInstance, ( tested: any ) =>
+		_.isString( tested ) || _.isNumber( tested ) );
+		
 	const isEntityUid = ( query: any ): query is EntityUid => query instanceof EntityUid;
 
 	/**
