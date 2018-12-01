@@ -1,3 +1,7 @@
+## [0.3.1](https://github.com/diaspora-orm/diaspora/compare/v0.3.0...v0.3.1) (2018-12-01)
+
+
+
 # [0.3.0](https://github.com/diaspora-orm/diaspora/compare/v0.3.0-alpha.14...v0.3.0) (2018-11-22)
 
 
