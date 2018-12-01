@@ -1,5 +1,5 @@
 import { Adapter as _WebApiAdapter } from '../../../src/adapters/webApi/adapter';
-import WebApiAdapter = _WebApiAdapter.WebApi.AWebApiAdapter
+import WebApiAdapter = _WebApiAdapter.WebApi.AWebApiAdapter;
 import { Adapter as _NodeWebApiAdapter } from '../../../src/adapters/webApi/subAdapters/nodeAdapter';
 import NodeWebApiAdapter = _NodeWebApiAdapter.WebApi.NodeWebApiAdapter;
 
@@ -19,9 +19,9 @@ const adapter = dal.adapter as NodeWebApiAdapter;
 beforeAll( async () => {
 	Diaspora.logger.level = ELoggingLevel.Silent;
 	const INMEMORY_TABLE = 'test-expressstoreNode';
-	const inMemoryAdapter = await Diaspora.createDataSource(
-		'inMemory',
+	const inMemoryAdapter = await Diaspora.createNamedDataSource(
 		INMEMORY_TABLE,
+		'inMemory',
 		adapterConfig
 	).waitReady();
 	const ENDPOINT = '/api/test';

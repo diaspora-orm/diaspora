@@ -15,18 +15,22 @@ export namespace Adapter {
 	 * TODO: Replace with a decorator to register type validation.
 	 * For instance, mongo may use the new decorator to declare a checking class that may recognize a class instance as an entity uid.
 	 * It would allow the mongo adapter to use normal mongo uuid as EntityUid type member
-	 */
-	export class EntityUid {}
-	/**
-	 * Test for an entity to be if it can be an EntityUid
 	 * 
-	 * @param tested - Value to test
-	 * @returns True if it is a valid entity Uid, false otherwise.
+	 * @author Gerkin
 	 */
-	Object.defineProperty( EntityUid, Symbol.hasInstance, ( tested: any ) =>
-		_.isString( tested ) || _.isNumber( tested ) );
-		
-	const isEntityUid = ( query: any ): query is EntityUid => query instanceof EntityUid;
+	export class EntityUid {
+		/**
+		 * Use `isEntityUid` to check if the value can be a valid entity uid
+		 * 
+		 * @returns True if it is a valid entity Uid, false otherwise.
+		 * @author Gerkin
+		 * @see http://www.ecma-international.org/ecma-262/6.0/#sec-function.prototype-@@hasinstance `Symbol.hasInstance` should defined with `Object.defineProperty`
+		 */
+		public static isEntityUid( query: any ): query is EntityUid {
+			return ( _.isString( query ) && query !== '' ) ||
+				( _.isNumber( query ) && query !== 0 );
+		}
+	}	
 
 	/**
 	 * The Data Access Layer class is the components that wraps adapter calls to provide standard inputs & outputs. Typically, it casts raw query & raw query options in standard query & standard query options, and casts POJO from the output of the adapter's query in adapter entity.
@@ -375,7 +379,7 @@ export namespace Adapter {
 		): QueryLanguage.Raw.SelectQueryOrCondition {
 			if ( _.isNil( query ) ) {
 				return {};
-			} else if ( isEntityUid( query ) ) {
+			} else if ( EntityUid.isEntityUid( query ) ) {
 				return {
 					id: query,
 				};
