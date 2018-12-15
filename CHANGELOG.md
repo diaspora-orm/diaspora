@@ -1,3 +1,12 @@
+## [0.3.2](https://github.com/diaspora-orm/diaspora/compare/v0.3.1...v0.3.2) (2018-12-15)
+
+
+### Bug Fixes
+
+* **types/ModelDescription:** Fixed missing import of lodash ([0daf2b8](https://github.com/diaspora-orm/diaspora/commit/0daf2b8))
+
+
+
 ## [0.3.1](https://github.com/diaspora-orm/diaspora/compare/v0.3.0...v0.3.1) (2018-12-01)
 
 
