@@ -241,3 +241,28 @@ modification, etc etc.
 *Note: Plan to show fallback implementations*
 
 [QL]: https://diaspora.ithoughts.io/guides/query-language#match-queries
+
+## Working with the development version
+
+If you are having issues, or you want to participate to the development and create new features, you may have to use the `develop`ment or `staging` version of Diaspora. Here is how you can do that: 
+
+```sh
+# Clone the repository & go into it
+git clone https://github.com/diaspora-orm/diaspora.git && cd diaspora
+# Go on the staging branch (you can also use directly the `develop` branch, but it may be less stable)
+git checkout staging
+# The following command installs dependencies & compiles the package
+npm run build
+# Finally, expose your local build so that it can be used in other projects.
+# You may need to run it with `sudo`.
+npm link
+
+# Go to your project
+cd ~/myproject
+# Ensure deps are installed
+npm install
+# And link the local version
+npm link @diaspora/diaspora
+```
+
+> Note that you may need to re-run `npm link @diaspora/diaspora` after every install (`npm install`) in your project.
