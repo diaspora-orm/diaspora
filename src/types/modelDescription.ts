@@ -1,4 +1,5 @@
 import { IEventHandler } from 'sequential-event';
+import _ from 'lodash';
 
 /**
  * Lists types recognized by Diaspora
