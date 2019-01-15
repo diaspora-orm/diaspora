@@ -1,12 +1,19 @@
 {
-  "extends": [
-    "config:base"
-  ],
-  "schedule": "before 10pm on Monday",
-  "automerge": true,
-  "major": {
-    "automerge": false
-  },
-  "branchPrefix": "greenkeeper/",
-  "groupName": "all"
+    "separateMajorMinor": false,
+    "extends": [
+      ":preserveSemverRanges",
+      "group:all",
+      "schedule:weekly",
+      ":maintainLockFilesWeekly"
+    ],
+    "lockFileMaintenance": {
+      "extends": [
+        "group:all"
+      ],
+      "commitMessageAction": "Update"
+    },
+    "automerge": true,
+    "major": {
+        "automerge": false
+    }
 }
