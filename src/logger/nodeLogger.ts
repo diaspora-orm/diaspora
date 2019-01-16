@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
-import { Logger as WLogger, createLogger, transports } from 'winston';
+import { Logger as WLogger, createLogger, transports, format } from 'winston';
+
 import { Logger, ELoggingLevel } from './logger';
-import { format } from 'logform';
-import { TransformableInfo } from 'logform';
 
 const LoggerHash = {
 	[ELoggingLevel.Silly]: 'silly',
@@ -41,8 +40,7 @@ export class NodeLogger extends Logger {
 		log.add( new transports.Console( {
 			format: combine(
 				format.colorize(),
-				// TODO: replace with logform TransformableInfos when Winston typings updated to 3.x
-				format( NodeLogger.format )()
+				format.printf( NodeLogger.format )
 			),
 		} ) );
 		super( {
@@ -94,27 +92,21 @@ export class NodeLogger extends Logger {
 	 * @author Gerkin
 	 * @param infos - Winston message infos
 	 */
-	protected static format( infos: TransformableInfo ){
-		const MESSAGE = Symbol.for( 'message' );
+	protected static format( infos: { [x: string]: any; level: string; message: any } ){
 		const LEVEL = Symbol.for( 'level' );
 
 		// Ugly patch related to [a known typescript missing feature](https://github.com/Microsoft/TypeScript/issues/24587)
-		// TODO: Clean this up!
+		// TODO: Remove this `any` cast.
 		const level = infos[LEVEL as any];
 		// Add 'Diaspora: ' before the log level name
 		infos.level = infos.level.replace( level, 'Diaspora: ' + level );
 		
-		let message = `${infos.level}${''} @ ${NodeLogger.formatDate()} => ${
-			infos.message
-		}`;
+		let message = `${infos.level} @ ${NodeLogger.formatDate()} => ${infos.message}`;
 		const omittedKeys = ['level', 'message', 'splat'];
 		if ( !_.isEmpty( _.difference( _.keys( infos ), omittedKeys ) ) ) {
 			message += ' ' + JSON.stringify( _.omit( infos, omittedKeys ) );
 		}
 
-		// Ugly patch related to [a known typescript missing feature](https://github.com/Microsoft/TypeScript/issues/24587)
-		// TODO: Clean this up!
-		infos[MESSAGE as any] = message;
-		return infos;
+		return message;
 	}
 }

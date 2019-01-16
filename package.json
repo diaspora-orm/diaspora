@@ -147,8 +147,7 @@
 		"request": "^2.88.0",
 		"request-promise": "^4.2.2",
 		"sequential-event": "^0.4.5",
-		"winston": "^3.1.0",
-		"logform": "^1.10.0"
+		"winston": "^3.1.0"
 	},
 	"engines": {
 		"node": ">=7.0.0"

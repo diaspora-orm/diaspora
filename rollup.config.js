@@ -13,54 +13,54 @@ import { kebabCase } from 'lodash';
 
 // The module name
 const moduleName = 'diaspora';
-const fileName = kebabCase(moduleName);
+const fileName = kebabCase( moduleName );
 
 const env = process.env.ENVIRONMENT || 'development'; // Production or development
-const pkg = require('./package.json');
+const pkg = require( './package.json' );
 
-console.log(`Building ${moduleName} for ${env}.`);
+console.log( `Building ${ moduleName } for ${ env }.` );
 
 // Plugins used for build
 const getPlugins = browser => [
 	// Preprocess files
-	jscc( {
+	jscc({
 		values: {
-			_BROWSER: browser,
+			_BROWSER:     browser,
 			_ENVIRONMENT: env,
 		},
-		extensions: ['.js', '.ts'],
-	} ),
+		extensions: [ '.js', '.ts' ],
+	}),
 	
 	// Compile TypeScript files
-	typescript( {
+	typescript({
 		useTsconfigDeclarationDir: true,
-		clean: true,
-		check: true,
-	} ),
+		clean:                     true,
+		check:                     true,
+	}),
 	
 	json(),
 	
 	// Allow node_modules resolution, so you can use 'external' to control
 	// which external modules to include in the bundle
 	// https://github.com/rollup/rollup-plugin-node-resolve#usage
-	resolve( {
+	resolve({
 		browser,
-	} ),
+	}),
 	// Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
-	commonjs( {
+	commonjs({
 		namedExports: {
-			'node_modules/lodash/lodash.js': Object.keys( require( 'lodash' ) ),
+			'node_modules/lodash/lodash.js': Object.keys( require( 'lodash' )),
 		},
-	} ),
+	}),
 	
-	env === 'production' ? terser() : undefined,
+	'production' === env ? terser() : undefined,
 	// Resolve source maps to the original source
 	
 	// Downgrade ES
 	babel(),
 	
 	sourceMaps(),
-].filter(v => v);
+].filter( v => v );
 
 // Destination dir
 const outDir = 'dist';
@@ -68,54 +68,27 @@ const outDir = 'dist';
 // Should we generate source maps?
 const sourcemap = true;
 
-const externals = Object.keys(pkg.dependencies).concat(['path']);
+const externals = Object.keys( pkg.dependencies ).concat([ 'path' ]);
 const input = './src/index.ts';
+
+const getConfig = ( format, browser, useExternals ) => ({
+	input,
+	output: {
+		file: `${ outDir }/browser/${ fileName }.${ format }.js`,
+		format,
+		// Use `name` as window to hack a bit & avoid exports.
+		name: moduleName,
+		sourcemap,
+	},
+	plugins:  getPlugins( browser ),
+	external: useExternals ? externals : undefined,
+});
 
 export default [
 	// Browser
-	{
-		input,
-		output: {
-			file: `${outDir}/browser/${fileName}.iife.js`,
-			format: 'iife',
-			// Use `name` as window to hack a bit & avoid exports.
-			name: moduleName,
-			sourcemap,
-		},
-		plugins: getPlugins(true),
-	},
-	{
-		input,
-		output: {
-			file: `${outDir}/browser/${fileName}.esm.js`,
-			format: 'esm',
-			name: moduleName,
-			sourcemap
-		},
-		plugins: getPlugins(true),
-		external: externals,
-	},
+	getConfig( 'iife', true, false ),
+	getConfig( 'esm', true, true ),
 	// Node
-	{
-		input,
-		output: {
-			file: `${outDir}/node/${fileName}.esm.js`,
-			format: 'esm',
-			name: moduleName,
-			sourcemap
-		},
-		plugins: getPlugins(false),
-		external: externals,
-	},
-	{
-		input,
-		output: {
-			file: `${outDir}/node/${fileName}.cjs.js`,
-			format: 'cjs',
-			name: moduleName,
-			sourcemap
-		},
-		plugins: getPlugins(false),
-		external: externals,
-	},
-]
+	getConfig( 'esm', false, true ),
+	getConfig( 'cjs', false, true ),
+];

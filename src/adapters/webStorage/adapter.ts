@@ -172,13 +172,8 @@ export namespace Adapter.WebStorage {
 			queryFind: _QueryLanguage.ISelectQuery,
 			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
-			_.defaults( options, {
-				skip: 0,
-			} );
-			if (
-				_.isEqual( _.keys( queryFind ), ['id'] ) &&
-				_.isEqual( _.keys( queryFind.id ), ['$equal'] )
-			) {
+			options = _.defaults( options, { skip: 0 } );
+			if ( _.isEqual( _.keys( queryFind ), ['id'] ) && _.isEqual( _.keys( queryFind.id ), ['$equal'] ) ) {
 				return this.findOneById( table, queryFind.id.$equal );
 			}
 			const itemIds = this.ensureCollectionExists( table );
@@ -186,11 +181,8 @@ export namespace Adapter.WebStorage {
 			let matched = 0;
 			// Iterate on each item ID, to test each one.
 			_.each( itemIds, itemId => {
-				// Retrieve the item...
-				const itemInWebStorage = this.source.getItem(
-					// ... by its complete name
-					WebStorageAdapter.getItemName( table, itemId )
-				);
+				// Retrieve the item by its complete name
+				const itemInWebStorage = this.source.getItem( WebStorageAdapter.getItemName( table, itemId ) );
 				// If the item simply does not exist, just ignore and skip to the next
 				// TODO: Repair the table?
 				if ( !itemInWebStorage ) {

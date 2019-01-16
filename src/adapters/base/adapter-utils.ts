@@ -12,9 +12,23 @@ import { isNumber, isString } from 'lodash';
  */
 export type Constructor<TClass> = new ( ...args: any[] ) => TClass;
 
+// Cast a number component to a number
+const getNum = ( ...params: Array<string | string[]> ) => {
+	const flatten = _.flattenDeep( params ) as string[];
+	const [fullMatch, sign, val] = flatten;
+	if ( '∞' === val ) {
+		if ( '-' === sign ) {
+			return -Infinity;
+		} else {
+			return Infinity;
+		}
+	} else {
+		return parseInt( fullMatch, 10 );
+	}
+};
 const validations = {
 	type: {
-		int( key: string, val: string | number ) {
+		int( key: string, val: number ) {
 			if ( _.isString( val ) ) {
 				val = parseInt( val, 10 );
 			}
@@ -24,27 +38,11 @@ const validations = {
 			return val;
 		},
 	},
-	rng( key: string, val: string | number, range: string ) {
+	rng( key: string, val: number, range: string ) {
 		const rangeMatch = range.match(
 			/^([[\]])((-)?(\d+|∞)),((-)?(\d+|∞))([[\]])$/
 		);
 		if ( rangeMatch ) {
-			// Cast a number component to a number
-			const getNum = ( ...params: Array<string | string[]> ) => {
-				const flatten = _.flattenDeep( params ) as string[];
-				const [fullMatch, sign, val] = flatten;
-				if ( '∞' === val ) {
-					if ( '-' === sign ) {
-						return -Infinity;
-					} else {
-						return Infinity;
-					}
-				} else {
-					return parseInt( fullMatch, 10 );
-				}
-			};
-
-
 			const lower = getNum( rangeMatch.splice( 2, 3 ) );
 			const upper = getNum( rangeMatch.splice( 2, 3 ) );
 			const isInRangeLower = '[' === rangeMatch[1] ? val >= lower : val > lower;
@@ -65,9 +63,9 @@ const validations = {
  * @param key - The name of the option checked
  * @param val - The value to match against
  */
-const validateOption = <TVal>(
+const validateOption = (
 	key: string,
-	val: TVal,
+	val: any,
 	config: { type: string; rng?: string }
 ): any => {
 	const valTypes: any = validations.type;
@@ -77,6 +75,9 @@ const validateOption = <TVal>(
 	if ( config.rng ) {
 		if ( !isString( val ) && !isNumber( val ) ){
 			throw new TypeError( `A range operator to match against the option ${key} must be a string or a number, not a ${typeof val}` );
+		}
+		if ( isString( val ) ){
+			val = parseInt( val );
 		}
 		val = validations.rng( key, val, config.rng );
 	}

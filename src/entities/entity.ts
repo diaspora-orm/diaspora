@@ -75,8 +75,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		// ### Init defaults
 		const sources = _.reduce(
 			model.dataSources,
-			( acc: Entity.IDataSourceMap<AAdapterEntity>, adapter ) =>
-			acc.set( adapter, null ),
+			( acc: Entity.IDataSourceMap<AAdapterEntity>, adapter ) => acc.set( adapter, null ),
 			new WeakMap()
 		);
 		this._dataSources = Object.seal( sources );
@@ -88,10 +87,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		if ( source instanceof AAdapterEntity ) {
 			// ### Load datas from source
 			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
-			this.setLastDataSourceEntity(
-				DataAccessLayer.retrieveAccessLayer( source.dataSource ),
-				source
-			);
+			this.setLastDataSourceEntity( DataAccessLayer.retrieveAccessLayer( source.dataSource ), source );
 		} else {
 			// ### Generate attributes
 			// Now we know that the source is valid. Deep clone to detach object values from entity
@@ -380,12 +376,12 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		const currentAttributes = this.attributes;
 		
 		const potentialChangedKeys = _.chain( currentAttributes )
-		// Get all keys in current attributes
-		.keys()
-		// Add to it the keys of the stored object
-		.concat( _.keys( dataStoreObject ) )
-		// Remove duplicates
-		.uniq();
+			// Get all keys in current attributes
+			.keys()
+			// Add to it the keys of the stored object
+			.concat( _.keys( dataStoreObject ) )
+			// Remove duplicates
+			.uniq();
 		
 		// Omit values that did not changed between now & stored object
 		const diffKeys = potentialChangedKeys.reject( ( key: string ) => _.isEqual( dataStoreEntity.attributes[key], currentAttributes[key] ) );
@@ -408,8 +404,6 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	
 	/**
 	 * Serialize an entity
-	 *
-	 * TODO: a real description
 	 */
 	protected serialize() {
 		return Entity.serialize( this.attributes );
@@ -417,8 +411,6 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	
 	/**
 	 * Deserialize an entity
-	 *
-	 * TODO: a real description
 	 */
 	protected deserialize() {
 		return Entity.deserialize( this.attributes );
@@ -488,14 +480,13 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 *
 	 * @author Gerkin
 	 * @param beforeState - The last stable state of the entity (before the current operation)
-	 * @param dataSource  -
-	 * @param method      -
+	 * @param dataSource  - The DataAccessLayer to execute the operation in.
+	 * @param method      - Name of the action to execute
 	 */
 	private execIfOkState<TAdapterEntity extends AAdapterEntity>(
 		beforeState: EEntityState,
 		dataSource: DataAccessLayer,
-		// TODO: precise it
-		method: string
+		method: 'findOne' | 'deleteOne'
 	): Promise<TAdapterEntity> {
 		// Depending on state, we are going to perform a different operation
 		if ( EEntityState.ORPHAN === beforeState ) {

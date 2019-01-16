@@ -127,7 +127,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	}
 	
 	/**
-	 * TODO
+	 * Transform the `sources` string, list or object to a dictionary of remaps (as dictionaries).
 	 *
 	 * @author Gerkin
 	 * @param modelDesc - Description of the model to normalize remaps for
@@ -140,10 +140,11 @@ export class Model<TEntity extends IEntityAttributes> {
 		} else if ( _.isArrayLike( sourcesRaw ) ) {
 			return _.zipObject(
 				sourcesRaw,
-				// TODO: What does it do?
+				// Create empty remaps dictionaries to zip with source names
 				_.times( sourcesRaw.length, _.constant( {} as _.Dictionary<string> ) )
 			);
 		} else {
+			// Normalize each sources separately
 			return _.mapValues( sourcesRaw, ( remap, dataSourceName ) => {
 				if ( true === remap ) {
 					return {} as _.Dictionary<string>;
@@ -151,9 +152,7 @@ export class Model<TEntity extends IEntityAttributes> {
 					return remap as _.Dictionary<string>;
 				} else {
 					throw new TypeError(
-						`Datasource "${dataSourceName}" value is invalid: expect \`true\` or a remap hash, but have ${JSON.stringify(
-							remap
-						)}`
+						`Datasource "${dataSourceName}" value is invalid: expect \`true\` or a remap hash, but have ${JSON.stringify( remap )}`
 					);
 				}
 			} );

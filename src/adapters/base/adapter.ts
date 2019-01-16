@@ -185,11 +185,12 @@ export namespace Adapter.Base {
 		}
 		
 		/**
-		 * TODO.
+		 * Remap the normal inputs to return an object corresponding to the actual adapter specific configuration
 		 *
 		 * @author gerkin
 		 * @see TODO remapping.
 		 * @see {@link Adapters.Adapter#remapIO remapIO}
+		 * @see {@link Adapters.Adapter#remapIO remapOutput}
 		 */
 		public remapInput<TProps extends IEntityAttributes>(
 			tableName: string,
@@ -199,11 +200,12 @@ export namespace Adapter.Base {
 		}
 		
 		/**
-		 * TODO.
+		 * Remap the output (eg. from a query result) to obtain the fields defined by the model.
 		 *
 		 * @author gerkin
 		 * @see TODO remapping.
 		 * @see {@link Adapters.Adapter#remapIO remapIO}
+		 * @see {@link Adapters.Adapter#remapIO remapInput}
 		 */
 		public remapOutput<TProps extends IEntityAttributes>(
 			tableName: string,
