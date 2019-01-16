@@ -53,7 +53,7 @@
 		"object"
 	],
 	"author": "Gerkin",
-	"license": "Apache 2.0",
+	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/diaspora-orm/diaspora/issues"
 	},

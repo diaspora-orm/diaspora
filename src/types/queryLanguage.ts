@@ -2,173 +2,173 @@ import * as ConstrainedTypes from './constrainedTypes';
 import { EntityUid } from './entity';
 
 export namespace QueryLanguage {
-	export namespace Raw {
+	/**
+	 * All properties are optional
+	 */
+	export interface IQueryOptions {
 		/**
-		 * All properties are optional
+		 * Number of items to skip
 		 */
-		export interface IQueryOptions {
-			/**
-			 * Number of items to skip
-			 */
-			skip?: ConstrainedTypes.AbsInt0;
-			
-			/**
-			 * Number of items to get
-			 */
-			limit?: ConstrainedTypes.AbsIntInf0;
-			
-			/**
-			 * To use with {@link QueryOptions.limit `limit`} and without {@link QueryOptions.skip `skip`}. Skips `page` pages of `limit` elements
-			 */
-			page?: ConstrainedTypes.AbsInt0;
-			
-			/**
-			 * Flag indicating if adapter input should be remapped or not. TODO Remapping doc
-			 */
-			remapInput?: boolean;
-			
-			/**
-			 * Flag indicating if adapter output should be remapped or not. TODO Remapping doc
-			 */
-			remapOutput?: boolean;
-		}
+		skip?: ConstrainedTypes.AbsInt0;
 		
 		/**
-		 * By default, all conditions in a single SelectQueryCondition are combined with an `AND` operator.
+		 * Number of items to get
 		 */
-		export interface ISelectQueryCondition {
-			/**
-			 * Alias for {@link SelectQueryCondition.$equals}
-			 */
-			'==': any;
-			
-			/**
-			 * See {@link SelectQueryCondition.$equals}
-			 */
-			$equals: any;
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$diff}
-			 */
-			'!=': any;
-			
-			/**
-			 * See {@link SelectQueryCondition.$diff}
-			 */
-			$diff: any;
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$exists}
-			 */
-			'~': boolean;
-			
-			/**
-			 * See {@link SelectQueryCondition.$exists}
-			 */
-			$exists: boolean;
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$less}
-			 */
-			'<': number;
-			
-			/**
-			 * See {@link SelectQueryCondition.$less}
-			 */
-			$less: number;
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$lessEqual}
-			 */
-			'<=': number;
-			
-			/**
-			 * See {@link SelectQueryCondition.$lessEqual}
-			 */
-			$lessEqual: number;
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$greater}
-			 */
-			'>': number;
-			
-			/**
-			 * See {@link SelectQueryCondition.$greater}
-			 */
-			$greater: number;
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$greaterEqual}
-			 */
-			'>=': number;
-			
-			/**
-			 * See {@link SelectQueryCondition.$greaterEqual}
-			 */
-			$greaterEqual: number;
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$or}
-			 */
-			'||': SelectQueryOrCondition[];
-			
-			/**
-			 * See {@link SelectQueryCondition.$or}
-			 */
-			$or: SelectQueryOrCondition[];
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$and}
-			 */
-			'&&': SelectQueryOrCondition[];
-			
-			/**
-			 * See {@link SelectQueryCondition.$and}
-			 */
-			$and: SelectQueryOrCondition[];
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$xor}
-			 */
-			'^^': SelectQueryOrCondition[];
-			
-			/**
-			 * See {@link SelectQueryCondition.$xor}
-			 */
-			$xor: SelectQueryOrCondition[];
-			
-			/**
-			 * Alias for {@link SelectQueryCondition.$not}
-			 */
-			'!': SelectQueryOrCondition;
-			
-			/**
-			 * See {@link SelectQueryCondition.$not}
-			 */
-			$not: SelectQueryOrCondition;
-			
-			/**
-			 * See {@link SelectQueryCondition.$contains}
-			 */
-			$contains: SelectQueryOrCondition | string | any;
-			
-			/**
-			 * See {@link SelectQueryCondition.$in}
-			 */
-			$in: any[];
-		}
+		limit?: ConstrainedTypes.AbsIntInf0;
 		
-		export interface ISelectQuery {
-			/**
-			 * Fields to search. If not providing an object, find items with a property value that equals this value
-			 */
-			[key: string]: any | ISelectQueryCondition;
-		}
+		/**
+		 * To use with {@link QueryOptions.limit `limit`} and without {@link QueryOptions.skip `skip`}. Skips `page` pages of `limit` elements
+		 */
+		page?: ConstrainedTypes.AbsInt0;
 		
-		export type SelectQueryOrCondition = ISelectQuery | ISelectQueryCondition;
-		export type SearchQuery = SelectQueryOrCondition | EntityUid;
+		/**
+		 * Flag indicating if adapter input should be remapped or not. TODO Remapping doc
+		 */
+		remapInput?: boolean;
+		
+		/**
+		 * Flag indicating if adapter output should be remapped or not. TODO Remapping doc
+		 */
+		remapOutput?: boolean;
 	}
 	
+	/**
+	 * By default, all conditions in a single SelectQueryCondition are combined with an `AND` operator.
+	 */
+	export interface ISelectQueryCondition {
+		/**
+		 * Alias for {@link SelectQueryCondition.$equals}
+		 */
+		'==': any;
+		
+		/**
+		 * See {@link SelectQueryCondition.$equals}
+		 */
+		$equals: any;
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$diff}
+		 */
+		'!=': any;
+		
+		/**
+		 * See {@link SelectQueryCondition.$diff}
+		 */
+		$diff: any;
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$exists}
+		 */
+		'~': boolean;
+		
+		/**
+		 * See {@link SelectQueryCondition.$exists}
+		 */
+		$exists: boolean;
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$less}
+		 */
+		'<': number;
+		
+		/**
+		 * See {@link SelectQueryCondition.$less}
+		 */
+		$less: number;
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$lessEqual}
+		 */
+		'<=': number;
+		
+		/**
+		 * See {@link SelectQueryCondition.$lessEqual}
+		 */
+		$lessEqual: number;
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$greater}
+		 */
+		'>': number;
+		
+		/**
+		 * See {@link SelectQueryCondition.$greater}
+		 */
+		$greater: number;
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$greaterEqual}
+		 */
+		'>=': number;
+		
+		/**
+		 * See {@link SelectQueryCondition.$greaterEqual}
+		 */
+		$greaterEqual: number;
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$or}
+		 */
+		'||': SelectQueryOrCondition[];
+		
+		/**
+		 * See {@link SelectQueryCondition.$or}
+		 */
+		$or: SelectQueryOrCondition[];
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$and}
+		 */
+		'&&': SelectQueryOrCondition[];
+		
+		/**
+		 * See {@link SelectQueryCondition.$and}
+		 */
+		$and: SelectQueryOrCondition[];
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$xor}
+		 */
+		'^^': SelectQueryOrCondition[];
+		
+		/**
+		 * See {@link SelectQueryCondition.$xor}
+		 */
+		$xor: SelectQueryOrCondition[];
+		
+		/**
+		 * Alias for {@link SelectQueryCondition.$not}
+		 */
+		'!': SelectQueryOrCondition;
+		
+		/**
+		 * See {@link SelectQueryCondition.$not}
+		 */
+		$not: SelectQueryOrCondition;
+		
+		/**
+		 * See {@link SelectQueryCondition.$contains}
+		 */
+		$contains: SelectQueryOrCondition | string | any;
+		
+		/**
+		 * See {@link SelectQueryCondition.$in}
+		 */
+		$in: any[];
+	}
+	
+	export interface ISelectQuery {
+		/**
+		 * Fields to search. If not providing an object, find items with a property value that equals this value
+		 */
+		[key: string]: any | ISelectQueryCondition;
+	}
+	
+	export type SelectQueryOrCondition = ISelectQuery | ISelectQueryCondition;
+	export type SearchQuery = SelectQueryOrCondition | EntityUid;
+}
+
+export namespace _QueryLanguage {
 	/**
 	 * Generated by Diaspora
 	 */

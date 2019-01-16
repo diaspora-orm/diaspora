@@ -2,12 +2,12 @@ import * as _ from 'lodash';
 
 import { Adapter as _Adapter } from '../base';
 import AAdapterEntity = _Adapter.Base.AAdapterEntity;
-import { IConstructable, OPERATORS } from './adapter-utils';
-import { QueryLanguage } from '../../types/queryLanguage';
+import { Constructor, OPERATORS } from './adapter-utils';
+import { _QueryLanguage } from '../../types/queryLanguage';
 import { IEntityProperties } from '../../types/entity';
 
 export const SelfMatchingAdapterEntity = <
-TAdapterEntityCtor extends IConstructable<AAdapterEntity>
+TAdapterEntityCtor extends Constructor<AAdapterEntity>
 >(
 	adapterEntity: TAdapterEntityCtor
 ): TAdapterEntityCtor =>
@@ -19,7 +19,7 @@ class SelfMatchingAdapterEntity extends adapterEntity {
 	 */
 	public static matches(
 		attributes: IEntityProperties,
-		query: QueryLanguage.ISelectQuery
+		query: _QueryLanguage.ISelectQuery
 	): boolean {
 		// Iterate over every query keys to check each predicates
 		const matchResult = _.every( _.toPairs( query ), ( [key, desc] ) => {
@@ -46,7 +46,7 @@ class SelfMatchingAdapterEntity extends adapterEntity {
 	 *
 	 * @author gerkin
 	 */
-	public matches( query: QueryLanguage.ISelectQuery ): boolean {
+	public matches( query: _QueryLanguage.ISelectQuery ): boolean {
 		return SelfMatchingAdapterEntity.matches( this._properties, query );
 	}
 };

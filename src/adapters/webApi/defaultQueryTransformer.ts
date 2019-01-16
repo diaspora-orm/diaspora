@@ -3,15 +3,15 @@ import * as _ from 'lodash';
 import { Adapter as _WebApiAdapter } from '.';
 import AWebApiAdapter = _WebApiAdapter.WebApi.AWebApiAdapter;
 
-import { QueryLanguage } from '../../types/queryLanguage';
+import { _QueryLanguage } from '../../types/queryLanguage';
 
 export namespace Adapter.WebApi {
-	type QueryStringObject = QueryLanguage.SelectQueryOrCondition | {
-		where?:QueryLanguage.SelectQueryOrCondition;
+	type QueryStringObject = _QueryLanguage.SelectQueryOrCondition | {
+		where?:_QueryLanguage.SelectQueryOrCondition;
 		options?:AWebApiAdapter.QueryOptions;
 	};
 	export const makeQueryString = (
-		query?: QueryLanguage.SelectQueryOrCondition,
+		query?: _QueryLanguage.SelectQueryOrCondition,
 		options?: AWebApiAdapter.QueryOptions
 	): QueryStringObject | undefined => {
 		// Transforms {where:{foo:1}} to {foo:1}

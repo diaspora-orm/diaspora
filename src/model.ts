@@ -9,13 +9,7 @@ import TDataSource = Adapter.TDataSource;
 import { Entity, Set, EntityFactory } from './entities';
 import { deepFreeze } from './utils';
 import { EntityTransformers } from './entityTransformers';
-import {
-	Raw,
-	FieldDescriptor,
-	IModelDescription,
-	EFieldType,
-	IAttributesDescription,
-} from './types/modelDescription';
+import { EFieldType, ModelDescription, _ModelDescription, FieldDescriptorTypeChecks } from './types/modelDescription';
 import { QueryLanguage } from './types/queryLanguage';
 import { IDataSourceRegistry, dataSourceRegistry } from './staticStores';
 import { IEntityAttributes } from './types/entity';
@@ -27,10 +21,10 @@ import { IEntityAttributes } from './types/entity';
  * @param TEntity - Test
  */
 export class Model<TEntity extends IEntityAttributes> {
-	public attributes: { [key: string]: FieldDescriptor };
+	public attributes: { [key: string]: _ModelDescription.FieldDescriptor };
 	
 	private readonly _dataSources: IDataSourceRegistry;
-	public modelDesc: IModelDescription;
+	public modelDesc: _ModelDescription.IModelDescription;
 	public get dataSources() {
 		return this._dataSources;
 	}
@@ -59,7 +53,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @returns Attributes description map normalized, with properties defaulted
 	 * @author Gerkin
 	 */
-	private static normalizeAttributesDescription( desc: Raw.IAttributesDescription ): IAttributesDescription {
+	private static normalizeAttributesDescription( desc: ModelDescription.IAttributesDescription ): _ModelDescription.IAttributesDescription {
 		return _.mapValues(
 			desc,
 			val => Model.normalizeAttributeDescription( val )
@@ -73,8 +67,8 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @returns Attribute description normalized, with properties defaulted
 	 * @author Gerkin
 	 */
-	private static normalizeAttributeDescription( attributeDesc: Raw.FieldDescriptor ): FieldDescriptor{
-		const fieldDescriptorToDefault = Raw.FieldDescriptor.FieldDescriptorTypeChecks.isObjectFieldDescriptor( attributeDesc ) ? attributeDesc : { type: attributeDesc } as Raw.ObjectFieldDescriptor;
+	private static normalizeAttributeDescription( attributeDesc: ModelDescription.FieldDescriptor ): _ModelDescription.FieldDescriptor{
+		const fieldDescriptorToDefault = FieldDescriptorTypeChecks.isObjectFieldDescriptor( attributeDesc ) ? attributeDesc : { type: attributeDesc } as ModelDescription.ObjectFieldDescriptor;
 		const fieldDescriptorWithRequired = _.defaults( fieldDescriptorToDefault , {required: false } );
 
 		// Perform deep defaulting
@@ -96,7 +90,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @param name      - Name of the model.
 	 * @param modelDesc - Hash representing the configuration of the model.
 	 */
-	public constructor( public name: string, modelDesc: Raw.IModelDescription ) {
+	public constructor( public name: string, modelDesc: ModelDescription.IModelDescription ) {
 		// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
 		const sourcesNormalized = Model.normalizeRemaps( modelDesc );
 		// List sources required by this model
@@ -135,7 +129,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @author Gerkin
 	 * @param modelDesc - Description of the model to normalize remaps for
 	 */
-	protected static normalizeRemaps( modelDesc: Raw.IModelDescription ) {
+	protected static normalizeRemaps( modelDesc: ModelDescription.IModelDescription ) {
 		const sourcesRaw = modelDesc.sources;
 		if ( _.isString( sourcesRaw ) ) {
 			// Single source: create an empty remap hash
@@ -264,8 +258,8 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @tag CRUD
 	 */
 	public async find(
-		queryFind?: QueryLanguage.Raw.SearchQuery,
-		options: QueryLanguage.Raw.IQueryOptions = {},
+		queryFind?: QueryLanguage.SearchQuery,
+		options: QueryLanguage.IQueryOptions = {},
 		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
@@ -284,8 +278,8 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @tag CRUD
 	 */
 	public async findMany(
-		queryFind?: QueryLanguage.Raw.SearchQuery,
-		options: QueryLanguage.Raw.IQueryOptions = {},
+		queryFind?: QueryLanguage.SearchQuery,
+		options: QueryLanguage.IQueryOptions = {},
 		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Set<TEntity>> {
 		return this.makeSet(
@@ -305,9 +299,9 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @tag CRUD
 	 */
 	public async update(
-		queryFind: QueryLanguage.Raw.SearchQuery | undefined,
+		queryFind: QueryLanguage.SearchQuery | undefined,
 		update: object,
-		options: QueryLanguage.Raw.IQueryOptions = {},
+		options: QueryLanguage.IQueryOptions = {},
 		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Entity<TEntity> | null> {
 		return this.makeEntity(
@@ -332,9 +326,9 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @tag CRUD
 	 */
 	public async updateMany(
-		queryFind: QueryLanguage.Raw.SearchQuery | undefined,
+		queryFind: QueryLanguage.SearchQuery | undefined,
 		update: object,
-		options: QueryLanguage.Raw.IQueryOptions = {},
+		options: QueryLanguage.IQueryOptions = {},
 		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<Set<TEntity>> {
 		return this.makeSet(
@@ -358,8 +352,8 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @tag CRUD
 	 */
 	public async delete(
-		queryFind?: QueryLanguage.Raw.SearchQuery,
-		options: QueryLanguage.Raw.IQueryOptions = {},
+		queryFind?: QueryLanguage.SearchQuery,
+		options: QueryLanguage.IQueryOptions = {},
 		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<void> {
 		return this.getDataSource( dataSource ).deleteOne(
@@ -380,8 +374,8 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @tag CRUD
 	 */
 	public async deleteMany(
-		queryFind?: QueryLanguage.Raw.SearchQuery,
-		options: QueryLanguage.Raw.IQueryOptions = {},
+		queryFind?: QueryLanguage.SearchQuery,
+		options: QueryLanguage.IQueryOptions = {},
 		dataSource: Adapter.TDataSource = this.defaultDataSource
 	): Promise<void> {
 		return this.getDataSource( dataSource ).deleteMany(

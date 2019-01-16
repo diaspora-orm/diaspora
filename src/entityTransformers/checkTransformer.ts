@@ -4,7 +4,7 @@ import { EntityTransformers as EntityTransformers_EntityTransformer } from './en
 import EntityTransformer = EntityTransformers_EntityTransformer.AEntityTransformer;
 import { PathStack } from './pathStack';
 import { EntityValidationError } from '../errors/entityValidationError';
-import { FieldDescriptor, EFieldType, Raw } from '../types/modelDescription';
+import { _ModelDescription, EFieldType } from '../types/modelDescription';
 import { IEntityAttributes } from '../types/entity';
 
 export namespace EntityTransformers{
@@ -18,7 +18,7 @@ export namespace EntityTransformers{
 	 */
 	const validateArrayItems = (
 		validator: CheckTransformer,
-		fieldDesc: Raw.FieldDescriptor.IArrayFieldDescriptor,
+		fieldDesc: _ModelDescription.FieldDescriptor.IArrayFieldDescriptor,
 		keys: PathStack
 	) => (
 		propVal: any,
@@ -48,7 +48,7 @@ export namespace EntityTransformers{
 		return null;
 	};
 	
-	const messageRequired = ( keys: PathStack, fieldDesc: FieldDescriptor ) => `${keys.toValidatePath()} is a required property of $type "${fieldDesc.type}"`;
+	const messageRequired = ( keys: PathStack, fieldDesc: _ModelDescription.FieldDescriptor ) => `${keys.toValidatePath()} is a required property of $type "${fieldDesc.type}"`;
 	
 	/**
 	 * A checker is a function that can return an error component with provided standard args.
@@ -61,7 +61,7 @@ export namespace EntityTransformers{
 	type CheckFunction = (
 		this: CheckTransformer,
 		keys: PathStack,
-		fieldDesc: FieldDescriptor,
+		fieldDesc: _ModelDescription.FieldDescriptor,
 		value: any
 	) => CheckTransformer.IErrorObjectFinal | undefined;
 	
@@ -73,7 +73,7 @@ export namespace EntityTransformers{
 	 */
 	const validateWrongType = ( tester: ( value: any ) => boolean ): CheckFunction => (
 		keys: PathStack,
-		fieldDesc: FieldDescriptor,
+		fieldDesc: _ModelDescription.FieldDescriptor,
 		value: any
 	): CheckTransformer.IErrorObjectFinal | undefined => {
 		if ( !tester( value ) ) {
@@ -134,7 +134,7 @@ export namespace EntityTransformers{
 			[EFieldType.OBJECT](
 				this: CheckTransformer,
 				keys: PathStack,
-				fieldDesc: FieldDescriptor.IObjectFieldDescriptor,
+				fieldDesc: _ModelDescription.FieldDescriptor.IObjectFieldDescriptor,
 				value: IEntityAttributes
 			): CheckTransformer.IErrorObjectFinal | undefined {
 				if ( !_.isObject( value ) ) {
@@ -173,7 +173,7 @@ export namespace EntityTransformers{
 			[EFieldType.ARRAY](
 				this: CheckTransformer,
 				keys: PathStack,
-				fieldDesc: FieldDescriptor.IArrayFieldDescriptor,
+				fieldDesc: _ModelDescription.FieldDescriptor.IArrayFieldDescriptor,
 				value: any[]
 			): CheckTransformer.IErrorObjectFinal | undefined {
 				if ( !_.isArray( value ) ) {
@@ -208,7 +208,7 @@ export namespace EntityTransformers{
 			[EFieldType.ANY](
 				this: CheckTransformer,
 				keys: PathStack,
-				fieldDesc: FieldDescriptor,
+				fieldDesc: _ModelDescription.FieldDescriptor,
 				value: any
 			): CheckTransformer.IErrorObjectFinal | undefined {
 				return _.isNil( value )
@@ -221,7 +221,7 @@ export namespace EntityTransformers{
 			_(
 				this: CheckTransformer,
 				keys: PathStack,
-				fieldDesc: FieldDescriptor,
+				fieldDesc: _ModelDescription.FieldDescriptor,
 				value: any
 			): CheckTransformer.IErrorObjectFinal | undefined {
 				return {
@@ -422,7 +422,7 @@ export namespace EntityTransformers{
 			 *
 			 * @author Gerkin
 			 */
-			fieldDesc: FieldDescriptor;
+			fieldDesc: _ModelDescription.FieldDescriptor;
 			/**
 			 * Pathstack representing keys so far.
 			 *

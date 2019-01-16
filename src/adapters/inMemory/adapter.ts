@@ -7,7 +7,7 @@ import { Adapter as _InMemoryEntity } from './entity';
 import InMemoryEntity = _InMemoryEntity.InMemory.InMemoryEntity;
 
 import * as Utils from '../../utils';
-import { QueryLanguage } from '../../types/queryLanguage';
+import { _QueryLanguage } from '../../types/queryLanguage';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
 export namespace Adapter.InMemory {
@@ -94,7 +94,7 @@ export namespace Adapter.InMemory {
 		 */
 		public async findOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
+			queryFind: _QueryLanguage.ISelectQuery,
 			options: InMemoryAdapter.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			const storeTable = this.ensureCollectionExists( table );
@@ -118,8 +118,8 @@ export namespace Adapter.InMemory {
 		 */
 		private static findManyIterators(
 			storeTable: InMemoryAdapter.IStoreTable,
-			queryFind: QueryLanguage.SelectQueryOrCondition,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
+			options: _QueryLanguage.IQueryOptions
 		){
 			// Choose the right iterator to be faster
 			if ( isFinite( options.limit ) ){
@@ -153,7 +153,7 @@ export namespace Adapter.InMemory {
 		 */
 		public async findMany(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
+			queryFind: _QueryLanguage.ISelectQuery,
 			options: InMemoryAdapter.IQueryOptions
 		): Promise<IEntityProperties[]> {
 			const storeTable = this.ensureCollectionExists( table );
@@ -177,9 +177,9 @@ export namespace Adapter.InMemory {
 		 */
 		public async updateOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
+			queryFind: _QueryLanguage.ISelectQuery,
 			update: IEntityAttributes,
-			options: QueryLanguage.IQueryOptions
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			const found = await this.findOne( table, queryFind, _.assign( {}, options, {clone: false} ) );
 			
@@ -204,9 +204,9 @@ export namespace Adapter.InMemory {
 		 */
 		public async updateMany(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
+			queryFind: _QueryLanguage.ISelectQuery,
 			update: IEntityAttributes,
-			options: QueryLanguage.IQueryOptions
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties[]> {
 			const foundEntities = await this.findMany( table, queryFind, _.assign( {}, options, {clone: false} ) );
 			
@@ -235,8 +235,8 @@ export namespace Adapter.InMemory {
 		 */
 		public async deleteOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			const storeTable = this.ensureCollectionExists( table );
 			const entityToDelete = await this.findOne( table, queryFind, options );
@@ -261,8 +261,8 @@ export namespace Adapter.InMemory {
 		 */
 		public async deleteMany(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			const storeTable = this.ensureCollectionExists( table );
 			const entitiesToDelete = await this.findMany( table, queryFind, _.assign( {}, options, {clone:false} ) );
@@ -315,7 +315,7 @@ export namespace Adapter.InMemory {
 		export interface IDataStoreHash {
 			[key: string]: IStoreTable;
 		}
-		export interface IQueryOptions extends QueryLanguage.IQueryOptions {
+		export interface IQueryOptions extends _QueryLanguage.IQueryOptions {
 			/**
 			 * Indicates if the query should end by cloning the object.
 			 */

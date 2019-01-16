@@ -6,9 +6,10 @@ import AAdapter = _Adapter.Base.AAdapter;
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEntityAttributes } from '../../types/entity';
 
-export interface IConstructable<TClass> {
-	new ( ...args: any[] ): TClass;
-}
+/**
+ * Generic constructor for a certain type
+ */
+export type Constructor<TClass> = new ( ...args: any[] ) => TClass;
 
 const getNum = ( ...params: Array<string | string[]> ) => {
 	const flatten = _.flattenDeep( params ) as string[];
@@ -131,21 +132,21 @@ export const CANONICAL_OPERATORS: _.Dictionary<string> = {
 };
 
 
-export type TQueryOptionsValidator = ( ops: QueryLanguage.Raw.IQueryOptions ) => void;
+export type TQueryOptionsValidator = ( ops: QueryLanguage.IQueryOptions ) => void;
 export const QUERY_OPTIONS_TRANSFORMS: _.Dictionary<TQueryOptionsValidator> = {
-	limit( opts: QueryLanguage.Raw.IQueryOptions ) {
+	limit( opts: QueryLanguage.IQueryOptions ) {
 		opts.limit = validateOption( 'limit', opts.limit as number, {
 			type: 'int',
 			rng: '[0,∞]',
 		} );
 	},
-	skip( opts: QueryLanguage.Raw.IQueryOptions ) {
+	skip( opts: QueryLanguage.IQueryOptions ) {
 		opts.skip = validateOption( 'skip', opts.skip as number, {
 			type: 'int',
 			rng: '[0,∞[',
 		} );
 	},
-	page( opts: QueryLanguage.Raw.IQueryOptions ) {
+	page( opts: QueryLanguage.IQueryOptions ) {
 		if ( !_.isNumber( opts.limit ) ) {
 			throw new ReferenceError(
 				'Usage of "options.page" requires "options.limit" to be defined.'

@@ -8,7 +8,7 @@ import { Adapter as _DefaultQueryTransformerFactory } from './defaultQueryTransf
 import DefaultQueryTransformerFactory = _DefaultQueryTransformerFactory.WebApi.DefaultQueryTransformerFactory;
 
 import { logger } from '../../logger';
-import { QueryLanguage } from '../../types/queryLanguage';
+import { _QueryLanguage } from '../../types/queryLanguage';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
 
 
@@ -125,7 +125,7 @@ export namespace Adapter.WebApi {
 		 * @param options   - Options object
 		 */
 		private static transformQueryOptions(
-			options: QueryLanguage.IQueryOptions
+			options: _QueryLanguage.IQueryOptions
 		): AWebApiAdapter.QueryOptions {
 			if ( 0 === options.skip ) {
 				delete options.skip;
@@ -215,8 +215,8 @@ export namespace Adapter.WebApi {
 		 */
 		public async findOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			const { apiDesc } = await this.beforeQuery( {
 				queryType: 'find',
@@ -251,8 +251,8 @@ export namespace Adapter.WebApi {
 		 */
 		public async findMany(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties[]> {
 			const { apiDesc } = await this.beforeQuery( {
 				queryType: 'find',
@@ -287,9 +287,9 @@ export namespace Adapter.WebApi {
 		 */
 		public async updateOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
+			queryFind: _QueryLanguage.ISelectQuery,
 			update: IEntityAttributes,
-			options: QueryLanguage.IQueryOptions
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			const { apiDesc } = await this.beforeQuery( {
 				queryType: 'update',
@@ -327,9 +327,9 @@ export namespace Adapter.WebApi {
 		 */
 		public async updateMany(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
+			queryFind: _QueryLanguage.ISelectQuery,
 			update: IEntityAttributes,
-			options: QueryLanguage.IQueryOptions
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties[]> {
 			const { apiDesc } = await this.beforeQuery( {
 				queryType: 'update',
@@ -364,8 +364,8 @@ export namespace Adapter.WebApi {
 		 */
 		public async deleteOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			const { apiDesc } = await this.beforeQuery( {
 				queryType: 'delete',
@@ -395,8 +395,8 @@ export namespace Adapter.WebApi {
 		 */
 		public async deleteMany(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			const { apiDesc } = await this.beforeQuery( {
 				queryType: 'delete',
@@ -615,7 +615,7 @@ export namespace Adapter.WebApi {
 			queryType: 'find' | 'update' | 'delete' | 'insert';
 			queryNum: 'one' | 'many';
 			modelName: string;
-			select: QueryLanguage.SelectQueryOrCondition;
+			select: _QueryLanguage.SelectQueryOrCondition;
 			update?: IEntityAttributes;
 			options: QueryOptions;
 			apiDesc: IApiDescription;
@@ -624,9 +624,9 @@ export namespace Adapter.WebApi {
 			queryType: 'find' | 'update' | 'delete' | 'insert';
 			queryNum: 'one' | 'many';
 			modelName: string;
-			select: QueryLanguage.SelectQueryOrCondition;
+			select: _QueryLanguage.SelectQueryOrCondition;
 			update?: IEntityAttributes;
-			options: QueryLanguage.IQueryOptions;
+			options: _QueryLanguage.IQueryOptions;
 			apiDesc: IApiDescription;
 		}
 

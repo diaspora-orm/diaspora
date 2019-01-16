@@ -6,7 +6,7 @@ import EAdapterState = _AAdapter.EAdapterState;
 import { Adapter as _WebStorageEntity } from './entity';
 import WebStorageEntity = _WebStorageEntity.WebStorage.WebStorageEntity;
 import * as Utils from '../../utils';
-import { QueryLanguage } from '../../types/queryLanguage';
+import { _QueryLanguage } from '../../types/queryLanguage';
 import { EntityUid, IEntityAttributes, IEntityProperties } from '../../types/entity';
 
 export namespace Adapter.WebStorage {
@@ -169,8 +169,8 @@ export namespace Adapter.WebStorage {
 		 */
 		public async findOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			_.defaults( options, {
 				skip: 0,
@@ -229,9 +229,9 @@ export namespace Adapter.WebStorage {
 		 */
 		public async updateOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
+			queryFind: _QueryLanguage.ISelectQuery,
 			update: IEntityAttributes,
-			options: QueryLanguage.IQueryOptions
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			_.defaults( options, {
 				skip: 0,
@@ -264,8 +264,8 @@ export namespace Adapter.WebStorage {
 		 */
 		public async deleteOne(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			const entityToDelete = await this.findOne( table, queryFind, options );
 			
@@ -292,8 +292,8 @@ export namespace Adapter.WebStorage {
 		 */
 		public async deleteMany(
 			table: string,
-			queryFind: QueryLanguage.ISelectQuery,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.ISelectQuery,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			const entitiesToDelete = await this.findMany( table, queryFind, options );
 			

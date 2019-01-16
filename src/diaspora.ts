@@ -12,7 +12,7 @@ import {
 import { logger } from './logger';
 import { BrowserLogger } from './logger/browserLogger';
 import { NodeLogger } from './logger/nodeLogger';
-import { Raw } from './types/modelDescription';
+import { ModelDescription } from './types/modelDescription';
 
 interface IAdapterRegistry {
 	[key: string]: Adapter.IAdapterCtr;
@@ -216,7 +216,7 @@ export class DiasporaStatic {
 	 * @param   modelDesc - Description of the model to define.
 	 * @returns Model created.
 	 */
-	public declareModel<TEntity>( name: string, modelDesc: Raw.IModelDescription ) {
+	public declareModel<TEntity>( name: string, modelDesc: ModelDescription.IModelDescription ) {
 		const model = new Model<TEntity>( name, modelDesc );
 		this._models[name] = model;
 		return model;

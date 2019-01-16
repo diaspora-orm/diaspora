@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { IEntityAttributes, IEntityProperties } from './types/entity';
-import { QueryLanguage } from './types/queryLanguage';
+import { _QueryLanguage } from './types/queryLanguage';
 import { namedFunctions } from './staticStores';
 
 /*#if _BROWSER
@@ -64,7 +64,7 @@ export const generateUUID = (): string => {
  */
 export const applyOptionsToSet = (
 	set: IEntityProperties[],
-	options: QueryLanguage.IQueryOptions
+	options: _QueryLanguage.IQueryOptions
 ): IEntityProperties[] => {
 	_.defaults( options, {
 		limit: Infinity,

@@ -5,8 +5,8 @@ import { Adapter as _AAdapterEntity } from './entity';
 import AAdapterEntity = _AAdapterEntity.Base.AAdapterEntity;
 import IAdapterEntityCtr = _AAdapterEntity.IAdapterEntityCtr;
 
-import { remapIO, CANONICAL_OPERATORS, QUERY_OPTIONS_TRANSFORMS, IConstructable } from './adapter-utils';
-import { QueryLanguage } from '../../types/queryLanguage';
+import { remapIO, CANONICAL_OPERATORS, QUERY_OPTIONS_TRANSFORMS, Constructor } from './adapter-utils';
+import { QueryLanguage, _QueryLanguage } from '../../types/queryLanguage';
 import { IDataSourceQuerier } from '../../types/dataSourceQuerier';
 import { logger } from '../../logger';
 import { IEntityProperties, IEntityAttributes } from '../../types/entity';
@@ -24,7 +24,7 @@ export namespace Adapter {
 	}
 
 	export interface IAdapterCtr<TAdapterEntity extends AAdapterEntity = AAdapterEntity>
-	extends IConstructable<Base.AAdapter<TAdapterEntity>> {
+	extends Constructor<Base.AAdapter<TAdapterEntity>> {
 		new ( dataSourceName: string, ...args: any[] ): Base.AAdapter<TAdapterEntity>;
 	}
 }
@@ -118,9 +118,9 @@ export namespace Adapter.Base {
 		 * @param query   - Query function to loop
 		 */
 		private static async iterateLimit(
-			options: QueryLanguage.IQueryOptions,
+			options: _QueryLanguage.IQueryOptions,
 			query: (
-				options: QueryLanguage.IQueryOptions
+				options: _QueryLanguage.IQueryOptions
 			) => Promise<IEntityProperties | undefined>
 		) {
 			const foundEntities: IEntityProperties[] = [];
@@ -222,8 +222,8 @@ export namespace Adapter.Base {
 		 * @returns Transformed options (also called `canonical options`).
 		 */
 		public normalizeOptions(
-			opts: QueryLanguage.Raw.IQueryOptions = {}
-		): QueryLanguage.IQueryOptions {
+			opts: QueryLanguage.IQueryOptions = {}
+		): _QueryLanguage.IQueryOptions {
 			opts = _.cloneDeep( opts );
 			_.forOwn( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
 				if ( optionName in opts && !_.isNil( ( opts as any )[optionName] ) ) {
@@ -245,7 +245,7 @@ export namespace Adapter.Base {
 		 * @author Gerkin
 		 * @param attrSearch - Search query to apply to the field
 		 */
-		protected static normalizeFieldQuery( attrSearch: QueryLanguage.Raw.ISelectQuery ): QueryLanguage.ISelectQuery{
+		protected static normalizeFieldQuery( attrSearch: QueryLanguage.ISelectQuery ): _QueryLanguage.ISelectQuery{
 			// Replace operations alias by canonical expressions
 			const attrSearchCanonical = _.mapKeys( attrSearch, ( val, operator, obj ) => {
 				if ( CANONICAL_OPERATORS.hasOwnProperty( operator ) ) {
@@ -278,9 +278,9 @@ export namespace Adapter.Base {
 		 * @author gerkin
 		 */
 		public normalizeQuery(
-			originalQuery: QueryLanguage.Raw.SelectQueryOrCondition,
+			originalQuery: QueryLanguage.SelectQueryOrCondition,
 			options: QueryLanguage.IQueryOptions
-		): QueryLanguage.SelectQueryOrCondition {
+		): _QueryLanguage.SelectQueryOrCondition {
 			const normalizedQuery = options.remapInput
 			? _.chain( originalQuery ).cloneDeep().mapValues( attrSearch => {
 				if ( _.isUndefined( attrSearch ) ) {
@@ -354,8 +354,8 @@ export namespace Adapter.Base {
 		 */
 		public async findOne(
 			table: string,
-			queryFind: QueryLanguage.SelectQueryOrCondition,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			options.limit = 1;
 			return _.first( await this.findMany( table, queryFind, options ) );
@@ -369,8 +369,8 @@ export namespace Adapter.Base {
 		 */
 		public async findMany(
 			table: string,
-			queryFind: QueryLanguage.SelectQueryOrCondition,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties[]> {
 			const boundQuery = this.findOne.bind( this, table, queryFind );
 			return AAdapter.iterateLimit( options, boundQuery );
@@ -387,9 +387,9 @@ export namespace Adapter.Base {
 		 */
 		public async updateOne(
 			table: string,
-			queryFind: QueryLanguage.SelectQueryOrCondition,
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
 			update: IEntityAttributes,
-			options: QueryLanguage.IQueryOptions
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			options.limit = 1;
 			return _.first( await this.updateMany( table, queryFind, update, options ) );
@@ -403,9 +403,9 @@ export namespace Adapter.Base {
 		 */
 		public async updateMany(
 			table: string,
-			queryFind: QueryLanguage.SelectQueryOrCondition,
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
 			update: IEntityAttributes,
-			options: QueryLanguage.IQueryOptions
+			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties[]> {
 			return AAdapter.iterateLimit(
 				options,
@@ -424,8 +424,8 @@ export namespace Adapter.Base {
 		 */
 		public async deleteOne(
 			table: string,
-			queryFind: QueryLanguage.SelectQueryOrCondition,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			options.limit = 1;
 			await this.deleteMany( table, queryFind, options );
@@ -443,8 +443,8 @@ export namespace Adapter.Base {
 		 */
 		public async deleteMany(
 			table: string,
-			queryFind: QueryLanguage.SelectQueryOrCondition,
-			options: QueryLanguage.IQueryOptions
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
+			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			const boundQuery = this.deleteOne.bind( this, table, queryFind );
 			await AAdapter.iterateLimit( options, boundQuery );

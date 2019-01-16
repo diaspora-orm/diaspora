@@ -4,14 +4,14 @@ import { Adapter as _Adapter } from '../base';
 import AAdapterEntity = _Adapter.Base.AAdapterEntity;
 import AAdapter = _Adapter.Base.AAdapter;
 import { generateUUID } from '../../utils';
-import { IConstructable } from './adapter-utils';
+import { Constructor } from './adapter-utils';
 import {
 	IEntityAttributes,
 	EntityUid,
 	IEntityProperties
 } from '../../types/entity';
 
-export const AutoIdAdapterEntity = <TAdapterEntityCtor extends IConstructable<AAdapterEntity>>(
+export const AutoIdAdapterEntity = <TAdapterEntityCtor extends Constructor<AAdapterEntity>>(
 	adapterEntity: TAdapterEntityCtor
 ): TAdapterEntityCtor =>
 class AutoIdAdapterEntity extends adapterEntity {

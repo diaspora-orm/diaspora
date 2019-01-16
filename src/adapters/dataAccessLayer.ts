@@ -6,7 +6,7 @@ import AAdapter = _Base.Base.AAdapter;
 import IAdapterEntityCtr = _Base.IAdapterEntityCtr;
 import { IDataSourceQuerier } from '../types/dataSourceQuerier';
 import { SequentialEvent } from 'sequential-event';
-import { QueryLanguage } from '../types/queryLanguage';
+import { _QueryLanguage, QueryLanguage } from '../types/queryLanguage';
 import { IEntityAttributes } from '../types/entity';
 
 
@@ -43,8 +43,8 @@ export namespace Adapter {
 	> extends SequentialEvent implements IDataSourceQuerier<
 		TEntity,
 		TEntity,
-		QueryLanguage.Raw.SearchQuery | undefined,
-		QueryLanguage.Raw.IQueryOptions | undefined
+		QueryLanguage.SearchQuery | undefined,
+		QueryLanguage.IQueryOptions | undefined
 	> {
 		public get classEntity() {
 			return this.adapter.classEntity;
@@ -72,8 +72,8 @@ export namespace Adapter {
 		 * @returns Returns the normalized query.
 		 */
 		public normalizeQuery(
-			originalQuery: QueryLanguage.Raw.SearchQuery | undefined,
-			options: QueryLanguage.IQueryOptions
+			originalQuery: QueryLanguage.SearchQuery | undefined,
+			options: _QueryLanguage.IQueryOptions
 		) {
 			const canonicalQuery = this.ensureQueryObject( originalQuery );
 			return this.adapter.normalizeQuery( canonicalQuery, options );
@@ -173,8 +173,8 @@ export namespace Adapter {
 		 */
 		public async findOne(
 			collectionName: string,
-			searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
-			options: QueryLanguage.Raw.IQueryOptions = {}
+			searchQuery: QueryLanguage.SearchQuery | undefined,
+			options: QueryLanguage.IQueryOptions = {}
 		) {
 			// Options to canonical
 			const optionsNormalized = this.normalizeOptions( options );
@@ -206,8 +206,8 @@ export namespace Adapter {
 		 */
 		public async findMany(
 			collectionName: string,
-			searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
-			options: QueryLanguage.Raw.IQueryOptions = {}
+			searchQuery: QueryLanguage.SearchQuery | undefined,
+			options: QueryLanguage.IQueryOptions = {}
 		) {
 			// Options to canonical
 			const optionsNormalized = this.normalizeOptions( options );
@@ -242,9 +242,9 @@ export namespace Adapter {
 		 */
 		public async updateOne(
 			collectionName: string,
-			searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
+			searchQuery: QueryLanguage.SearchQuery | undefined,
 			update: IEntityAttributes,
-			options: QueryLanguage.Raw.IQueryOptions = {}
+			options: QueryLanguage.IQueryOptions = {}
 		) {
 			const updateRemappedIn = this.remapInput( collectionName, update );
 			// Options to canonical
@@ -282,9 +282,9 @@ export namespace Adapter {
 		 */
 		public async updateMany(
 			collectionName: string,
-			searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
+			searchQuery: QueryLanguage.SearchQuery | undefined,
 			update: IEntityAttributes,
-			options: QueryLanguage.Raw.IQueryOptions = {}
+			options: QueryLanguage.IQueryOptions = {}
 		) {
 			const updateRemappedIn = this.remapInput( collectionName, update );
 			// Options to canonical
@@ -322,8 +322,8 @@ export namespace Adapter {
 		 */
 		public async deleteOne(
 			collectionName: string,
-			searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
-			options: QueryLanguage.Raw.IQueryOptions = {}
+			searchQuery: QueryLanguage.SearchQuery | undefined,
+			options: QueryLanguage.IQueryOptions = {}
 		) {
 			// Options to canonical
 			const optionsNormalized = this.normalizeOptions( options );
@@ -349,8 +349,8 @@ export namespace Adapter {
 		 */
 		public async deleteMany(
 			collectionName: string,
-			searchQuery: QueryLanguage.Raw.SearchQuery | undefined,
-			options: QueryLanguage.Raw.IQueryOptions = {}
+			searchQuery: QueryLanguage.SearchQuery | undefined,
+			options: QueryLanguage.IQueryOptions = {}
 		) {
 			// Options to canonical
 			const optionsNormalized = this.normalizeOptions( options );
@@ -375,8 +375,8 @@ export namespace Adapter {
 		 * @param query - Entity ID or query to potentialy transform
 		 */
 		public ensureQueryObject(
-			query?: QueryLanguage.Raw.SearchQuery
-		): QueryLanguage.Raw.SelectQueryOrCondition {
+			query?: QueryLanguage.SearchQuery
+		): QueryLanguage.SelectQueryOrCondition {
 			if ( _.isNil( query ) ) {
 				return {};
 			} else if ( EntityUid.isEntityUid( query ) ) {

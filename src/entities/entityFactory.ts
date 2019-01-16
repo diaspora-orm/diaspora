@@ -9,14 +9,13 @@ import TDataSource = Adapter.TDataSource;
 
 import { Errors } from '../errors';
 import { Model } from '../model';
-import { IModelDescription } from '../types/modelDescription';
+import { _ModelDescription } from '../types/modelDescription';
 import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
 import { Entity } from './entity';
-import { QueryLanguage } from '../types/queryLanguage';
 import { logger } from '../logger/index';
 
 // We init the function as any to define the Entity property later.
-const ef: Entity.IEntityFactory = ( <TEntity extends IEntityAttributes>( name: string, modelDesc: IModelDescription, model: Model<TEntity> ) => {
+const ef: Entity.IEntityFactory = ( <TEntity extends IEntityAttributes>( name: string, modelDesc: _ModelDescription.IModelDescription, model: Model<TEntity> ) => {
 	/**
 	 * @ignore
 	 */

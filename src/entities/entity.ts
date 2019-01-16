@@ -10,7 +10,7 @@ import TDataSource = Adapter.TDataSource;
 import { Errors } from '../errors';
 import { Model } from '../model';
 import { QueryLanguage } from '../types/queryLanguage';
-import { IModelDescription } from '../types/modelDescription';
+import { _ModelDescription } from '../types/modelDescription';
 import { IEntityAttributes, EEntityState, IIdHash, IEntityProperties, EntityUid } from '../types/entity';
 import { logger } from '../logger';
 
@@ -187,7 +187,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 */
 	public uidQuery(
 		dataSource?: TDataSource
-	): QueryLanguage.Raw.SelectQueryOrCondition {
+	): QueryLanguage.SelectQueryOrCondition {
 		const dataSourceFixed = this.getDataSource( dataSource );
 		// Todo: precise return type
 		return {
@@ -626,7 +626,7 @@ export namespace Entity {
 	 * @returns Entity constructor to use with this model.
 	 */
 	export interface IEntityFactory{
-		<TEntity>( name: string, modelDesc: IModelDescription, model: Model<TEntity> ): IEntitySpawner<TEntity>;
+		<TEntity>( name: string, modelDesc: _ModelDescription.IModelDescription, model: Model<TEntity> ): IEntitySpawner<TEntity>;
 		Entity: typeof Entity;
 	}
 }

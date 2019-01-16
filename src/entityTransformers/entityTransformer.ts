@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { FieldDescriptor, IAttributesDescription } from '../types/modelDescription';
+import { _ModelDescription } from '../types/modelDescription';
 import { PathStack } from './pathStack';
 import { IEntityAttributes } from '../types/entity';
 
@@ -15,7 +15,7 @@ export namespace EntityTransformers{
 		 * @param modelAttributes - Model description to validate.
 		 */
 		public constructor(
-			protected readonly _modelAttributes: IAttributesDescription
+			protected readonly _modelAttributes: _ModelDescription.IAttributesDescription
 		) {}
 		
 		/**

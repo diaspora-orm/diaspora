@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { EntityTransformers as EntityTransformers_EntityTransformer } from './entityTransformer';
 import EntityTransformer = EntityTransformers_EntityTransformer.AEntityTransformer;
 import { PathStack } from './pathStack';
-import { FieldDescriptor, EFieldType } from '../types/modelDescription';
+import { _ModelDescription, EFieldType } from '../types/modelDescription';
 import { getDefaultValue } from '../utils';
 import { IEntityAttributes } from '../types/entity';
 
@@ -53,7 +53,7 @@ export namespace EntityTransformers{
 			const fieldDesc = _.get(
 				this.modelAttributes,
 				keys.segmentsValidation
-			) as FieldDescriptor;
+			) as _ModelDescription.FieldDescriptor;
 			
 			// Return the `default` if value is undefined
 			const valOrBaseDefault = _.isNil( val )
