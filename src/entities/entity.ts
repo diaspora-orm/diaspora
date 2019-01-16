@@ -83,8 +83,8 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		this._lastDataSource = null;
 		this.idHash = {};
 		
-			// ### Load datas from source
-			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
+		// ### Load datas from source
+		// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
 		if ( source instanceof AAdapterEntity ) {
 			// ### Load datas from source
 			// If we construct our Entity from a datastore entity (that can happen internally in Diaspora), set it to `sync` state
@@ -104,11 +104,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		const sourceDModel = _.difference( _.keys( this._attributes ), modelAttrsKeys );
 		if ( 0 !== sourceDModel.length ) {
 			// Later, add a criteria for schemaless models
-			throw new Error(
-				`Source has unknown keys: ${JSON.stringify(
-					sourceDModel
-				)} in ${JSON.stringify( source )}`
-			);
+			throw new Error( `Source has unknown keys: ${JSON.stringify( sourceDModel )} in ${JSON.stringify( source )}` );
 		}
 		
 		// ### Load events
@@ -116,9 +112,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 			this.model.modelDesc.lifecycleEvents,
 			( eventFunctions, eventName ) => {
 				// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
-				_.forEach( _.castArray( eventFunctions ), eventFunction => {
-					this.on( eventName, eventFunction );
-				} );
+				_.forEach( _.castArray( eventFunctions ), eventFunction => this.on( eventName, eventFunction ) );
 			}
 		);
 	}

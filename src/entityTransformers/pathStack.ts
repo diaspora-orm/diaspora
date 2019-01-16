@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { _ModelDescription } from '../types/modelDescription';
 
 /**
  * The PathStack class allows model validation to follow different paths in model description & entity.
@@ -86,5 +87,12 @@ export class PathStack {
 	 */
 	public clone(): PathStack {
 		return new PathStack( ...this.toArray() );
+	}
+	
+	public getDesc( desc: _ModelDescription.AttributesDescription ){
+		return this.segmentsValidation.length > 0 ? _.get( desc, this.segmentsValidation ) : desc;
+	}
+	public getProp( entity: any ){
+		return this.segmentsEntity.length > 0 ? _.get( entity, this.segmentsEntity ) : entity;
 	}
 }

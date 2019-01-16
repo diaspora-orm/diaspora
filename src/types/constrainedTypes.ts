@@ -9,11 +9,11 @@ export type AbsInt0 = number;
 export type AbsInt = number;
 
 /**
- * @description Integer above 0, may be integer
+ * @description Integer above 0, may be infinite
  */
 export type AbsIntInf = number;
 
 /**
- * @description Integer equal or above 0, may be integer
+ * @description Integer equal or above 0, may be infinite
  */
 export type AbsIntInf0 = number;

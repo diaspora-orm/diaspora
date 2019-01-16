@@ -48,13 +48,49 @@ describe( 'Checking model description normalization', () => {
 			expect( model.attributes ).toEqual( {
 				foo:{
 					type: EFieldType.OBJECT,
-					attributes: {
+					attributes: [{
 						bar: {
 							type: EFieldType.STRING,
 							required: false,
 							default: undefined,
 						},
+					}],
+					required: false,
+				},
+			} );
+		} );
+		it( 'Deep object with multiple definitions', () => {
+			Diaspora.createNamedDataSource( ADAPTER_LABEL, 'inMemory' );
+			const model = Diaspora.declareModel( MODEL_NAME, {
+				sources: ADAPTER_LABEL,
+				attributes: {
+					foo:{
+						type: EFieldType.OBJECT,
+						attributes: [{
+							bar: EFieldType.STRING,
+						},           {
+							baz: EFieldType.INTEGER,
+						}],
+						required: false,
 					},
+				},
+			} );
+			expect( model.attributes ).toEqual( {
+				foo:{
+					type: EFieldType.OBJECT,
+					attributes: [{
+						bar: {
+							type: EFieldType.STRING,
+							required: false,
+							default: undefined,
+						},
+					},           {
+						baz: {
+							type: EFieldType.INTEGER,
+							required: false,
+							default: undefined,
+						},
+					}],
 					required: false,
 				},
 			} );
@@ -74,11 +110,39 @@ describe( 'Checking model description normalization', () => {
 			expect( model.attributes ).toEqual( {
 				foo:{
 					type: EFieldType.ARRAY,
-					of: {
+					of: [{
 						type: EFieldType.STRING,
 						required: false,
 						default: undefined,
+					}],
+					required: false,
+				},
+			} );
+		} );
+		it( 'Deep array with multiple definitions', () => {
+			Diaspora.createNamedDataSource( ADAPTER_LABEL, 'inMemory' );
+			const model = Diaspora.declareModel( MODEL_NAME, {
+				sources: ADAPTER_LABEL,
+				attributes: {
+					foo:{
+						type: EFieldType.ARRAY,
+						of: [EFieldType.STRING, EFieldType.INTEGER],
+						required: false,
 					},
+				},
+			} );
+			expect( model.attributes ).toEqual( {
+				foo:{
+					type: EFieldType.ARRAY,
+					of: [{
+						type: EFieldType.STRING,
+						required: false,
+						default: undefined,
+					},   {
+						type: EFieldType.INTEGER,
+						required: false,
+						default: undefined,
+					}],
 					required: false,
 				},
 			} );

@@ -2,7 +2,7 @@
 import { EntityTransformers as DefaultTransformer_CheckTransformer } from '../../../src/entityTransformers';
 import DefaultTransformer = DefaultTransformer_CheckTransformer.DefaultTransformer;
 import { EFieldType } from '../../../src';
-import { Raw, IAttributesDescription } from '../../../src/types/modelDescription';
+import { _ModelDescription } from '../../../src/types/modelDescription';
 
 describe( 'Default values', () => {
 	it( 'Default field', async () => {
@@ -31,13 +31,13 @@ describe( 'Default values', () => {
 				const validator = new DefaultTransformer( {
 					foo:{
 						type: EFieldType.OBJECT,
-						attributes: {
+						attributes: [{
 							bar: {
 								type: EFieldType.STRING,
 								required: false,
 								default: undefined,
 							},
-						},
+						}],
 						required: false,
 					},
 				} );
@@ -49,13 +49,13 @@ describe( 'Default values', () => {
 				const validator = new DefaultTransformer( {
 					foo:{
 						type: EFieldType.OBJECT,
-						attributes: {
+						attributes: [{
 							bar: {
 								type: EFieldType.STRING,
 								required: false,
 								default: 'qux',
 							},
-						},
+						}],
 						required: false,
 					},
 				} );
@@ -67,12 +67,12 @@ describe( 'Default values', () => {
 				const validator = new DefaultTransformer( {
 					foo:{
 						type: EFieldType.OBJECT,
-						attributes: {
+						attributes: [{
 							bar: {
 								type: EFieldType.STRING,
 								required: false,
 							},
-						},
+						}],
 						required: false,
 						default: {
 							bar: 'qux',
@@ -87,13 +87,13 @@ describe( 'Default values', () => {
 				const validator = new DefaultTransformer( {
 					foo:{
 						type: EFieldType.OBJECT,
-						attributes: {
+						attributes: [{
 							bar: {
 								type: EFieldType.STRING,
 								required: false,
 								default: 'quux',
 							},
-						},
+						}],
 						required: false,
 						default: {
 							bar: 'qux',
@@ -109,85 +109,85 @@ describe( 'Default values', () => {
 					const model = {
 						foo:{
 							type: EFieldType.OBJECT,
-							attributes: {
+							attributes: [{
 								bar: {
 									type: EFieldType.STRING,
 									required: false,
 									default: jest.fn( () => 'foo' ),
 								},
-							},
+							}],
 							required: false,
 							default: jest.fn( () => ( {bar: 'quux'} ) ),
 						},
 					};
-					const validator = new DefaultTransformer( model as IAttributesDescription );
+					const validator = new DefaultTransformer( model as _ModelDescription.IAttributesDescription );
 					
 					expect( validator.apply( {} ) ).toEqual( {foo:{bar:'quux'}} );
 					expect( model.foo.default ).toHaveBeenCalledTimes( 1 );
-					expect( model.foo.attributes.bar.default ).toHaveBeenCalledTimes( 0 );
+					expect( model.foo.attributes[0].bar.default ).toHaveBeenCalledTimes( 0 );
 				} );
 				it( 'Child only', () => {
 					const model = {
 						foo:{
 							type: EFieldType.OBJECT,
-							attributes: {
+							attributes: [{
 								bar: {
 									type: EFieldType.STRING,
 									required: false,
 									default: jest.fn( () => 'baaz' ),
 								},
-							},
+							}],
 							required: false,
 							default: jest.fn( () => ( {bar: 'quux'} ) ),
 						},
 					};
-					const validator = new DefaultTransformer( model as IAttributesDescription );
+					const validator = new DefaultTransformer( model as _ModelDescription.IAttributesDescription );
 					
 					expect( validator.apply( {foo:{}} ) ).toEqual( {foo:{bar:'baaz'}} );
 					expect( model.foo.default ).toHaveBeenCalledTimes( 0 );
-					expect( model.foo.attributes.bar.default ).toHaveBeenCalledTimes( 1 );
+					expect( model.foo.attributes[0].bar.default ).toHaveBeenCalledTimes( 1 );
 				} );
 				it( 'Both', () => {
 					const model = {
 						foo:{
 							type: EFieldType.OBJECT,
-							attributes: {
+							attributes: [{
 								bar: {
 									type: EFieldType.STRING,
 									required: false,
 									default: jest.fn( () => 'baaz' ),
 								},
-							},
+							}],
 							required: false,
 							default: jest.fn( () => ( {test: 'quux'} ) ),
 						},
 					};
-					const validator = new DefaultTransformer( model as IAttributesDescription );
+					const validator = new DefaultTransformer( model as _ModelDescription.IAttributesDescription );
 					
 					expect( validator.apply( {} ) ).toEqual( {foo:{bar:'baaz', test:'quux'}} );
 					expect( model.foo.default ).toHaveBeenCalledTimes( 1 );
-					expect( model.foo.attributes.bar.default ).toHaveBeenCalledTimes( 1 );
+					expect( model.foo.attributes[0].bar.default ).toHaveBeenCalledTimes( 1 );
 				} );
 				it( 'No default required', () => {
 					const model = {
 						foo:{
 							type: EFieldType.OBJECT,
-							attributes: {
+							attributes: [{
 								bar: {
 									type: EFieldType.STRING,
 									required: false,
 									default: jest.fn( () => 'foo' ),
 								},
-							},
+							}],
 							required: false,
 							default: jest.fn( () => ( {bar: 'quux'} ) ),
 						},
 					};
-					const validator = new DefaultTransformer( model as IAttributesDescription );
+					const validator = new DefaultTransformer( model as _ModelDescription.IAttributesDescription );
 					
 					expect( validator.apply( {foo:{bar:'string'}} ) ).toEqual( {foo:{bar:'string'}} );
 					expect( model.foo.default ).toHaveBeenCalledTimes( 0 );
-					expect( model.foo.attributes.bar.default ).toHaveBeenCalledTimes( 0 );
+					expect( model.foo.attributes[0].bar.default ).toHaveBeenCalledTimes( 0 );
 				} );
 			} );
 		} );
@@ -196,11 +196,11 @@ describe( 'Default values', () => {
 				const validator = new DefaultTransformer( {
 					foo:{
 						type: EFieldType.ARRAY,
-						of: {
+						of: [{
 							type: EFieldType.STRING,
 							required: false,
 							default: undefined,
-						},
+						}],
 						required: false,
 					},
 				} );
@@ -212,11 +212,11 @@ describe( 'Default values', () => {
 				const validator = new DefaultTransformer( {
 					foo:{
 						type: EFieldType.ARRAY,
-						of: {
+						of: [{
 							type: EFieldType.STRING,
 							required: false,
 							default: undefined,
-						},
+						}],
 						required: false,
 						default: ['bar'],
 					},
@@ -229,18 +229,18 @@ describe( 'Default values', () => {
 				const validator = new DefaultTransformer( {
 					foo:{
 						type: EFieldType.ARRAY,
-						of: {
+						of: [{
 							type: EFieldType.OBJECT,
-							attributes: {
+							attributes: [{
 								baz: {
 									type: EFieldType.STRING,
 									required: false,
 									default: 'qux',
 								},
-							},
+							}],
 							required: false,
 							default: undefined,
-						},
+						}],
 						required: false,
 					},
 				} );
@@ -252,18 +252,18 @@ describe( 'Default values', () => {
 				const validator = new DefaultTransformer( {
 					foo:{
 						type: EFieldType.ARRAY,
-						of: {
+						of: [{
 							type: EFieldType.OBJECT,
-							attributes: {
+							attributes: [{
 								baz: {
 									type: EFieldType.STRING,
 									required: false,
 									default: 'qux',
 								},
-							},
+							}],
 							required: false,
 							default: undefined,
-						},
+						}],
 						required: false,
 						default: [{}],
 					},

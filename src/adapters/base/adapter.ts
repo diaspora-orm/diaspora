@@ -117,13 +117,13 @@ export namespace Adapter.Base {
 		 * @param options - Hash of options that forms the query
 		 * @param query   - Query function to loop
 		 */
-		private static async iterateLimit(
+		private static async iterateLimit<TRet>(
 			options: _QueryLanguage.IQueryOptions,
 			query: (
 				options: _QueryLanguage.IQueryOptions
-			) => Promise<IEntityProperties | undefined>
-		) {
-			const foundEntities: IEntityProperties[] = [];
+			) => Promise<TRet | undefined>
+		): Promise<TRet[]> {
+			const foundEntities: TRet[] = [];
 			const localOptions = _.assign( {}, options );
 			let origSkip = localOptions.skip;
 			

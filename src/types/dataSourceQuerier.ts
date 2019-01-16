@@ -37,9 +37,9 @@ export interface IDataSourceQuerier<
 	 * @author gerkin
 	 */
 	findOne(
-	table: string,
-	queryFind: TQuery,
-	options: TOptions
+		table: string,
+		queryFind: TQuery,
+		options: TOptions
 	): Promise<TOut | undefined>;
 
 	/**
@@ -49,9 +49,9 @@ export interface IDataSourceQuerier<
 	 * @author gerkin
 	 */
 	findMany(
-	table: string,
-	queryFind: TQuery,
-	options: TOptions
+		table: string,
+		queryFind: TQuery,
+		options: TOptions
 	): Promise<TOut[]>;
 
 	// -----
@@ -64,10 +64,10 @@ export interface IDataSourceQuerier<
 	 * @author gerkin
 	 */
 	updateOne(
-	table: string,
-	queryFind: TQuery,
-	update: TIn,
-	options: TOptions
+		table: string,
+		queryFind: TQuery,
+		update: TIn,
+		options: TOptions
 	): Promise<TOut | undefined>;
 
 	/**
@@ -77,10 +77,10 @@ export interface IDataSourceQuerier<
 	 * @author gerkin
 	 */
 	updateMany(
-	table: string,
-	queryFind: TQuery,
-	update: TIn,
-	options: TOptions
+		table: string,
+		queryFind: TQuery,
+		update: TIn,
+		options: TOptions
 	): Promise<TOut[]>;
 
 	// -----
@@ -105,9 +105,9 @@ export interface IDataSourceQuerier<
 	 * @returns Promise resolved once item is found. Called with (*{@link DataStoreEntity}[]* `entities`).
 	 */
 	deleteMany(
-	table: string,
-	queryFind: TQuery,
-	options: TOptions
+		table: string,
+		queryFind: TQuery,
+		options: TOptions
 	): Promise<void>;
 
 	// -----
@@ -121,8 +121,8 @@ export interface IDataSourceQuerier<
 	 * @author gerkin
 	 */
 	configureCollection(
-	tableName: string,
-	remaps: _.Dictionary<string>,
-	filters: _.Dictionary<any>
+		tableName: string,
+		remaps: _.Dictionary<string>,
+		filters: _.Dictionary<any>
 	): this;
 }

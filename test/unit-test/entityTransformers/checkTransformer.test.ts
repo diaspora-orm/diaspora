@@ -147,124 +147,179 @@ describe( 'Default values', () => {
 		} );
 		describe( 'Sub-elements checking', () => {
 			describe( 'Objects', () => {
-				it( 'Optional property in optional object', () => {
-					const validator = new CheckTransformer( {
-						test: {
-							type: EFieldType.OBJECT,
-							attributes: {
-								string: {
-									type: EFieldType.STRING,
-									required: false,
-								},
-							},
-							required: false,
-						},
-					} );
-					const testObjects = wrapTest( [
-						[undefined, null, { string: 'foo' }, {}, { string: '' }],
-						['foo'],
-					] );
-					return runTests( validator, testObjects );
-				} );
-				it( 'Optional property in required object', () => {
-					const validator = new CheckTransformer( {
-						test: {
-							type: EFieldType.OBJECT,
-							required: true,
-							attributes: {
-								string: {
-									type: EFieldType.STRING,
-									required: false,
-								},
-							},
-						},
-					} );
-					const testObjects = wrapTest( [
-						[{ string: 'foo' }, {}, { string: '' }],
-						[undefined, null, 'foo'],
-					] );
-					return runTests( validator, testObjects );
-				} );
-				it( 'Required property in optional object', () => {
-					const validator = new CheckTransformer( {
-						test: {
-							type: EFieldType.OBJECT,
-							attributes: {
-								string: {
-									type: EFieldType.STRING,
-									required: true,
-								},
-							},
-							required: false,
-						},
-					} );
-					const testObjects = wrapTest( [
-						[{ string: 'foo' }, { string: '' }, undefined, null],
-						[{}, 'foo'],
-					] );
-					return runTests( validator, testObjects );
-				} );
-				it( 'Required property in required object', () => {
-					const validator = new CheckTransformer( {
-						test: {
-							type: EFieldType.OBJECT,
-							required: true,
-							attributes: {
-								string: {
-									type: EFieldType.STRING,
-									required: true,
-								},
-							},
-						},
-					} );
-					const testObjects = wrapTest( [
-						[{ string: 'foo' }, { string: '' }],
-						['foo', undefined, null, {}],
-					] );
-					return runTests( validator, testObjects );
-				} );
-				it( 'In-depth required property in required object', () => {
-					const validator = new CheckTransformer( {
-						test: {
-							type: EFieldType.OBJECT,
-							required: true,
-							attributes: {
-								obj: {
-									type: EFieldType.OBJECT,
-									required: true,
-									attributes: {
-										obj: {
-											type: EFieldType.OBJECT,
-											required: true,
-											attributes: {
-												test: {
-													type: EFieldType.STRING,
-													required: true,
-												},
-											},
-										},
+				describe( 'Single definition', () => {
+					it( 'Optional property in optional object', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.OBJECT,
+								attributes: [{
+									string: {
+										type: EFieldType.STRING,
+										required: false,
 									},
-								},
+								}],
+								required: false,
 							},
-						},
+						} );
+						const testObjects = wrapTest( [
+							[undefined, null, { string: 'foo' }, {}, { string: '' }],
+							['foo'],
+						] );
+						return runTests( validator, testObjects );
 					} );
-					const testObjects = wrapTest( [
-						[{ obj: { obj: { test: 'foo' } } }],
-						[undefined, null, {}, { obj: {} }, { obj: { obj: {} } }],
-					] );
-					return runTests( validator, testObjects );
+					it( 'Optional property in required object', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.OBJECT,
+								required: true,
+								attributes: [{
+									string: {
+										type: EFieldType.STRING,
+										required: false,
+									},
+								}],
+							},
+						} );
+						const testObjects = wrapTest( [
+							[{ string: 'foo' }, {}, { string: '' }],
+							[undefined, null, 'foo'],
+						] );
+						return runTests( validator, testObjects );
+					} );
+					it( 'Required property in optional object', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.OBJECT,
+								attributes: [{
+									string: {
+										type: EFieldType.STRING,
+										required: true,
+									},
+								}],
+								required: false,
+							},
+						} );
+						const testObjects = wrapTest( [
+							[{ string: 'foo' }, { string: '' }, undefined, null],
+							[{}, 'foo'],
+						] );
+						return runTests( validator, testObjects );
+					} );
+					it( 'Required property in required object', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.OBJECT,
+								required: true,
+								attributes: [{
+									string: {
+										type: EFieldType.STRING,
+										required: true,
+									},
+								}],
+							},
+						} );
+						const testObjects = wrapTest( [
+							[{ string: 'foo' }, { string: '' }],
+							['foo', undefined, null, {}],
+						] );
+						return runTests( validator, testObjects );
+					} );
+					it( 'In-depth required property in required object', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.OBJECT,
+								required: true,
+								attributes: [{
+									obj: {
+										type: EFieldType.OBJECT,
+										required: true,
+										attributes: [{
+											obj: {
+												type: EFieldType.OBJECT,
+												required: true,
+												attributes: [{
+													test: {
+														type: EFieldType.STRING,
+														required: true,
+													},
+												}],
+											},
+										}],
+									},
+								}],
+							},
+						} );
+						const testObjects = wrapTest( [
+							[{ obj: { obj: { test: 'foo' } } }],
+							[undefined, null, {}, { obj: {} }, { obj: { obj: {} } }],
+						] );
+						return runTests( validator, testObjects );
+					} );
+				} );
+				describe( 'Multiple definitions', () => {
+					it( 'Optional property in optional object', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.OBJECT,
+								attributes: [
+									{ string: { type: EFieldType.STRING, required: false } },
+									{ int: { type: EFieldType.INTEGER, required: false } },
+								],
+								required: false,
+							},
+						} );
+						const testObjects = wrapTest( [
+							[undefined, null, {}, { string: 'foo' }, { string: '' }, { int: 12 }, { int: 0 }],
+							['foo', 1],
+						] );
+						return runTests( validator, testObjects );
+					} );
+					it( 'Required property in optional object', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.OBJECT,
+								required: false,
+								attributes: [
+									{ string: { type: EFieldType.STRING, required: true } },
+									{ int: { type: EFieldType.INTEGER, required: true } },
+								],
+							},
+						} );
+						const testObjects = wrapTest( [
+							[undefined, null, { string: 'foo' }, { string: '' }, {int: 1}, {int: 0}],
+							['foo', {}, 0, 1],
+						] );
+						return runTests( validator, testObjects );
+					} );
+					it( 'Required property in required object', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.OBJECT,
+								required: true,
+								attributes: [
+									{ string: { type: EFieldType.STRING, required: true } },
+									{ int: { type: EFieldType.INTEGER, required: true } },
+								],
+							},
+						} );
+						const testObjects = wrapTest( [
+							[{ string: 'foo' }, { string: '' }, {int: 1}, {int: 0}],
+							['foo', undefined, null, {}, 0, 1],
+						] );
+						return runTests( validator, testObjects );
+					} );
 				} );
 			} );
 			describe( 'Arrays', () => {
 				describe( 'Single definition', () => {
-					it( 'Optional single definition in optional object', () => {
+					it( 'Optional value in optional array', () => {
 						const validator = new CheckTransformer( {
 							test: {
 								type: EFieldType.ARRAY,
-								of: {
+								of: [{
 									type: EFieldType.INTEGER,
 									required: false,
-								},
+								}],
 								required: false,
 							},
 						} );
@@ -274,15 +329,15 @@ describe( 'Default values', () => {
 						] );
 						return runTests( validator, testObjects );
 					} );
-					it( 'Optional single definition in required object', () => {
+					it( 'Optional value in required array', () => {
 						const validator = new CheckTransformer( {
 							test: {
 								type: EFieldType.ARRAY,
 								required: true,
-								of: {
+								of: [{
 									type: EFieldType.INTEGER,
 									required: false,
-								},
+								}],
 							},
 						} );
 						const testObjects = wrapTest( [
@@ -291,14 +346,14 @@ describe( 'Default values', () => {
 						] );
 						return runTests( validator, testObjects );
 					} );
-					it( 'Required single definition in optional object', () => {
+					it( 'Required value in optional array', () => {
 						const validator = new CheckTransformer( {
 							test: {
 								type: EFieldType.ARRAY,
-								of: {
+								of: [{
 									type: EFieldType.INTEGER,
 									required: true,
-								},
+								}],
 								required: false,
 							},
 						} );
@@ -308,15 +363,15 @@ describe( 'Default values', () => {
 						] );
 						return runTests( validator, testObjects );
 					} );
-					it( 'Required single definition in required object', () => {
+					it( 'Required value in required array', () => {
 						const validator = new CheckTransformer( {
 							test: {
 								type: EFieldType.ARRAY,
 								required: true,
-								of: {
+								of: [{
 									type: EFieldType.INTEGER,
 									required: true,
-								},
+								}],
 							},
 						} );
 						const testObjects = wrapTest( [
@@ -325,28 +380,81 @@ describe( 'Default values', () => {
 						] );
 						return runTests( validator, testObjects );
 					} );
-					it( 'In-depth required element in required arrays', () => {
+					it( 'In-depth required value in required arrays', () => {
 						const validator = new CheckTransformer( {
 							test: {
 								type: EFieldType.ARRAY,
 								required: true,
-								of: {
+								of: [{
 									type: EFieldType.ARRAY,
 									required: true,
-									of: {
+									of: [{
 										type: EFieldType.ARRAY,
 										required: true,
-										of: {
+										of: [{
 											type: EFieldType.STRING,
 											required: true,
-										},
-									},
-								},
+										}],
+									}],
+								}],
 							},
 						} );
 						const testObjects = wrapTest( [
 							[[[['foo']]], [[[]]], [[]], []],
 							[undefined, null, [[[['foo', 1]]]], [1]],
+						] );
+						return runTests( validator, testObjects );
+					} );
+				} );
+				describe( 'Multiple definitions', () => {
+					it( 'Optional value in optional array', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.ARRAY,
+								of: [
+									{ type: EFieldType.STRING, required: false },
+									{ type: EFieldType.INTEGER, required: false },
+								],
+								required: false,
+							},
+						} );
+						const testObjects = wrapTest( [
+							[undefined, null, [], ['foo', 'bar'], [''], [12, 42], [0], ['bar', 0], ['bar', undefined], [undefined, 0]],
+							['foo', 1],
+						] );
+						return runTests( validator, testObjects );
+					} );
+					it( 'Required value in optional array', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.ARRAY,
+								required: false,
+								of: [
+									{ type: EFieldType.STRING, required: true },
+									{ type: EFieldType.INTEGER, required: true },
+								],
+							},
+						} );
+						const testObjects = wrapTest( [
+							[undefined, null, [], ['foo', 'bar'], [''], [12, 42], [0], ['bar', 0]],
+							['foo', {}, 0, 1, ['bar', undefined], [undefined, 0]],
+						] );
+						return runTests( validator, testObjects );
+					} );
+					it( 'Required value in required array', () => {
+						const validator = new CheckTransformer( {
+							test: {
+								type: EFieldType.ARRAY,
+								required: true,
+								of: [
+									{ type: EFieldType.STRING, required: true },
+									{ type: EFieldType.INTEGER, required: true },
+								],
+							},
+						} );
+						const testObjects = wrapTest( [
+							[[], ['foo', 'bar'], [''], [12, 42], [0], ['bar', 0]],
+							['foo', undefined, null, 0, 1, ['bar', undefined], [undefined, 0]],
 						] );
 						return runTests( validator, testObjects );
 					} );

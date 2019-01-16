@@ -53,7 +53,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @returns Attributes description map normalized, with properties defaulted
 	 * @author Gerkin
 	 */
-	private static normalizeAttributesDescription( desc: ModelDescription.IAttributesDescription ): _ModelDescription.IAttributesDescription {
+	private static normalizeAttributesDescription( desc: ModelDescription.AttributesDescription ): _ModelDescription.AttributesDescription {
 		return _.mapValues(
 			desc,
 			val => Model.normalizeAttributeDescription( val )
@@ -73,10 +73,13 @@ export class Model<TEntity extends IEntityAttributes> {
 
 		// Perform deep defaulting
 		if ( fieldDescriptorWithRequired.type === EFieldType.OBJECT ){
-			const attributesDefaulted = fieldDescriptorWithRequired.attributes ? Model.normalizeAttributesDescription( fieldDescriptorWithRequired.attributes ) : undefined;
-			return _.assign( _.omit( fieldDescriptorWithRequired, 'attributes' ), {attributes: attributesDefaulted} );
+			// TODO: Find the source of this cast issue
+			const attrsDescs: ModelDescription.AttributesDescription[] = _.castArray( fieldDescriptorWithRequired.attributes as any );
+			const attrsDescsDefaulted = _.map( attrsDescs, attrsDesc => Model.normalizeAttributesDescription( attrsDesc ) );
+			return _.assign( _.omit( fieldDescriptorWithRequired, 'attributes' ), {attributes: attrsDescsDefaulted} );
 		} else if ( fieldDescriptorWithRequired.type === EFieldType.ARRAY ){
-			const ofDefaulted = Model.normalizeAttributeDescription( fieldDescriptorWithRequired.of ? fieldDescriptorWithRequired.of : EFieldType.ANY );
+			const attrsDescs = _.castArray( fieldDescriptorWithRequired.of );
+			const ofDefaulted = _.map( attrsDescs, attrsDesc => Model.normalizeAttributeDescription( attrsDesc ) );
 			return _.assign( _.omit( fieldDescriptorWithRequired, 'of' ), {of: ofDefaulted} );
 		} else {
 			return fieldDescriptorWithRequired;

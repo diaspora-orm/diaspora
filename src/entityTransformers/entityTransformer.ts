@@ -15,7 +15,7 @@ export namespace EntityTransformers{
 		 * @param modelAttributes - Model description to validate.
 		 */
 		public constructor(
-			protected readonly _modelAttributes: _ModelDescription.IAttributesDescription
+			protected readonly _modelAttributes: _ModelDescription.AttributesDescription
 		) {}
 		
 		/**
@@ -44,7 +44,7 @@ export namespace EntityTransformers{
 		/**
 		 * Get the model description provided in constructor.
 		 */
-		public get modelAttributes(): object {
+		public get modelAttributes() {
 			return _.cloneDeep( this._modelAttributes );
 		}
 		

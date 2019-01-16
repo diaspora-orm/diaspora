@@ -45,34 +45,32 @@ export namespace EntityTransformers{
 			options: { getProps: boolean } = { getProps: false }
 		): any {
 			_.defaults( options, { getProps: true } );
-			if ( !( keys instanceof PathStack ) ) {
-				keys = new PathStack( keys );
-			}
+			const keysPathStack = keys instanceof PathStack ? keys : new PathStack( keys );
 			
-			const val = options.getProps ? _.get( value, keys.segmentsEntity ) : value;
-			const fieldDesc = _.get(
-				this.modelAttributes,
-				keys.segmentsValidation
-			) as _ModelDescription.FieldDescriptor;
+			const val = options.getProps ? keysPathStack.getProp( value ) : value;
+			const fieldDesc = keysPathStack.getDesc( this.modelAttributes );
 			
 			// Return the `default` if value is undefined
 			const valOrBaseDefault = _.isNil( val )
-			? getDefaultValue( fieldDesc.default )
-			: val;
+				? getDefaultValue( fieldDesc.default )
+				: val;
 			
 			// Recurse if we are defaulting an object
 			if ( fieldDesc.type === EFieldType.OBJECT ){
 				if (
-					_.keys( fieldDesc.attributes ).length > 0 &&
+					fieldDesc.attributes.length > 0 &&
+					_.keys( fieldDesc.attributes[0] ).length > 0 &&
 					!_.isNil( valOrBaseDefault )
 				) {
 					const childDefaultProps = _.omitBy(
 						_.chain( fieldDesc.attributes )
+							// Get the first definition
+							.first()
 							// Do not default existing fields
 							.omit( _.keys( valOrBaseDefault ) )
 							.mapValues( ( fieldDesc, key ) => this.applyField(
 								value,
-								( keys as PathStack ).clone().pushValidationProp( 'attributes' ).pushProp( key ),
+								keysPathStack.clone().pushValidationProp( 'attributes', '0' ).pushProp( key ),
 								{getProps: true}
 							) )
 							.value(),
@@ -89,12 +87,12 @@ export namespace EntityTransformers{
 			} else if ( fieldDesc.type === EFieldType.ARRAY ){
 				if (
 					!_.isUndefined( valOrBaseDefault ) &&
-					fieldDesc.of &&
-					( fieldDesc.of.type === EFieldType.OBJECT || fieldDesc.of.type === EFieldType.ARRAY )
+					fieldDesc.of.length > 0 &&
+					( fieldDesc.of[0].type === EFieldType.OBJECT || fieldDesc.of[0].type === EFieldType.ARRAY )
 				){
 					return ( valOrBaseDefault as any[] ).map( ( child, index ) => this.applyField(
 						child,
-						( keys as PathStack ).clone().pushValidationProp( 'of' ).pushEntityProp( index + '' )
+						keysPathStack.clone().pushValidationProp( 'of', '0' ).pushEntityProp( String( index ) )
 					) );
 				}
 			}

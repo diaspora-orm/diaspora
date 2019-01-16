@@ -35,7 +35,7 @@ export namespace ModelDescription {
 		 *
 		 * @author gerkin
 		 */
-		attributes: IAttributesDescription;
+		attributes: AttributesDescription;
 		/**
 		 * Methods to add to entities prototype.
 		 *
@@ -56,17 +56,24 @@ export namespace ModelDescription {
 		lifecycleEvents?: { [key: string]: IEventHandler | IEventHandler[] };
 	}
 
-	export interface IAttributesDescription {
-		[key: string]: FieldDescriptor;
-	}
-
+	/**
+	 * An ObjectFieldDescriptor is a field descriptor containing more type informations than a simple [[EFieldType]].
+	 * This type can be any kind of specific field descriptor for each type.
+	 */
 	export type ObjectFieldDescriptor = FieldDescriptor.IPrimitiveFieldDescriptor
 	| FieldDescriptor.IArrayFieldDescriptor
 	| FieldDescriptor.IObjectFieldDescriptor;
+	/**
+	 * Can be either the complete {@link ObjectFieldDescriptor} notation or the shorthand {@link EFieldType}.
+	 */
 	export type FieldDescriptor = ObjectFieldDescriptor | EFieldType;
+	export type AttributesDescription = _.Dictionary<FieldDescriptor>;
 
 	export namespace FieldDescriptor{
-		export interface IBaseFieldDescriptor {
+		/**
+		 * Basic common fields to describe an entity field. You should not use this interface directly: use its sub-interfaces
+		 */
+		interface IBaseFieldDescriptor {
 			/**
 			 * Expected type of the value. Either `type` or `model` should be defined, or none.
 			 *
@@ -88,6 +95,9 @@ export namespace ModelDescription {
 			default?: Function | any;
 			enum?: any[];
 		}
+		/**
+		 * Represents a primitive entity field.
+		 */
 		export interface IPrimitiveFieldDescriptor extends IBaseFieldDescriptor {
 			type: EFieldType.ANY
 			| EFieldType.BOOLEAN
@@ -96,6 +106,9 @@ export namespace ModelDescription {
 			| EFieldType.INTEGER
 			| EFieldType.STRING;
 		}
+		/**
+		 * Represents an array entity field. This array can have one or several member definition(s).
+		 */
 		export interface IArrayFieldDescriptor extends IBaseFieldDescriptor {
 			type: EFieldType.ARRAY;
 			/**
@@ -103,11 +116,19 @@ export namespace ModelDescription {
 			 *
 			 * @author gerkin
 			 */
-			of?: FieldDescriptor;
+			of?: _.Many<FieldDescriptor>;
 		}
+		/**
+		 * Represents an object entity field. This object can have one or several containing object(s).
+		 */
 		export interface IObjectFieldDescriptor extends IBaseFieldDescriptor {
 			type: EFieldType.OBJECT;
-			attributes?: IAttributesDescription;
+			/**
+			 * Object(s) representing properties of internal objects
+			 *
+			 * @author gerkin
+			 */
+			attributes?: _.Many<AttributesDescription>;
 		}
 	}
 }
@@ -119,7 +140,7 @@ export namespace _ModelDescription{
 		 *
 		 * @author gerkin
 		 */
-		attributes: IAttributesDescription;
+		attributes: AttributesDescription;
 		/**
 		 * List of sources to use with this model.
 		 *
@@ -146,9 +167,7 @@ export namespace _ModelDescription{
 		lifecycleEvents?: { [key: string]: IEventHandler | IEventHandler[] };
 	}
 
-	export interface IAttributesDescription {
-		[key: string]: FieldDescriptor;
-	}
+	export type AttributesDescription = _.Dictionary<FieldDescriptor>;
 	export type FieldDescriptor = FieldDescriptor.IPrimitiveFieldDescriptor
 	| FieldDescriptor.IArrayFieldDescriptor
 	| FieldDescriptor.IObjectFieldDescriptor;
@@ -191,11 +210,11 @@ export namespace _ModelDescription{
 			 *
 			 * @author gerkin
 			 */
-			of: FieldDescriptor;
+			of: FieldDescriptor[];
 		}
 		export interface IObjectFieldDescriptor extends IBaseFieldDescriptor {
 			type: EFieldType.OBJECT;
-			attributes?: IAttributesDescription;
+			attributes?: AttributesDescription[];
 		}
 	}
 }
