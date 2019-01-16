@@ -1,3 +1,4 @@
+import { IEntityAttributes } from './../types/entity';
 import * as _ from 'lodash';
 import { _ModelDescription } from '../types/modelDescription';
 
@@ -89,10 +90,23 @@ export class PathStack {
 		return new PathStack( ...this.toArray() );
 	}
 	
+	/**
+	 * Applies the path stack to retrieve the attribute description in the provided attributes description
+	 * 
+	 * @author gerkin
+	 * @param desc - Attributes description to retrieve field from
+	 */
 	public getDesc( desc: _ModelDescription.AttributesDescription ){
 		return this.segmentsValidation.length > 0 ? _.get( desc, this.segmentsValidation ) : desc;
 	}
-	public getProp( entity: any ){
+	
+	/**
+	 * Applies the path stack to retrieve the field in the provided entity attributes
+	 * 
+	 * @author gerkin
+	 * @param entity - Entity to retrieve field from
+	 */
+	public getProp( entity: IEntityAttributes ){
 		return this.segmentsEntity.length > 0 ? _.get( entity, this.segmentsEntity ) : entity;
 	}
 }

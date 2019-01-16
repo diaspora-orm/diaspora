@@ -317,8 +317,16 @@ export namespace EntityTransformers{
 			return entity;
 		}
 
+		/**
+		 * Validates the given entity attributes at a defined path
+		 * 
+		 * @author gerkin
+		 * @param value   - Entity's attributes to test
+		 * @param keys    - Path to this point of the entity
+		 * @param options - Additional options for the validation
+		 */
 		public applyObject(
-			value: _.Dictionary<any>,
+			value: IEntityAttributes,
 			keys: PathStack | string[],
 			options: { getProps: boolean } = { getProps: false }
 		){

@@ -113,6 +113,12 @@ export interface IDataSourceQuerier<
 	// -----
 	// ### Utils
 
+	/**
+	 * Returns a promise resolved once the data source querier is ready.
+	 *
+	 * @author gerkin
+	 * @returns Promise resolved when the data source is ready, and rejected if an error occured.
+	 */
 	waitReady(): Promise<this>;
 
 	/**

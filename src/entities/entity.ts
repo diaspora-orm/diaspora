@@ -602,7 +602,7 @@ export namespace Entity {
 		skipEvents?: boolean;
 	}
 	
-	export interface IEntitySpawner<TEntity> {
+	export interface IEntitySpawner<TEntity extends IEntityAttributes> {
 		model: Model<TEntity>;
 		name: string;
 		new ( source?: IEntityAttributes ): Entity<TEntity>;

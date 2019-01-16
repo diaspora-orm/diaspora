@@ -12,11 +12,27 @@ export namespace Adapter {
 	export interface IAdapterEntityCtr<TAdapterEntity extends Base.AAdapterEntity> {
 		new ( data: IEntityProperties, adapter: AAdapter<TAdapterEntity> ): TAdapterEntity;
 		
+		/**
+		 * Checks if the provided `attributes` matches the `query`.
+		 * 
+		 * @author gerkin
+		 * @param attributes - An object containing the properties to test.
+		 * @param query      - The query to match against the attributes.
+		 */
 		matches(
 			attributes: IEntityProperties,
 			query: QueryLanguage.ISelectQuery
 		): boolean;
 		
+		/**
+		 * Defines the `id` (& `idHash`) on the provided object
+		 * 
+		 * @author gerkin
+		 * @param attributes - An object representing an entity's attributes
+		 * @param adapter    - The source adapter of the entity, to load mapping informations from
+		 * @param id         - The actual id value
+		 * @param propName   - The name of the property used as `id` field
+		 */
 		setId(
 			attributes: IEntityAttributes,
 			adapter: AAdapter<TAdapterEntity>,
