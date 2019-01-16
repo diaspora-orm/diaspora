@@ -1,4 +1,4 @@
-# Diaspora
+# ![Diaspora logo](https://cdn.rawgit.com/diaspora-orm/diaspora/master/media/logo.svg) Diaspora
 
 ***Multi-source ORM for NodeJS & the browser***
 
