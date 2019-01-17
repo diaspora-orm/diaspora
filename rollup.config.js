@@ -74,7 +74,7 @@ const input = './src/index.ts';
 const getConfig = ( format, browser, useExternals ) => ({
 	input,
 	output: {
-		file: `${ outDir }/browser/${ fileName }.${ format }.js`,
+		file: `${ outDir }/${ browser ? 'browser' : 'node' }/${ fileName }.${ format }.js`,
 		format,
 		// Use `name` as window to hack a bit & avoid exports.
 		name: moduleName,

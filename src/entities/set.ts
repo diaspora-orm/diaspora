@@ -43,7 +43,7 @@ Promise.all(
  */
 async function wrapEventsAction<TEntity extends IEntityAttributes>(
 	this: Set<TEntity>,
-	sourceName: string,
+	sourceName: string | undefined,
 	action: string,
 	verb: string | string[]
 ): Promise<void> {
@@ -198,20 +198,20 @@ export class Set<TEntity extends IEntityAttributes> {
 	 */
 	public async persist( sourceName?: string ): Promise<Set<TEntity>> {
 		const suffixes = this.toChainable()
-		.map( entity => ( 'orphan' === entity.state ? 'Create' : 'Update' ) )
-		.value();
+			.map( entity => ( 'orphan' === entity.state ? 'Create' : 'Update' ) )
+			.value();
 		const _allEmit = _.partial( allEmit, this.entities );
 		await _allEmit( 'Persist', 'before' );
 		await _allEmit( 'Validate', 'before' );
 		const validationResults = this.toChainable()
-		.map( entity => {
-			try {
-				entity.validate();
-			} catch ( error ) {
-				return error;
-			}
-		} )
-		.value();
+			.map( entity => {
+				try {
+					entity.validate();
+				} catch ( error ) {
+					return error;
+				}
+			} )
+			.value();
 		const errors = _.compact( validationResults ).length;
 		if ( errors > 0 ) {
 			throw new Errors.SetValidationError(
@@ -220,8 +220,8 @@ export class Set<TEntity extends IEntityAttributes> {
 			);
 		}
 		this.toChainable()
-		.map( entity => entity.applyDefaults() )
-		.value();
+			.map( entity => entity.applyDefaults() )
+			.value();
 		await _allEmit( 'Validate', 'after' );
 		await wrapEventsAction.call(
 			this,
