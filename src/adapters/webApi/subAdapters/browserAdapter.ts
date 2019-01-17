@@ -2,11 +2,16 @@ import * as _ from 'lodash';
 
 import { Adapter as _AWebApiAdapter } from '../adapter';
 import AWebApiAdapter = _AWebApiAdapter.WebApi.AWebApiAdapter;
+import { IWebApiAdapterConfig, TEntitiesJsonResponse, EHttpVerb } from '../types';
 
-type ResolveResponse = ( value?: | AWebApiAdapter.TEntitiesJsonResponse | PromiseLike<AWebApiAdapter.TEntitiesJsonResponse> ) => void;
+type ResolveResponse = ( value?: | TEntitiesJsonResponse | PromiseLike<TEntitiesJsonResponse> ) => void;
 
 export namespace Adapter.WebApi {
 	export class BrowserWebApiAdapter extends AWebApiAdapter {
+		protected normalizeConfig( options: IWebApiAdapterConfig ){
+			return _.defaults( options, {host: '', scheme: 'http', port: 80} );
+		}
+		
 		public constructor(
 			dataSourceName: string,
 			config: AWebApiAdapter.IWebApiAdapterConfig,
@@ -70,8 +75,8 @@ export namespace Adapter.WebApi {
 			xhr: XMLHttpRequest,
 			resolve: (
 				thenableOrResult?:
-				| AWebApiAdapter.TEntitiesJsonResponse
-				| PromiseLike<AWebApiAdapter.TEntitiesJsonResponse>
+				| TEntitiesJsonResponse
+				| PromiseLike<TEntitiesJsonResponse>
 				| undefined
 			) => void,
 			reject: ( thenableOrResult?: {} | PromiseLike<any> | undefined ) => void
@@ -106,11 +111,11 @@ export namespace Adapter.WebApi {
 		 * @param queryObject - Object to put in query string
 		 */
 		protected async httpRequest(
-			method: AWebApiAdapter.EHttpVerb,
+			method: EHttpVerb,
 			endPoint: string,
 			data?: object,
 			queryObject?: object
-		): Promise<AWebApiAdapter.TEntitiesJsonResponse> {
+		): Promise<TEntitiesJsonResponse> {
 			return new Promise( ( resolve: ResolveResponse, reject ) => {
 				const xhr = BrowserWebApiAdapter.defineXhrEvents(
 					new XMLHttpRequest(),

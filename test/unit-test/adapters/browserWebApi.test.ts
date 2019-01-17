@@ -11,6 +11,7 @@ import { Diaspora } from '../../../src/diaspora';
 import { getConfig } from '../utils';
 import { createDataSource, checkSpawnedAdapter, checkEachStandardMethods, initMockApi } from './utils';
 import { ELoggingLevel } from '../../../src/logger/logger';
+import { EHttpVerb } from '../../../src/adapters/webApi/types';
 
 const ADAPTER_LABEL = 'webApiBrowser';
 const adapterConfig = getConfig( ADAPTER_LABEL ) as WebApiAdapter.IWebApiAdapterConfig ;
@@ -37,7 +38,7 @@ checkSpawnedAdapter( ADAPTER_LABEL );
 checkEachStandardMethods( ADAPTER_LABEL );
 describe( 'Test error codes', async () => {
 	it( '400', async () => {
-		const errPromise = ( adapter as any ).apiQuery( WebApiAdapter.EHttpVerb .GET, '400' );
+		const errPromise = ( adapter as any ).apiQuery( EHttpVerb .GET, '400' );
 		expect( errPromise ).rejects.toBeInstanceOf( Error );
 		await errPromise.catch( error => {
 			expect( error ).toHaveProperty( 'message' );
@@ -46,7 +47,7 @@ describe( 'Test error codes', async () => {
 		} );
 	} );
 	it( '404', async () => {
-		const errPromise = ( adapter as any ).apiQuery( WebApiAdapter.EHttpVerb .GET, '404' );
+		const errPromise = ( adapter as any ).apiQuery( EHttpVerb .GET, '404' );
 		expect( errPromise ).rejects.toBeInstanceOf( Error );
 		await errPromise.catch( error => {
 			expect( error ).toHaveProperty( 'message' );
@@ -55,7 +56,7 @@ describe( 'Test error codes', async () => {
 		} );
 	} );
 	it( '418 (unhandled)', async () => {
-		const errPromise = ( adapter as any ).apiQuery( WebApiAdapter.EHttpVerb .GET, '418' );
+		const errPromise = ( adapter as any ).apiQuery( EHttpVerb .GET, '418' );
 		expect( errPromise ).rejects.toBeInstanceOf( Error );
 		await errPromise.catch( error => {
 			expect( error ).toHaveProperty( 'message' );
@@ -64,7 +65,7 @@ describe( 'Test error codes', async () => {
 		} );
 	} );
 	it( 'No message', async () => {
-		const errPromise = ( adapter as any ).apiQuery( WebApiAdapter.EHttpVerb .GET, 'nomsg/418' );
+		const errPromise = ( adapter as any ).apiQuery( EHttpVerb .GET, 'nomsg/418' );
 		expect( errPromise ).rejects.toBeInstanceOf( Error );
 		await errPromise.catch( error => {
 			expect( error ).toHaveProperty( 'message' );

@@ -3,25 +3,18 @@ import * as requestPromise from 'request-promise';
 
 import { Adapter as _AWebApiAdapter } from '../adapter';
 import AWebApiAdapter = _AWebApiAdapter.WebApi.AWebApiAdapter;
+import { IWebApiAdapterConfig, TEntitiesJsonResponse, EHttpVerb } from '../types';
 
 
 export namespace Adapter.WebApi {
-	export interface INodeWebApiAdapterConfig
-	extends AWebApiAdapter.IWebApiAdapterConfig {
-		/**
-		 * Hostname of the endpoint. On server environment, this parameter is *required*.
-		 */
-		host: string;
-		/**
-		 * Scheme to use. On server environment, this parameter is *required*. On browser environment, it defaults to a relative scheme (IE ``). Note that it will be suffixed with `//`.
-		 */
-		scheme: string;
-	}
-
 	export class NodeWebApiAdapter extends AWebApiAdapter {
+		protected normalizeConfig( options: NodeWebApiAdapter.INodeWebApiAdapterConfig ){
+			return _.defaults( options, {host: '127.0.0.1', scheme: 'http', port: 80} );
+		}
+		
 		public constructor(
 			dataSourceName: string,
-			config: INodeWebApiAdapterConfig,
+			config: NodeWebApiAdapter.INodeWebApiAdapterConfig,
 			eventProviders?: AWebApiAdapter.IEventProvider[]
 		) {
 			const defaultedConfig = _.defaults( config, {
@@ -38,11 +31,11 @@ export namespace Adapter.WebApi {
 		 * @param queryObject - Object to put in query string
 		 */
 		protected async httpRequest(
-			method: AWebApiAdapter.EHttpVerb,
+			method: EHttpVerb,
 			endPoint: string,
 			data?: object,
 			queryObject?: object
-		): Promise<AWebApiAdapter.TEntitiesJsonResponse> {
+		): Promise<TEntitiesJsonResponse> {
 			const methodNormalized = method.toLowerCase() as
 			| 'get'
 			| 'post'
@@ -59,6 +52,18 @@ export namespace Adapter.WebApi {
 			} catch ( error ) {
 				throw NodeWebApiAdapter.handleError( error.error, error.statusCode );
 			}
+		}
+	}
+	export namespace NodeWebApiAdapter {
+		export interface INodeWebApiAdapterConfig extends AWebApiAdapter.IWebApiAdapterConfig {
+			/**
+			 * Hostname of the endpoint. On server environment, this parameter is *required*.
+			 */
+			host: string;
+			/**
+			 * Scheme to use. On server environment, this parameter is *required*. On browser environment, it defaults to a relative scheme (IE ``). Note that it will be suffixed with `//`.
+			 */
+			scheme: string;
 		}
 	}
 }
