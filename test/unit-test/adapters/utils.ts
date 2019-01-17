@@ -421,7 +421,7 @@ export const checkEachStandardMethods = adapterLabel => {
 				skip: [undefined, 0,2],
 				limit: [undefined, 0,2],
 				page: [undefined, 0,2],
-			} ) as QueryLanguage.Raw.IQueryOptions[];
+			} ) as QueryLanguage.IQueryOptions[];
 			const removedImpossibleCombinations = _.reject( allOptionsCombinations, combination => 
 				// Conflicting options (page & skip)
 				( !_.isNil( combination.page ) && !_.isNil( combination.skip ) ) || 
@@ -429,11 +429,11 @@ export const checkEachStandardMethods = adapterLabel => {
 				( !_.isNil( combination.page ) && _.isNil( combination.limit ) )
 			);
 			const groups = {
-				'Limit only': ( options: QueryLanguage.Raw.IQueryOptions ) => !_.isNil( options.limit ) && _.isNil( options.page ) && _.isNil( options.skip ), 
-				'Skip only': ( options: QueryLanguage.Raw.IQueryOptions ) => _.isNil( options.limit ) && _.isNil( options.page ) && !_.isNil( options.skip ), 
-				'Other combinations': ( options: QueryLanguage.Raw.IQueryOptions ) => true,
+				'Limit only': ( options: QueryLanguage.IQueryOptions ) => !_.isNil( options.limit ) && _.isNil( options.page ) && _.isNil( options.skip ), 
+				'Skip only': ( options: QueryLanguage.IQueryOptions ) => _.isNil( options.limit ) && _.isNil( options.page ) && !_.isNil( options.skip ), 
+				'Other combinations': ( options: QueryLanguage.IQueryOptions ) => true,
 			};
-			const testsCombinations = _.mapValues( groups, () => [] ) as {[key: string]: QueryLanguage.Raw.IQueryOptions[]};
+			const testsCombinations = _.mapValues( groups, () => [] ) as {[key: string]: QueryLanguage.IQueryOptions[]};
 			_.forEach( removedImpossibleCombinations, ( combination, name ) => {
 				_.forEach( groups, ( tester, name ) => {
 					if ( tester( combination ) ){
@@ -455,7 +455,7 @@ export const checkEachStandardMethods = adapterLabel => {
 			];
 			const matchSearch = {a: true};
 			
-			const getExpectedCount = ( totalItems: number, combination: QueryLanguage.Raw.IQueryOptions ) => {
+			const getExpectedCount = ( totalItems: number, combination: QueryLanguage.IQueryOptions ) => {
 				const expected = ( totalItems - ( combination.skip || 0 ) ) - ( ( combination.limit || 0 ) * ( combination.page || 0 ) );
 				if ( _.isNil( combination.limit ) ){
 					return expected;
@@ -463,7 +463,7 @@ export const checkEachStandardMethods = adapterLabel => {
 					return Math.min( expected, combination.limit );
 				}
 			};
-			const getExpectedOffset = ( combination: QueryLanguage.Raw.IQueryOptions ) =>
+			const getExpectedOffset = ( combination: QueryLanguage.IQueryOptions ) =>
 				( ( ( combination.page || 0 ) * ( combination.limit || 0 ) ) + ( combination.skip || 0 ) ) || 0;
 
 			
@@ -492,8 +492,8 @@ export const checkEachStandardMethods = adapterLabel => {
 				} );
 			} );
 		} );
-		const OFFSET_OBJECT = {};
-		const TEST_SET = [OFFSET_OBJECT, {a: 1, b: 3}, {a: 4, c: 5}, {b: 3}, {a: 4, d: 'foo'}, {a: 1, d: 'baz'}];
+		const OFFSET_OBJECT = {e: 1};
+		const TEST_SET = [OFFSET_OBJECT, {a: 1, b: 3, e: 1}, {a: 4, c: 5, e: 1}, {b: 3, e: 1}, {a: 4, d: 'foo', e: 1}, {a: 1, d: 'baz', e: 1}];
 		describe( '✨ Insert methods', () => {
 			beforeEach( async () => {
 				await adapter.deleteMany( TABLE, {} );
@@ -705,9 +705,43 @@ export const checkEachStandardMethods = adapterLabel => {
 					expect( entities ).toEqual( [] );
 				} );
 			} );
+			describe( '🛠️ Utility methods', () => {
+				describe( getTestLabel( 'contains' ), () => {
+					it( 'Existing element', async () => {
+						expect( await adapter.contains( TABLE, {a: 1}, {} ) ).toBe( true );
+					} );
+					it( 'Non existing element', async () => {
+						expect( await adapter.contains( TABLE, {a: 42}, {} ) ).toBe( false );
+					} );
+					it( 'Existing element, too offseted', async () => {
+						expect( await adapter.contains( TABLE, {a: 1}, {skip:2} ) ).toBe( false );
+					} );
+				} );
+				describe( getTestLabel( 'count' ), () => {
+					it( 'Existing element', async () => {
+						expect( await adapter.count( TABLE, {a: 1}, {} ) ).toBe( 2 );
+					} );
+					it( 'Non existing element', async () => {
+						expect( await adapter.count( TABLE, {a: 42}, {} ) ).toBe( 0 );
+					} );
+					it( 'Existing element, too offseted', async () => {
+						expect( await adapter.count( TABLE, {a: 1}, {skip:2} ) ).toBe( 0 );
+					} );
+				} );
+				describe( getTestLabel( 'every' ), () => {
+					it( 'Truthy query', async () => {
+						expect( await adapter.every( TABLE, {e: 1}, {} ) ).toBe( true );
+					} );
+					it( 'Falsey query', async () => {
+						expect( await adapter.every( TABLE, {a: 42}, {} ) ).toBe( false );
+						expect( await adapter.every( TABLE, {e: 2}, {} ) ).toBe( false );
+					} );
+				} );
+			} );
 		} );
 		describe( 'Specification level 2', () => {
-			it( 'Initialize test data', async () => {
+			beforeEach( async () => {
+				await adapter.deleteMany( TABLE, {} );
 				const objects = [
 					// Tests for $exists
 					{ b: 1 },

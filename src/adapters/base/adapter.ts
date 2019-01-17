@@ -312,6 +312,24 @@ export namespace Adapter.Base {
 			] );
 		}
 		
+		/**
+		 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
+		 *
+		 * @author gerkin
+		 */
+		public configureCollection(
+			tableName: string,
+			remaps: _.Dictionary<string> = {},
+			filters: _.Dictionary<any> = {}
+		): this {
+			( this.remaps as any )[tableName] = {
+				normal: remaps,
+				inverted: _.invert( remaps ),
+			};
+			( this.filters as any )[tableName] = filters;
+			return this;
+		}
+		
 		// -----
 		// ### Insert
 		
@@ -452,22 +470,58 @@ export namespace Adapter.Base {
 			await AAdapter.iterateLimit( options, boundQuery );
 		}
 		
+		// -----
+		// ### Utility
+		
 		/**
-		 * Saves the remapping table, the reversed remapping table and the filter table in the adapter. Those tables will be used later when manipulating models & entities.
-		 *
-		 * @author gerkin
+		 * Check if the data store contains at least one element matching the query. This function is a default polyfill if the inheriting adapter does not provide `contains` itself.
+		 * 
+		 * @param collectionName - Name of the data store to search entities in
+		 * @param queryFind      - Description of the entities to match
+		 * @param options        - Options to apply to the query
 		 */
-		public configureCollection(
-			tableName: string,
-			remaps: _.Dictionary<string> = {},
-			filters: _.Dictionary<any> = {}
-		): this {
-			( this.remaps as any )[tableName] = {
-				normal: remaps,
-				inverted: _.invert( remaps ),
-			};
-			( this.filters as any )[tableName] = filters;
-			return this;
+		public async contains(
+			table: string,
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
+			options: _QueryLanguage.IQueryOptions
+		): Promise<boolean> {
+			const foundEntity = await this.findOne( table, queryFind, options );
+			return !_.isNil( foundEntity );
+		}
+		
+		/**
+		 * Get the number of elements in a data store matching the query. This function is a default polyfill if the inheriting adapter does not provide `count` itself.
+		 * 
+		 * @param collectionName - Name of the data store to search entities in
+		 * @param queryFind      - Description of the entities to match
+		 * @param options        - Options to apply to the query
+		 */
+		public async count(
+			table: string,
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
+			options: _QueryLanguage.IQueryOptions
+		): Promise<number> {
+			const foundEntities = await this.findMany( table, queryFind, options );
+			return foundEntities.length;
+		}
+		
+		/**
+		 * Check if every elements in the data store matches the query. This function is a default polyfill if the inheriting adapter does not provide `every` itself.
+		 * 
+		 * @param collectionName - Name of the data store to search entities in
+		 * @param queryFind      - Description of the entities to match
+		 * @param options        - Options to apply to the query
+		 */
+		public async every(
+			table: string,
+			queryFind: _QueryLanguage.SelectQueryOrCondition,
+			options: _QueryLanguage.IQueryOptions
+		): Promise<boolean> {
+			const [matchingCount, allCount] = await Promise.all( [
+				this.count( table, queryFind, options ),
+				this.count( table, {}, {skip: 0, limit: Infinity, remapInput: false, remapOutput: false} ),
+			] );
+			return matchingCount === allCount;
 		}
 	}
 }

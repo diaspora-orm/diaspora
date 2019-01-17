@@ -12,7 +12,7 @@ export interface IDataSourceQuerier<
 	// ### Insert
 
 	/**
-	 * Insert a single entity in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertOne` itself.
+	 * Insert a single entity in the data store.
 	 *
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
@@ -20,7 +20,7 @@ export interface IDataSourceQuerier<
 	insertOne( table: string, entity: TIn ): Promise<TOut | undefined>;
 
 	/**
-	 * Insert several entities in the data store. This function is a default polyfill if the inheriting adapter does not provide `insertMany` itself.
+	 * Insert several entities in the data store.
 	 *
 	 * @summary At least one of {@link insertOne} or {@link insertMany} must be reimplemented by adapter.
 	 * @author gerkin
@@ -31,7 +31,7 @@ export interface IDataSourceQuerier<
 	// ### Find
 
 	/**
-	 * Retrieve a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `findOne` itself.
+	 * Retrieve a single entity from the data store.
 	 *
 	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
@@ -43,7 +43,7 @@ export interface IDataSourceQuerier<
 	): Promise<TOut | undefined>;
 
 	/**
-	 * Retrieve several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `findMany` itself.
+	 * Retrieve several entities from the data store.
 	 *
 	 * @summary At least one of {@link findOne} or {@link findMany} must be reimplemented by adapter.
 	 * @author gerkin
@@ -58,7 +58,7 @@ export interface IDataSourceQuerier<
 	// ### Update
 
 	/**
-	 * Update a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateOne` itself.
+	 * Update a single entity from the data store.
 	 *
 	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
@@ -71,7 +71,7 @@ export interface IDataSourceQuerier<
 	): Promise<TOut | undefined>;
 
 	/**
-	 * Update several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `updateMany` itself.
+	 * Update several entities from the data store.
 	 *
 	 * @summary At least one of {@link updateOne} or {@link updateMany} must be reimplemented by adapter.
 	 * @author gerkin
@@ -87,7 +87,7 @@ export interface IDataSourceQuerier<
 	// ### Delete
 
 	/**
-	 * Delete a single entity from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteOne` itself.
+	 * Delete a single entity from the data store.
 	 *
 	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
@@ -95,7 +95,7 @@ export interface IDataSourceQuerier<
 	deleteOne( table: string, queryFind: TQuery, options: TOptions ): Promise<void>;
 
 	/**
-	 * Delete several entities from the data store. This function is a default polyfill if the inheriting adapter does not provide `deleteMany` itself.
+	 * Delete several entities from the data store.
 	 *
 	 * @summary At least one of {@link deleteOne} or {@link deleteMany} must be reimplemented by adapter.
 	 * @author gerkin
@@ -112,6 +112,48 @@ export interface IDataSourceQuerier<
 
 	// -----
 	// ### Utils
+
+	/**
+	 * Check if the data store contains at least one element matching the query.
+	 * 
+	 * @param collectionName - Name of the data store to search entities in
+	 * @param queryFind      - Description of the entities to match
+	 * @param options        - Options to apply to the query
+	 */
+	contains(
+		table: string,
+		queryFind: TQuery,
+		options: TOptions
+	): Promise<boolean>;
+	
+	/**
+	 * Get the number of elements in a data store matching the query.
+	 * 
+	 * @param collectionName - Name of the data store to search entities in
+	 * @param queryFind      - Description of the entities to match
+	 * @param options        - Options to apply to the query
+	 */
+	count(
+		table: string,
+		queryFind: TQuery,
+		options: TOptions
+	): Promise<number>;
+	
+	/**
+	 * Check if every elements in the data store matches the query.
+	 * 
+	 * @param collectionName - Name of the data store to search entities in
+	 * @param queryFind      - Description of the entities to match
+	 * @param options        - Options to apply to the query
+	 */
+	every(
+		table: string,
+		queryFind: TQuery,
+		options: TOptions
+	): Promise<boolean>;
+
+	// -----
+	// ### Various
 
 	/**
 	 * Returns a promise resolved once the data source querier is ready.

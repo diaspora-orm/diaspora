@@ -367,7 +367,88 @@ export namespace Adapter {
 		}
 		
 		// -----
-		// ### Utils
+		// ### Utility
+
+		/**
+		 * Check if the collection contains at least one element matching the query.
+		 * 
+		 * @param collectionName - Name of the collection to search entities in
+		 * @param searchQuery    - Description of the entities to match
+		 * @param options        - Options to apply to the query
+		 */
+		public async contains(
+			collectionName: string,
+			searchQuery: QueryLanguage.SearchQuery | undefined,
+			options: QueryLanguage.IQueryOptions | undefined
+		): Promise<boolean> {
+			// Options to canonical
+			const optionsNormalized = this.normalizeOptions( options );
+			// Query search to cannonical
+			const finalSearchQuery = this.remapInput(
+				collectionName,
+				this.normalizeQuery( searchQuery, optionsNormalized )
+			);
+			return this.adapter.contains(
+				collectionName,
+				finalSearchQuery,
+				optionsNormalized
+			);
+		}
+
+		/**
+		 * Get the number of elements in a collection matching the query.
+		 * 
+		 * @param collectionName - Name of the collection to search entities in
+		 * @param searchQuery    - Description of the entities to match
+		 * @param options        - Options to apply to the query
+		 */
+		public async count(
+			collectionName: string,
+			searchQuery: QueryLanguage.SearchQuery | undefined,
+			options: QueryLanguage.IQueryOptions | undefined
+		): Promise<number> {
+			// Options to canonical
+			const optionsNormalized = this.normalizeOptions( options );
+			// Query search to cannonical
+			const finalSearchQuery = this.remapInput(
+				collectionName,
+				this.normalizeQuery( searchQuery, optionsNormalized )
+			);
+			return this.adapter.count(
+				collectionName,
+				finalSearchQuery,
+				optionsNormalized
+			);
+		}
+
+		/**
+		 * Check if every elements in the collection matches the query.
+		 * 
+		 * @param collectionName - Name of the collection to search entities in
+		 * @param searchQuery    - Description of the entities to match
+		 * @param options        - Options to apply to the query
+		 */
+		public async every(
+			collectionName: string,
+			searchQuery: QueryLanguage.SearchQuery | undefined,
+			options: QueryLanguage.IQueryOptions | undefined
+		): Promise<boolean> {
+			// Options to canonical
+			const optionsNormalized = this.normalizeOptions( options );
+			// Query search to cannonical
+			const finalSearchQuery = this.remapInput(
+				collectionName,
+				this.normalizeQuery( searchQuery, optionsNormalized )
+			);
+			return this.adapter.every(
+				collectionName,
+				finalSearchQuery,
+				optionsNormalized
+			);
+		}
+		
+		// -----
+		// ### Various
 		
 		/**
 		 * Generates a query object if the only provided parameter is an {@link EntityUid}.
