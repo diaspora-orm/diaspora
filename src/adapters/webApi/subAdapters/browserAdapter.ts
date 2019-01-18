@@ -8,6 +8,12 @@ type ResolveResponse = ( value?: | TEntitiesJsonResponse | PromiseLike<TEntities
 
 export namespace Adapter.WebApi {
 	export class BrowserWebApiAdapter extends AWebApiAdapter {
+		/**
+		 * Converts the user-provided universal config to an adapter-specific one.
+		 * 
+		 * @author Gerkin
+		 * @param options - The user-provided config to transform
+		 */
 		protected normalizeConfig( options: IWebApiAdapterConfig ){
 			return defaults( options, {host: '', scheme: 'http', port: 80} );
 		}

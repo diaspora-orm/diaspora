@@ -109,6 +109,12 @@ export namespace Adapter.WebApi {
 			return `"${response.message || 'NULL'}"`;
 		}
 
+		/**
+		 * Converts the user-provided universal config to an adapter-specific one.
+		 * 
+		 * @author Gerkin
+		 * @param options - The user-provided config to transform
+		 */
 		protected abstract normalizeConfig( options:WebApiTypes.IWebApiAdapterConfig ): WebApiTypes.IWebApiAdapterInternalConfig;
 		
 		/**
@@ -131,10 +137,10 @@ export namespace Adapter.WebApi {
 		}
 		
 		/**
-		 * Fills the id of entities
-		 *
-		 * @param entities - Entities received
-		 * @param adapter  - Source of those entities
+		 * Manipulate a raw query response to check if it contains several elements, then define local required properties
+		 * 
+		 * @author Gerkin
+		 * @param entity - The raw entity sent by the API
 		 */
 		private postProcessManyQuery( entities: WebApiTypes.TEntitiesJsonResponse ) {
 			if ( !isArray( entities ) && !isUndefined( entities ) ){
@@ -147,6 +153,12 @@ export namespace Adapter.WebApi {
 			}
 		}
 
+		/**
+		 * Manipulate a raw query response to check if it contains a single element, then define local required properties
+		 * 
+		 * @author Gerkin
+		 * @param entity - The raw entity sent by the API
+		 */
 		private postProcessOneQuery( entity: WebApiTypes.TEntitiesJsonResponse ) {
 			if ( isArray( entity ) ){
 				throw new TypeError( `The API should have returned "undefined" or a single plain object, but received ${JSON.stringify( entity )}` );

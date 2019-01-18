@@ -8,6 +8,12 @@ import { IWebApiAdapterConfig, TEntitiesJsonResponse, EHttpVerb } from '../types
 
 export namespace Adapter.WebApi {
 	export class NodeWebApiAdapter extends AWebApiAdapter {
+		/**
+		 * Converts the user-provided universal config to an adapter-specific one.
+		 * 
+		 * @author Gerkin
+		 * @param options - The user-provided config to transform
+		 */
 		protected normalizeConfig( options: NodeWebApiAdapter.INodeWebApiAdapterConfig ){
 			return defaults( options, {host: '127.0.0.1', scheme: 'http', port: 80} );
 		}

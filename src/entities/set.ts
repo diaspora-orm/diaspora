@@ -76,8 +76,11 @@ export class Set<TEntity extends IEntityAttributes> extends Array<Entity<TEntity
 	private _model: Model<TEntity>;
 	
 	/**
+	 * PRIVATE SYMBOL. Please use {@link create}
 	 * Create a new set, managing provided `entities` that must be generated from provided `model`.
 	 *
+	 * @see {@link create}
+	 * @author Gerkin
 	 * @param model    - Model describing entities managed by this set.
 	 * @param entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
 	 */
@@ -91,6 +94,12 @@ export class Set<TEntity extends IEntityAttributes> extends Array<Entity<TEntity
 		this._model = model;
 	}
 
+	/**
+	 * Create a new set, managing provided `entities` that must be generated from provided `model`.
+	 *
+	 * @param model    - Model describing entities managed by this set.
+	 * @param entities - Entities to manage with this set. Arguments are flattened, so you can provide as many nested arrays as you want.
+	 */
 	public static create<T>( model: Model<T>, entities?: Array<Entity<T>> ): Set<T> {
 		const newSet: Set<T> = Object.create( Set.prototype );
 		newSet._model = model;

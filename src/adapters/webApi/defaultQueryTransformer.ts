@@ -65,7 +65,7 @@ export namespace Adapter.WebApi {
 						queryString: makeQueryString( select, options ),
 						body: update,
 					},
-				},                     queryDesc );
+				},                   queryDesc );
 			},
 		};
 	};
