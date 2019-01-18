@@ -4,15 +4,16 @@ import { Adapter as _WebApiAdapter } from '.';
 import AWebApiAdapter = _WebApiAdapter.WebApi.AWebApiAdapter;
 
 import { _QueryLanguage } from '../../types/queryLanguage';
+import { EHttpVerb, IQueryDescriptor, IEventProviderFactory, QueryOptions } from './types';
 
 export namespace Adapter.WebApi {
 	type QueryStringObject = _QueryLanguage.SelectQueryOrCondition | {
 		where?:_QueryLanguage.SelectQueryOrCondition;
-		options?:AWebApiAdapter.QueryOptions;
+		options?:QueryOptions;
 	};
 	export const makeQueryString = (
 		query?: _QueryLanguage.SelectQueryOrCondition,
-		options?: AWebApiAdapter.QueryOptions
+		options?: QueryOptions
 	): QueryStringObject | undefined => {
 		// Transforms {where:{foo:1}} to {foo:1}
 		if ( isEmpty( options ) ){
@@ -27,7 +28,7 @@ export namespace Adapter.WebApi {
 			return {where: query, options};
 		}
 	};
-	export const DefaultQueryTransformerFactory: AWebApiAdapter.IEventProviderFactory = (
+	export const DefaultQueryTransformerFactory: IEventProviderFactory = (
 		config: any
 	) => {
 		/**
@@ -40,8 +41,8 @@ export namespace Adapter.WebApi {
 		get( config, ['pluralApis', endPoint], `${endPoint}s` );
 		return {
 			beforeQuery(
-				queryDesc: AWebApiAdapter.IQueryDescriptor
-			): AWebApiAdapter.IQueryDescriptor {
+				queryDesc: IQueryDescriptor
+			): IQueryDescriptor {
 				const {
 					queryType,
 					queryNum,
@@ -56,7 +57,7 @@ export namespace Adapter.WebApi {
 					update: 'PATCH',
 					delete: 'DELETE',
 					insert: 'POST',
-				} as any )[queryType] as AWebApiAdapter.EHttpVerb;
+				} as any )[queryType] as EHttpVerb;
 				
 				return defaultsDeep( {
 					apiDesc: {
