@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { get, merge } from 'lodash';
 
 import { Adapter as _Adapter } from '../base';
 import AAdapterEntity = _Adapter.Base.AAdapterEntity;
@@ -31,8 +31,8 @@ class AutoIdAdapterEntity extends adapterEntity {
 		id?: EntityUid,
 		propName: string = 'id'
 	): IEntityProperties {
-		const defaultedId = id || _.get( attributes, propName, generateUUID() );
-		const adapterEntityAttributes = _.merge( attributes, {
+		const defaultedId = id || get( attributes, propName, generateUUID() );
+		const adapterEntityAttributes = merge( attributes, {
 			id: defaultedId,
 			idHash: {
 				[adapter.name]: defaultedId,
@@ -52,7 +52,7 @@ class AutoIdAdapterEntity extends adapterEntity {
 	protected setId(
 		adapter: AAdapter,
 		propName: string = 'id',
-		id: EntityUid = _.get( this, 'attributes.id', generateUUID() )
+		id: EntityUid = get( this, 'attributes.id', generateUUID() )
 	): this {
 		this._properties = AutoIdAdapterEntity.setId(
 			this.attributes,

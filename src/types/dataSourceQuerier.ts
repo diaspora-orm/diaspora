@@ -1,6 +1,5 @@
-import * as _ from 'lodash';
-
 import { QueryLanguage } from './queryLanguage';
+import { Dictionary } from 'lodash';
 
 export interface IDataSourceQuerier<
 	TIn,
@@ -170,7 +169,7 @@ export interface IDataSourceQuerier<
 	 */
 	configureCollection(
 		tableName: string,
-		remaps: _.Dictionary<string>,
-		filters: _.Dictionary<any>
+		remaps: Dictionary<string>,
+		filters: Dictionary<any>
 	): this;
 }

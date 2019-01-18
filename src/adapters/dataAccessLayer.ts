@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isString, isNumber, map, isNil, Dictionary, chain, castArray, forEach } from 'lodash';
 
 import { Adapter as _Base } from './base';
 import AAdapterEntity = _Base.Base.AAdapterEntity;
@@ -27,8 +27,8 @@ export namespace Adapter {
 		 * @see http://www.ecma-international.org/ecma-262/6.0/#sec-function.prototype-@@hasinstance `Symbol.hasInstance` should defined with `Object.defineProperty`
 		 */
 		public static isEntityUid( query: any ): query is EntityUid {
-			return ( _.isString( query ) && query !== '' ) ||
-				( _.isNumber( query ) && query !== 0 );
+			return ( isString( query ) && query !== '' ) ||
+				( isNumber( query ) && query !== 0 );
 		}
 	}	
 
@@ -147,14 +147,14 @@ export namespace Adapter {
 			collectionName: string,
 			entities: IEntityAttributes[]
 		) {
-			const entitiesRemappedIn = _.map( entities, entity =>
+			const entitiesRemappedIn = map( entities, entity =>
 				this.remapInput( collectionName, entity )
 			);
 			const newEntities = await this.adapter.insertMany(
 				collectionName,
 				entitiesRemappedIn
 			);
-			return _.map( newEntities, newEntity => {
+			return map( newEntities, newEntity => {
 				const newEntityRemapped = this.remapOutput( collectionName, newEntity );
 				return new this.classEntity( newEntityRemapped, this.adapter );
 			} );
@@ -222,7 +222,7 @@ export namespace Adapter {
 				finalSearchQuery,
 				optionsNormalized
 			);
-			return _.map( foundEntities, foundEntity => {
+			return map( foundEntities, foundEntity => {
 				const foundEntityRemapped = this.remapOutput( collectionName, foundEntity );
 				return new this.classEntity( foundEntityRemapped, this.adapter );
 			} );
@@ -300,7 +300,7 @@ export namespace Adapter {
 				updateRemappedIn,
 				optionsNormalized
 			);
-			return _.map( updatedEntities, updatedEntity => {
+			return map( updatedEntities, updatedEntity => {
 				const updatedEntityRemapped = this.remapOutput(
 					collectionName,
 					updatedEntity
@@ -458,7 +458,7 @@ export namespace Adapter {
 		public ensureQueryObject(
 			query?: QueryLanguage.SearchQuery
 		): QueryLanguage.SelectQueryOrCondition {
-			if ( _.isNil( query ) ) {
+			if ( isNil( query ) ) {
 				return {};
 			} else if ( EntityUid.isEntityUid( query ) ) {
 				return {
@@ -490,8 +490,8 @@ export namespace Adapter {
 		 */
 		public configureCollection(
 			collectionName: string,
-			remaps: _.Dictionary<string> = {},
-			filters: _.Dictionary<any> = {}
+			remaps: Dictionary<string> = {},
+			filters: Dictionary<any> = {}
 		) {
 			this.adapter.configureCollection( collectionName, remaps, filters );
 			return this;
@@ -504,9 +504,7 @@ export namespace Adapter {
 		 * @param eventNames - Name of the events to propagate
 		 */
 		protected transmitEvent( eventNames: string | string[] ) {
-			_.chain( eventNames )
-			.castArray()
-			.forEach( eventName =>
+			forEach( castArray( eventNames ), eventName =>
 				this.adapter.on( eventName, ( ...args: any[] ) => this.emit( eventName, ...args ) )
 			);
 		}

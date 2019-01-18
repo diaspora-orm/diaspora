@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { forEach } from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
 import { Adapter } from '../adapters';
@@ -44,11 +44,11 @@ const ef: Entity.IEntityFactory = ( <TEntity extends IEntityAttributes>(
 		}
 		// We use keys `methods` and not `functions` as explained in this [StackOverflow thread](https://stackoverflow.com/a/155655/4839162).
 		// Extend prototype with methods in our model description
-		_.forEach( modelDesc.methods, ( method: Function, methodName: string ) => {
+		forEach( modelDesc.methods, ( method: Function, methodName: string ) => {
 			( SubEntity.prototype as any )[methodName] = method;
 		} );
 		// Add static methods
-		_.forEach(
+		forEach(
 			modelDesc.staticMethods,
 			( staticMethod: Function, staticMethodName: string ) => {
 				( SubEntity as any )[staticMethodName] = staticMethod;

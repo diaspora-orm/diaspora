@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { every, toPairs, isObject } from 'lodash';
 
 import { Adapter as _Adapter } from '../base';
 import AAdapterEntity = _Adapter.Base.AAdapterEntity;
@@ -22,11 +22,11 @@ class SelfMatchingAdapterEntity extends adapterEntity {
 		query: _QueryLanguage.ISelectQuery
 	): boolean {
 		// Iterate over every query keys to check each predicates
-		const matchResult = _.every( _.toPairs( query ), ( [key, desc] ) => {
-			if ( _.isObject( desc ) ) {
+		const matchResult = every( toPairs( query ), ( [key, desc] ) => {
+			if ( isObject( desc ) ) {
 				const entityVal = attributes[key];
 				// Iterate over each matchers in the query for this attribute
-				return _.every( desc, ( val, operationName ) => {
+				return every( desc, ( val, operationName ) => {
 					// Try to execute the rule's matcher if any
 					const operationFunction = OPERATORS[operationName];
 					if ( operationFunction ) {

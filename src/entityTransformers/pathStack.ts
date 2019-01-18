@@ -1,5 +1,6 @@
+import { isNil, chain, flattenDeep, get, concat, reject } from 'lodash';
+
 import { IEntityAttributes } from './../types/entity';
-import * as _ from 'lodash';
 import { _ModelDescription } from '../types/modelDescription';
 
 /**
@@ -16,10 +17,10 @@ export class PathStack {
 	 * @author gerkin
 	 */
 	public constructor( segmentsEntity?: string[], segmentsValidation?: string[] ) {
-		if ( _.isNil( segmentsEntity ) ) {
+		if ( isNil( segmentsEntity ) ) {
 			segmentsEntity = [];
 		}
-		if ( _.isNil( segmentsValidation ) ) {
+		if ( isNil( segmentsValidation ) ) {
 			segmentsValidation = segmentsEntity;
 		}
 		
@@ -34,10 +35,10 @@ export class PathStack {
 	 * @returns Returns `this`.
 	 */
 	public pushEntityProp( ...prop: string[] ): this {
-		this.segmentsEntity = _.chain( this.segmentsEntity )
-		.concat( _.flattenDeep( prop ) )
-		.reject( _.isNil )
-		.value();
+		this.segmentsEntity = reject(
+			concat( this.segmentsEntity, flattenDeep( prop ) ),
+			isNil
+		);
 		return this;
 	}
 	
@@ -48,10 +49,10 @@ export class PathStack {
 	 * @returns Returns `this`.
 	 */
 	public pushValidationProp( ...prop: string[] ): this {
-		this.segmentsValidation = _.chain( this.segmentsValidation )
-		.concat( prop )
-		.reject( _.isNil )
-		.value();
+		this.segmentsValidation = reject(
+			concat( this.segmentsValidation, flattenDeep( prop ) ),
+			isNil
+		);
 		return this;
 	}
 	
@@ -97,7 +98,7 @@ export class PathStack {
 	 * @param desc - Attributes description to retrieve field from
 	 */
 	public getDesc( desc: _ModelDescription.AttributesDescription ){
-		return this.segmentsValidation.length > 0 ? _.get( desc, this.segmentsValidation ) : desc;
+		return this.segmentsValidation.length > 0 ? get( desc, this.segmentsValidation ) : desc;
 	}
 	
 	/**
@@ -107,6 +108,6 @@ export class PathStack {
 	 * @param entity - Entity to retrieve field from
 	 */
 	public getProp( entity: IEntityAttributes ){
-		return this.segmentsEntity.length > 0 ? _.get( entity, this.segmentsEntity ) : entity;
+		return this.segmentsEntity.length > 0 ? get( entity, this.segmentsEntity ) : entity;
 	}
 }

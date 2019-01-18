@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isEmpty, difference, keys, omit } from 'lodash';
 import { Logger as WLogger, createLogger, transports, format } from 'winston';
 
 import { Logger, ELoggingLevel } from './logger';
@@ -103,8 +103,8 @@ export class NodeLogger extends Logger {
 		
 		let message = `${infos.level} @ ${NodeLogger.formatDate()} => ${infos.message}`;
 		const omittedKeys = ['level', 'message', 'splat'];
-		if ( !_.isEmpty( _.difference( _.keys( infos ), omittedKeys ) ) ) {
-			message += ' ' + JSON.stringify( _.omit( infos, omittedKeys ) );
+		if ( !isEmpty( difference( keys( infos ), omittedKeys ) ) ) {
+			message += ' ' + JSON.stringify( omit( infos, omittedKeys ) );
 		}
 
 		return message;

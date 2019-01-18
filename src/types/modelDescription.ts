@@ -1,5 +1,5 @@
 import { IEventHandler } from 'sequential-event';
-import * as _ from 'lodash';
+import { Dictionary, Many } from 'lodash';
 
 /**
  * Lists types recognized by Diaspora
@@ -67,7 +67,7 @@ export namespace ModelDescription {
 	 * Can be either the complete {@link ObjectFieldDescriptor} notation or the shorthand {@link EFieldType}.
 	 */
 	export type FieldDescriptor = ObjectFieldDescriptor | EFieldType;
-	export type AttributesDescription = _.Dictionary<FieldDescriptor>;
+	export type AttributesDescription = Dictionary<FieldDescriptor>;
 
 	export namespace FieldDescriptor{
 		/**
@@ -116,7 +116,7 @@ export namespace ModelDescription {
 			 *
 			 * @author gerkin
 			 */
-			of?: _.Many<FieldDescriptor>;
+			of?: Many<FieldDescriptor>;
 		}
 		/**
 		 * Represents an object entity field. This object can have one or several containing object(s).
@@ -128,7 +128,7 @@ export namespace ModelDescription {
 			 *
 			 * @author gerkin
 			 */
-			attributes?: _.Many<AttributesDescription>;
+			attributes?: Many<AttributesDescription>;
 		}
 	}
 }
@@ -146,7 +146,7 @@ export namespace _ModelDescription{
 		 *
 		 * @author gerkin
 		 */
-		sources: _.Dictionary<_.Dictionary<string>>;
+		sources: Dictionary<Dictionary<string>>;
 		/**
 		 * Methods to add to entities prototype.
 		 *
@@ -167,7 +167,7 @@ export namespace _ModelDescription{
 		lifecycleEvents?: { [key: string]: IEventHandler | IEventHandler[] };
 	}
 
-	export type AttributesDescription = _.Dictionary<FieldDescriptor>;
+	export type AttributesDescription = Dictionary<FieldDescriptor>;
 	export type FieldDescriptor = FieldDescriptor.IPrimitiveFieldDescriptor
 	| FieldDescriptor.IArrayFieldDescriptor
 	| FieldDescriptor.IObjectFieldDescriptor;

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { chain, identity, values, omit, join, mapValues } from 'lodash';
 
 import { ValidationError } from './validationError';
 import { EntityTransformers } from '../entityTransformers/checkTransformer';
@@ -32,7 +32,7 @@ export class EntityValidationError extends ValidationError {
 	 */
 	private static stringifyErrorComponent( error: IErrorObjectFinal ) {
 		return `${JSON.stringify( error.value )}
-	* ${_.chain( error ).omit( ['value'] ).values().map( _.identity ).value()}`;
+	* ${values( omit( error, ['value'] ) )}`;
 	}
 	
 	/**
@@ -41,13 +41,14 @@ export class EntityValidationError extends ValidationError {
 	 * @author Gerkin
 	 */
 	protected stringifyValidationError() {
-		return _.chain( this.validationErrors )
-		.mapValues(
-			( error, key ) =>
-			`${key} => ${EntityValidationError.stringifyErrorComponent( error )}`
-		)
-		.values()
-		.join( '\n* ' )
-		.value();
+		return join(
+			values(
+				mapValues(
+					this.validationErrors,
+					( error, key ) => `${key} => ${EntityValidationError.stringifyErrorComponent( error )}`
+				)
+			),
+			'\n* '
+		);
 	}
 }

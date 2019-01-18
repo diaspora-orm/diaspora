@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { chain, isNil, identity, map, filter, join } from 'lodash';
 
 import { ValidationError } from './validationError';
 import { EntityValidationError } from './entityValidationError';
@@ -34,16 +34,15 @@ export class SetValidationError extends ValidationError {
 	 * @author Gerkin
 	 */
 	protected stringifyValidationError() {
-		return _.chain( this.validationErrors )
-		.map( ( error, index ) => {
-			if ( _.isNil( error ) ) {
-				return false;
-			} else {
-				return `${index}: ${error.message.replace( /\n/g, '\n	' )}`;
-			}
-		} )
-		.filter( _.identity )
-		.join( ',\n' )
-		.value();
+		return join(
+			filter( map( this.validationErrors, ( error, index ) => {
+				if ( isNil( error ) ) {
+					return false;
+				} else {
+					return `${index}: ${error.message.replace( /\n/g, '\n	' )}`;
+				}
+			} ),    identity ),
+			',\n'
+		);
 	}
 }

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { get, isInteger, map, isEmpty, some, isNil, compact, flatten, values, every, chain, assign, defaults, forEach, Dictionary, isString, isNumber, isDate, isBoolean, isObject, isArray, castArray, mapValues, omitBy } from 'lodash';
 
 import { EntityTransformers as EntityTransformers_EntityTransformer } from './entityTransformer';
 import EntityTransformer = EntityTransformers_EntityTransformer.AEntityTransformer;
@@ -57,31 +57,31 @@ export namespace EntityTransformers{
 			 *
 			 * @author Gerkin
 			 */
-			[EFieldType.STRING]: validateWrongType( _.isString ),
+			[EFieldType.STRING]: validateWrongType( isString ),
 			/**
 			 * Integer type checker
 			 *
 			 * @author Gerkin
 			 */
-			[EFieldType.INTEGER]: validateWrongType( _.isInteger ),
+			[EFieldType.INTEGER]: validateWrongType( isInteger ),
 			/**
 			 * Float type checker. Any numeric other NaN or ±Infinity is accepted
 			 *
 			 * @author Gerkin
 			 */
-			[EFieldType.FLOAT]: validateWrongType( _.isNumber ),
+			[EFieldType.FLOAT]: validateWrongType( isNumber ),
 			/**
 			 * Date type checker
 			 *
 			 * @author Gerkin
 			 */
-			[EFieldType.DATETIME]: validateWrongType( _.isDate ),
+			[EFieldType.DATETIME]: validateWrongType( isDate ),
 			/**
 			 * Boolean type checker
 			 *
 			 * @author Gerkin
 			 */
-			[EFieldType.BOOLEAN]: validateWrongType( _.isBoolean ),
+			[EFieldType.BOOLEAN]: validateWrongType( isBoolean ),
 			/**
 			 * Object type checker
 			 *
@@ -97,26 +97,26 @@ export namespace EntityTransformers{
 				fieldDesc: _ModelDescription.FieldDescriptor.IObjectFieldDescriptor,
 				value: IEntityAttributes
 			): CheckTransformer.IErrorObjectFinal | undefined {
-				if ( !_.isObject( value ) ) {
+				if ( !isObject( value ) ) {
 					return {
 						type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
 						value,
 					};
 				} else {
 					// Try each definition
-					const deepTestErrors: Array<_.Dictionary<CheckTransformer.IErrorObjectFinal> | undefined> = _.map(
+					const deepTestErrors: Array<Dictionary<CheckTransformer.IErrorObjectFinal> | undefined> = map(
 						fieldDesc.attributes,
 						( objdDesc, defIndex ) => {
 							const defErrors = this.applyObject( value, keys.clone().pushValidationProp( 'attributes', String( defIndex ) ), { getProps: false } );
 							// Substitute empty error object with `undefined`
-							return _.isEmpty( defErrors ) ? undefined : defErrors;
+							return isEmpty( defErrors ) ? undefined : defErrors;
 						}
 					);
 					// Check if at least one definition was OK
-					if ( deepTestErrors.length === 0 || _.some( deepTestErrors, deepTestError => _.isNil( deepTestError ) ) ){
+					if ( deepTestErrors.length === 0 || some( deepTestErrors, deepTestError => isNil( deepTestError ) ) ){
 						return undefined;
 					} else {
-						return { children: _.compact( _.flatten( _.map( deepTestErrors, deepTestError => _.values( deepTestError ) ) ) ), value };
+						return { children: compact( flatten( map( deepTestErrors, deepTestError => values( deepTestError ) ) ) ), value };
 					}
 				}
 			},
@@ -136,16 +136,16 @@ export namespace EntityTransformers{
 				fieldDesc: _ModelDescription.FieldDescriptor.IArrayFieldDescriptor,
 				values: any[]
 			): CheckTransformer.IErrorObjectFinal | undefined {
-				if ( !_.isArray( values ) ) {
+				if ( !isArray( values ) ) {
 					return {
 						type: `${keys.toValidatePath()} expected to be a "${fieldDesc.type}"`,
 						value: values,
 					};
 				} else {
 					// For each value element
-					const valuesTestErrors = _.map( values, ( value, valIndex ) => {
+					const valuesTestErrors = map( values, ( value, valIndex ) => {
 						// Try each definition
-						const valueErrors: Array<CheckTransformer.IErrorObjectFinal | undefined> = _.map(
+						const valueErrors: Array<CheckTransformer.IErrorObjectFinal | undefined> = map(
 							fieldDesc.of,
 							( arrFieldDesc, defIndex ) => {
 								const defErrors = this.applyField(
@@ -154,7 +154,7 @@ export namespace EntityTransformers{
 									{getProps: false}
 								);
 								// Substitute empty error object with `undefined`
-								return _.isEmpty( defErrors ) || _.isNil( defErrors ) ? undefined : defErrors;
+								return isEmpty( defErrors ) || isNil( defErrors ) ? undefined : defErrors;
 							}
 						);
 						return valueErrors;
@@ -162,17 +162,17 @@ export namespace EntityTransformers{
 					// Check if at least one definition was OK
 					if (
 						valuesTestErrors.length === 0 ||
-						_.every(
+						every(
 							valuesTestErrors,
-							valueTestErrors => valueTestErrors.length === 0 || _.some(
+							valueTestErrors => valueTestErrors.length === 0 || some(
 								valueTestErrors,
-								valueTestError => _.isNil( valueTestError )
+								valueTestError => isNil( valueTestError )
 							)
 						)
 					){
 						return undefined;
 					} else {
-						return { children: _.compact( _.flatten( valuesTestErrors ) ), value: values };
+						return { children: compact( flatten( valuesTestErrors ) ), value: values };
 					}
 				}
 			},
@@ -192,7 +192,7 @@ export namespace EntityTransformers{
 				fieldDesc: _ModelDescription.FieldDescriptor,
 				value: any
 			): CheckTransformer.IErrorObjectFinal | undefined {
-				return _.isNil( value )
+				return isNil( value )
 				? {
 					type: `${keys.toValidatePath()} expected to be assigned with any type`,
 					value,
@@ -235,10 +235,7 @@ export namespace EntityTransformers{
 			) {
 				const { error, fieldDesc, keys, value } = validationArgs;
 				// It the field has a `validate` property, try to use it
-				const validateFcts = _.chain( fieldDesc.validate as Function[] )
-				.castArray()
-				.compact()
-				.value();
+				const validateFcts = compact( castArray( fieldDesc.validate ) );
 				validateFcts.forEach( validateFct => {
 					if ( !validateFct.call( this, value, fieldDesc ) ) {
 						error.validate = `${keys.toValidatePath()} custom validation failed`;
@@ -259,13 +256,13 @@ export namespace EntityTransformers{
 				const { error, fieldDesc, keys, value } = validationArgs;
 				// Check the type and the required status
 				// Apply the `required` modifier
-				if ( fieldDesc.required && _.isNil( value ) ) {
+				if ( fieldDesc.required && isNil( value ) ) {
 					error.required = messageRequired( keys, fieldDesc );
-				} else if ( !_.isNil( value ) ) {
-					_.assign(
+				} else if ( !isNil( value ) ) {
+					assign(
 						error,
 						// Get the validator. Default to unhandled type
-						_.get( VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._ ).call( this, keys, fieldDesc, value )
+						get( VALIDATIONS, ['TYPE', fieldDesc.type], VALIDATIONS.TYPE._ ).call( this, keys, fieldDesc, value )
 					);
 				}
 			},
@@ -284,10 +281,10 @@ export namespace EntityTransformers{
 				const fieldDesc = validationArgs.fieldDesc;
 				// Check enum values
 				if (
-					!_.isNil( value ) &&
-					_.isArray( fieldDesc.enum )
+					!isNil( value ) &&
+					isArray( fieldDesc.enum )
 				) {
-					const result = _.some( fieldDesc.enum, enumVal => {
+					const result = some( fieldDesc.enum, enumVal => {
 						if ( enumVal instanceof RegExp ) {
 							return null !== value.match( enumVal );
 						} else {
@@ -311,7 +308,7 @@ export namespace EntityTransformers{
 		public apply( entity: IEntityAttributes ) {
 			// Apply method `checkField` on each field described
 			const checkResults = this.applyObject( entity, [], { getProps: false } );
-			if ( !_.isNil( checkResults ) ) {
+			if ( !isNil( checkResults ) ) {
 				throw new EntityValidationError( checkResults, 'Validation failed' );
 			}
 			return entity;
@@ -330,19 +327,18 @@ export namespace EntityTransformers{
 			keys: PathStack | string[],
 			options: { getProps: boolean } = { getProps: false }
 		){
-			_.defaults( options, { getProps: true } );
+			defaults( options, { getProps: true } );
 			const keysPathStack = keys instanceof PathStack ? keys : new PathStack( keys );
 
 			const subObj = options.getProps ? keysPathStack.getProp( value ) : value;
 			const fieldDesc = keysPathStack.getDesc( this.modelAttributes );
-			const outObjectErrors = _.chain( fieldDesc )
-				.mapValues( ( fieldDesc, field ) =>
-				this.applyField( subObj[field], keysPathStack.clone().pushProp( field ), {
+			const outObjectErrors = omitBy(
+				mapValues( fieldDesc, ( fieldDesc, field ) => this.applyField( subObj[field], keysPathStack.clone().pushProp( field ), {
 					getProps: false,
-				} ) )
-				.omitBy( _.isEmpty )
-				.value() as { [key: string]: CheckTransformer.IErrorObjectFinal };
-			if ( _.isEmpty( outObjectErrors ) ){
+				} ) ),
+				isEmpty
+			) as Dictionary<CheckTransformer.IErrorObjectFinal>;
+			if ( isEmpty( outObjectErrors ) ){
 				return undefined;
 			} else {
 				return outObjectErrors;
@@ -363,15 +359,15 @@ export namespace EntityTransformers{
 			keys: PathStack | string[],
 			options: { getProps: boolean } = { getProps: false }
 		): CheckTransformer.IErrorObjectFinal | null {
-			_.defaults( options, { getProps: true } );
+			defaults( options, { getProps: true } );
 			if ( !( keys instanceof PathStack ) ) {
 				keys = new PathStack( keys );
 			}
 			
-			const val = options.getProps ? _.get( value, keys.segmentsEntity ) : value;
-			const fieldDesc = _.get( this.modelAttributes, keys.segmentsValidation );
+			const val = options.getProps ? get( value, keys.segmentsEntity ) : value;
+			const fieldDesc = get( this.modelAttributes, keys.segmentsValidation );
 			// TODO: Add checks for strict models (like if we are using MySQL)
-			if ( !_.isObject( fieldDesc ) ) {
+			if ( !isObject( fieldDesc ) ) {
 				return null;
 			}
 			
@@ -384,12 +380,12 @@ export namespace EntityTransformers{
 				value: val,
 			};
 			
-			_.forEach( CheckTransformer.validationSteps, validationStep =>
+			forEach( CheckTransformer.validationSteps, validationStep =>
 				validationStep.call( this, stepsArgs )
 			);
 			
-			if ( !_.isEmpty( error ) ) {
-				const finalError = _.defaults( { value } as CheckTransformer.IErrorObjectFinal, error );
+			if ( !isEmpty( error ) ) {
+				const finalError = defaults( { value } as CheckTransformer.IErrorObjectFinal, error );
 				return finalError;
 			} else {
 				return null;

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { defaults, omitBy, chain, isUndefined, isNil, assign, keys, mapValues, first, omit } from 'lodash';
 
 import { EntityTransformers as EntityTransformers_EntityTransformer } from './entityTransformer';
 import EntityTransformer = EntityTransformers_EntityTransformer.AEntityTransformer;
@@ -22,12 +22,11 @@ export namespace EntityTransformers{
 		 */
 		public apply( entity: IEntityAttributes ) {
 			// Apply method `defaultField` on each field described
-			return _.defaults( entity, _.omitBy(
-				_.chain( this._modelAttributes ).mapValues( ( fieldDesc, field ) =>
-				this.applyField( entity, new PathStack().pushProp( field ), {
+			return defaults( entity, omitBy(
+				mapValues( this._modelAttributes, ( fieldDesc, field ) => this.applyField( entity, new PathStack().pushProp( field ), {
 					getProps: true,
-				} ) ) .value(),
-				_.isUndefined
+				} ) ),
+				isUndefined
 			) );
 		}
 		
@@ -41,17 +40,17 @@ export namespace EntityTransformers{
 		 */
 		public applyField(
 			value: any,
-			keys: PathStack | string[],
+			propPath: PathStack | string[],
 			options: { getProps: boolean } = { getProps: false }
 		): any {
-			_.defaults( options, { getProps: true } );
-			const keysPathStack = keys instanceof PathStack ? keys : new PathStack( keys );
+			defaults( options, { getProps: true } );
+			const keysPathStack = propPath instanceof PathStack ? propPath : new PathStack( propPath );
 			
 			const val = options.getProps ? keysPathStack.getProp( value ) : value;
 			const fieldDesc = keysPathStack.getDesc( this.modelAttributes );
 			
 			// Return the `default` if value is undefined
-			const valOrBaseDefault = _.isNil( val )
+			const valOrBaseDefault = isNil( val )
 				? getDefaultValue( fieldDesc.default )
 				: val;
 			
@@ -59,34 +58,34 @@ export namespace EntityTransformers{
 			if ( fieldDesc.type === EFieldType.OBJECT ){
 				if (
 					fieldDesc.attributes.length > 0 &&
-					_.keys( fieldDesc.attributes[0] ).length > 0 &&
-					!_.isNil( valOrBaseDefault )
+					keys( fieldDesc.attributes[0] ).length > 0 &&
+					!isNil( valOrBaseDefault )
 				) {
-					const childDefaultProps = _.omitBy(
-						_.chain( fieldDesc.attributes )
-							// Get the first definition
-							.first()
+					const childDefaultProps = omitBy(
+						mapValues(
 							// Do not default existing fields
-							.omit( _.keys( valOrBaseDefault ) )
-							.mapValues( ( fieldDesc, key ) => this.applyField(
+							omit(
+								// Get the first definition
+								first( fieldDesc.attributes ),
+								keys( valOrBaseDefault ) ),
+							// Apply defaults on each non-attributed fields
+							( fieldDesc, key ) => this.applyField(
 								value,
 								keysPathStack.clone().pushValidationProp( 'attributes', '0' ).pushProp( key ),
-								{getProps: true}
-							) )
-							.value(),
-						_.isUndefined
+								{getProps: true} ) ),
+						isUndefined
 					);
-					if ( _.isUndefined( val ) ){
+					if ( isUndefined( val ) ){
 						// If the object does not exist, properties of parent's default will be used instead of children properties.
-						return _.assign( childDefaultProps, valOrBaseDefault );
+						return assign( childDefaultProps, valOrBaseDefault );
 					} else {
 						// If the object exists already, merge missing props.
-						return _.assign( valOrBaseDefault, childDefaultProps );
+						return assign( valOrBaseDefault, childDefaultProps );
 					}
 				}
 			} else if ( fieldDesc.type === EFieldType.ARRAY ){
 				if (
-					!_.isUndefined( valOrBaseDefault ) &&
+					!isUndefined( valOrBaseDefault ) &&
 					fieldDesc.of.length > 0 &&
 					( fieldDesc.of[0].type === EFieldType.OBJECT || fieldDesc.of[0].type === EFieldType.ARRAY )
 				){

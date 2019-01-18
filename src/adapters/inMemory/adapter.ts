@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { omitBy, cloneDeep, isUndefined, assign, map, filter, first, isNil, transform, reject, includes, Dictionary } from 'lodash';
 
 import { Adapter as _AAdapter } from '../base';
 import AAdapter = _AAdapter.Base.AAdapter;
@@ -53,11 +53,11 @@ export namespace Adapter.InMemory {
 		): Promise<IEntityProperties | undefined> {
 			const storeTable = this.ensureCollectionExists( table );
 			const adapterEntityAttributes = InMemoryEntity.setId(
-				_.omitBy( _.cloneDeep( entity ), _.isUndefined ),
+				omitBy( cloneDeep( entity ), isUndefined ),
 				this
 			);
 			storeTable.items.push( adapterEntityAttributes );
-			return _.assign( {}, adapterEntityAttributes );
+			return assign( {}, adapterEntityAttributes );
 		}
 
 		/**
@@ -74,9 +74,9 @@ export namespace Adapter.InMemory {
 			entities: IEntityAttributes[]
 		): Promise<IEntityProperties[]> {
 			const storeTable = this.ensureCollectionExists( table );
-			const adapterEntitiesAttributes = _.map( entities, entity => InMemoryEntity.setId( _.omitBy( _.cloneDeep( entity ), _.isUndefined ), this ) );
+			const adapterEntitiesAttributes = map( entities, entity => InMemoryEntity.setId( omitBy( cloneDeep( entity ), isUndefined ), this ) );
 			storeTable.items = storeTable.items.concat( adapterEntitiesAttributes );
-			return _.assign( {}, adapterEntitiesAttributes );
+			return assign( {}, adapterEntitiesAttributes );
 		}
 		
 		// -----
@@ -98,13 +98,13 @@ export namespace Adapter.InMemory {
 			options: InMemoryAdapter.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			const storeTable = this.ensureCollectionExists( table );
-			const matches = _.filter( storeTable.items, item =>
+			const matches = filter( storeTable.items, item =>
 				InMemoryEntity.matches( item, queryFind )
 			);
 			const reducedMatches = Utils.applyOptionsToSet( matches, options );
-			const match = _.first( reducedMatches );
+			const match = first( reducedMatches );
 			// If the entity is nil, do not clone it, or it would return an empty object
-			return options.clone === false || _.isNil( match ) ? match : _.assign( {}, match );
+			return options.clone === false || isNil( match ) ? match : assign( {}, match );
 		}
 		
 		/**
@@ -124,7 +124,7 @@ export namespace Adapter.InMemory {
 			// Choose the right iterator to be faster
 			if ( isFinite( options.limit ) ){
 				const limitAndSkip = options.limit + options.skip;
-				const matches = _.transform(
+				const matches = transform(
 					storeTable.items,
 					( acc, item ) => {
 						if ( InMemoryEntity.matches( item, queryFind ) ){
@@ -136,7 +136,7 @@ export namespace Adapter.InMemory {
 				);
 				return Utils.applyOptionsToSet( matches, options ) || [];
 			} else {
-				const matches = _.filter( storeTable.items, item => InMemoryEntity.matches( item, queryFind ) );
+				const matches = filter( storeTable.items, item => InMemoryEntity.matches( item, queryFind ) );
 				return Utils.applyOptionsToSet( matches, options ) || [];
 			}
 		}
@@ -158,7 +158,7 @@ export namespace Adapter.InMemory {
 		): Promise<IEntityProperties[]> {
 			const storeTable = this.ensureCollectionExists( table );
 			const foundItems = InMemoryAdapter.findManyIterators( storeTable, queryFind, options );
-			return options.clone === false ? foundItems : _.map( foundItems, match => _.assign( {}, match ) );
+			return options.clone === false ? foundItems : map( foundItems, match => assign( {}, match ) );
 		}
 		
 		// -----
@@ -181,12 +181,12 @@ export namespace Adapter.InMemory {
 			update: IEntityAttributes,
 			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
-			const found = await this.findOne( table, queryFind, _.assign( {}, options, {clone: false} ) );
+			const found = await this.findOne( table, queryFind, assign( {}, options, {clone: false} ) );
 			
 			if ( found ) {
 				// Because our `match` is a reference to the in-memory stored object, we can just modify it.
 				Utils.applyUpdateEntity( update, found );
-				return _.assign( {}, found );
+				return assign( {}, found );
 			}
 			return undefined;
 		}
@@ -208,12 +208,12 @@ export namespace Adapter.InMemory {
 			update: IEntityAttributes,
 			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties[]> {
-			const foundEntities = await this.findMany( table, queryFind, _.assign( {}, options, {clone: false} ) );
+			const foundEntities = await this.findMany( table, queryFind, assign( {}, options, {clone: false} ) );
 			
-			if ( !_.isNil( foundEntities ) && foundEntities.length > 0 ) {
-				return _.map( foundEntities, item => {
+			if ( !isNil( foundEntities ) && foundEntities.length > 0 ) {
+				return map( foundEntities, item => {
 					Utils.applyUpdateEntity( update, item );
-					return _.assign( {}, item );
+					return assign( {}, item );
 				} );
 			} else {
 				return [];
@@ -241,8 +241,8 @@ export namespace Adapter.InMemory {
 			const storeTable = this.ensureCollectionExists( table );
 			const entityToDelete = await this.findOne( table, queryFind, options );
 			
-			if ( !_.isNil( entityToDelete ) ) {
-				storeTable.items = _.reject(
+			if ( !isNil( entityToDelete ) ) {
+				storeTable.items = reject(
 					storeTable.items,
 					entity => entity.id === entityToDelete.id
 				);
@@ -265,10 +265,10 @@ export namespace Adapter.InMemory {
 			options: _QueryLanguage.IQueryOptions
 		): Promise<void> {
 			const storeTable = this.ensureCollectionExists( table );
-			const entitiesToDelete = await this.findMany( table, queryFind, _.assign( {}, options, {clone:false} ) );
-			const entitiesIds = _.map( entitiesToDelete, entity => entity.id );
-			storeTable.items = _.reject( storeTable.items, entity =>
-				_.includes( entitiesIds, entity.id )
+			const entitiesToDelete = await this.findMany( table, queryFind, assign( {}, options, {clone:false} ) );
+			const entitiesIds = map( entitiesToDelete, entity => entity.id );
+			storeTable.items = reject( storeTable.items, entity =>
+				includes( entitiesIds, entity.id )
 			);
 		}
 		
@@ -282,8 +282,8 @@ export namespace Adapter.InMemory {
 		 */
 		public configureCollection(
 			tableName: string,
-			remaps: _.Dictionary<string>,
-			filters: _.Dictionary<any>
+			remaps: Dictionary<string>,
+			filters: Dictionary<any>
 		) {
 			super.configureCollection( tableName, remaps, filters );
 			this.ensureCollectionExists( tableName );

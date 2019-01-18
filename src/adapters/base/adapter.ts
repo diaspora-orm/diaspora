@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { pick, assign, isNil, cloneDeep, forOwn, defaults, mapKeys, forEach, isNumber, isDate, chain, isUndefined, Dictionary, invert, first, compact, mapValues } from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
 import { Adapter as _AAdapterEntity } from './entity';
@@ -104,7 +104,7 @@ export namespace Adapter.Base {
 				this.state = EAdapterState.ERROR;
 				logger.error(
 					'Error while initializing:',
-					_.pick( err, Object.getOwnPropertyNames( err ) )
+					pick( err, Object.getOwnPropertyNames( err ) )
 				);
 				this.error = err;
 			} );
@@ -124,13 +124,13 @@ export namespace Adapter.Base {
 			) => Promise<TRet | undefined>
 		): Promise<TRet[]> {
 			const foundEntities: TRet[] = [];
-			const localOptions = _.assign( {}, options );
+			const localOptions = assign( {}, options );
 			let origSkip = localOptions.skip;
 			
 			// We are going to loop until we find enough items
 			while ( foundEntities.length < localOptions.limit ) {
 				const found = await query( localOptions );
-				if ( _.isNil( found ) ) {
+				if ( isNil( found ) ) {
 					return foundEntities;
 				} else {
 					foundEntities.push( found );
@@ -226,13 +226,13 @@ export namespace Adapter.Base {
 		public normalizeOptions(
 			opts: QueryLanguage.IQueryOptions = {}
 		): _QueryLanguage.IQueryOptions {
-			opts = _.cloneDeep( opts );
-			_.forOwn( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
-				if ( optionName in opts && !_.isNil( ( opts as any )[optionName] ) ) {
+			opts = cloneDeep( opts );
+			forOwn( QUERY_OPTIONS_TRANSFORMS, ( transform, optionName ) => {
+				if ( optionName in opts && !isNil( ( opts as any )[optionName] ) ) {
 					transform( opts );
 				}
 			} );
-			const optsDefaulted = _.defaults( opts, {
+			const optsDefaulted = defaults( opts, {
 				skip: 0,
 				remapInput: true,
 				remapOutput: true,
@@ -249,7 +249,7 @@ export namespace Adapter.Base {
 		 */
 		protected static normalizeFieldQuery( attrSearch: QueryLanguage.ISelectQuery ): _QueryLanguage.ISelectQuery{
 			// Replace operations alias by canonical expressions
-			const attrSearchCanonical = _.mapKeys( attrSearch, ( val, operator, obj ) => {
+			const attrSearchCanonical = mapKeys( attrSearch, ( val, operator, obj ) => {
 				if ( CANONICAL_OPERATORS.hasOwnProperty( operator ) ) {
 					// ... check for conflict with canonical operation name...
 					if ( obj.hasOwnProperty( CANONICAL_OPERATORS[operator] ) ) {
@@ -260,12 +260,12 @@ export namespace Adapter.Base {
 				return operator;
 			} );
 			// For arithmetic comparison, check if values are numeric
-			_.forEach( ['$less', '$lessEqual', '$greater', '$greaterEqual'], operation => {
+			forEach( ['$less', '$lessEqual', '$greater', '$greaterEqual'], operation => {
 				if (
 					attrSearchCanonical.hasOwnProperty( operation ) &&
 					!(
-						_.isNumber( attrSearchCanonical[operation] ) ||
-						_.isDate( attrSearchCanonical[operation] )
+						isNumber( attrSearchCanonical[operation] ) ||
+						isDate( attrSearchCanonical[operation] )
 					)
 				) {
 					throw new TypeError( `Expect "${operation}" in ${JSON.stringify( attrSearchCanonical )} to be a numeric value` );
@@ -284,16 +284,16 @@ export namespace Adapter.Base {
 			options: QueryLanguage.IQueryOptions
 		): _QueryLanguage.SelectQueryOrCondition {
 			const normalizedQuery = options.remapInput
-			? _.chain( originalQuery ).cloneDeep().mapValues( attrSearch => {
-				if ( _.isUndefined( attrSearch ) ) {
+			? mapValues( cloneDeep( originalQuery ), attrSearch => {
+				if ( isUndefined( attrSearch ) ) {
 					return { $exists: false };
 				} else if ( !( attrSearch instanceof Object ) ) {
 					return { $equal: attrSearch };
 				} else {
 					return AAdapter.normalizeFieldQuery( attrSearch );
 				}
-			} ).value()
-			: _.cloneDeep( originalQuery );
+			} )
+			: cloneDeep( originalQuery );
 			return normalizedQuery;
 		}
 		
@@ -303,7 +303,7 @@ export namespace Adapter.Base {
 		 * @returns JSON representation of the adapter.
 		 */
 		public toJSON(): object {
-			return _.pick( this, [
+			return pick( this, [
 				'state',
 				'remaps',
 				'remapsInverted',
@@ -319,12 +319,12 @@ export namespace Adapter.Base {
 		 */
 		public configureCollection(
 			tableName: string,
-			remaps: _.Dictionary<string> = {},
-			filters: _.Dictionary<any> = {}
+			remaps: Dictionary<string> = {},
+			filters: Dictionary<any> = {}
 		): this {
 			( this.remaps as any )[tableName] = {
 				normal: remaps,
-				inverted: _.invert( remaps ),
+				inverted: invert( remaps ),
 			};
 			( this.filters as any )[tableName] = filters;
 			return this;
@@ -343,7 +343,7 @@ export namespace Adapter.Base {
 			table: string,
 			entity: IEntityAttributes
 		): Promise<IEntityProperties | undefined> {
-			return _.first( await this.insertMany( table, [entity] ) );
+			return first( await this.insertMany( table, [entity] ) );
 		}
 		
 		/**
@@ -360,7 +360,7 @@ export namespace Adapter.Base {
 			for ( let i = 0; i < entities.length; i++ ) {
 				mapped.push( await this.insertOne( table, entities[i] || {} ) );
 			}
-			return _.compact( mapped );
+			return compact( mapped );
 		}
 		
 		// -----
@@ -378,7 +378,7 @@ export namespace Adapter.Base {
 			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			options.limit = 1;
-			return _.first( await this.findMany( table, queryFind, options ) );
+			return first( await this.findMany( table, queryFind, options ) );
 		}
 		
 		/**
@@ -412,7 +412,7 @@ export namespace Adapter.Base {
 			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
 			options.limit = 1;
-			return _.first( await this.updateMany( table, queryFind, update, options ) );
+			return first( await this.updateMany( table, queryFind, update, options ) );
 		}
 		
 		/**
@@ -486,7 +486,7 @@ export namespace Adapter.Base {
 			options: _QueryLanguage.IQueryOptions
 		): Promise<boolean> {
 			const foundEntity = await this.findOne( table, queryFind, options );
-			return !_.isNil( foundEntity );
+			return !isNil( foundEntity );
 		}
 		
 		/**

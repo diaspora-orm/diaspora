@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import { Adapter } from './adapters';
 import AAdapterEntity = Adapter.Base.AAdapterEntity;
 import AAdapter = Adapter.Base.AAdapter;

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { assign } from 'lodash';
 import { resolve, basename } from 'path';
 
 import { Adapter } from './adapters';
@@ -55,11 +55,11 @@ export class DiasporaStatic {
 	 * @author gerkin
 	 */
 	public get dataSources() {
-		return _.assign( {}, this._dataSources );
+		return assign( {}, this._dataSources );
 	}
 	
 	public get models() {
-		return _.assign( {}, this._models );
+		return assign( {}, this._models );
 	}
 	
 	/**

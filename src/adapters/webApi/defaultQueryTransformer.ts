@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isEmpty, isNil, get, defaultsDeep } from 'lodash';
 
 import { Adapter as _WebApiAdapter } from '.';
 import AWebApiAdapter = _WebApiAdapter.WebApi.AWebApiAdapter;
@@ -15,11 +15,11 @@ export namespace Adapter.WebApi {
 		options?: AWebApiAdapter.QueryOptions
 	): QueryStringObject | undefined => {
 		// Transforms {where:{foo:1}} to {foo:1}
-		if ( _.isEmpty( options ) ){
+		if ( isEmpty( options ) ){
 			// Force wrap in `where` if search on field `options` or `where` like in {where{options:true}}
-			if ( _.isNil( query ) || ( !( 'options' in query ) && !( 'where' in query ) ) ){
+			if ( isNil( query ) || ( !( 'options' in query ) && !( 'where' in query ) ) ){
 				// If empty query, return undefined
-				return _.isEmpty( query ) ? undefined : query;
+				return isEmpty( query ) ? undefined : query;
 			} else {
 				return {where:query};
 			}
@@ -37,7 +37,7 @@ export namespace Adapter.WebApi {
 		 * @returns Plural version of the endpoint name.
 		 */
 		const getPluralEndpoint = ( endPoint: string ) =>
-		_.get( config, ['pluralApis', endPoint], `${endPoint}s` );
+		get( config, ['pluralApis', endPoint], `${endPoint}s` );
 		return {
 			beforeQuery(
 				queryDesc: AWebApiAdapter.IQueryDescriptor
@@ -58,7 +58,7 @@ export namespace Adapter.WebApi {
 					insert: 'POST',
 				} as any )[queryType] as AWebApiAdapter.EHttpVerb;
 				
-				return _.defaultsDeep( {
+				return defaultsDeep( {
 					apiDesc: {
 						method,
 						endPoint: ( queryNum === 'many' ? getPluralEndpoint( modelName ) : modelName ).toLowerCase(),

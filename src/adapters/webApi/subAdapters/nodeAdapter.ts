@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { defaults, isNil, mapValues } from 'lodash';
 import * as requestPromise from 'request-promise';
 
 import { Adapter as _AWebApiAdapter } from '../adapter';
@@ -9,7 +9,7 @@ import { IWebApiAdapterConfig, TEntitiesJsonResponse, EHttpVerb } from '../types
 export namespace Adapter.WebApi {
 	export class NodeWebApiAdapter extends AWebApiAdapter {
 		protected normalizeConfig( options: NodeWebApiAdapter.INodeWebApiAdapterConfig ){
-			return _.defaults( options, {host: '127.0.0.1', scheme: 'http', port: 80} );
+			return defaults( options, {host: '127.0.0.1', scheme: 'http', port: 80} );
 		}
 		
 		public constructor(
@@ -17,7 +17,7 @@ export namespace Adapter.WebApi {
 			config: NodeWebApiAdapter.INodeWebApiAdapterConfig,
 			eventProviders?: AWebApiAdapter.IEventProvider[]
 		) {
-			const defaultedConfig = _.defaults( config, {
+			const defaultedConfig = defaults( config, {
 				port: false,
 			} );
 			super( dataSourceName, defaultedConfig, eventProviders );
@@ -46,8 +46,8 @@ export namespace Adapter.WebApi {
 			
 			try {
 				return await ( requestPromise as any )[methodNormalized]( endPoint, {
-					json: _.isNil( data ) ? true : data,
-					qs: _.mapValues( queryObject, qsData => JSON.stringify( qsData ) ),
+					json: isNil( data ) ? true : data,
+					qs: mapValues( queryObject, qsData => JSON.stringify( qsData ) ),
 				} );
 			} catch ( error ) {
 				throw NodeWebApiAdapter.handleError( error.error, error.statusCode );

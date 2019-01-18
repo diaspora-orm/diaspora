@@ -177,7 +177,7 @@ expect.extend( {
 		_.forEach( ['persist', 'fetch', 'destroy' ], word => {
 			expect( receivedSet ).toImplementMethod( word );
 		} );
-		receivedSet.entities.forEach( ( received, index ) => {
+		receivedSet.forEach( ( received, index ) => {
 			const expectedAttributes = _.isArray( expectedAttributesArray )
 			? expectedAttributesArray[index]
 			: expectedAttributesArray;

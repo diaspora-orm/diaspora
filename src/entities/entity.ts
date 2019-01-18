@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { keys, reduce, isNil, cloneDeep, difference, forEach, castArray, isUndefined, isNull, defaults, chain, isEqual, mapValues, isObject, isString, isInteger, slice, concat, uniq, reject, transform, isEmpty, without, values } from 'lodash';
 import { SequentialEvent } from 'sequential-event';
 
 import { Adapter } from '../adapters';
@@ -70,10 +70,10 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		source?: AAdapterEntity | TEntity | null
 	) {
 		super();
-		const modelAttrsKeys = _.keys( this.model.modelDesc.attributes );
+		const modelAttrsKeys = keys( this.model.modelDesc.attributes );
 		
 		// ### Init defaults
-		const sources = _.reduce(
+		const sources = reduce(
 			model.dataSources,
 			( acc: Entity.IDataSourceMap<AAdapterEntity>, adapter ) => acc.set( adapter, null ),
 			new WeakMap()
@@ -91,24 +91,24 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		} else {
 			// ### Generate attributes
 			// Now we know that the source is valid. Deep clone to detach object values from entity
-			this._attributes = _.isNil( source ) ? null : this.applyDefaults( _.cloneDeep( source ) );
+			this._attributes = isNil( source ) ? null : this.applyDefaults( cloneDeep( source ) );
 		}
 		
 
 		// ### Final validation
 		// Check keys provided in source
-		const sourceDModel = _.difference( _.keys( this._attributes ), modelAttrsKeys );
+		const sourceDModel = difference( keys( this._attributes ), modelAttrsKeys );
 		if ( 0 !== sourceDModel.length ) {
 			// Later, add a criteria for schemaless models
 			throw new Error( `Source has unknown keys: ${JSON.stringify( sourceDModel )} in ${JSON.stringify( source )}` );
 		}
 		
 		// ### Load events
-		_.forEach(
+		forEach(
 			this.model.modelDesc.lifecycleEvents,
 			( eventFunctions, eventName ) => {
-				// Iterate on each event functions. `_.castArray` will ensure we iterate on an array if a single function is provided.
-				_.forEach( _.castArray( eventFunctions ), eventFunction => this.on( eventName, eventFunction ) );
+				// Iterate on each event functions. `castArray` will ensure we iterate on an array if a single function is provided.
+				forEach( castArray( eventFunctions ), eventFunction => this.on( eventName, eventFunction ) );
 			}
 		);
 	}
@@ -121,9 +121,9 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	public applyDefaults(): this;
 	public applyDefaults( attributes: TEntity | null ): TEntity | null;
 	public applyDefaults( attributes?: TEntity | null ) {
-		const attrs = _.isUndefined( attributes ) ? this._attributes : attributes;
-		const defaultApplied = _.isNull( attrs ) ? null : this.ctor.model.entityTransformers.default.apply( attrs ) as TEntity;
-		return _.isUndefined( attributes ) ? this : defaultApplied;
+		const attrs = isUndefined( attributes ) ? this._attributes : attributes;
+		const defaultApplied = isNull( attrs ) ? null : this.ctor.model.entityTransformers.default.apply( attrs ) as TEntity;
+		return isUndefined( attributes ) ? this : defaultApplied;
 	}
 	
 	/**
@@ -137,9 +137,9 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	public validate(): this;
 	public validate( attributes: TEntity | null ): TEntity | null;
 	public validate( attributes?: TEntity | null ) {
-		const attrs = _.isUndefined( attributes ) ? this._attributes : attributes;
-		const validateApplied = _.isNull( attrs ) ? null : this.ctor.model.entityTransformers.check.apply( attrs ) as TEntity;
-		return _.isUndefined( attributes ) ? this : validateApplied;
+		const attrs = isUndefined( attributes ) ? this._attributes : attributes;
+		const validateApplied = isNull( attrs ) ? null : this.ctor.model.entityTransformers.check.apply( attrs ) as TEntity;
+		return isUndefined( attributes ) ? this : validateApplied;
 	}
 	
 	/**
@@ -152,7 +152,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	public static serialize(
 		data: IEntityAttributes | null
 	): IEntityAttributes | undefined {
-		return data ? _.cloneDeep( data ) : undefined;
+		return data ? cloneDeep( data ) : undefined;
 	}
 	
 	/**
@@ -165,7 +165,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	public static deserialize(
 		data: IEntityAttributes | null
 	): IEntityAttributes | undefined {
-		return data ? _.cloneDeep( data ) : undefined;
+		return data ? cloneDeep( data ) : undefined;
 	}
 	
 	/**
@@ -243,7 +243,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		dataSource?: TDataSource,
 		options: Entity.IOptions = {}
 	) {
-		_.defaults( options, DEFAULT_OPTIONS );
+		defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
 		this._state = EEntityState.SYNCING;
@@ -287,7 +287,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	 * @returns Promise resolved once entity is reloaded. Resolved with `this`.
 	 */
 	public async fetch( dataSource?: TDataSource, options: Entity.IOptions = {} ) {
-		_.defaults( options, DEFAULT_OPTIONS );
+		defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
 		this._state = EEntityState.SYNCING;
@@ -323,7 +323,7 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		dataSource?: TDataSource,
 		options: Entity.IOptions = {}
 	) {
-		_.defaults( options, DEFAULT_OPTIONS );
+		defaults( options, DEFAULT_OPTIONS );
 		// Change the state of the entity
 		const beforeState = this.state;
 		this._state = EEntityState.SYNCING;
@@ -369,27 +369,27 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		const dataSourceFixed = this.getDataSource( dataSource );
 		const dataStoreEntity = this.dataSources.get( dataSourceFixed );
 		// All is diff if not present
-		if ( _.isNil( dataStoreEntity ) || _.isNil( this.attributes ) ) {
+		if ( isNil( dataStoreEntity ) || isNil( this.attributes ) ) {
 			return this.attributes || undefined;
 		}
 		const dataStoreObject = dataStoreEntity.attributes;
 		const currentAttributes = this.attributes;
 		
-		const potentialChangedKeys = _.chain( currentAttributes )
-			// Get all keys in current attributes
-			.keys()
-			// Add to it the keys of the stored object
-			.concat( _.keys( dataStoreObject ) )
-			// Remove duplicates
-			.uniq();
+		// Remove duplicates
+		const potentialChangedKeys = uniq(
+			concat(
+				// Get all keys in current attributes
+				keys( currentAttributes ),
+				// Add to it the keys of the stored object
+				keys( dataStoreObject ) ) );
 		
 		// Omit values that did not changed between now & stored object
-		const diffKeys = potentialChangedKeys.reject( ( key: string ) => _.isEqual( dataStoreEntity.attributes[key], currentAttributes[key] ) );
+		const diffKeys = reject( potentialChangedKeys, ( key: string ) => isEqual( dataStoreEntity.attributes[key], currentAttributes[key] ) );
 		
-		return diffKeys.transform( ( accumulator: IEntityAttributes, key: string ) => {
+		return transform( diffKeys, ( accumulator: IEntityAttributes, key: string ) => {
 			accumulator[key] = currentAttributes[key];
 			return accumulator;
-		},                         {} ).value();
+		},                {} );
 	}
 	
 	/**
@@ -426,13 +426,13 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 	private castTypes( source: {[key in keyof TEntity]: any} ): TEntity {
 		const attrs = this.model.modelDesc.attributes;
 		const foo: Partial<TEntity> | undefined = undefined;
-		return _.mapValues( source, <TKey extends keyof TEntity>( currentVal: any, attrName: keyof TEntity ) => {
+		return mapValues( source, <TKey extends keyof TEntity>( currentVal: any, attrName: keyof TEntity ) => {
 			const attrDesc = attrs[attrName as string];
-			if ( _.isObject( attrDesc ) ) {
+			if ( isObject( attrDesc ) ) {
 				switch ( attrDesc.type ) {
 					case 'datetime':
 					{
-						if ( _.isString( currentVal ) || _.isInteger( currentVal ) ) {
+						if ( isString( currentVal ) || isInteger( currentVal ) ) {
 							return new Date( currentVal );
 						} else if ( !( currentVal instanceof Date ) ) {
 							logger.error(
@@ -462,13 +462,13 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 		eventsArgs: any[],
 		events: string | string[]
 	): Promise<this> {
-		events = _.castArray( events );
+		events = castArray( events );
 		if ( options.skipEvents ) {
 			return this;
 		} else {
 			await this.emit( events[0], ...eventsArgs );
 			if ( events.length > 1 ) {
-				return this.maybeEmit( options, eventsArgs, _.slice( events, 1 ) );
+				return this.maybeEmit( options, eventsArgs, slice( events, 1 ) );
 			} else {
 				return this;
 			}
@@ -527,18 +527,12 @@ export abstract class Entity<TEntity extends IEntityAttributes> extends Sequenti
 			// Set the state
 			this._state = EEntityState.SYNC;
 			const attrs = this.castTypes( dataSourceEntity.attributes as any );
-			this.idHash = _.cloneDeep( dataSourceEntity.properties.idHash );
-			this._attributes = _.cloneDeep( attrs );
+			this.idHash = cloneDeep( dataSourceEntity.properties.idHash );
+			this._attributes = cloneDeep( attrs );
 		} else {
 			this._attributes = null;
 			// If this was our only data source, then go back to orphan state
-			if (
-				_.chain( this.model.dataSources )
-				.values()
-				.without( dataSource )
-				.isEmpty()
-				.value()
-			) {
+			if ( isEmpty( without( values( this.model.dataSources ), dataSource ) ) ) {
 				this._state = EEntityState.ORPHAN;
 			} else {
 				this._state = EEntityState.SYNC;

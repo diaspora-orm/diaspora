@@ -1,11 +1,10 @@
-import * as _ from 'lodash';
+import { mapValues, flattenDeep, isInteger, get, isFunction, mapKeys, Dictionary, isUndefined, isArray, some, isEqual, isNil, isNumber, isString } from 'lodash';
 
 import { Adapter as _Adapter } from '../base';
 import AAdapterEntity = _Adapter.Base.AAdapterEntity;
 import AAdapter = _Adapter.Base.AAdapter;
 import { QueryLanguage } from '../../types/queryLanguage';
 import { IEntityAttributes } from '../../types/entity';
-import { isNumber, isString } from 'lodash';
 
 /**
  * Generic constructor for a certain type
@@ -14,7 +13,7 @@ export type Constructor<TClass> = new ( ...args: any[] ) => TClass;
 
 // Cast a number component to a number
 const getNum = ( ...params: Array<string | string[]> ) => {
-	const flatten = _.flattenDeep( params ) as string[];
+	const flatten = flattenDeep( params ) as string[];
 	const [fullMatch, sign, val] = flatten;
 	if ( '∞' === val ) {
 		if ( '-' === sign ) {
@@ -29,10 +28,10 @@ const getNum = ( ...params: Array<string | string[]> ) => {
 const validations = {
 	type: {
 		int( key: string, val: number ) {
-			if ( _.isString( val ) ) {
+			if ( isString( val ) ) {
 				val = parseInt( val, 10 );
 			}
-			if ( !_.isInteger( val ) && isFinite( val ) ) {
+			if ( !isInteger( val ) && isFinite( val ) ) {
 				throw new TypeError( `Expect "${key}" to be an integer` );
 			}
 			return val;
@@ -97,45 +96,45 @@ export const remapIO = <TEntity extends IEntityAttributes>(
 	input: boolean
 ) => {
 	const direction = input ? 'input' : 'output';
-	const filtered = _.mapValues( query, ( value, key ) => {
-		const filter = _.get(
+	const filtered = mapValues( query, ( value, key ) => {
+		const filter = get(
 			adapter,
 			['filters', tableName, direction, key],
 			undefined
 		);
-		if ( _.isFunction( filter ) ) {
+		if ( isFunction( filter ) ) {
 			return filter( value );
 		}
 		return value;
 	} );
 	const remapType = input ? 'normal' : 'inverted';
-	const remaped = _.mapKeys( filtered, ( value, key ) => _.get( adapter, ['remaps', tableName, remapType, key], key ) );
+	const remaped = mapKeys( filtered, ( value, key ) => get( adapter, ['remaps', tableName, remapType, key], key ) );
 	return remaped as TEntity;
 };
 
 export type IQueryCheckFunction = ( entityVal: any, targetVal: any ) => boolean;
 
-export const OPERATORS: _.Dictionary<IQueryCheckFunction | undefined> = {
+export const OPERATORS: Dictionary<IQueryCheckFunction | undefined> = {
 	$exists: ( entityVal: any, targetVal: any ) =>
-	targetVal === !_.isUndefined( entityVal ),
+	targetVal === !isUndefined( entityVal ),
 	$equal: ( entityVal: any, targetVal: any ) =>
-	!_.isUndefined( entityVal ) && entityVal === targetVal,
+	!isUndefined( entityVal ) && entityVal === targetVal,
 	$diff: ( entityVal: any, targetVal: any ) =>
-	!_.isUndefined( entityVal ) && entityVal !== targetVal,
+	!isUndefined( entityVal ) && entityVal !== targetVal,
 	$less: ( entityVal: any, targetVal: any ) =>
-	!_.isUndefined( entityVal ) && entityVal < targetVal,
+	!isUndefined( entityVal ) && entityVal < targetVal,
 	$lessEqual: ( entityVal: any, targetVal: any ) =>
-	!_.isUndefined( entityVal ) && entityVal <= targetVal,
+	!isUndefined( entityVal ) && entityVal <= targetVal,
 	$greater: ( entityVal: any, targetVal: any ) =>
-	!_.isUndefined( entityVal ) && entityVal > targetVal,
+	!isUndefined( entityVal ) && entityVal > targetVal,
 	$greaterEqual: ( entityVal: any, targetVal: any ) =>
-	!_.isUndefined( entityVal ) && entityVal >= targetVal,
+	!isUndefined( entityVal ) && entityVal >= targetVal,
 	$contains: ( entityVal: any, targetVal: any ) =>
-	!_.isUndefined( entityVal ) &&
-	_.isArray( entityVal ) &&
-	_.some( entityVal, val => _.isEqual( val, targetVal ) ),
+	!isUndefined( entityVal ) &&
+	isArray( entityVal ) &&
+	some( entityVal, val => isEqual( val, targetVal ) ),
 };
-export const CANONICAL_OPERATORS: _.Dictionary<string> = {
+export const CANONICAL_OPERATORS: Dictionary<string> = {
 	'~': '$exists',
 	'==': '$equal',
 	'!=': '$diff',
@@ -147,7 +146,7 @@ export const CANONICAL_OPERATORS: _.Dictionary<string> = {
 
 
 export type TQueryOptionsValidator = ( ops: QueryLanguage.IQueryOptions ) => void;
-export const QUERY_OPTIONS_TRANSFORMS: _.Dictionary<TQueryOptionsValidator> = {
+export const QUERY_OPTIONS_TRANSFORMS: Dictionary<TQueryOptionsValidator> = {
 	limit( opts: QueryLanguage.IQueryOptions ) {
 		opts.limit = validateOption( 'limit', opts.limit as number, {
 			type: 'int',
@@ -161,7 +160,7 @@ export const QUERY_OPTIONS_TRANSFORMS: _.Dictionary<TQueryOptionsValidator> = {
 		} );
 	},
 	page( opts: QueryLanguage.IQueryOptions ) {
-		if ( !_.isNumber( opts.limit ) ) {
+		if ( !isNumber( opts.limit ) ) {
 			throw new ReferenceError(
 				'Usage of "options.page" requires "options.limit" to be defined.'
 			);
@@ -171,7 +170,7 @@ export const QUERY_OPTIONS_TRANSFORMS: _.Dictionary<TQueryOptionsValidator> = {
 				'Usage of "options.page" requires "options.limit" to not be infinite'
 			);
 		}
-		if ( !_.isNil( opts.skip ) ) {
+		if ( !isNil( opts.skip ) ) {
 			throw new ReferenceError( 'Use either "options.page" or "options.skip"' );
 		}
 		opts.skip =

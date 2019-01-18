@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { forEach, isUndefined, defaults, isObject, mapValues, isPlainObject, get, isFunction, identity, isString } from 'lodash';
 
 import { IEntityAttributes, IEntityProperties } from './types/entity';
 import { _QueryLanguage } from './types/queryLanguage';
@@ -23,8 +23,8 @@ export const applyUpdateEntity = (
 	update: IEntityAttributes,
 	entity: IEntityAttributes
 ): IEntityAttributes => {
-	_.forEach( update, ( val, key ) => {
-		if ( _.isUndefined( val ) ) {
+	forEach( update, ( val, key ) => {
+		if ( isUndefined( val ) ) {
 			delete entity[key];
 		} else {
 			entity[key] = val;
@@ -66,7 +66,7 @@ export const applyOptionsToSet = (
 	set: IEntityProperties[],
 	options: _QueryLanguage.IQueryOptions
 ): IEntityProperties[] => {
-	_.defaults( options, {
+	defaults( options, {
 		limit: Infinity,
 		skip: 0,
 	} );
@@ -87,9 +87,9 @@ export const applyOptionsToSet = (
 export const deepFreeze = <TObject>( object: TObject ) => {
 	const deepMap = ( obj: TObject, mapper: Function ): TObject =>
 	mapper(
-		_.isObject( obj )
-		? _.mapValues( ( obj as any ) as object, function( v ) {
-			return _.isPlainObject( v ) ? deepMap( v, mapper ) : v;
+		isObject( obj )
+		? mapValues( ( obj as any ) as object, function( v ) {
+			return isPlainObject( v ) ? deepMap( v, mapper ) : v;
 		} )
 		: obj
 	);
@@ -102,18 +102,18 @@ export const getDefaultFunction = (
 	const match = identifier.match( /^(.+?)(?:::(.+?))+$/ );
 	if ( match ) {
 		const parts = identifier.split( '::' );
-		const namedFunction = _.get( namedFunctions, parts );
-		if ( _.isFunction( namedFunction ) ) {
+		const namedFunction = get( namedFunctions, parts );
+		if ( isFunction( namedFunction ) ) {
 			return namedFunction;
 		}
 	}
-	return _.identity;
+	return identity;
 };
 
 export const getDefaultValue = ( value: any ) => {
-	if ( _.isFunction( value ) ) {
+	if ( isFunction( value ) ) {
 		return value();
-	} else if ( _.isString( value ) ) {
+	} else if ( isString( value ) ) {
 		return getDefaultFunction( value )( value );
 	}
 	return value;

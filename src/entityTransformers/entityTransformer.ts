@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { cloneDeep } from 'lodash';
 
 import { _ModelDescription } from '../types/modelDescription';
 import { PathStack } from './pathStack';
@@ -45,7 +45,7 @@ export namespace EntityTransformers{
 		 * Get the model description provided in constructor.
 		 */
 		public get modelAttributes() {
-			return _.cloneDeep( this._modelAttributes );
+			return cloneDeep( this._modelAttributes );
 		}
 		
 		/**

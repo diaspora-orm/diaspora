@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { omit, cloneDeep, isNil, merge, get } from 'lodash';
 
 import { Adapter as _AAdapter } from './adapter';
 import AAdapter = _AAdapter.Base.AAdapter;
@@ -59,7 +59,7 @@ export namespace Adapter.Base {
 		 */
 		public get attributes() {
 			// TODO WARNING! Cast not OK
-			return _.omit( this.properties, ['idHash', 'id'] );
+			return omit( this.properties, ['idHash', 'id'] );
 		}
 
 		/**
@@ -71,7 +71,7 @@ export namespace Adapter.Base {
 		 * @author Gerkin
 		 */
 		public get properties() {
-			return _.cloneDeep( this._properties );
+			return cloneDeep( this._properties );
 		}
 
 		/**
@@ -89,10 +89,10 @@ export namespace Adapter.Base {
 		 * @author gerkin
 		 */
 		public constructor( entity: IEntityProperties, dataSource: AAdapter ) {
-			if ( _.isNil( entity ) ) {
+			if ( isNil( entity ) ) {
 				throw new Error( "Can't construct entity from nil value" );
 			}
-			if ( _.isNil( dataSource ) ) {
+			if ( isNil( dataSource ) ) {
 				throw new TypeError(
 					`Expect 2nd argument to be the parent of this entity, have "${dataSource}"`
 				);
@@ -101,7 +101,7 @@ export namespace Adapter.Base {
 				throw new Error( 'Entity from adapter should have an id.' );
 			}
 			
-			_.merge( entity, { idHash: { [dataSource.name]: entity.id } } );
+			merge( entity, { idHash: { [dataSource.name]: entity.id } } );
 			this._properties = entity;
 			this.dataSource = dataSource;
 			this.dataAccessLayer = DataAccessLayer.retrieveAccessLayer( dataSource );
@@ -122,8 +122,8 @@ export namespace Adapter.Base {
 			id?: EntityUid,
 			propName: string = 'id'
 		): IEntityProperties {
-			const defaultedId = id || _.get( attributes, propName );
-			const adapterEntityAttributes = _.merge( attributes, {
+			const defaultedId = id || get( attributes, propName );
+			const adapterEntityAttributes = merge( attributes, {
 				id: defaultedId,
 				idHash: {
 					[adapter.name]: defaultedId,

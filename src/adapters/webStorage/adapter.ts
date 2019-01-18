@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { defaults, Dictionary, cloneDeep, isNil, isEqual, keys, each, pull, pullAll, map, forEach } from 'lodash';
 
 import { Adapter as _AAdapter } from '../base';
 import AAdapter = _AAdapter.Base.AAdapter;
@@ -36,7 +36,7 @@ export namespace Adapter.WebStorage {
 			config?: WebStorageAdapter.IOptionsRaw
 		) {
 			super( WebStorageEntity, dataSourceName );
-			this.config = _.defaults( config, {
+			this.config = defaults( config, {
 				session: false,
 			} );
 			this.state = EAdapterState.READY;
@@ -67,8 +67,8 @@ export namespace Adapter.WebStorage {
 		 */
 		public configureCollection(
 			tableName: string,
-			remaps: _.Dictionary<string>,
-			filters: _.Dictionary<any>
+			remaps: Dictionary<string>,
+			filters: Dictionary<any>
 		) {
 			super.configureCollection( tableName, remaps );
 			this.ensureCollectionExists( tableName );
@@ -119,7 +119,7 @@ export namespace Adapter.WebStorage {
 			table: string,
 			entities: IEntityAttributes[]
 		): Promise<IEntityProperties[]> {
-			entities = _.cloneDeep( entities );
+			entities = cloneDeep( entities );
 			const tableIndex = this.ensureCollectionExists( table );
 			const rawAdapterAttributesArr = entities.map( entity => {
 				const rawAdapterAttributes = WebStorageEntity.setId(
@@ -151,7 +151,7 @@ export namespace Adapter.WebStorage {
 		 */
 		public findOneById( table: string, id: string ): IEntityProperties | undefined {
 			const item = this.source.getItem( WebStorageAdapter.getItemName( table, id ) );
-			if ( !_.isNil( item ) ) {
+			if ( !isNil( item ) ) {
 				return JSON.parse( item );
 			}
 			return undefined;
@@ -172,15 +172,15 @@ export namespace Adapter.WebStorage {
 			queryFind: _QueryLanguage.ISelectQuery,
 			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
-			options = _.defaults( options, { skip: 0 } );
-			if ( _.isEqual( _.keys( queryFind ), ['id'] ) && _.isEqual( _.keys( queryFind.id ), ['$equal'] ) ) {
+			options = defaults( options, { skip: 0 } );
+			if ( isEqual( keys( queryFind ), ['id'] ) && isEqual( keys( queryFind.id ), ['$equal'] ) ) {
 				return this.findOneById( table, queryFind.id.$equal );
 			}
 			const itemIds = this.ensureCollectionExists( table );
 			let returnedItem;
 			let matched = 0;
 			// Iterate on each item ID, to test each one.
-			_.each( itemIds, itemId => {
+			each( itemIds, itemId => {
 				// Retrieve the item by its complete name
 				const itemInWebStorage = this.source.getItem( WebStorageAdapter.getItemName( table, itemId ) );
 				// If the item simply does not exist, just ignore and skip to the next
@@ -225,12 +225,12 @@ export namespace Adapter.WebStorage {
 			update: IEntityAttributes,
 			options: _QueryLanguage.IQueryOptions
 		): Promise<IEntityProperties | undefined> {
-			_.defaults( options, {
+			defaults( options, {
 				skip: 0,
 			} );
 			const entity = await this.findOne( table, queryFind, options );
 			
-			if ( _.isNil( entity ) ) {
+			if ( isNil( entity ) ) {
 				return undefined;
 			}
 			Utils.applyUpdateEntity( update, entity );
@@ -265,7 +265,7 @@ export namespace Adapter.WebStorage {
 				return;
 			}
 			const tableIndex = this.ensureCollectionExists( table );
-			_.pull( tableIndex, entityToDelete.id );
+			pull( tableIndex, entityToDelete.id );
 			this.source.setItem( table, JSON.stringify( tableIndex ) );
 			this.source.removeItem(
 				WebStorageAdapter.getItemName( table, entityToDelete.id )
@@ -290,9 +290,9 @@ export namespace Adapter.WebStorage {
 			const entitiesToDelete = await this.findMany( table, queryFind, options );
 			
 			const tableIndex = this.ensureCollectionExists( table );
-			_.pullAll( tableIndex, _.map( entitiesToDelete, 'id' ) );
+			pullAll( tableIndex, map( entitiesToDelete, 'id' ) );
 			this.source.setItem( table, JSON.stringify( tableIndex ) );
-			_.forEach( entitiesToDelete, entityToDelete => {
+			forEach( entitiesToDelete, entityToDelete => {
 				this.source.removeItem(
 					WebStorageAdapter.getItemName( table, entityToDelete.id )
 				);
@@ -308,7 +308,7 @@ export namespace Adapter.WebStorage {
 		 */
 		private ensureCollectionExists( table: string ) {
 			const index = this.source.getItem( table );
-			if ( _.isNil( index ) ) {
+			if ( isNil( index ) ) {
 				const newIndex: string[] = [];
 				this.source.setItem( table, JSON.stringify( newIndex ) );
 				return newIndex;

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { map, forIn, assign, omit, isArray, isUndefined, isNil, get } from 'lodash';
 
 import { Adapter as _AAdapter } from '../base';
 import AAdapter = _AAdapter.Base.AAdapter;
@@ -72,8 +72,8 @@ export namespace Adapter.WebApi {
 			this.pluralApis = config.pluralApis || {};
 			
 			// Bind lifecycle events
-			_.map( eventProviders, eventProvider =>
-				_.forIn( eventProvider, ( listener, event ) => this.on( event, listener ) )
+			map( eventProviders, eventProvider =>
+				forIn( eventProvider, ( listener, event ) => this.on( event, listener ) )
 			);
 			
 			if ( this.has( 'initialize' ) ) {
@@ -94,8 +94,8 @@ export namespace Adapter.WebApi {
 			apiDesc: WebApiTypes.IQueryDescriptorRaw
 		): Promise<WebApiTypes.IQueryDescriptor> {
 			const filteredApiDescOptions = AWebApiAdapter.transformQueryOptions( apiDesc.options );
-			return this.emit( 'beforeQuery', _.assign(
-				_.omit( apiDesc, ['options'] ),
+			return this.emit( 'beforeQuery', assign(
+				omit( apiDesc, ['options'] ),
 				{ options: filteredApiDescOptions }
 			) );
 		}
@@ -127,7 +127,7 @@ export namespace Adapter.WebApi {
 				delete options.limit;
 			}
 			
-			return _.omit( options, ['remapInput', 'remapOutput'] );
+			return omit( options, ['remapInput', 'remapOutput'] );
 		}
 		
 		/**
@@ -137,21 +137,21 @@ export namespace Adapter.WebApi {
 		 * @param adapter  - Source of those entities
 		 */
 		private postProcessManyQuery( entities: WebApiTypes.TEntitiesJsonResponse ) {
-			if ( !_.isArray( entities ) && !_.isUndefined( entities ) ){
+			if ( !isArray( entities ) && !isUndefined( entities ) ){
 				throw new TypeError( `The API should have returned "undefined" or an array, but received ${JSON.stringify( entities )}` );
 			}
-			if ( !_.isNil( entities ) ) {
-				return _.map( entities, entity => this.postProcessOneQuery( entity ) as IEntityProperties );
+			if ( !isNil( entities ) ) {
+				return map( entities, entity => this.postProcessOneQuery( entity ) as IEntityProperties );
 			} else {
 				return [];
 			}
 		}
 
 		private postProcessOneQuery( entity: WebApiTypes.TEntitiesJsonResponse ) {
-			if ( _.isArray( entity ) ){
+			if ( isArray( entity ) ){
 				throw new TypeError( `The API should have returned "undefined" or a single plain object, but received ${JSON.stringify( entity )}` );
 			}
-			if ( !_.isNil( entity ) ) {
+			if ( !isNil( entity ) ) {
 				entity.idHash = { [this.name]: entity.id };
 			}
 			return entity;
@@ -456,7 +456,7 @@ export namespace Adapter.WebApi {
 		 * @param endpoint - Name of the endpoint
 		 */
 		private getPluralEndpoint( endpoint: string ): string {
-			return _.get( this.pluralApis, endpoint, endpoint + 's' );
+			return get( this.pluralApis, endpoint, endpoint + 's' );
 		}
 		
 		/**
@@ -472,7 +472,7 @@ export namespace Adapter.WebApi {
 			statusCode: number
 		) {
 			// Retrieve the function that will generate the error
-			const errorBuilder = _.get(
+			const errorBuilder = get(
 				AWebApiAdapter.httpErrorFactories,
 				statusCode,
 				AWebApiAdapter.httpErrorFactories._

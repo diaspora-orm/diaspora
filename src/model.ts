@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { mapValues, defaults, castArray, map, assign, omit, keys, pick, difference, forEach, chain, isString, Dictionary, isArrayLike, zipObject, times, constant, isObject, values, isNil, first, compact } from 'lodash';
 
 import { Adapter } from './adapters';
 import AAdapterEntity = Adapter.Base.AAdapterEntity;
@@ -54,7 +54,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @author Gerkin
 	 */
 	private static normalizeAttributesDescription( desc: ModelDescription.AttributesDescription ): _ModelDescription.AttributesDescription {
-		return _.mapValues(
+		return mapValues(
 			desc,
 			val => Model.normalizeAttributeDescription( val )
 		);
@@ -69,18 +69,18 @@ export class Model<TEntity extends IEntityAttributes> {
 	 */
 	private static normalizeAttributeDescription( attributeDesc: ModelDescription.FieldDescriptor ): _ModelDescription.FieldDescriptor{
 		const fieldDescriptorToDefault = FieldDescriptorTypeChecks.isObjectFieldDescriptor( attributeDesc ) ? attributeDesc : { type: attributeDesc } as ModelDescription.ObjectFieldDescriptor;
-		const fieldDescriptorWithRequired = _.defaults( fieldDescriptorToDefault , {required: false } );
+		const fieldDescriptorWithRequired = defaults( fieldDescriptorToDefault , {required: false } );
 
 		// Perform deep defaulting
 		if ( fieldDescriptorWithRequired.type === EFieldType.OBJECT ){
 			// TODO: Find the source of this cast issue
-			const attrsDescs: ModelDescription.AttributesDescription[] = _.castArray( fieldDescriptorWithRequired.attributes as any );
-			const attrsDescsDefaulted = _.map( attrsDescs, attrsDesc => Model.normalizeAttributesDescription( attrsDesc ) );
-			return _.assign( _.omit( fieldDescriptorWithRequired, 'attributes' ), {attributes: attrsDescsDefaulted} );
+			const attrsDescs: ModelDescription.AttributesDescription[] = castArray( fieldDescriptorWithRequired.attributes as any );
+			const attrsDescsDefaulted = map( attrsDescs, attrsDesc => Model.normalizeAttributesDescription( attrsDesc ) );
+			return assign( omit( fieldDescriptorWithRequired, 'attributes' ), {attributes: attrsDescsDefaulted} );
 		} else if ( fieldDescriptorWithRequired.type === EFieldType.ARRAY ){
-			const attrsDescs = _.castArray( fieldDescriptorWithRequired.of );
-			const ofDefaulted = _.map( attrsDescs, attrsDesc => Model.normalizeAttributeDescription( attrsDesc ) );
-			return _.assign( _.omit( fieldDescriptorWithRequired, 'of' ), {of: ofDefaulted} );
+			const attrsDescs = castArray( fieldDescriptorWithRequired.of );
+			const ofDefaulted = map( attrsDescs, attrsDesc => Model.normalizeAttributeDescription( attrsDesc ) );
+			return assign( omit( fieldDescriptorWithRequired, 'of' ), {of: ofDefaulted} );
 		} else {
 			return fieldDescriptorWithRequired;
 		}
@@ -97,9 +97,9 @@ export class Model<TEntity extends IEntityAttributes> {
 		// Normalize our sources: normalized form is an object with keys corresponding to source name, and key corresponding to remaps
 		const sourcesNormalized = Model.normalizeRemaps( modelDesc );
 		// List sources required by this model
-		const sourceNames = _.keys( sourcesNormalized );
-		const modelSources = _.pick( dataSourceRegistry, sourceNames );
-		const missingSources = _.difference( sourceNames, _.keys( modelSources ) );
+		const sourceNames = keys( sourcesNormalized );
+		const modelSources = pick( dataSourceRegistry, sourceNames );
+		const missingSources = difference( sourceNames, keys( modelSources ) );
 		if ( 0 !== missingSources.length ) {
 			throw new Error( `Missing data sources ${missingSources.map( v => `"${v}"` ).join( ', ' )}` );
 		}
@@ -114,14 +114,18 @@ export class Model<TEntity extends IEntityAttributes> {
 		this.attributes = deepFreeze( attributes );
 		
 		// Configure source-related elements
-		_.forEach( sourcesNormalized, ( remap, sourceName ) => {
+		forEach( sourcesNormalized, ( remap, sourceName ) => {
 			modelSources[sourceName].configureCollection( name, remap );
 		} );
 		this._dataSources = modelSources;
-		this.defaultDataSource = _.chain( modelSources ).keys().head().value() as string;
+		const defaultDataSource = first( keys( modelSources ) );
+		if ( isNil( defaultDataSource ) ){
+			throw new TypeError( 'Missing default data source' );
+		}
+		this.defaultDataSource = defaultDataSource;
 		
 		// Store & expose the model description
-		this.modelDesc = deepFreeze( _.assign( modelDesc, { attributes, sources: sourcesNormalized } ) );
+		this.modelDesc = deepFreeze( assign( modelDesc, { attributes, sources: sourcesNormalized } ) );
 		// Prepare our entity factory
 		this._entityFactory = EntityFactory( name, this.modelDesc, this );
 	}
@@ -134,22 +138,22 @@ export class Model<TEntity extends IEntityAttributes> {
 	 */
 	protected static normalizeRemaps( modelDesc: ModelDescription.IModelDescription ) {
 		const sourcesRaw = modelDesc.sources;
-		if ( _.isString( sourcesRaw ) ) {
+		if ( isString( sourcesRaw ) ) {
 			// Single source: create an empty remap hash
-			return { [sourcesRaw]: {} } as _.Dictionary<_.Dictionary<string>>;
-		} else if ( _.isArrayLike( sourcesRaw ) ) {
-			return _.zipObject(
+			return { [sourcesRaw]: {} } as Dictionary<Dictionary<string>>;
+		} else if ( isArrayLike( sourcesRaw ) ) {
+			return zipObject(
 				sourcesRaw,
 				// Create empty remaps dictionaries to zip with source names
-				_.times( sourcesRaw.length, _.constant( {} as _.Dictionary<string> ) )
+				times( sourcesRaw.length, constant( {} as Dictionary<string> ) )
 			);
 		} else {
 			// Normalize each sources separately
-			return _.mapValues( sourcesRaw, ( remap, dataSourceName ) => {
+			return mapValues( sourcesRaw, ( remap, dataSourceName ) => {
 				if ( true === remap ) {
-					return {} as _.Dictionary<string>;
-				} else if ( _.isObject( remap ) ) {
-					return remap as _.Dictionary<string>;
+					return {} as Dictionary<string>;
+				} else if ( isObject( remap ) ) {
+					return remap as Dictionary<string>;
 				} else {
 					throw new TypeError(
 						`Datasource "${dataSourceName}" value is invalid: expect \`true\` or a remap hash, but have ${JSON.stringify( remap )}`
@@ -172,7 +176,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	): DataAccessLayer {
 		// If argument is a data access layer, check that it is in our {@link _dataSources} hash.
 		if ( dataSource instanceof DataAccessLayer ) {
-			if ( _.values( this._dataSources ).indexOf( dataSource ) === -1 ) {
+			if ( values( this._dataSources ).indexOf( dataSource ) === -1 ) {
 				throw new ReferenceError(
 					`Model does not contain data source "${dataSource.adapter.name}"`
 				);
@@ -210,7 +214,7 @@ export class Model<TEntity extends IEntityAttributes> {
 	 * @returns Set with new *orphan* entities.
 	 */
 	public spawnMany( sources: Array<Partial<TEntity>> ): Set<TEntity> {
-		return new Set( this, _.map( sources, source => this.spawn( source ) ) );
+		return Set.create( this, map( sources, source => this.spawn( source ) ) );
 	}
 	
 	/**
@@ -396,11 +400,8 @@ export class Model<TEntity extends IEntityAttributes> {
 		dataSourceEntitiesPromise: Promise<Array<AAdapterEntity | undefined>>
 	) {
 		const dataSourceEntities = await dataSourceEntitiesPromise;
-		const newEntities = _.chain( dataSourceEntities )
-		.map( dataSourceEntity => new this.entityFactory( dataSourceEntity ) )
-		.compact()
-		.value();
-		const set = new Set<TEntity>( this, newEntities );
+		const newEntities = compact( map( dataSourceEntities, dataSourceEntity => new this.entityFactory( dataSourceEntity ) ) );
+		const set = Set.create<TEntity>( this, newEntities );
 		return set;
 	}
 	
@@ -414,9 +415,9 @@ export class Model<TEntity extends IEntityAttributes> {
 		dataSourceEntityPromise: Promise<AAdapterEntity | undefined>
 	) {
 		const dataSourceEntity = await dataSourceEntityPromise;
-		if ( _.isNil( dataSourceEntity ) ) {
+		if ( isNil( dataSourceEntity ) ) {
 			return null;
 		}
-  return new this.entityFactory( dataSourceEntity );
+		return new this.entityFactory( dataSourceEntity );
 	}
 }

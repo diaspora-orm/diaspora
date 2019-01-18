@@ -68,7 +68,7 @@ export const bindEvents = <TEntity extends IEntityAttributes>( category: string,
 		if ( entity instanceof Entity ) {
 			bindEntity( entity );
 		} else {
-			entity.entities.forEach( bindEntity );
+			entity.forEach( bindEntity );
 		}
 	} );
 	return eventsFlags;

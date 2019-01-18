@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { defaults, assign, cloneDeep, omitBy, isNumber, chain, isObject, isEmpty, unary, partial, map, inRange, isNil, join, toPairs, mapValues } from 'lodash';
 
 import { Adapter as _AWebApiAdapter } from '../adapter';
 import AWebApiAdapter = _AWebApiAdapter.WebApi.AWebApiAdapter;
@@ -9,7 +9,7 @@ type ResolveResponse = ( value?: | TEntitiesJsonResponse | PromiseLike<TEntities
 export namespace Adapter.WebApi {
 	export class BrowserWebApiAdapter extends AWebApiAdapter {
 		protected normalizeConfig( options: IWebApiAdapterConfig ){
-			return _.defaults( options, {host: '', scheme: 'http', port: 80} );
+			return defaults( options, {host: '', scheme: 'http', port: 80} );
 		}
 		
 		public constructor(
@@ -17,7 +17,7 @@ export namespace Adapter.WebApi {
 			config: AWebApiAdapter.IWebApiAdapterConfig,
 			eventProviders?: AWebApiAdapter.IEventProvider[]
 		) {
-			const defaultedConfig = _.defaults( config, {
+			const defaultedConfig = defaults( config, {
 				scheme: false,
 				host: false,
 				port: false,
@@ -26,7 +26,7 @@ export namespace Adapter.WebApi {
 			false === defaultedConfig.host ? defaultedConfig.path : undefined;
 			super(
 				dataSourceName,
-				_.assign( { baseEndPoint }, defaultedConfig ),
+				assign( { baseEndPoint }, defaultedConfig ),
 				eventProviders
 			);
 		}
@@ -38,28 +38,28 @@ export namespace Adapter.WebApi {
 		 * @param queryObject - Query to serialize for a query string
 		 */
 		private static queryObjectToString( queryObject?: object ) {
-			const filteredQueryObject = _.cloneDeep( queryObject ) as any;
+			const filteredQueryObject = cloneDeep( queryObject ) as any;
 			if ( filteredQueryObject && filteredQueryObject.options ) {
-				filteredQueryObject.options = _.omitBy(
+				filteredQueryObject.options = omitBy(
 					filteredQueryObject.options,
-					v => _.isNumber( v ) && !isFinite( v )
+					v => isNumber( v ) && !isFinite( v )
 				);
 			}
-			return (
-				_.chain( filteredQueryObject )
-				.thru( _.cloneDeep )
-				.omitBy( val => _.isObject( val ) && _.isEmpty( val ) )
-				// { foo: 1, bar: { baz: 2 } }
-				.mapValues( _.unary( JSON.stringify ) )
-				// { foo: '1', bar: '{"baz": "2"}' }
-				.toPairs()
-				// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
-				.map( _.partial( _.map, _.partial.placeholder, encodeURIComponent ) )
-				// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
-				.map( arr => `${arr[0]}=${arr[1]}` )
+			return join(
 				// [ 'foo=1', 'bar=%7B%22baz%22%3A2%7D' ]
-				.join( '&' )
-				.value()
+				map(
+					// [ [ 'foo', '1' ], [ 'bar', '%7B%22baz%22%3A2%7D' ] ]
+					map(
+						// [ [ 'foo', '1' ], [ 'bar', '{"baz":2}' ] ]
+						toPairs(
+							// { foo: '1', bar: '{"baz": "2"}' }
+							mapValues(
+								// { foo: 1, bar: { baz: 2 } }
+								omitBy( cloneDeep( filteredQueryObject ), val => isObject( val ) && isEmpty( val ) ),
+								unary( JSON.stringify ) ) ),
+						partial( map, partial.placeholder, encodeURIComponent ) ),
+					arr => `${arr[0]}=${arr[1]}` ),
+				'&'
 			);
 		}
 		
@@ -83,7 +83,7 @@ export namespace Adapter.WebApi {
 		) {
 			xhr.onload = () => {
 				try {
-					if ( _.inRange( xhr.status, 200, 299 ) ) {
+					if ( inRange( xhr.status, 200, 299 ) ) {
 						return resolve( xhr.responseText === '' ? undefined : JSON.parse( xhr.responseText ) );
 					} else {
 						reject( BrowserWebApiAdapter.handleError(
@@ -132,7 +132,7 @@ export namespace Adapter.WebApi {
 					true
 				);
 				xhr.setRequestHeader( 'Content-Type', 'application/json' );
-				xhr.send( _.isNil( data ) ? undefined : JSON.stringify( data ) );
+				xhr.send( isNil( data ) ? undefined : JSON.stringify( data ) );
 			} );
 		}
 	}
