@@ -58,6 +58,14 @@ export namespace Adapter.WebApi {
 			);
 		}
 		
+		private static parseResponse( xhr: XMLHttpRequest ){
+			if ( xhr.responseType === 'text' || xhr.responseType === '' ){
+				return xhr.responseText === '' ? undefined : JSON.parse( xhr.responseText );
+			} else {
+				return xhr.response;
+			}
+		}
+		
 		/**
 		 * Binds `resolve` & `reject` to XHR events.
 		 *
@@ -78,11 +86,11 @@ export namespace Adapter.WebApi {
 		) {
 			xhr.onload = () => {
 				try {
-					if ( _.inRange( xhr.status, 200, 299 ) ) {
-						return resolve( xhr.responseText === '' ? undefined : JSON.parse( xhr.responseText ) );
+					if ( _.inRange( xhr.status, 200, 300 ) ) {
+						return resolve( this.parseResponse( xhr ) );
 					} else {
 						reject( BrowserWebApiAdapter.handleError(
-							JSON.parse( xhr.responseText ),
+							this.parseResponse( xhr ),
 							xhr.status
 						) );
 					}
