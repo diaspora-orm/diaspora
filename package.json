@@ -1,156 +1,160 @@
 {
-	"name": "@diaspora/diaspora",
-	"version": "0.3.3",
-	"description": "Multi-Layer ORM for Javascript Client+Server",
-	"files": [
-		"docs",
-		"dist",
-		"src"
-	],
-	"//": "For IIFE, you can use `./dist/browser/diaspora.iife.js`",
-	"main": "./dist/node/diaspora.cjs.js",
-	"module": "./dist/node/diaspora.esm.js",
-	"browser": "./dist/browser/diaspora.esm.js",
-	"typings": "./dist/types",
-	"directories": {
-		"doc": "doc",
-		"test": "test"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/diaspora-orm/diaspora.git"
-	},
-	"scripts": {
-		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json",
-		"lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json || true",
-		"doc": "typedoc --target es6 --mode file --json doc.json src",
-		"prebuild": "rimraf docs dist",
-		"build": "npm install && rollup -c ./rollup.config.js --environment ENVIRONMENT:production && npm run doc",
-		"build:dev": "npm install && rollup -c ./rollup.config.js",
-		"start": "rollup -c ./rollup.config.js -w",
-		"test": "jest",
-		"test:watch": "jest --watch",
-		"test:prod": "npm run lint && npm run test -- --coverage --no-cache",
-		"deploy-docs": "ts-node tools/gh-pages-publish",
-		"report-coverage": "cat ./coverage/lcov.info | coveralls",
-		"commit": "git-cz",
-		"semantic-release": "semantic-release pre && npm publish && semantic-release post",
-		"semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-		"changelog": "npx conventional-changelog -p angular -i CHANGELOG.md -s",
-		"version": "npm run changelog && git add CHANGELOG.md && npm run doc",
-		"prepack": "npm run build"
-	},
-	"keywords": [
-		"ORM",
-		"db",
-		"collection",
-		"manager",
-		"localstorage",
-		"webstorage",
-		"models",
-		"mvc",
-		"query",
-		"object"
-	],
-	"author": "Gerkin",
-	"license": "Apache 2.0",
-	"bugs": {
-		"url": "https://github.com/diaspora-orm/diaspora/issues"
-	},
-	"homepage": "https://github.com/diaspora-orm/diaspora#readme",
-	"config": {
-		"commitizen": {
-			"path": "node_modules/cz-conventional-changelog"
-		},
-		"validate-commit-msg": {
-			"types": "conventional-commit-types",
-			"helpMessage": "Use \"npm run commit\" instead, we use conventional-changelog format :) (https://github.com/commitizen/cz-cli)"
-		}
-	},
-	"jest": {
-		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
-		"moduleFileExtensions": [
-			"js",
-			"json",
-			"jsx",
-			"ts",
-			"tsx"
-		],
-		"moduleDirectories": [
-			"node_modules"
-		],
-		"roots": [
-			"test/unit-test"
-		],
-		"coverageThreshold": {
-			"global": {
-				"branches": 70,
-				"functions": 80,
-				"lines": 80,
-				"statements": 80
-			}
-		},
-		"collectCoverage": true,
-		"collectCoverageFrom": [
-			"src/**/*.{js,jsx,ts,tsx}"
-		],
-		"globals": {
-			"ts-jest": {
-				"tsConfig": "test/tsconfig.test.json",
-				"diagnostics": false
-			}
-		},
-		"setupTestFrameworkScriptFile": "./test/unit-test/setup.ts",
-		"testURL": "http://localhost/",
-		"preset": "ts-jest",
-		"testMatch": null
-	},
-	"devDependencies": {
-		"@babel/core": "7.4.4",
-		"@babel/preset-env": "7.4.4",
-		"@types/express": "4.16.0",
-		"@types/jest": "23.3.10",
-		"@types/lodash": "4.14.118",
-		"@types/logform": "1.2.0",
-		"@types/node": "10.12.10",
-		"@types/request-promise": "4.1.42",
-		"commitizen": "3.0.4",
-		"conventional-changelog-cli": "2.0.11",
-		"coveralls": "3.0.2",
-		"cz-conventional-changelog": "2.1.0",
-		"express": "4.16.4",
-		"intercept-stdout": "0.1.2",
-		"jest": "23.6.0",
-		"jest-extended": "0.11.0",
-		"rimraf": "2.6.2",
-		"rollup": "0.68.0",
-		"rollup-plugin-babel": "4.0.3",
-		"rollup-plugin-commonjs": "9.2.0",
-		"rollup-plugin-jscc": "1.0.0",
-		"rollup-plugin-json": "3.1.0",
-		"rollup-plugin-node-resolve": "4.0.0",
-		"rollup-plugin-sourcemaps": "0.4.2",
-		"rollup-plugin-terser": "4.0.0",
-		"rollup-plugin-typescript2": "0.18.0",
-		"semantic-release": "15.13.16",
-		"ts-jest": "23.10.5",
-		"tslint": "5.11.0",
-		"tslint-config-standard": "8.0.1",
-		"typedoc": "0.14.0",
-		"typescript": "3.1.6",
-		"validate-commit-msg": "2.14.0",
-		"validate-npm-package-name": "3.0.0",
-		"xmlhttprequest": "1.8.0"
-	},
-	"dependencies": {
-		"lodash": "^4.17.11",
-		"request": "^2.88.0",
-		"request-promise": "^4.2.2",
-		"sequential-event": "^0.4.5",
-		"winston": "^3.1.0",
-		"logform": "^1.10.0"
-	},
-	"engines": {
-		"node": ">=7.0.0"
-	}
+  "name": "@diaspora/diaspora",
+  "version": "0.3.3",
+  "description": "Multi-Layer ORM for Javascript Client+Server",
+  "files": [
+    "docs",
+    "dist",
+    "src"
+  ],
+  "//": "For IIFE, you can use `./dist/browser/diaspora.iife.js`",
+  "main": "./dist/node/diaspora.cjs.js",
+  "module": "./dist/node/diaspora.esm.js",
+  "browser": "./dist/browser/diaspora.esm.js",
+  "typings": "./dist/types",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diaspora-orm/diaspora.git"
+  },
+  "scripts": {
+    "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json",
+    "lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json || true",
+    "doc": "typedoc --target es6 --mode file --json doc.json src",
+    "prebuild": "rimraf docs dist",
+    "build": "npm install && rollup -c ./rollup.config.js --environment ENVIRONMENT:production && npm run doc",
+    "build:dev": "npm install && rollup -c ./rollup.config.js",
+    "start": "rollup -c ./rollup.config.js -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
+    "deploy-docs": "ts-node tools/gh-pages-publish",
+    "report-coverage": "cat ./coverage/lcov.info | coveralls",
+    "commit": "git-cz",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
+    "changelog": "npx conventional-changelog -p angular -i CHANGELOG.md -s",
+    "version": "npm run changelog && git add CHANGELOG.md && npm run doc",
+    "prepack": "npm run build",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "keywords": [
+    "ORM",
+    "db",
+    "collection",
+    "manager",
+    "localstorage",
+    "webstorage",
+    "models",
+    "mvc",
+    "query",
+    "object"
+  ],
+  "author": "Gerkin",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/diaspora-orm/diaspora/issues"
+  },
+  "homepage": "https://github.com/diaspora-orm/diaspora#readme",
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    },
+    "validate-commit-msg": {
+      "types": "conventional-commit-types",
+      "helpMessage": "Use \"npm run commit\" instead, we use conventional-changelog format :) (https://github.com/commitizen/cz-cli)"
+    }
+  },
+  "jest": {
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "jsx",
+      "ts",
+      "tsx"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "roots": [
+      "test/unit-test"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "test/tsconfig.test.json",
+        "diagnostics": false
+      }
+    },
+    "setupTestFrameworkScriptFile": "./test/unit-test/setup.ts",
+    "testURL": "http://localhost/",
+    "preset": "ts-jest",
+    "testMatch": null
+  },
+  "devDependencies": {
+    "@babel/core": "7.4.4",
+    "@babel/preset-env": "7.4.4",
+    "@types/express": "4.16.0",
+    "@types/jest": "23.3.10",
+    "@types/lodash": "4.14.118",
+    "@types/logform": "1.2.0",
+    "@types/node": "10.12.10",
+    "@types/request-promise": "4.1.42",
+    "commitizen": "3.0.4",
+    "conventional-changelog-cli": "2.0.11",
+    "coveralls": "3.0.2",
+    "cz-conventional-changelog": "2.1.0",
+    "express": "4.16.4",
+    "intercept-stdout": "0.1.2",
+    "jest": "23.6.0",
+    "jest-extended": "0.11.0",
+    "rimraf": "2.6.2",
+    "rollup": "0.68.0",
+    "rollup-plugin-babel": "4.0.3",
+    "rollup-plugin-commonjs": "9.2.0",
+    "rollup-plugin-jscc": "1.0.0",
+    "rollup-plugin-json": "3.1.0",
+    "rollup-plugin-node-resolve": "4.0.0",
+    "rollup-plugin-sourcemaps": "0.4.2",
+    "rollup-plugin-terser": "4.0.0",
+    "rollup-plugin-typescript2": "0.18.0",
+    "semantic-release": "15.13.16",
+    "ts-jest": "23.10.5",
+    "tslint": "5.11.0",
+    "tslint-config-standard": "8.0.1",
+    "typedoc": "0.14.0",
+    "typescript": "3.1.6",
+    "validate-commit-msg": "2.14.0",
+    "validate-npm-package-name": "3.0.0",
+    "xmlhttprequest": "1.8.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "sequential-event": "^0.4.5",
+    "winston": "^3.1.0",
+    "logform": "^1.10.0",
+    "snyk": "^1.189.0"
+  },
+  "engines": {
+    "node": ">=7.0.0"
+  },
+  "snyk": true
 }
