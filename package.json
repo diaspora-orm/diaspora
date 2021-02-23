@@ -143,7 +143,7 @@
 		"xmlhttprequest": "1.8.0"
 	},
 	"dependencies": {
-		"lodash": "^4.17.11",
+		"lodash": "^4.17.21",
 		"request": "^2.88.0",
 		"request-promise": "^4.2.2",
 		"sequential-event": "^0.4.5",
